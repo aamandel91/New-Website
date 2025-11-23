@@ -1,0 +1,281 @@
+openapi: 3.1.0
+info:
+  title: Locations API
+  description: |
+    API for searching, filtering, and retrieving location data across multiple geographical hierarchies.
+    Provides endpoints for location querying based on various parameters including geographical boundaries,
+    administrative divisions and location types. Supports filtering, pagination, and custom field selection.
+  version: 1.0.0
+servers:
+  - url: https://api.repliers.io
+    description: Production server
+  - url: https://dev.repliers.io
+    description: Development server
+paths:
+  /nlp:
+    post:
+      summary: New Prompt
+      description: |
+        This endpoint translates natural language search queries into structured API requests for the Repliers listings endpoint. For example, the prompt `find me properties in new york`` would be converted to the equivalent API call: https://api.repliers.io/listings?city=New York
+      tags:
+        - NLP
+      parameters:
+        - name: nlpVersion
+          in: query
+          description: NLP Model version
+          required: false
+          schema:
+            type: string
+            default: "3"
+            enum: ["1", "2", "3"]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                prompt:
+                  type: string
+                  description: The natural language prompt to be processed.
+                  example: "Find me a condo in toronto with at least 1 bedroom in the annex. It must have underground parking."
+                nlpId:
+                  type: string
+                  description: |
+                    Unique identifier for maintaining context-aware interactions across multiple prompts.
+
+                    - **If omitted or blank:** A new session is created, and the system processes the prompt independently without any prior context.
+                    - **If provided:** The prompt is added to the existing session associated with the given `nlpId`, allowing the system to consider the conversation history when generating the API request.
+
+                    When you send a prompt to the `/nlp` endpoint, the system returns an `nlpId` in the response. You can include this `nlpId` in subsequent requests to build upon previous interactions and maintain continuity within the same conversation thread.
+                  example: "d38a5bfc-3e8f-4a00-b9s7a-49fe545fa72b"
+                clientId:
+                  type: string
+                  description: The `clientId` of the client that the NLP prompt is for.
+                  example: "12345"
+                listings:
+                  type: boolean
+                  default: false
+                  description: |
+                    If `true`, the endpoint will return listings according to the generated urlQueryString parameters, the same way as GET /lisitngs endpoint would treat those parameters. Default is `false`.
+                fields:
+                  type: string
+                  description: |
+                    Use if you want to limit the `listings` response object to containing certain fields only. For example: `fields=listPrice,soldPrice` would limit the response to contain `listPrice` and `soldPrice` only. You can also specify the amount of images to return, for example if a listing has 40 images total and you specify `fields=images[5]` it will only return the first 5 images.
+
+      responses:
+        "200":
+          description: Successful response with processed data.
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/NLPResponseObject"
+                  - type: object
+                    properties:
+                      request:
+                        $ref: "#/components/schemas/NLPRequest"
+        "400":
+          description: Bad Request - Invalid input.
+        "406":
+          description: Not accepted - If the input is not relevant to a listings search a 406 response will be returned. For example, "why is the sky blue" would return a 406 response.
+        "500":
+          description: Internal Server Error - An error occurred while processing the request.
+    get:
+      summary: Filter prompts
+      description: |
+        This endpoint allows you to list and filter prompts across all sessions.
+      tags:
+        - NLP
+      parameters:
+        - name: nlpId
+          in: query
+          description: Unique identifier for the NLP session.
+          required: false
+          schema:
+            type: string
+        - name: clientId
+          in: query
+          description: Filter sessions based on the `clientId` to see all NLP sessions associated with a specific client.
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successful response with NLP session data.
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "components.yml#/components/schemas/PaginationInfo"
+                  - type: object
+                    properties:
+                      prompts:
+                        type: array
+                        description: List of NLP prompts and their responses
+                        items:
+                          allOf:
+                            - $ref: "#/components/schemas/NLPResponseObject"
+                            - type: object
+                              properties:
+                                request:
+                                  $ref: "#/components/schemas/NLPRequest"
+        "500":
+          description: Internal Server Error - An error occurred while processing the request.
+  /nlp/chats:
+    get:
+      summary: Filter sessions
+      description: |
+        This endpoint allows you to list and filter all sessions. Each session has a unique nlpId and a session can have many prompts.
+      tags:
+        - NLP
+      parameters:
+        - name: nlpId
+          in: query
+          description: Unique identifier for the NLP session.
+          required: false
+          schema:
+            type: string
+
+        - name: clientId
+          in: query
+          description: Filter sessions based on the `clientId` to see all NLP sessions associated with a specific client.
+          required: false
+          schema:
+            type: string
+
+        - name: resultsPerPage
+          in: query
+          description: The amount of chats to return in each page of the results set.
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 100
+
+        - name: pageNum
+          in: query
+          description: If specified indexes a specific page in the results set. For example, if there are 1000 chats and 100 chats per page, if you'd like to view chats 101-200 you'd specify pageNum=2
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+
+        - name: prompts
+          in: query
+          description: |
+            Fetch all prompts for each of the chats.
+          required: false
+          schema:
+            type: boolean
+            default: null
+
+      responses:
+        "200":
+          description: Successful response with NLP chats.
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "components.yml#/components/schemas/PaginationInfo"
+                  - type: object
+                    properties:
+                      chats:
+                        type: array
+                        description: List of NLP chats
+                        items:
+                          type: object
+                          properties:
+                            nlpId:
+                              type: string
+                              description: Unique session identifier for maintaining context in future NLP requests.
+                              example: "d38a5bfc-3e8f-4a00-b9s7a-49fe545fa72b"
+                            clientId:
+                              type: string
+                              description: The `clientId` of the client that the NLP chat is for.
+                              example: "12345"
+                            title:
+                              type: string
+                              description: The title of the NLP chat made out of last NLP prompt summary.
+                              example: "Searching for properties in Boston with at least 2 bedrooms."
+                            updatedOn:
+                              type: string
+                              format: date-time
+                              description: The date and time when the chat was last updated.
+                              example: "2025-11-03T22:44:24.000Z"
+                            nlpVersion:
+                              type: string
+                              description: The NLP model version used in the chat.
+                              example: "1"
+                            prompts:
+                              type: array
+                              description: List of NLP prompts and their responses
+                              items:
+                                allOf:
+                                  - $ref: "#/components/schemas/NLPResponseObject"
+                                  - type: object
+                                    properties:
+                                      request:
+                                        $ref: "#/components/schemas/NLPRequest"
+        "500":
+          description: Internal Server Error - An error occurred while processing the request.
+
+components:
+  schemas:
+    NLPResponseObject:
+      type: object
+      properties:
+        nlpId:
+          type: string
+          description: Unique session identifier for maintaining context in future NLP requests.
+          example: "d38a5bfc-3e8f-4a00-b9s7a-49fe545fa72b"
+        nlpVersion:
+          type: string
+          description: The NLP model version used to process the prompt.
+          example: "1"
+        clientId:
+          type: string
+          description: The `clientId` of the client that the NLP prompt is for.
+          example: "12345"
+    NLPRequest:
+      type: object
+      description: Details of the Repliers API request generated by the NLP model.
+      properties:
+        url:
+          type: string
+          description: Formatted GET /listings URL ready for use.
+          example: "https://api.repliers.io/listings?area=Toronto&city=Toronto&propertyType=Condo%20Apt&minBeds=1&neighborhood=Annex&garage=Underground"
+        body:
+          type: object
+          description: Formatted POST /listings body ready for use.
+          properties:
+            imageSearchItems:
+              type: array
+              description: List of image search items.
+              items:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    description: |
+                      possible values `text` or `image`
+                    example: "text"
+                  value:
+                    type: string
+                    description: The text or image URL for the search item.
+                    example: white kitchen
+                  boost:
+                    type: number
+                    description: Boost value for the search item.
+                    example: 1
+        summary:
+          type: string
+          description: Summary of how the prompt was interpreted by NLP model.
+          example: "Searching for a condominium apartment in Toronto with a minimum of 1 bedroom located in the Annex neighborhood. The property must have underground parking."
+        locations:
+          type: array
+          description: List of locations identified in the prompt.
+          items:
+            $ref: "locations.yml#/components/schemas/SuggestedLocation"
