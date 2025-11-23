@@ -1,0 +1,16 @@
+.highlight {
+  position: relative;
+
+  &::before {
+    content: '';
+    position: absolute;
+    border-radius: 8px;
+    inset: 0;
+    padding: 0 8px 2px;
+    margin: 0 -8px -2px;
+    border: 1px solid #fd9;
+    background: #fec4;
+
+    pointer-events: none;
+  }
+}
