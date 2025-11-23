@@ -16,7 +16,7 @@ Before you begin, ensure you have the following installed:
 
 - Node.js (min v22.x)
 - Git
-- fully operational Repliers API backend (see [portal-backend](https://github.com/Repliers-io/portal-backend) for instructions on how to get it running locally)
+- fully operational Repliers API backend (included in this repository under `/backend` - see [backend/README.md](./backend/README.md) for instructions on how to get it running locally)
 
 **Required API Keys:**
 
