@@ -23,7 +23,7 @@ const Header = () => {
       <AppBar
         sx={{
           zIndex: 'modal', // +2 levels from its normal value; should be on top of the mobile menu drawer
-          position: { xs: 'fixed', md: 'relative' }
+          position: 'fixed'
         }}
       >
         <Container

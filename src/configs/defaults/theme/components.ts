@@ -42,9 +42,9 @@ const components = {
         theme.unstable_sx({
           bgcolor: 'common.white',
           color: 'common.black',
-          position: 'relative',
+          position: 'fixed',
           borderRadius: 0,
-          boxShadow: '0 0 35px #A1A1A126'
+          boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)'
         })
     }
   },
@@ -130,12 +130,28 @@ const components = {
         theme.unstable_sx({
           p: 2,
           height: 48,
-          borderRadius: 1,
+          borderRadius: 2,
+          transition: 'all 0.2s ease-in-out',
 
           '&.MuiButton-contained': {
+            bgcolor: 'primary.main',
+            color: 'common.white',
             '& svg path': { fill: 'currentColor' },
             '&.Mui-disabled.MuiButton-loading': {
               color: 'transparent'
+            },
+            '&:hover': {
+              bgcolor: 'primary.dark',
+              transform: 'translateY(-1px)'
+            }
+          },
+          '&.MuiButton-outlined': {
+            borderColor: 'secondary.main',
+            color: 'secondary.main',
+            '&:hover': {
+              bgcolor: 'secondary.main',
+              color: 'common.white',
+              borderColor: 'secondary.main'
             }
           },
           '& .MuiButton-loadingIndicator': {
@@ -396,7 +412,12 @@ const components = {
       root: ({ theme }: ThemeProps) =>
         theme.unstable_sx({
           overflow: 'hidden',
-          borderRadius: 2
+          borderRadius: 2,
+          boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)',
+          transition: 'box-shadow 0.2s ease-in-out',
+          '&:hover': {
+            boxShadow: '0 4px 16px rgba(0, 0, 0, 0.12)'
+          }
         })
     }
   },

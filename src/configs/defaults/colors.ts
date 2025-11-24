@@ -2,16 +2,16 @@ import { darken, lighten } from '@mui/material'
 
 export const white = '#FFFFFF'
 export const light = '#7B7B7B'
-export const medium = '#3E494B'
-export const dark = '#363636'
-export const black = '#130F26'
+export const medium = '#4a4a4a'
+export const dark = '#1a1a1a'
+export const black = '#000000'
 
-export const background = '#F4F4F4'
+export const background = '#f2f2f0'
 
-// main green
-export const primary = '#32735F'
-// main coral
-export const secondary = '#EC6932'
+// main dark charcoal
+export const primary = '#1a1a1a'
+// main gold/bronze accent
+export const secondary = '#b19a55'
 // markers color, normally the same as secondary
 export const marker = secondary
 export const soldMarker = darken(marker, 0.2)

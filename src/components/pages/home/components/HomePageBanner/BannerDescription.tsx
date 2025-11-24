@@ -17,16 +17,18 @@ const BannerDescription = ({
         <Box
           sx={{
             py: { xs: 4, sm: 6, md: 8 },
-            maxWidth: { xs: 'auto', md: '50%' }
+            maxWidth: { xs: 'auto', md: '60%' }
           }}
         >
           <Typography
             variant="h1"
             color="common.white"
             sx={{
-              textShadow: '0 0 10px rgba(0,0,0,0.3)',
-              fontSize: { xs: '2rem', sm: '3rem' },
-              lineHeight: 1.5
+              textShadow: '0 2px 4px rgba(0,0,0,0.5)',
+              fontSize: { xs: '2rem', sm: '3rem', md: '3.5rem' },
+              lineHeight: 1.3,
+              fontWeight: 700,
+              letterSpacing: '-0.02em'
             }}
           >
             {title}
@@ -39,17 +41,13 @@ const BannerDescription = ({
             variant="h4"
             color="common.white"
             sx={{
-              p: 1,
-              m: -1,
-              borderRadius: 2,
-              textShadow: {
-                xs: '0 0 0px rgba(0,0,0,0.1)',
-                sm: '0 0 2px rgba(0,0,0,0.3)'
-              },
-              bgcolor: {
-                xs: 'rgba(0, 0, 0, 0.6)',
-                sm: 'rgba(0, 0, 0, 0.1)'
-              }
+              p: 2,
+              m: -2,
+              borderRadius: 1,
+              textShadow: '0 1px 2px rgba(0,0,0,0.3)',
+              bgcolor: 'rgba(0, 0, 0, 0.4)',
+              fontWeight: 400,
+              fontSize: { xs: '1rem', sm: '1.25rem' }
             }}
           >
             {subtitle}

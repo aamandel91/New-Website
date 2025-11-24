@@ -1,12 +1,11 @@
 import { toRem } from 'utils/theme'
 
-import '@fontsource/poppins/latin.css'
 import { type TypographyOptions } from '@mui/material/styles/createTypography'
 
 const typography: TypographyOptions = {
   htmlFontSize: 16, // HTML base font size in pixels
   fontSize: 16, // 16px
-  fontFamily: ['Poppins', 'sans-serif'].join(','),
+  fontFamily: ['Arial', 'Helvetica', 'sans-serif'].join(','),
 
   h1: {
     fontWeight: 600,
