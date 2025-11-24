@@ -1,42 +1,41 @@
 import { toRem } from 'utils/theme'
 
-import '@fontsource/poppins/latin.css'
 import { type TypographyOptions } from '@mui/material/styles/createTypography'
 
 const typography: TypographyOptions = {
   htmlFontSize: 16, // HTML base font size in pixels
-  fontSize: 16, // 16px
-  fontFamily: ['Poppins', 'sans-serif'].join(','),
+  fontSize: 14, // 14px to match floridahomefinder.com
+  fontFamily: ['Arial', 'Helvetica', 'sans-serif'].join(','),
 
   h1: {
-    fontWeight: 600,
-    fontSize: toRem(56),
-    lineHeight: toRem(72)
+    fontWeight: 400,
+    fontSize: toRem(48),
+    lineHeight: toRem(56)
   },
   h2: {
-    fontWeight: 600,
-    fontSize: toRem(28),
-    lineHeight: toRem(36)
+    fontWeight: 400,
+    fontSize: toRem(32),
+    lineHeight: toRem(40)
   },
   h3: {
-    fontWeight: 600,
+    fontWeight: 400,
     fontSize: toRem(24),
     lineHeight: toRem(32)
   },
   h4: {
-    fontWeight: 600,
-    fontSize: toRem(20),
-    lineHeight: toRem(28)
+    fontWeight: 400,
+    fontSize: toRem(18),
+    lineHeight: toRem(26)
   },
   h5: {
-    fontWeight: 600,
-    fontSize: toRem(18),
+    fontWeight: 400,
+    fontSize: toRem(16),
     lineHeight: toRem(24)
   },
   h6: {
-    fontWeight: 600,
-    fontSize: toRem(16),
-    lineHeight: toRem(24)
+    fontWeight: 400,
+    fontSize: toRem(14),
+    lineHeight: toRem(20)
   },
 
   subtitle2: {},
@@ -44,24 +43,24 @@ const typography: TypographyOptions = {
   // NOTE: `body1` is the default text size in Material UI
   body1: {
     fontWeight: 400,
-    fontSize: toRem(16),
-    lineHeight: toRem(24)
+    fontSize: toRem(14),
+    lineHeight: 1.43
   },
 
   body2: {
-    fontSize: toRem(14),
-    lineHeight: toRem(20)
+    fontSize: toRem(13),
+    lineHeight: 1.43
   },
 
   caption: {
-    fontSize: toRem(10),
-    lineHeight: toRem(16)
+    fontSize: toRem(11),
+    lineHeight: 1.43
   },
 
   button: {
     lineHeight: 1.75,
-    fontSize: toRem(16),
-    fontWeight: 'medium',
+    fontSize: toRem(14),
+    fontWeight: 400,
     textTransform: 'none'
   }
 }

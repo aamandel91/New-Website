@@ -12,50 +12,45 @@ const BannerDescription = ({
   if (!title && !subtitle) return null
 
   return (
-    <Container maxWidth="lg" sx={{ position: 'relative' }}>
-      {title && (
-        <Box
-          sx={{
-            py: { xs: 4, sm: 6, md: 8 },
-            maxWidth: { xs: 'auto', md: '50%' }
-          }}
-        >
+    <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 2 }}>
+      <Box
+        sx={{
+          py: { xs: 6, sm: 8, md: 12 },
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          minHeight: { xs: '400px', md: '500px' }
+        }}
+      >
+        {title && (
           <Typography
             variant="h1"
             color="common.white"
             sx={{
-              textShadow: '0 0 10px rgba(0,0,0,0.3)',
-              fontSize: { xs: '2rem', sm: '3rem' },
-              lineHeight: 1.5
+              mb: 2,
+              fontSize: { xs: '2.5rem', sm: '3.5rem', md: '4rem' },
+              lineHeight: 1.2,
+              fontWeight: 400
             }}
           >
             {title}
           </Typography>
-        </Box>
-      )}
-      {subtitle && (
-        <Box sx={{ maxWidth: { xs: 'auto', sm: '50%', md: '45%' } }}>
+        )}
+        {subtitle && (
           <Typography
-            variant="h4"
+            variant="body1"
             color="common.white"
             sx={{
-              p: 1,
-              m: -1,
-              borderRadius: 2,
-              textShadow: {
-                xs: '0 0 0px rgba(0,0,0,0.1)',
-                sm: '0 0 2px rgba(0,0,0,0.3)'
-              },
-              bgcolor: {
-                xs: 'rgba(0, 0, 0, 0.6)',
-                sm: 'rgba(0, 0, 0, 0.1)'
-              }
+              maxWidth: '600px',
+              fontSize: { xs: '1rem', sm: '1.1rem' },
+              lineHeight: 1.6,
+              opacity: 0.9
             }}
           >
             {subtitle}
           </Typography>
-        </Box>
-      )}
+        )}
+      </Box>
     </Container>
   )
 }

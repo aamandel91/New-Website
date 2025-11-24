@@ -14,6 +14,7 @@ const BannerImage = () => {
       height="100%"
       position="absolute"
       bgcolor="background.default"
+      sx={{ zIndex: 0 }}
     >
       <Image
         unoptimized
