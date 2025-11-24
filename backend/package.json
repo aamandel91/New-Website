@@ -33,6 +33,7 @@
       ]
    },
    "dependencies": {
+      "@anthropic-ai/sdk": "^0.70.1",
       "@koa/cors": "^5.0.0",
       "@koa/router": "^13.1.0",
       "@logtail/pino": "^0.5.4",
@@ -42,6 +43,7 @@
       "addresser": "github:Repliers-io/addresser",
       "axios": "^1.9.0",
       "cloud-pine": "^2.0.1",
+      "cloudinary": "^2.8.0",
       "dayjs": "^1.11.13",
       "debug": "^4.4.1",
       "dotenv": "^16.5.0",
