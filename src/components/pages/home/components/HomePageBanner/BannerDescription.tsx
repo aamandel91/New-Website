@@ -25,7 +25,7 @@ const BannerDescription = ({
         {title && (
           <Typography
             variant="h1"
-            color="common.white"
+            color="text.primary"
             sx={{
               mb: 2,
               fontSize: { xs: '2.5rem', sm: '3.5rem', md: '4rem' },
@@ -39,12 +39,11 @@ const BannerDescription = ({
         {subtitle && (
           <Typography
             variant="body1"
-            color="common.white"
+            color="text.secondary"
             sx={{
               maxWidth: '600px',
               fontSize: { xs: '1rem', sm: '1.1rem' },
-              lineHeight: 1.6,
-              opacity: 0.9
+              lineHeight: 1.6
             }}
           >
             {subtitle}

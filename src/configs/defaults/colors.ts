@@ -6,7 +6,7 @@ export const medium = '#666666'
 export const dark = '#1a1a1a'
 export const black = '#202020'
 
-export const background = '#1a1a1a'
+export const background = '#FFFFFF'
 
 // main gold/tan accent
 export const primary = '#b19a55'
