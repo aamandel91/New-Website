@@ -1,4 +1,4 @@
-import { BlogListing } from '@pages'
+import { BlogListing } from '@pages/blog'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {

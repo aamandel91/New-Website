@@ -1,4 +1,4 @@
-import { BlogEditor } from '@pages'
+import { BlogEditor } from '@pages/blog'
 import type { Metadata } from 'next'
 
 interface EditBlogPageProps {

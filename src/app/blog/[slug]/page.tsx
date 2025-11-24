@@ -1,6 +1,6 @@
 import { Suspense } from 'react'
 import { Box, Container, Typography, Grid, CircularProgress } from '@mui/material'
-import { BlogDisplay, BlogListing } from '@pages'
+import { BlogDisplay, BlogListing } from '@pages/blog'
 import type { Metadata } from 'next'
 
 interface BlogPostPageProps {
