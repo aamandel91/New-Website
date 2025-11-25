@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, Suspense } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import {
   Box,
@@ -19,6 +19,7 @@ import {
   Chip,
   Divider,
   Alert,
+  CircularProgress,
 } from '@mui/material'
 import CloseIcon from '@mui/icons-material/Close'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'
@@ -30,7 +31,7 @@ import { generatePropertyUrl } from 'utils/propertyUrls'
 import { usePropertyComparison } from '@/hooks/usePropertyComparison'
 import searchConfig from '@configs/search'
 
-const ComparisonPage: React.FC = () => {
+const ComparisonPageContent: React.FC = () => {
   const searchParams = useSearchParams()
   const router = useRouter()
   const { properties: storedProperties, removeProperty } = usePropertyComparison()
@@ -274,6 +275,18 @@ const ComparisonPage: React.FC = () => {
         </Alert>
       )}
     </Container>
+  )
+}
+
+const ComparisonPage: React.FC = () => {
+  return (
+    <Suspense fallback={
+      <Container maxWidth="xl" sx={{ py: 4, display: 'flex', justifyContent: 'center' }}>
+        <CircularProgress />
+      </Container>
+    }>
+      <ComparisonPageContent />
+    </Suspense>
   )
 }
 
