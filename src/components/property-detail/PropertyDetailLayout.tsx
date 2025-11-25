@@ -1,8 +1,11 @@
 'use client'
 
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Box, Container, Grid } from '@mui/material'
 import { Property } from 'services/API'
+
+import { useFavorites } from 'providers/FavoritesProvider'
+import { useRecentlyViewed } from '@/hooks/useRecentlyViewed'
 
 import PropertyPhotoGallery from './PropertyPhotoGallery'
 import PropertyHeader from './PropertyHeader'
@@ -16,6 +19,17 @@ interface PropertyDetailLayoutProps {
 }
 
 const PropertyDetailLayout: React.FC<PropertyDetailLayoutProps> = ({ property }) => {
+  const { toggle: toggleFavorite, find: findFavorite } = useFavorites()
+  const { addProperty: addToRecentlyViewed } = useRecentlyViewed()
+
+  // Check if property is favorited
+  const isFavorited = Boolean(findFavorite(property))
+
+  // Track as recently viewed on mount
+  useEffect(() => {
+    addToRecentlyViewed(property)
+  }, [property.mlsNumber])
+
   // Map property photos
   const photos = property.images?.map((img, index) => ({
     url: img.url || '',
@@ -74,8 +88,7 @@ const PropertyDetailLayout: React.FC<PropertyDetailLayoutProps> = ({ property })
 
   // Handle action buttons
   const handleSave = () => {
-    console.log('Save property:', property.mlsNumber)
-    // TODO: Implement save functionality
+    toggleFavorite(property)
   }
 
   const handleShare = () => {
@@ -120,6 +133,7 @@ const PropertyDetailLayout: React.FC<PropertyDetailLayoutProps> = ({ property })
           sqft={property.sqft || 0}
           yearBuilt={property.yearBuilt}
           property={property}
+          isSaved={isFavorited}
           onSave={handleSave}
           onShare={handleShare}
           onRequestInfo={handleRequestInfo}
