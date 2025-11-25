@@ -1,1 +1,1 @@
-export { ListingByAddress } from "./listing-by-address";
+export { ListingByAddress } from './listing-by-address'

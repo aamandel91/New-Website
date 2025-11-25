@@ -1,93 +1,93 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo } from 'react'
 
 // UI Components
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 
 // Custom Components
-import { ListingByAddress } from "@/components/listings/listing-by-address/listing-by-address";
-import { PropertyDetailsDisplay } from "@/components/listings/property-details-display";
+import { ListingByAddress } from '@/components/listings/listing-by-address/listing-by-address'
+import { PropertyDetailsDisplay } from '@/components/listings/property-details-display'
 
 // Types
 interface AddressComponents {
-  city: string;
-  streetNumber: string;
-  streetName: string;
-  streetSuffix: string;
-  state: string;
-  postalCode: string;
-  country: string;
+  city: string
+  streetNumber: string
+  streetName: string
+  streetSuffix: string
+  state: string
+  postalCode: string
+  country: string
 }
 
 interface PlaceDetails {
-  address: AddressComponents;
-  formattedAddress: string;
-  placeId: string;
+  address: AddressComponents
+  formattedAddress: string
+  placeId: string
   geometry?: {
-    lat: number;
-    lng: number;
-  };
+    lat: number
+    lng: number
+  }
 }
 
 interface PropertyListing {
-  id: string;
-  address: string;
-  price?: number;
-  beds?: number;
-  baths?: number;
-  sqft?: number;
-  yearBuilt?: number;
-  propertyType?: string;
-  status?: string;
+  id: string
+  address: string
+  price?: number
+  beds?: number
+  baths?: number
+  sqft?: number
+  yearBuilt?: number
+  propertyType?: string
+  status?: string
   // Add other fields as returned by the API
-  [key: string]: any;
+  [key: string]: any
 }
 
 interface ComparableProperty {
-  id: string;
-  address: string;
-  price: number;
-  beds: number;
-  baths: number;
-  sqft: number;
-  pricePerSqft: number;
-  yearBuilt: number;
-  daysOnMarket: number;
-  distance: number; // in miles
-  lastSoldDate: string;
-  propertyType: string;
-  imageUrl?: string;
-  propertyTaxes?: number;
+  id: string
+  address: string
+  price: number
+  beds: number
+  baths: number
+  sqft: number
+  pricePerSqft: number
+  yearBuilt: number
+  daysOnMarket: number
+  distance: number // in miles
+  lastSoldDate: string
+  propertyType: string
+  imageUrl?: string
+  propertyTaxes?: number
 }
 
 interface ComparableSearchData {
-  numBedrooms?: number;
-  numBathrooms?: number;
-  lat?: number;
-  long?: number;
-  propertyType?: string;
-  sqft?: number;
-  city?: string;
-  type?: string;
+  numBedrooms?: number
+  numBathrooms?: number
+  lat?: number
+  long?: number
+  propertyType?: string
+  sqft?: number
+  city?: string
+  type?: string
   // Additional search parameters
-  status?: string;
-  lastStatus?: string;
-  minBeds?: number;
-  maxBeds?: number;
-  minBaths?: number;
-  maxBaths?: number;
-  minSqft?: number;
-  maxSqft?: number;
-  radius?: number;
-  maxTaxes?: number;
-  minPrice?: number;
-  maxPrice?: number;
+  status?: string
+  lastStatus?: string
+  minBeds?: number
+  maxBeds?: number
+  minBaths?: number
+  maxBaths?: number
+  minSqft?: number
+  maxSqft?: number
+  radius?: number
+  maxTaxes?: number
+  minPrice?: number
+  maxPrice?: number
 }
 
 interface ComparablesByAddressSearchProps {
-  className?: string;
-  onComparablesFound?: (comparables: ComparableProperty[]) => void;
-  searchRadius?: number; // in kilometers
+  className?: string
+  onComparablesFound?: (comparables: ComparableProperty[]) => void
+  searchRadius?: number // in kilometers
 }
 
 /**
@@ -100,141 +100,141 @@ interface ComparablesByAddressSearchProps {
 export function ComparablesByAddressSearch({
   className,
   onComparablesFound,
-  searchRadius = 2.0,
+  searchRadius = 2.0
 }: ComparablesByAddressSearchProps) {
   const [selectedListing, setSelectedListing] =
-    useState<PropertyListing | null>(null);
+    useState<PropertyListing | null>(null)
   const [comparableData, setComparableData] =
-    useState<ComparableSearchData | null>(null);
-  const [comparables, setComparables] = useState<ComparableProperty[]>([]);
+    useState<ComparableSearchData | null>(null)
+  const [comparables, setComparables] = useState<ComparableProperty[]>([])
   const [originalListings, setOriginalListings] = useState<PropertyListing[]>(
     []
-  );
-  const [isLoadingComparables, setIsLoadingComparables] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  )
+  const [isLoadingComparables, setIsLoadingComparables] = useState(false)
+  const [error, setError] = useState<string | null>(null)
   const [editableData, setEditableData] = useState<ComparableSearchData>({
-    radius: searchRadius,
-  });
-  const [propertyTypes, setPropertyTypes] = useState<string[]>([]);
-  const [isLoadingPropertyTypes, setIsLoadingPropertyTypes] = useState(false);
-  const [hasSearched, setHasSearched] = useState(false);
+    radius: searchRadius
+  })
+  const [propertyTypes, setPropertyTypes] = useState<string[]>([])
+  const [isLoadingPropertyTypes, setIsLoadingPropertyTypes] = useState(false)
+  const [hasSearched, setHasSearched] = useState(false)
 
   // Fetch property types from aggregates API
   const fetchPropertyTypes = async () => {
     const apiInput = document.querySelector(
       'input[placeholder*="API"]'
-    ) as HTMLInputElement;
-    const apiKey = apiInput?.value?.trim();
+    ) as HTMLInputElement
+    const apiKey = apiInput?.value?.trim()
 
     if (!apiKey) {
-      return; // Don't fetch if no API key
+      return // Don't fetch if no API key
     }
 
-    setIsLoadingPropertyTypes(true);
+    setIsLoadingPropertyTypes(true)
     try {
       const response = await fetch(
-        "https://api.repliers.io/listings?aggregates=details.propertyType",
+        'https://api.repliers.io/listings?aggregates=details.propertyType',
         {
           headers: {
-            "REPLIERS-API-KEY": apiKey,
-          },
+            'REPLIERS-API-KEY': apiKey
+          }
         }
-      );
+      )
 
       if (response.ok) {
-        const data = await response.json();
-        console.log("📊 Property types aggregates response:", data);
+        const data = await response.json()
+        console.log('📊 Property types aggregates response:', data)
 
         if (data.aggregates?.details?.propertyType) {
           // Extract property types and sort by count (descending)
-          const propertyTypeData = data.aggregates.details.propertyType;
+          const propertyTypeData = data.aggregates.details.propertyType
           const sortedTypes = Object.entries(propertyTypeData)
             .sort(([, a], [, b]) => (b as number) - (a as number))
-            .map(([type]) => type);
+            .map(([type]) => type)
 
-          setPropertyTypes(sortedTypes);
-          console.log("🏠 Property types loaded:", sortedTypes);
+          setPropertyTypes(sortedTypes)
+          console.log('🏠 Property types loaded:', sortedTypes)
         }
       } else {
-        console.warn("❌ Failed to fetch property types aggregates");
+        console.warn('❌ Failed to fetch property types aggregates')
       }
     } catch (error) {
-      console.warn("❌ Error fetching property types:", error);
+      console.warn('❌ Error fetching property types:', error)
     } finally {
-      setIsLoadingPropertyTypes(false);
+      setIsLoadingPropertyTypes(false)
     }
-  };
+  }
 
   // Fetch property types when component mounts or API key becomes available
   React.useEffect(() => {
     const handleApiKeyChange = () => {
       if (propertyTypes.length === 0) {
-        fetchPropertyTypes();
+        fetchPropertyTypes()
       }
-    };
+    }
 
     // Try to fetch immediately
-    handleApiKeyChange();
+    handleApiKeyChange()
 
     // Also listen for API key input changes
-    const apiInput = document.querySelector('input[placeholder*="API"]');
+    const apiInput = document.querySelector('input[placeholder*="API"]')
     if (apiInput) {
-      apiInput.addEventListener("blur", handleApiKeyChange);
-      return () => apiInput.removeEventListener("blur", handleApiKeyChange);
+      apiInput.addEventListener('blur', handleApiKeyChange)
+      return () => apiInput.removeEventListener('blur', handleApiKeyChange)
     }
-  }, [propertyTypes.length]);
+  }, [propertyTypes.length])
 
   const extractComparableData = (
     listing: PropertyListing
   ): ComparableSearchData => {
-    const comparableData: ComparableSearchData = {};
+    const comparableData: ComparableSearchData = {}
 
     // Extract details.numBedrooms
     if (listing.details?.numBedrooms) {
-      comparableData.numBedrooms = listing.details.numBedrooms;
+      comparableData.numBedrooms = listing.details.numBedrooms
     }
 
     // Extract details.numBathrooms
     if (listing.details?.numBathrooms) {
-      comparableData.numBathrooms = listing.details.numBathrooms;
+      comparableData.numBathrooms = listing.details.numBathrooms
     }
 
     // Extract map coordinates - handle both lat/long and latitude/longitude
     if (listing.map?.lat) {
-      comparableData.lat = listing.map.lat;
+      comparableData.lat = listing.map.lat
     } else if (listing.map?.latitude) {
-      comparableData.lat = listing.map.latitude;
+      comparableData.lat = listing.map.latitude
     }
 
     if (listing.map?.long) {
-      comparableData.long = listing.map.long;
+      comparableData.long = listing.map.long
     } else if (listing.map?.longitude) {
-      comparableData.long = listing.map.longitude;
+      comparableData.long = listing.map.longitude
     }
 
     // Extract details.propertyType
     if (listing.details?.propertyType) {
-      comparableData.propertyType = listing.details.propertyType;
+      comparableData.propertyType = listing.details.propertyType
     }
 
     // Extract details.sqft
     if (listing.details?.sqft) {
-      comparableData.sqft = listing.details.sqft;
+      comparableData.sqft = listing.details.sqft
     }
 
     // Extract address.city
     if (
-      typeof listing.address === "object" &&
+      typeof listing.address === 'object' &&
       listing.address !== null &&
-      "city" in listing.address
+      'city' in listing.address
     ) {
-      comparableData.city = (listing.address as any).city;
-    } else if (typeof listing.address === "string") {
+      comparableData.city = (listing.address as any).city
+    } else if (typeof listing.address === 'string') {
       // If address is a string, try to extract city from it
       // This is a fallback since we might not have structured address data
-      const addressParts = listing.address.split(",");
+      const addressParts = listing.address.split(',')
       if (addressParts.length >= 2) {
-        comparableData.city = addressParts[addressParts.length - 2].trim();
+        comparableData.city = addressParts[addressParts.length - 2].trim()
       }
     }
 
@@ -245,22 +245,22 @@ export function ComparablesByAddressSearch({
       listing.transactionType ||
       listing.details?.type ||
       listing.details?.listingType ||
-      "sale"; // Default to "sale" if no type found
+      'sale' // Default to "sale" if no type found
 
     // Normalize the type to lowercase
-    comparableData.type = extractedType.toLowerCase();
+    comparableData.type = extractedType.toLowerCase()
 
-    return comparableData;
-  };
+    return comparableData
+  }
 
   const handleListingSelected = (listing: PropertyListing | null) => {
-    setSelectedListing(listing);
+    setSelectedListing(listing)
 
     if (listing) {
-      const extractedData = extractComparableData(listing);
+      const extractedData = extractComparableData(listing)
 
       // Extract property taxes for pre-filling
-      let propertyTaxes = undefined;
+      let propertyTaxes = undefined
       if (listing.taxes) {
         propertyTaxes =
           listing.taxes.annualAmount ||
@@ -268,13 +268,13 @@ export function ComparablesByAddressSearch({
           listing.taxes.yearly ||
           listing.taxes.total ||
           listing.taxes.amount ||
-          listing.taxes;
+          listing.taxes
       } else if (listing.propertyTaxes) {
-        propertyTaxes = listing.propertyTaxes;
+        propertyTaxes = listing.propertyTaxes
       } else if (listing.annualTaxes) {
-        propertyTaxes = listing.annualTaxes;
+        propertyTaxes = listing.annualTaxes
       } else if (listing.yearlyTaxes) {
-        propertyTaxes = listing.yearlyTaxes;
+        propertyTaxes = listing.yearlyTaxes
       } else if (listing.details && listing.details.taxes) {
         propertyTaxes =
           listing.details.taxes.annualAmount ||
@@ -282,27 +282,27 @@ export function ComparablesByAddressSearch({
           listing.details.taxes.yearly ||
           listing.details.taxes.total ||
           listing.details.taxes.amount ||
-          listing.details.taxes;
+          listing.details.taxes
       } else if (listing.financials && listing.financials.taxes) {
-        propertyTaxes = listing.financials.taxes;
+        propertyTaxes = listing.financials.taxes
       }
 
       // Ensure propertyTaxes is a number if found
-      if (propertyTaxes && typeof propertyTaxes !== "number") {
-        const parsed = parseFloat(propertyTaxes);
-        propertyTaxes = isNaN(parsed) ? undefined : parsed;
+      if (propertyTaxes && typeof propertyTaxes !== 'number') {
+        const parsed = parseFloat(propertyTaxes)
+        propertyTaxes = isNaN(parsed) ? undefined : parsed
       }
 
       // Extract price for pre-filling (prefer sold price over list price)
-      const referencePrice = listing.soldPrice || listing.listPrice;
+      const referencePrice = listing.soldPrice || listing.listPrice
 
-      setComparableData(extractedData);
+      setComparableData(extractedData)
 
       const newEditableData = {
         ...extractedData,
         radius: searchRadius,
         // Set default search parameters
-        status: "A", // Search for available properties by default
+        status: 'A', // Search for available properties by default
         lastStatus: undefined, // Don't set lastStatus for available properties
         type: extractedData.type, // Use the original property's listing type
         minBeds: extractedData.numBedrooms,
@@ -316,275 +316,275 @@ export function ComparablesByAddressSearch({
           ? Math.ceil(propertyTaxes / 100) * 100
           : undefined, // Round up to nearest 100
         minPrice: referencePrice
-          ? extractedData.type === "lease"
+          ? extractedData.type === 'lease'
             ? Math.max(1000, Math.floor((referencePrice * 0.8) / 100) * 100) // 20% below reference price, rounded down to nearest $100, minimum $1000
             : Math.max(
                 50000,
                 Math.floor((referencePrice * 0.8) / 10000) * 10000
               ) // 20% below reference price, rounded down to nearest $10k, minimum $50k
-          : extractedData.type === "lease"
-          ? 1000
-          : 50000, // Fallback to fixed values if no reference price
+          : extractedData.type === 'lease'
+            ? 1000
+            : 50000, // Fallback to fixed values if no reference price
         maxPrice: referencePrice
-          ? extractedData.type === "lease"
+          ? extractedData.type === 'lease'
             ? Math.ceil(referencePrice / 100) * 100 // Round to nearest $100 for lease
             : Math.ceil(referencePrice / 10000) * 10000 // Round to nearest $10k for sale
-          : undefined,
-      };
+          : undefined
+      }
 
-      console.log("🔄 About to set editable data:", newEditableData);
-      console.log("🔍 Key values being set:", {
+      console.log('🔄 About to set editable data:', newEditableData)
+      console.log('🔍 Key values being set:', {
         type: newEditableData.type,
         minPrice: newEditableData.minPrice,
         maxPrice: newEditableData.maxPrice,
         maxTaxes: newEditableData.maxTaxes,
         extractedType: extractedData.type,
         referencePrice: referencePrice,
-        isLease: extractedData.type === "lease",
-      });
-      setEditableData(newEditableData);
-      console.log("🏠 Listing selected:", listing);
-      console.log("📊 Comparable data extracted:", extractedData);
-      console.log("💰 Reference price:", referencePrice);
-      console.log("🏷️ Property taxes:", propertyTaxes);
-      console.log("📝 Final editable data being set:", {
+        isLease: extractedData.type === 'lease'
+      })
+      setEditableData(newEditableData)
+      console.log('🏠 Listing selected:', listing)
+      console.log('📊 Comparable data extracted:', extractedData)
+      console.log('💰 Reference price:', referencePrice)
+      console.log('🏷️ Property taxes:', propertyTaxes)
+      console.log('📝 Final editable data being set:', {
         ...extractedData,
         type: extractedData.type,
         minPrice: referencePrice
-          ? extractedData.type === "lease"
+          ? extractedData.type === 'lease'
             ? Math.max(1000, Math.floor((referencePrice * 0.8) / 100) * 100)
             : Math.max(
                 50000,
                 Math.floor((referencePrice * 0.8) / 10000) * 10000
               )
-          : extractedData.type === "lease"
-          ? 1000
-          : 50000,
+          : extractedData.type === 'lease'
+            ? 1000
+            : 50000,
         maxPrice: referencePrice
-          ? extractedData.type === "lease"
+          ? extractedData.type === 'lease'
             ? Math.ceil(referencePrice / 100) * 100
             : Math.ceil(referencePrice / 10000) * 10000
           : undefined,
         maxTaxes: propertyTaxes
           ? Math.ceil(propertyTaxes / 100) * 100
-          : undefined,
-      });
+          : undefined
+      })
     } else {
-      setComparableData(null);
-      setEditableData({ radius: searchRadius });
+      setComparableData(null)
+      setEditableData({ radius: searchRadius })
     }
 
-    setComparables([]);
-    setError(null);
-    setHasSearched(false);
-  };
+    setComparables([])
+    setError(null)
+    setHasSearched(false)
+  }
 
   const handleFindComparables = async (e: React.FormEvent) => {
-    e.preventDefault();
+    e.preventDefault()
 
     if (!selectedListing || !editableData) {
-      setError("Please select a property listing first.");
-      return;
+      setError('Please select a property listing first.')
+      return
     }
 
     // Check if we have an API key
     const apiInput = document.querySelector(
       'input[placeholder*="API"]'
-    ) as HTMLInputElement;
-    const apiKey = apiInput?.value?.trim();
+    ) as HTMLInputElement
+    const apiKey = apiInput?.value?.trim()
 
     if (!apiKey) {
-      setError("API key is required to search for comparable properties.");
-      return;
+      setError('API key is required to search for comparable properties.')
+      return
     }
 
-    setIsLoadingComparables(true);
-    setError(null);
-    setHasSearched(true);
+    setIsLoadingComparables(true)
+    setError(null)
+    setHasSearched(true)
 
     try {
       // Build search parameters from editableData
-      const searchParams = new URLSearchParams();
+      const searchParams = new URLSearchParams()
 
       // Status/Type Filters
       if (editableData.status && editableData.status.trim())
-        searchParams.append("status", editableData.status);
+        searchParams.append('status', editableData.status)
       // Only include lastStatus if status is not "A" (Available)
       if (
         editableData.lastStatus &&
         editableData.lastStatus.trim() &&
-        editableData.status !== "A"
+        editableData.status !== 'A'
       )
-        searchParams.append("lastStatus", editableData.lastStatus);
+        searchParams.append('lastStatus', editableData.lastStatus)
       if (editableData.type && editableData.type.trim())
-        searchParams.append("type", editableData.type);
+        searchParams.append('type', editableData.type)
 
       // Property Characteristics
       if (editableData.propertyType && editableData.propertyType.trim())
-        searchParams.append("propertyType", editableData.propertyType);
+        searchParams.append('propertyType', editableData.propertyType)
       if (
         editableData.minBeds !== undefined &&
         editableData.minBeds !== null &&
         !isNaN(editableData.minBeds)
       )
-        searchParams.append("minBeds", editableData.minBeds.toString());
+        searchParams.append('minBeds', editableData.minBeds.toString())
       if (
         editableData.maxBeds !== undefined &&
         editableData.maxBeds !== null &&
         !isNaN(editableData.maxBeds)
       )
-        searchParams.append("maxBeds", editableData.maxBeds.toString());
+        searchParams.append('maxBeds', editableData.maxBeds.toString())
       if (
         editableData.minBaths !== undefined &&
         editableData.minBaths !== null &&
         !isNaN(editableData.minBaths)
       )
-        searchParams.append("minBaths", editableData.minBaths.toString());
+        searchParams.append('minBaths', editableData.minBaths.toString())
       if (
         editableData.maxBaths !== undefined &&
         editableData.maxBaths !== null &&
         !isNaN(editableData.maxBaths)
       )
-        searchParams.append("maxBaths", editableData.maxBaths.toString());
+        searchParams.append('maxBaths', editableData.maxBaths.toString())
       if (
         editableData.minSqft !== undefined &&
         editableData.minSqft !== null &&
         !isNaN(editableData.minSqft)
       )
-        searchParams.append("minSqft", editableData.minSqft.toString());
+        searchParams.append('minSqft', editableData.minSqft.toString())
       if (
         editableData.maxSqft !== undefined &&
         editableData.maxSqft !== null &&
         !isNaN(editableData.maxSqft)
       )
-        searchParams.append("maxSqft", editableData.maxSqft.toString());
+        searchParams.append('maxSqft', editableData.maxSqft.toString())
 
       // Location Parameters
       if (editableData.city && editableData.city.trim())
-        searchParams.append("city", editableData.city);
+        searchParams.append('city', editableData.city)
       if (
         editableData.lat !== undefined &&
         editableData.lat !== null &&
         !isNaN(editableData.lat)
       )
-        searchParams.append("lat", editableData.lat.toString());
+        searchParams.append('lat', editableData.lat.toString())
       if (
         editableData.long !== undefined &&
         editableData.long !== null &&
         !isNaN(editableData.long)
       )
-        searchParams.append("long", editableData.long.toString());
+        searchParams.append('long', editableData.long.toString())
       if (
         editableData.radius !== undefined &&
         editableData.radius !== null &&
         !isNaN(editableData.radius)
       )
-        searchParams.append("radius", editableData.radius.toString());
+        searchParams.append('radius', editableData.radius.toString())
       if (
         editableData.maxTaxes !== undefined &&
         editableData.maxTaxes !== null &&
         !isNaN(editableData.maxTaxes)
       )
-        searchParams.append("maxTaxes", editableData.maxTaxes.toString());
+        searchParams.append('maxTaxes', editableData.maxTaxes.toString())
       if (
         editableData.minPrice !== undefined &&
         editableData.minPrice !== null &&
         !isNaN(editableData.minPrice) &&
         editableData.minPrice > 0
       )
-        searchParams.append("minPrice", editableData.minPrice.toString());
+        searchParams.append('minPrice', editableData.minPrice.toString())
       if (
         editableData.maxPrice !== undefined &&
         editableData.maxPrice !== null &&
         !isNaN(editableData.maxPrice)
       )
-        searchParams.append("maxPrice", editableData.maxPrice.toString());
+        searchParams.append('maxPrice', editableData.maxPrice.toString())
 
-      const url = `https://api.repliers.io/listings?${searchParams.toString()}`;
-      console.log("🔍 Making comparables API request to:", url);
-      console.log("📊 Search parameters:", Object.fromEntries(searchParams));
+      const url = `https://api.repliers.io/listings?${searchParams.toString()}`
+      console.log('🔍 Making comparables API request to:', url)
+      console.log('📊 Search parameters:', Object.fromEntries(searchParams))
 
       const response = await fetch(url, {
         headers: {
-          "REPLIERS-API-KEY": apiKey,
-        },
-      });
+          'REPLIERS-API-KEY': apiKey
+        }
+      })
 
       console.log(
-        "📡 Comparables response status:",
+        '📡 Comparables response status:',
         response.status,
         response.statusText
-      );
+      )
 
       if (!response.ok) {
-        const errorText = await response.text();
-        console.error("❌ Comparables API Error:", errorText);
+        const errorText = await response.text()
+        console.error('❌ Comparables API Error:', errorText)
         throw new Error(
           `API request failed: ${response.status} ${response.statusText} - ${errorText}`
-        );
+        )
       }
 
-      const data = await response.json();
-      console.log("📦 Comparables API Response:", data);
-      console.log("📦 Response keys:", Object.keys(data));
-      console.log("📦 Response data type:", typeof data);
+      const data = await response.json()
+      console.log('📦 Comparables API Response:', data)
+      console.log('📦 Response keys:', Object.keys(data))
+      console.log('📦 Response data type:', typeof data)
 
       // Log data structure to understand format
       if (data.data && Array.isArray(data.data)) {
-        console.log("📦 Found data.data array with", data.data.length, "items");
+        console.log('📦 Found data.data array with', data.data.length, 'items')
         if (data.data.length > 0) {
           console.log(
-            "📦 First item in data.data:",
+            '📦 First item in data.data:',
             JSON.stringify(data.data[0], null, 2)
-          );
+          )
         }
       }
 
       // Extract listings from the response (same logic as ListingByAddress)
-      let comparableListings = [];
+      let comparableListings = []
 
       if (data.data && Array.isArray(data.data)) {
-        comparableListings = data.data;
+        comparableListings = data.data
       } else if (data.results && Array.isArray(data.results)) {
-        comparableListings = data.results;
+        comparableListings = data.results
       } else if (data.listings && Array.isArray(data.listings)) {
-        comparableListings = data.listings;
+        comparableListings = data.listings
       } else if (data.items && Array.isArray(data.items)) {
-        comparableListings = data.items;
+        comparableListings = data.items
       } else if (data.properties && Array.isArray(data.properties)) {
-        comparableListings = data.properties;
+        comparableListings = data.properties
       } else if (Array.isArray(data)) {
-        comparableListings = data;
+        comparableListings = data
       } else if (data.count > 0) {
         // Look for any property that might be the listing data
         for (const key of Object.keys(data)) {
           if (
-            typeof data[key] === "object" &&
+            typeof data[key] === 'object' &&
             data[key] !== null &&
-            !["apiVersion", "page", "numPages", "pageSize", "count"].includes(
+            !['apiVersion', 'page', 'numPages', 'pageSize', 'count'].includes(
               key
             )
           ) {
             if (Array.isArray(data[key])) {
-              comparableListings = data[key];
-              break;
+              comparableListings = data[key]
+              break
             } else {
-              comparableListings = [data[key]];
-              break;
+              comparableListings = [data[key]]
+              break
             }
           }
         }
       }
 
-      console.log("📋 Extracted comparable listings:", comparableListings);
-      console.log("📋 Comparable listings count:", comparableListings.length);
+      console.log('📋 Extracted comparable listings:', comparableListings)
+      console.log('📋 Comparable listings count:', comparableListings.length)
 
       // Debug: Log the first listing to see the data structure
       if (comparableListings.length > 0) {
         console.log(
-          "🔍 First listing structure:",
+          '🔍 First listing structure:',
           JSON.stringify(comparableListings[0], null, 2)
-        );
+        )
       }
 
       // Convert to ComparableProperty format for display
@@ -592,24 +592,24 @@ export function ComparablesByAddressSearch({
         (listing: any, index: number) => {
           // Calculate days on market from list date
           const listDate =
-            listing.listDate || listing.soldDate || listing.closingDate;
-          let daysOnMarket = null;
+            listing.listDate || listing.soldDate || listing.closingDate
+          let daysOnMarket = null
 
           if (listDate) {
             try {
-              const listedDate = new Date(listDate);
-              const today = new Date();
-              const timeDiff = today.getTime() - listedDate.getTime();
-              daysOnMarket = Math.floor(timeDiff / (1000 * 3600 * 24));
+              const listedDate = new Date(listDate)
+              const today = new Date()
+              const timeDiff = today.getTime() - listedDate.getTime()
+              daysOnMarket = Math.floor(timeDiff / (1000 * 3600 * 24))
               // Ensure it's not negative
-              if (daysOnMarket < 0) daysOnMarket = 0;
+              if (daysOnMarket < 0) daysOnMarket = 0
             } catch (error) {
-              console.warn("Error calculating days on market:", error);
+              console.warn('Error calculating days on market:', error)
               daysOnMarket =
                 listing.daysOnMarket ||
                 listing.dom ||
                 listing.daysonmarket ||
-                null;
+                null
             }
           } else {
             // Fallback to API provided value
@@ -617,11 +617,11 @@ export function ComparablesByAddressSearch({
               listing.daysOnMarket ||
               listing.dom ||
               listing.daysonmarket ||
-              null;
+              null
           }
 
           // Extract the first image URL from various possible locations
-          let imageUrl = undefined;
+          let imageUrl = undefined
 
           // Debug: Log the entire listing structure for image debugging
           console.log(`🖼️ Debugging images for listing ${index}:`, {
@@ -638,9 +638,9 @@ export function ComparablesByAddressSearch({
               photoUrl: listing.photoUrl,
               thumbnailUrl: listing.thumbnailUrl,
               mainImage: listing.mainImage,
-              featuredImage: listing.featuredImage,
-            },
-          });
+              featuredImage: listing.featuredImage
+            }
+          })
 
           // Check multiple possible locations for images
           const imageSources = [
@@ -648,8 +648,8 @@ export function ComparablesByAddressSearch({
             listing.photos,
             listing.media,
             listing.pictures,
-            listing.attachments,
-          ];
+            listing.attachments
+          ]
 
           for (const imageArray of imageSources) {
             if (
@@ -657,20 +657,20 @@ export function ComparablesByAddressSearch({
               Array.isArray(imageArray) &&
               imageArray.length > 0
             ) {
-              const firstImage = imageArray[0];
-              console.log(`🖼️ Found image array with first image:`, firstImage);
+              const firstImage = imageArray[0]
+              console.log(`🖼️ Found image array with first image:`, firstImage)
 
-              if (typeof firstImage === "string") {
+              if (typeof firstImage === 'string') {
                 // Check if it's already a full URL or needs base URL
-                if (firstImage.startsWith("http")) {
-                  imageUrl = firstImage;
+                if (firstImage.startsWith('http')) {
+                  imageUrl = firstImage
                 } else {
                   // Use the correct CDN base URL for images with small class for faster loading
-                  imageUrl = `https://cdn.repliers.io/${firstImage}?class=small`;
+                  imageUrl = `https://cdn.repliers.io/${firstImage}?class=small`
                 }
-                console.log(`🖼️ Using string image URL:`, imageUrl);
-                break;
-              } else if (firstImage && typeof firstImage === "object") {
+                console.log(`🖼️ Using string image URL:`, imageUrl)
+                break
+              } else if (firstImage && typeof firstImage === 'object') {
                 // Handle cases where image is an object with url property
                 const extractedUrl =
                   firstImage.url ||
@@ -680,24 +680,24 @@ export function ComparablesByAddressSearch({
                   firstImage.mediaUrl ||
                   firstImage.fullSizeUrl ||
                   firstImage.largePhotoUrl ||
-                  firstImage.photoUrl;
+                  firstImage.photoUrl
 
                 if (extractedUrl) {
                   // Check if it's already a full URL or needs base URL
-                  if (extractedUrl.startsWith("http")) {
-                    imageUrl = extractedUrl;
+                  if (extractedUrl.startsWith('http')) {
+                    imageUrl = extractedUrl
                   } else {
-                    imageUrl = `https://cdn.repliers.io/${extractedUrl}?class=small`;
+                    imageUrl = `https://cdn.repliers.io/${extractedUrl}?class=small`
                   }
                 }
 
                 console.log(`🖼️ Extracted from object:`, {
                   object: firstImage,
                   extractedUrl: extractedUrl,
-                  finalUrl: imageUrl,
-                });
+                  finalUrl: imageUrl
+                })
 
-                if (imageUrl) break;
+                if (imageUrl) break
               }
             }
           }
@@ -711,10 +711,10 @@ export function ComparablesByAddressSearch({
               photoUrl: listing.photoUrl,
               thumbnailUrl: listing.thumbnailUrl,
               mainImage: listing.mainImage,
-              featuredImage: listing.featuredImage,
-            };
+              featuredImage: listing.featuredImage
+            }
 
-            console.log(`🖼️ Checking direct properties:`, directProperties);
+            console.log(`🖼️ Checking direct properties:`, directProperties)
 
             const directImageUrl =
               listing.imageUrl ||
@@ -723,23 +723,23 @@ export function ComparablesByAddressSearch({
               listing.photoUrl ||
               listing.thumbnailUrl ||
               listing.mainImage ||
-              listing.featuredImage;
+              listing.featuredImage
 
             if (directImageUrl) {
               // Check if it's already a full URL or needs base URL
-              if (directImageUrl.startsWith("http")) {
-                imageUrl = directImageUrl;
+              if (directImageUrl.startsWith('http')) {
+                imageUrl = directImageUrl
               } else {
-                imageUrl = `https://cdn.repliers.io/${directImageUrl}?class=small`;
+                imageUrl = `https://cdn.repliers.io/${directImageUrl}?class=small`
               }
-              console.log(`🖼️ Found direct property image:`, imageUrl);
+              console.log(`🖼️ Found direct property image:`, imageUrl)
             }
           }
 
-          console.log(`🖼️ Final imageUrl for listing ${index}:`, imageUrl);
+          console.log(`🖼️ Final imageUrl for listing ${index}:`, imageUrl)
 
           // Extract property taxes from various possible locations
-          let propertyTaxes = undefined;
+          let propertyTaxes = undefined
 
           console.log(`💰 Debugging property taxes for listing ${index}:`, {
             id: listing.mlsNumber || listing.id,
@@ -750,21 +750,21 @@ export function ComparablesByAddressSearch({
             detailsTaxes: listing.details?.taxes,
             financialsTaxes: listing.financials?.taxes,
             allTaxFields: {
-              "listing.taxes": listing.taxes,
-              "listing.propertyTaxes": listing.propertyTaxes,
-              "listing.annualTaxes": listing.annualTaxes,
-              "listing.yearlyTaxes": listing.yearlyTaxes,
-              "listing.details.taxes": listing.details?.taxes,
-              "listing.financials.taxes": listing.financials?.taxes,
-              "listing.details.propertyTaxes": listing.details?.propertyTaxes,
-              "listing.details.annualTaxes": listing.details?.annualTaxes,
-              "listing.taxInfo": listing.taxInfo,
-              "listing.propertyTax": listing.propertyTax,
-              "listing.tax": listing.tax,
-              "listing.assessment": listing.assessment,
-              "listing.assessments": listing.assessments,
-            },
-          });
+              'listing.taxes': listing.taxes,
+              'listing.propertyTaxes': listing.propertyTaxes,
+              'listing.annualTaxes': listing.annualTaxes,
+              'listing.yearlyTaxes': listing.yearlyTaxes,
+              'listing.details.taxes': listing.details?.taxes,
+              'listing.financials.taxes': listing.financials?.taxes,
+              'listing.details.propertyTaxes': listing.details?.propertyTaxes,
+              'listing.details.annualTaxes': listing.details?.annualTaxes,
+              'listing.taxInfo': listing.taxInfo,
+              'listing.propertyTax': listing.propertyTax,
+              'listing.tax': listing.tax,
+              'listing.assessment': listing.assessment,
+              'listing.assessments': listing.assessments
+            }
+          })
 
           if (listing.taxes) {
             propertyTaxes =
@@ -773,13 +773,13 @@ export function ComparablesByAddressSearch({
               listing.taxes.total ||
               listing.taxes.amount ||
               listing.taxes.annualAmount ||
-              listing.taxes;
+              listing.taxes
           } else if (listing.propertyTaxes) {
-            propertyTaxes = listing.propertyTaxes;
+            propertyTaxes = listing.propertyTaxes
           } else if (listing.annualTaxes) {
-            propertyTaxes = listing.annualTaxes;
+            propertyTaxes = listing.annualTaxes
           } else if (listing.yearlyTaxes) {
-            propertyTaxes = listing.yearlyTaxes;
+            propertyTaxes = listing.yearlyTaxes
           } else if (listing.details && listing.details.taxes) {
             propertyTaxes =
               listing.details.taxes.annual ||
@@ -787,47 +787,46 @@ export function ComparablesByAddressSearch({
               listing.details.taxes.total ||
               listing.details.taxes.amount ||
               listing.details.taxes.annualAmount ||
-              listing.details.taxes;
+              listing.details.taxes
           } else if (listing.financials && listing.financials.taxes) {
-            propertyTaxes = listing.financials.taxes;
+            propertyTaxes = listing.financials.taxes
           } else if (listing.details?.propertyTaxes) {
-            propertyTaxes = listing.details.propertyTaxes;
+            propertyTaxes = listing.details.propertyTaxes
           } else if (listing.details?.annualTaxes) {
-            propertyTaxes = listing.details.annualTaxes;
+            propertyTaxes = listing.details.annualTaxes
           } else if (listing.taxInfo) {
             propertyTaxes =
               listing.taxInfo.annual ||
               listing.taxInfo.amount ||
-              listing.taxInfo;
+              listing.taxInfo
           } else if (listing.propertyTax) {
-            propertyTaxes = listing.propertyTax;
+            propertyTaxes = listing.propertyTax
           } else if (listing.tax) {
-            propertyTaxes = listing.tax;
+            propertyTaxes = listing.tax
           } else if (listing.assessment) {
             propertyTaxes =
               listing.assessment.taxes ||
               listing.assessment.propertyTax ||
-              listing.assessment;
+              listing.assessment
           } else if (
             listing.assessments &&
             Array.isArray(listing.assessments) &&
             listing.assessments.length > 0
           ) {
             propertyTaxes =
-              listing.assessments[0].taxes ||
-              listing.assessments[0].propertyTax;
+              listing.assessments[0].taxes || listing.assessments[0].propertyTax
           }
 
           // Ensure propertyTaxes is a number if found
-          if (propertyTaxes && typeof propertyTaxes !== "number") {
-            const parsed = parseFloat(propertyTaxes);
-            propertyTaxes = isNaN(parsed) ? undefined : parsed;
+          if (propertyTaxes && typeof propertyTaxes !== 'number') {
+            const parsed = parseFloat(propertyTaxes)
+            propertyTaxes = isNaN(parsed) ? undefined : parsed
           }
 
           console.log(
             `💰 Final property taxes for listing ${index}:`,
             propertyTaxes
-          );
+          )
 
           return {
             id:
@@ -855,152 +854,152 @@ export function ComparablesByAddressSearch({
             propertyType:
               listing.details?.propertyType ||
               listing.propertyType ||
-              "Unknown",
+              'Unknown',
             imageUrl,
-            propertyTaxes,
-          };
+            propertyTaxes
+          }
         }
-      );
+      )
 
-      setComparables(formattedComparables);
-      setOriginalListings(comparableListings);
-      onComparablesFound?.(formattedComparables);
+      setComparables(formattedComparables)
+      setOriginalListings(comparableListings)
+      onComparablesFound?.(formattedComparables)
 
       if (formattedComparables.length === 0) {
         setError(
-          "No comparable properties found with the current search criteria. Try adjusting your filters."
-        );
+          'No comparable properties found with the current search criteria. Try adjusting your filters.'
+        )
       } else {
         // Scroll to results section after a brief delay to allow DOM update
         setTimeout(() => {
-          const resultsSection = document.querySelector("#comparable-results");
+          const resultsSection = document.querySelector('#comparable-results')
           if (resultsSection) {
             resultsSection.scrollIntoView({
-              behavior: "smooth",
-              block: "start",
-            });
+              behavior: 'smooth',
+              block: 'start'
+            })
           }
-        }, 100);
+        }, 100)
       }
     } catch (err) {
-      console.error("💥 Error in handleFindComparables:", err);
+      console.error('💥 Error in handleFindComparables:', err)
       setError(
         err instanceof Error
           ? err.message
-          : "Failed to fetch comparable properties. Please try again."
-      );
+          : 'Failed to fetch comparable properties. Please try again.'
+      )
     } finally {
-      setIsLoadingComparables(false);
+      setIsLoadingComparables(false)
     }
-  };
+  }
 
   const formatPrice = (price: number) => {
-    return `$${price.toLocaleString()}`;
-  };
+    return `$${price.toLocaleString()}`
+  }
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    });
-  };
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    })
+  }
 
   const formatAddress = (address: any) => {
     // Handle cases where address might be an object or string
-    if (typeof address === "string") {
-      return address;
+    if (typeof address === 'string') {
+      return address
     }
 
-    if (typeof address === "object" && address !== null) {
+    if (typeof address === 'object' && address !== null) {
       // Try to construct a formatted address from the object
-      const parts = [];
-      if (address.streetNumber) parts.push(address.streetNumber);
-      if (address.streetName) parts.push(address.streetName);
-      if (address.streetSuffix) parts.push(address.streetSuffix);
-      if (address.city) parts.push(address.city);
-      if (address.state) parts.push(address.state);
+      const parts = []
+      if (address.streetNumber) parts.push(address.streetNumber)
+      if (address.streetName) parts.push(address.streetName)
+      if (address.streetSuffix) parts.push(address.streetSuffix)
+      if (address.city) parts.push(address.city)
+      if (address.state) parts.push(address.state)
       if (address.zip || address.postalCode)
-        parts.push(address.zip || address.postalCode);
+        parts.push(address.zip || address.postalCode)
 
-      return parts.length > 0 ? parts.join(" ") : "Address not available";
+      return parts.length > 0 ? parts.join(' ') : 'Address not available'
     }
 
-    return "Address not available";
-  };
+    return 'Address not available'
+  }
 
   const formatTimestamp = (timestamp: any) => {
-    if (!timestamp) return "Not available";
+    if (!timestamp) return 'Not available'
 
     try {
-      let date: Date;
+      let date: Date
 
       // Handle different timestamp formats
-      if (typeof timestamp === "number") {
+      if (typeof timestamp === 'number') {
         // Unix timestamp (seconds or milliseconds)
         date =
           timestamp > 1000000000000
             ? new Date(timestamp)
-            : new Date(timestamp * 1000);
-      } else if (typeof timestamp === "string") {
+            : new Date(timestamp * 1000)
+      } else if (typeof timestamp === 'string') {
         // ISO string or other date string
-        date = new Date(timestamp);
+        date = new Date(timestamp)
       } else {
-        return String(timestamp);
+        return String(timestamp)
       }
 
       // Check if date is valid
       if (isNaN(date.getTime())) {
-        return String(timestamp);
+        return String(timestamp)
       }
 
       // Format as human-readable date
-      return date.toLocaleDateString("en-US", {
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
-        timeZoneName: "short",
-      });
+      return date.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        timeZoneName: 'short'
+      })
     } catch (error) {
-      return String(timestamp);
+      return String(timestamp)
     }
-  };
+  }
 
   const extractImages = (obj: any): string[] => {
-    const images: string[] = [];
+    const images: string[] = []
 
     const searchForImages = (value: any) => {
-      if (typeof value === "string") {
+      if (typeof value === 'string') {
         // Check if it's a full Repliers CDN image URL
-        if (value.includes("cdn.repliers.io") && value.includes("IMG-")) {
-          images.push(value);
+        if (value.includes('cdn.repliers.io') && value.includes('IMG-')) {
+          images.push(value)
         }
         // Check if it's just an image filename (IMG-*.jpg)
         else if (value.match(/^IMG-[A-Z0-9]+_\d+\.jpg$/i)) {
           // Convert filename to full CDN URL
-          const fullUrl = `https://cdn.repliers.io/${value}?class=small`;
-          images.push(fullUrl);
+          const fullUrl = `https://cdn.repliers.io/${value}?class=small`
+          images.push(fullUrl)
         }
       } else if (Array.isArray(value)) {
-        value.forEach(searchForImages);
-      } else if (typeof value === "object" && value !== null) {
-        Object.values(value).forEach(searchForImages);
+        value.forEach(searchForImages)
+      } else if (typeof value === 'object' && value !== null) {
+        Object.values(value).forEach(searchForImages)
       }
-    };
+    }
 
-    searchForImages(obj);
-    return [...new Set(images)]; // Remove duplicates
-  };
+    searchForImages(obj)
+    return [...new Set(images)] // Remove duplicates
+  }
 
   const getSmallImageUrl = (imageUrl: string) => {
-    return imageUrl.replace(/\?class=\w+/, "?class=small");
-  };
+    return imageUrl.replace(/\?class=\w+/, '?class=small')
+  }
 
   const getLargeImageUrl = (imageUrl: string) => {
-    return imageUrl.replace(/\?class=\w+/, "?class=large");
-  };
+    return imageUrl.replace(/\?class=\w+/, '?class=large')
+  }
 
   const openDetailedListingView = (property: ComparableProperty) => {
     // Find the original listing data
@@ -1009,21 +1008,21 @@ export function ComparablesByAddressSearch({
         (listing.mlsNumber ||
           listing.id ||
           `comparable-${originalListings.indexOf(listing)}`) === property.id
-    );
+    )
 
     if (!originalListing) {
       console.error(
-        "Could not find original listing data for property:",
+        'Could not find original listing data for property:',
         property.id
-      );
-      return;
+      )
+      return
     }
 
     // Create a new tab with the detailed view using the PropertyDetailsDisplay component
-    const detailWindow = window.open("", "_blank");
+    const detailWindow = window.open('', '_blank')
     if (!detailWindow) {
-      alert("Please allow popups to view detailed property information");
-      return;
+      alert('Please allow popups to view detailed property information')
+      return
     }
 
     // Create a minimal React app in the new tab that uses our PropertyDetailsDisplay component
@@ -1155,11 +1154,11 @@ export function ComparablesByAddressSearch({
         </script>
       </body>
       </html>
-    `;
+    `
 
-    detailWindow.document.write(htmlContent);
-    detailWindow.document.close();
-  };
+    detailWindow.document.write(htmlContent)
+    detailWindow.document.close()
+  }
 
   return (
     <div className={className}>
@@ -1216,7 +1215,7 @@ export function ComparablesByAddressSearch({
                   {selectedListing &&
                     (() => {
                       // Extract property taxes from the selected listing
-                      let propertyTaxes = undefined;
+                      let propertyTaxes = undefined
 
                       if (selectedListing.taxes) {
                         propertyTaxes =
@@ -1225,13 +1224,13 @@ export function ComparablesByAddressSearch({
                           selectedListing.taxes.yearly ||
                           selectedListing.taxes.total ||
                           selectedListing.taxes.amount ||
-                          selectedListing.taxes;
+                          selectedListing.taxes
                       } else if (selectedListing.propertyTaxes) {
-                        propertyTaxes = selectedListing.propertyTaxes;
+                        propertyTaxes = selectedListing.propertyTaxes
                       } else if (selectedListing.annualTaxes) {
-                        propertyTaxes = selectedListing.annualTaxes;
+                        propertyTaxes = selectedListing.annualTaxes
                       } else if (selectedListing.yearlyTaxes) {
-                        propertyTaxes = selectedListing.yearlyTaxes;
+                        propertyTaxes = selectedListing.yearlyTaxes
                       } else if (
                         selectedListing.details &&
                         selectedListing.details.taxes
@@ -1242,30 +1241,30 @@ export function ComparablesByAddressSearch({
                           selectedListing.details.taxes.yearly ||
                           selectedListing.details.taxes.total ||
                           selectedListing.details.taxes.amount ||
-                          selectedListing.details.taxes;
+                          selectedListing.details.taxes
                       } else if (
                         selectedListing.financials &&
                         selectedListing.financials.taxes
                       ) {
-                        propertyTaxes = selectedListing.financials.taxes;
+                        propertyTaxes = selectedListing.financials.taxes
                       }
 
                       // Ensure propertyTaxes is a number if found
-                      if (propertyTaxes && typeof propertyTaxes !== "number") {
-                        const parsed = parseFloat(propertyTaxes);
-                        propertyTaxes = isNaN(parsed) ? undefined : parsed;
+                      if (propertyTaxes && typeof propertyTaxes !== 'number') {
+                        const parsed = parseFloat(propertyTaxes)
+                        propertyTaxes = isNaN(parsed) ? undefined : parsed
                       }
 
                       return propertyTaxes ? (
                         <div>
                           <span className="text-gray-600">
-                            Property Taxes:{" "}
+                            Property Taxes:{' '}
                           </span>
                           <span className="font-medium">
                             ${propertyTaxes.toLocaleString()}/year
                           </span>
                         </div>
-                      ) : null;
+                      ) : null
                     })()}
 
                   {comparableData.numBedrooms && (
@@ -1363,13 +1362,13 @@ export function ComparablesByAddressSearch({
                           </span>
                           <input
                             type="number"
-                            value={editableData.minPrice || ""}
+                            value={editableData.minPrice || ''}
                             onChange={(e) =>
                               setEditableData({
                                 ...editableData,
                                 minPrice: e.target.value
                                   ? Number(e.target.value)
-                                  : undefined,
+                                  : undefined
                               })
                             }
                             className="h-8 text-sm border border-gray-300 rounded-md pl-6 pr-2 w-full"
@@ -1392,13 +1391,13 @@ export function ComparablesByAddressSearch({
                           </span>
                           <input
                             type="number"
-                            value={editableData.maxPrice || ""}
+                            value={editableData.maxPrice || ''}
                             onChange={(e) =>
                               setEditableData({
                                 ...editableData,
                                 maxPrice: e.target.value
                                   ? Number(e.target.value)
-                                  : undefined,
+                                  : undefined
                               })
                             }
                             className="h-8 text-sm border border-gray-300 rounded-md pl-6 pr-2 w-full"
@@ -1421,13 +1420,13 @@ export function ComparablesByAddressSearch({
                           </span>
                           <input
                             type="number"
-                            value={editableData.maxTaxes || ""}
+                            value={editableData.maxTaxes || ''}
                             onChange={(e) =>
                               setEditableData({
                                 ...editableData,
                                 maxTaxes: e.target.value
                                   ? Number(e.target.value)
-                                  : undefined,
+                                  : undefined
                               })
                             }
                             className="h-8 text-sm border border-gray-300 rounded-md pl-6 pr-2 w-full"
@@ -1453,18 +1452,18 @@ export function ComparablesByAddressSearch({
                           Status:
                         </label>
                         <select
-                          value={editableData.status || "A"}
+                          value={editableData.status || 'A'}
                           onChange={(e) => {
-                            const newStatus = e.target.value || undefined;
+                            const newStatus = e.target.value || undefined
                             setEditableData({
                               ...editableData,
                               status: newStatus,
                               // Clear lastStatus when switching to Available
                               lastStatus:
-                                newStatus === "A"
+                                newStatus === 'A'
                                   ? undefined
-                                  : editableData.lastStatus,
-                            });
+                                  : editableData.lastStatus
+                            })
                           }}
                           className="h-8 text-sm border border-gray-300 rounded-md px-2 w-full"
                         >
@@ -1481,18 +1480,18 @@ export function ComparablesByAddressSearch({
                           Last Status:
                         </label>
                         <select
-                          value={editableData.lastStatus || ""}
+                          value={editableData.lastStatus || ''}
                           onChange={(e) =>
                             setEditableData({
                               ...editableData,
-                              lastStatus: e.target.value || undefined,
+                              lastStatus: e.target.value || undefined
                             })
                           }
-                          disabled={editableData.status === "A"}
+                          disabled={editableData.status === 'A'}
                           className={`h-8 text-sm border border-gray-300 rounded-md px-2 w-full ${
-                            editableData.status === "A"
-                              ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-                              : ""
+                            editableData.status === 'A'
+                              ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                              : ''
                           }`}
                         >
                           <option value="">Select Last Status</option>
@@ -1507,11 +1506,11 @@ export function ComparablesByAddressSearch({
                           Listing Type:
                         </label>
                         <select
-                          value={editableData.type || "sale"}
+                          value={editableData.type || 'sale'}
                           onChange={(e) =>
                             setEditableData({
                               ...editableData,
-                              type: e.target.value || undefined,
+                              type: e.target.value || undefined
                             })
                           }
                           className="h-8 text-sm border border-gray-300 rounded-md px-2 w-full"
@@ -1535,24 +1534,24 @@ export function ComparablesByAddressSearch({
                           Property Type:
                         </label>
                         <select
-                          value={editableData.propertyType || ""}
+                          value={editableData.propertyType || ''}
                           onChange={(e) =>
                             setEditableData({
                               ...editableData,
-                              propertyType: e.target.value || undefined,
+                              propertyType: e.target.value || undefined
                             })
                           }
                           disabled={isLoadingPropertyTypes}
                           className={`h-8 text-sm border border-gray-300 rounded-md px-2 w-full ${
                             isLoadingPropertyTypes
-                              ? "bg-gray-100 text-gray-400"
-                              : ""
+                              ? 'bg-gray-100 text-gray-400'
+                              : ''
                           }`}
                         >
                           <option value="">
                             {isLoadingPropertyTypes
-                              ? "Loading..."
-                              : "Select Property Type"}
+                              ? 'Loading...'
+                              : 'Select Property Type'}
                           </option>
                           {propertyTypes.map((type) => (
                             <option key={type} value={type}>
@@ -1570,13 +1569,13 @@ export function ComparablesByAddressSearch({
                           </label>
                           <Input
                             type="number"
-                            value={editableData.minBeds || ""}
+                            value={editableData.minBeds || ''}
                             onChange={(e) =>
                               setEditableData({
                                 ...editableData,
                                 minBeds: e.target.value
                                   ? Number(e.target.value)
-                                  : undefined,
+                                  : undefined
                               })
                             }
                             className="h-8 text-sm"
@@ -1590,13 +1589,13 @@ export function ComparablesByAddressSearch({
                           </label>
                           <Input
                             type="number"
-                            value={editableData.maxBeds || ""}
+                            value={editableData.maxBeds || ''}
                             onChange={(e) =>
                               setEditableData({
                                 ...editableData,
                                 maxBeds: e.target.value
                                   ? Number(e.target.value)
-                                  : undefined,
+                                  : undefined
                               })
                             }
                             className="h-8 text-sm"
@@ -1614,13 +1613,13 @@ export function ComparablesByAddressSearch({
                           </label>
                           <Input
                             type="number"
-                            value={editableData.minBaths || ""}
+                            value={editableData.minBaths || ''}
                             onChange={(e) =>
                               setEditableData({
                                 ...editableData,
                                 minBaths: e.target.value
                                   ? Number(e.target.value)
-                                  : undefined,
+                                  : undefined
                               })
                             }
                             className="h-8 text-sm"
@@ -1635,13 +1634,13 @@ export function ComparablesByAddressSearch({
                           </label>
                           <Input
                             type="number"
-                            value={editableData.maxBaths || ""}
+                            value={editableData.maxBaths || ''}
                             onChange={(e) =>
                               setEditableData({
                                 ...editableData,
                                 maxBaths: e.target.value
                                   ? Number(e.target.value)
-                                  : undefined,
+                                  : undefined
                               })
                             }
                             className="h-8 text-sm"
@@ -1660,13 +1659,13 @@ export function ComparablesByAddressSearch({
                           </label>
                           <Input
                             type="number"
-                            value={editableData.minSqft || ""}
+                            value={editableData.minSqft || ''}
                             onChange={(e) =>
                               setEditableData({
                                 ...editableData,
                                 minSqft: e.target.value
                                   ? Number(e.target.value)
-                                  : undefined,
+                                  : undefined
                               })
                             }
                             className="h-8 text-sm"
@@ -1680,13 +1679,13 @@ export function ComparablesByAddressSearch({
                           </label>
                           <Input
                             type="number"
-                            value={editableData.maxSqft || ""}
+                            value={editableData.maxSqft || ''}
                             onChange={(e) =>
                               setEditableData({
                                 ...editableData,
                                 maxSqft: e.target.value
                                   ? Number(e.target.value)
-                                  : undefined,
+                                  : undefined
                               })
                             }
                             className="h-8 text-sm"
@@ -1711,11 +1710,11 @@ export function ComparablesByAddressSearch({
                         </label>
                         <Input
                           type="text"
-                          value={editableData.city || ""}
+                          value={editableData.city || ''}
                           onChange={(e) =>
                             setEditableData({
                               ...editableData,
-                              city: e.target.value || undefined,
+                              city: e.target.value || undefined
                             })
                           }
                           className="h-8 text-sm"
@@ -1733,14 +1732,14 @@ export function ComparablesByAddressSearch({
                             value={
                               editableData.lat !== undefined
                                 ? editableData.lat.toFixed(6)
-                                : ""
+                                : ''
                             }
                             onChange={(e) =>
                               setEditableData({
                                 ...editableData,
                                 lat: e.target.value
                                   ? Number(e.target.value)
-                                  : undefined,
+                                  : undefined
                               })
                             }
                             className="h-8 text-sm"
@@ -1758,14 +1757,14 @@ export function ComparablesByAddressSearch({
                             value={
                               editableData.long !== undefined
                                 ? editableData.long.toFixed(6)
-                                : ""
+                                : ''
                             }
                             onChange={(e) =>
                               setEditableData({
                                 ...editableData,
                                 long: e.target.value
                                   ? Number(e.target.value)
-                                  : undefined,
+                                  : undefined
                               })
                             }
                             className="h-8 text-sm"
@@ -1783,13 +1782,13 @@ export function ComparablesByAddressSearch({
                         </label>
                         <Input
                           type="number"
-                          value={editableData.radius || ""}
+                          value={editableData.radius || ''}
                           onChange={(e) =>
                             setEditableData({
                               ...editableData,
                               radius: e.target.value
                                 ? Number(e.target.value)
-                                : undefined,
+                                : undefined
                             })
                           }
                           className="h-8 text-sm"
@@ -1814,7 +1813,7 @@ export function ComparablesByAddressSearch({
               disabled={isLoadingComparables}
               className="px-8 py-2"
             >
-              {isLoadingComparables ? "Searching..." : "Find Comparables"}
+              {isLoadingComparables ? 'Searching...' : 'Find Comparables'}
             </Button>
           </div>
         )}
@@ -1858,9 +1857,9 @@ export function ComparablesByAddressSearch({
                 console.log(
                   `🏠 Property ${property.id} UI render - propertyTaxes:`,
                   property.propertyTaxes,
-                  "Should show:",
+                  'Should show:',
                   !!property.propertyTaxes
-                );
+                )
 
                 return (
                   <div
@@ -1900,23 +1899,23 @@ export function ComparablesByAddressSearch({
                                 console.log(
                                   `✅ Image loaded successfully for property ${property.id}:`,
                                   property.imageUrl
-                                );
+                                )
                               }}
                               onError={(e) => {
                                 console.log(
                                   `❌ Image failed to load for property ${property.id}:`,
                                   property.imageUrl
-                                );
+                                )
                                 // Fallback to house icon if image fails to load
-                                const target = e.target as HTMLImageElement;
-                                target.style.display = "none";
-                                const parent = target.parentElement;
+                                const target = e.target as HTMLImageElement
+                                target.style.display = 'none'
+                                const parent = target.parentElement
                                 if (parent) {
                                   parent.innerHTML = `
                                   <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
                                   </svg>
-                                `;
+                                `
                                 }
                               }}
                             />
@@ -1974,7 +1973,7 @@ export function ComparablesByAddressSearch({
                             <span className="font-medium text-gray-900">
                               {property.sqft
                                 ? property.sqft.toLocaleString()
-                                : "N/A"}
+                                : 'N/A'}
                             </span>
                           </div>
                           <div className="flex items-center gap-2">
@@ -2008,7 +2007,7 @@ export function ComparablesByAddressSearch({
                       </div>
                     </div>
                   </div>
-                );
+                )
               })}
             </div>
           </div>
@@ -2022,7 +2021,7 @@ export function ComparablesByAddressSearch({
           error === null && (
             <div className="text-center py-8">
               <p className="text-gray-600">
-                No comparable properties found within{" "}
+                No comparable properties found within{' '}
                 {editableData.radius || searchRadius} km. Try increasing the
                 search radius.
               </p>
@@ -2030,5 +2029,5 @@ export function ComparablesByAddressSearch({
           )}
       </form>
     </div>
-  );
+  )
 }

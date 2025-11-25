@@ -1,21 +1,21 @@
-import React from "react";
+import React from 'react'
 
 interface OpenAIInventoryForecastProps {
-  zipCode: string;
-  riskLevel: string;
-  location: string;
-  averagePrice: number;
-  priceChange: number;
-  currentInventory: number;
-  daysOnMarket: number;
+  zipCode: string
+  riskLevel: string
+  location: string
+  averagePrice: number
+  priceChange: number
+  currentInventory: number
+  daysOnMarket: number
   inventoryForecast: {
-    month: string;
-    value: number;
-  }[];
-  sixMonthAverage: number;
-  sixMonthChange: number;
-  yearOverYearAverage: number;
-  yearOverYearChange: number;
+    month: string
+    value: number
+  }[]
+  sixMonthAverage: number
+  sixMonthChange: number
+  yearOverYearAverage: number
+  yearOverYearChange: number
 }
 
 const OpenAIInventoryForecast: React.FC<OpenAIInventoryForecastProps> = ({
@@ -30,7 +30,7 @@ const OpenAIInventoryForecast: React.FC<OpenAIInventoryForecastProps> = ({
   sixMonthAverage,
   sixMonthChange,
   yearOverYearAverage,
-  yearOverYearChange,
+  yearOverYearChange
 }) => {
   return (
     <div className="max-w-4xl mx-auto p-6 bg-white rounded-2xl shadow border border-gray-200">
@@ -53,11 +53,11 @@ const OpenAIInventoryForecast: React.FC<OpenAIInventoryForecastProps> = ({
               </p>
               <p
                 className={`text-sm ${
-                  priceChange >= 0 ? "text-green-600" : "text-red-600"
+                  priceChange >= 0 ? 'text-green-600' : 'text-red-600'
                 } mt-1`}
               >
-                {priceChange >= 0 ? "↑" : "↓"} {Math.abs(priceChange)}%{" "}
-                {priceChange >= 0 ? "up" : "down"} vs previous month
+                {priceChange >= 0 ? '↑' : '↓'} {Math.abs(priceChange)}%{' '}
+                {priceChange >= 0 ? 'up' : 'down'} vs previous month
               </p>
             </div>
 
@@ -68,11 +68,11 @@ const OpenAIInventoryForecast: React.FC<OpenAIInventoryForecastProps> = ({
               </p>
               <p
                 className={`text-sm ${
-                  sixMonthChange >= 0 ? "text-green-600" : "text-red-600"
+                  sixMonthChange >= 0 ? 'text-green-600' : 'text-red-600'
                 } mt-1`}
               >
-                {sixMonthChange >= 0 ? "↑" : "↓"} {Math.abs(sixMonthChange)}%{" "}
-                {sixMonthChange >= 0 ? "up" : "down"} vs previous 6 months
+                {sixMonthChange >= 0 ? '↑' : '↓'} {Math.abs(sixMonthChange)}%{' '}
+                {sixMonthChange >= 0 ? 'up' : 'down'} vs previous 6 months
               </p>
             </div>
 
@@ -83,12 +83,12 @@ const OpenAIInventoryForecast: React.FC<OpenAIInventoryForecastProps> = ({
               </p>
               <p
                 className={`text-sm ${
-                  yearOverYearChange >= 0 ? "text-green-600" : "text-red-600"
+                  yearOverYearChange >= 0 ? 'text-green-600' : 'text-red-600'
                 } mt-1`}
               >
-                {yearOverYearChange >= 0 ? "↑" : "↓"}{" "}
-                {Math.abs(yearOverYearChange)}%{" "}
-                {yearOverYearChange >= 0 ? "up" : "down"} vs last year
+                {yearOverYearChange >= 0 ? '↑' : '↓'}{' '}
+                {Math.abs(yearOverYearChange)}%{' '}
+                {yearOverYearChange >= 0 ? 'up' : 'down'} vs last year
               </p>
             </div>
           </div>
@@ -130,7 +130,7 @@ const OpenAIInventoryForecast: React.FC<OpenAIInventoryForecastProps> = ({
         ))}
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default OpenAIInventoryForecast;
+export default OpenAIInventoryForecast

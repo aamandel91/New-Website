@@ -1,9 +1,9 @@
-import { Command } from "commander";
-import { registerToolsCommand } from "./commands/tools.js";
+import { Command } from 'commander'
+import { registerToolsCommand } from './commands/tools.js'
 
-const program = new Command();
+const program = new Command()
 
 // Register commands
-registerToolsCommand(program);
+registerToolsCommand(program)
 
-program.parse(process.argv);
+program.parse(process.argv)

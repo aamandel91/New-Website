@@ -1,5 +1,5 @@
-import type { Meta, StoryObj } from "@storybook/react";
-import { UnifiedAddressSearch } from "./unified-address-search";
+import type { Meta, StoryObj } from '@storybook/react'
+import { UnifiedAddressSearch } from './unified-address-search'
 
 /**
  * ## 👤 User Story
@@ -84,50 +84,50 @@ import { UnifiedAddressSearch } from "./unified-address-search";
  */
 
 const meta: Meta<typeof UnifiedAddressSearch> = {
-  title: "Components/Useful Components/Unified Address Search",
+  title: 'Components/Useful Components/Unified Address Search',
   component: UnifiedAddressSearch,
   parameters: {
-    layout: "centered",
+    layout: 'centered'
   },
-  tags: ["autodocs"],
+  tags: ['autodocs'],
   argTypes: {
     onPlaceSelect: {
-      action: "selected",
-      description: "Callback function when an address is selected",
+      action: 'selected',
+      description: 'Callback function when an address is selected'
     },
     placeholder: {
-      control: "text",
-      description: "Placeholder text for the search input",
+      control: 'text',
+      description: 'Placeholder text for the search input'
     },
     className: {
-      control: "text",
-      description: "Additional CSS classes to apply to the component",
+      control: 'text',
+      description: 'Additional CSS classes to apply to the component'
     },
     disabled: {
-      control: "boolean",
-      description: "Whether the search input is disabled",
+      control: 'boolean',
+      description: 'Whether the search input is disabled'
     },
     displayAddressComponents: {
-      control: "boolean",
+      control: 'boolean',
       description:
-        "Whether to show the address components breakdown below the input",
-    },
-  },
-};
+        'Whether to show the address components breakdown below the input'
+    }
+  }
+}
 
-export default meta;
-type Story = StoryObj<typeof UnifiedAddressSearch>;
+export default meta
+type Story = StoryObj<typeof UnifiedAddressSearch>
 
 export const Default: Story = {
   args: {
-    placeholder: "Enter an address...",
-    displayAddressComponents: true,
-  },
-};
+    placeholder: 'Enter an address...',
+    displayAddressComponents: true
+  }
+}
 
 export const Disabled: Story = {
   args: {
     ...Default.args,
-    disabled: true,
-  },
-};
+    disabled: true
+  }
+}

@@ -1,17 +1,19 @@
-import Router from "@koa/router";
-import { container } from "tsyringe";
-import { Middleware } from "koa-jwt";
-import { ApiError } from "../lib/errors.js";
-import UserService from "../services/user.js";
-import { userUpdateSchema } from "../validate/user.js";
-import assets from './user/assets.js';
-import social from './user/social.js';
-import boss from './user/boss.js';
+import Router from '@koa/router'
+import { container } from 'tsyringe'
+import { Middleware } from 'koa-jwt'
+import { ApiError } from '../lib/errors.js'
+import UserService from '../services/user.js'
+import { userUpdateSchema } from '../validate/user.js'
+import assets from './user/assets.js'
+import social from './user/social.js'
+import boss from './user/boss.js'
 const router = new Router({
-   prefix: "/user"
-});
-const authMiddleware = container.resolve<Middleware>("middleware.jwt");
-const pathThroughMiddleware = container.resolve<Middleware>("middleware.jwt.passthrough");
+  prefix: '/user'
+})
+const authMiddleware = container.resolve<Middleware>('middleware.jwt')
+const pathThroughMiddleware = container.resolve<Middleware>(
+  'middleware.jwt.passthrough'
+)
 
 /**
  * @openapi
@@ -56,22 +58,19 @@ const pathThroughMiddleware = container.resolve<Middleware>("middleware.jwt.pass
  *          401:
  *             $ref: '#/components/responses/Unauthorized'
  */
-router.patch("/", authMiddleware, async ctx => {
-   ctx.state['enable.xff'] = true;
-   const {
-      error,
-      value
-   } = userUpdateSchema.validate({
-      ...ctx.request.body,
-      clientId: ctx.state["user"].sub
-   });
-   if (error) {
-      ctx.throw(new ApiError(error.message, 400));
-      return;
-   }
-   const userService = ctx.state.container.resolve(UserService);
-   ctx.body = await userService.update(value);
-});
+router.patch('/', authMiddleware, async (ctx) => {
+  ctx.state['enable.xff'] = true
+  const { error, value } = userUpdateSchema.validate({
+    ...ctx.request.body,
+    clientId: ctx.state['user'].sub
+  })
+  if (error) {
+    ctx.throw(new ApiError(error.message, 400))
+    return
+  }
+  const userService = ctx.state.container.resolve(UserService)
+  ctx.body = await userService.update(value)
+})
 
 /**
  * @openapi
@@ -137,22 +136,22 @@ router.patch("/", authMiddleware, async ctx => {
  *          401:
  *             $ref: '#/components/responses/Unauthorized'
  */
-router.get("/me", authMiddleware, async ctx => {
-   ctx.state["enable.xff"] = true;
-   const userService = ctx.state.container.resolve(UserService);
-   ctx.body = await userService.info(ctx.state["user"].sub);
-});
-router.get("/agent", pathThroughMiddleware, async ctx => {
-   ctx.state["enable.xff"] = true;
-   const userService = ctx.state.container.resolve(UserService);
-   const agent = await userService.agent(ctx.state["user"]?.sub);
-   if (!agent) {
-      ctx.throw(new ApiError("Agent not found", 404));
-      return;
-   }
-   ctx.body = agent;
-});
-router.use(assets.routes(), assets.allowedMethods());
-router.use(social.routes(), social.allowedMethods());
-router.use(boss.routes(), boss.allowedMethods());
-export default router;
+router.get('/me', authMiddleware, async (ctx) => {
+  ctx.state['enable.xff'] = true
+  const userService = ctx.state.container.resolve(UserService)
+  ctx.body = await userService.info(ctx.state['user'].sub)
+})
+router.get('/agent', pathThroughMiddleware, async (ctx) => {
+  ctx.state['enable.xff'] = true
+  const userService = ctx.state.container.resolve(UserService)
+  const agent = await userService.agent(ctx.state['user']?.sub)
+  if (!agent) {
+    ctx.throw(new ApiError('Agent not found', 404))
+    return
+  }
+  ctx.body = agent
+})
+router.use(assets.routes(), assets.allowedMethods())
+router.use(social.routes(), social.allowedMethods())
+router.use(boss.routes(), boss.allowedMethods())
+export default router

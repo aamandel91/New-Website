@@ -4,13 +4,13 @@
  */
 
 import type {
-  EnhancedConversionData,
-  RemarketingPropertyData,
-  PropertyViewEvent,
-  LeadEvent,
-  SearchEvent,
   ConversionEvent,
-  DataLayerEvent
+  DataLayerEvent,
+  EnhancedConversionData,
+  LeadEvent,
+  PropertyViewEvent,
+  RemarketingPropertyData,
+  SearchEvent
 } from './types'
 
 declare global {
@@ -49,7 +49,7 @@ export const hashUserData = async (data: string): Promise<string> => {
   const dataBuffer = encoder.encode(data.toLowerCase().trim())
   const hashBuffer = await crypto.subtle.digest('SHA-256', dataBuffer)
   const hashArray = Array.from(new Uint8Array(hashBuffer))
-  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('')
+  return hashArray.map((b) => b.toString(16).padStart(2, '0')).join('')
 }
 
 /**
@@ -285,7 +285,9 @@ export const trackScheduleShowing = async (
 /**
  * Track property added to favorites
  */
-export const trackAddToFavorites = (property: RemarketingPropertyData): void => {
+export const trackAddToFavorites = (
+  property: RemarketingPropertyData
+): void => {
   const event: DataLayerEvent = {
     event: 'add_to_wishlist',
     ecommerce: {

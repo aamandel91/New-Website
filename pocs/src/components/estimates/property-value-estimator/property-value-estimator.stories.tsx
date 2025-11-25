@@ -1,5 +1,5 @@
-import type { Meta, StoryObj } from "@storybook/react";
-import { PropertyValueEstimator } from "./property-value-estimator";
+import type { Meta, StoryObj } from '@storybook/react'
+import { PropertyValueEstimator } from './property-value-estimator'
 
 /**
  *
@@ -306,24 +306,24 @@ import { PropertyValueEstimator } from "./property-value-estimator";
  */
 
 const meta: Meta<typeof PropertyValueEstimator> = {
-  title: "PoCs/Estimates/Property Value Estimator",
+  title: 'PoCs/Estimates/Property Value Estimator',
   component: PropertyValueEstimator,
   parameters: {
-    layout: "centered",
+    layout: 'centered'
   },
   decorators: [
     (Story) => (
       <div className="w-[800px] p-4">
         <Story />
       </div>
-    ),
+    )
   ],
-  tags: ["autodocs"],
-};
+  tags: ['autodocs']
+}
 
-export default meta;
-type Story = StoryObj<typeof PropertyValueEstimator>;
+export default meta
+type Story = StoryObj<typeof PropertyValueEstimator>
 
 export const WorkingDemo: Story = {
-  args: {},
-};
+  args: {}
+}

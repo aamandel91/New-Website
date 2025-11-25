@@ -1,61 +1,61 @@
-import type { Meta, StoryObj } from "@storybook/react";
-import { MapListings } from "./map-listings";
+import type { Meta, StoryObj } from '@storybook/react'
+import { MapListings } from './map-listings'
 
 const meta: Meta<typeof MapListings> = {
   title:
-    "Tutorials/Configuring the MapListings Component with the Repliers API (WIP)",
+    'Tutorials/Configuring the MapListings Component with the Repliers API (WIP)',
   component: MapListings,
   parameters: {
-    layout: "fullscreen",
+    layout: 'fullscreen',
     docs: {
-      page: () => null, // Use MDX file instead
-    },
+      page: () => null // Use MDX file instead
+    }
   },
   argTypes: {
     apiKey: {
-      control: "text",
-      description: "Repliers API key (required)",
+      control: 'text',
+      description: 'Repliers API key (required)'
     },
     mapboxToken: {
-      control: "text",
-      description: "MapBox access token (required)",
+      control: 'text',
+      description: 'MapBox access token (required)'
     },
     initialCenter: {
-      control: "object",
-      description: "Initial map center coordinates [lng, lat]",
+      control: 'object',
+      description: 'Initial map center coordinates [lng, lat]'
     },
     initialZoom: {
-      control: { type: "range", min: 1, max: 20, step: 1 },
-      description: "Initial zoom level",
+      control: { type: 'range', min: 1, max: 20, step: 1 },
+      description: 'Initial zoom level'
     },
     height: {
-      control: "text",
-      description: "Map container height",
+      control: 'text',
+      description: 'Map container height'
     },
     width: {
-      control: "text",
-      description: "Map container width",
+      control: 'text',
+      description: 'Map container width'
     },
     mapStyle: {
-      control: "select",
+      control: 'select',
       options: [
-        "mapbox://styles/mapbox/streets-v12",
-        "mapbox://styles/mapbox/light-v11",
-        "mapbox://styles/mapbox/dark-v11",
-        "mapbox://styles/mapbox/satellite-v9",
-        "mapbox://styles/mapbox/satellite-streets-v12",
+        'mapbox://styles/mapbox/streets-v12',
+        'mapbox://styles/mapbox/light-v11',
+        'mapbox://styles/mapbox/dark-v11',
+        'mapbox://styles/mapbox/satellite-v9',
+        'mapbox://styles/mapbox/satellite-streets-v12'
       ],
-      description: "MapBox map style",
-    },
-  },
-};
+      description: 'MapBox map style'
+    }
+  }
+}
 
-export default meta;
-type Story = StoryObj<typeof meta>;
+export default meta
+type Story = StoryObj<typeof meta>
 
-const SAMPLE_API_KEY = "pxI19UMy9zfw9vz5lRxoGpjJWXrMnm";
+const SAMPLE_API_KEY = 'pxI19UMy9zfw9vz5lRxoGpjJWXrMnm'
 const SAMPLE_MAPBOX_TOKEN =
-  "pk.eyJ1IjoibWlsYW5zb21hIiwiYSI6ImNtZWJrODZmajBwMWQya3B3cHE1M2Y3anoifQ.HMDLOc-6V9K3-mHKeTHHxw";
+  'pk.eyJ1IjoibWlsYW5zb21hIiwiYSI6ImNtZWJrODZmajBwMWQya3B3cHE1M2Y3anoifQ.HMDLOc-6V9K3-mHKeTHHxw'
 
 /**
  * **Part 1: Basic Map Listings Display**
@@ -75,9 +75,9 @@ export const Part1_BasicListings: Story = {
     apiKey: SAMPLE_API_KEY,
     mapboxToken: SAMPLE_MAPBOX_TOKEN,
     initialZoom: 8,
-    height: "100vh",
-    width: "100vw",
-    mapStyle: "mapbox://styles/mapbox/streets-v12",
+    height: '100vh',
+    width: '100vw',
+    mapStyle: 'mapbox://styles/mapbox/streets-v12'
   },
   parameters: {
     docs: {
@@ -101,11 +101,11 @@ Uses the largest cluster method to find the area with the most listings and cent
 - Server-side clustering reduces data transfer
 - Only one API call per map movement
 - Cluster limit reduced to 100 for better distribution
-        `,
-      },
-    },
-  },
-};
+        `
+      }
+    }
+  }
+}
 
 /**
  * **Part 2: Largest Cluster Center Calculation**
@@ -119,9 +119,9 @@ export const Part2_LargestClusterCenter: Story = {
     apiKey: SAMPLE_API_KEY,
     mapboxToken: SAMPLE_MAPBOX_TOKEN,
     initialZoom: 10,
-    height: "100vh",
-    width: "100vw",
-    mapStyle: "mapbox://styles/mapbox/streets-v12",
+    height: '100vh',
+    width: '100vw',
+    mapStyle: 'mapbox://styles/mapbox/streets-v12'
   },
   parameters: {
     docs: {
@@ -142,11 +142,11 @@ This method finds the largest cluster of listings and centers the map on it for 
 - Quick identification of market hotspots
 
 **Console output:** \`🏆 Largest cluster: 24938 listings at [-79.3832, 43.6532]\`
-        `,
-      },
-    },
-  },
-};
+        `
+      }
+    }
+  }
+}
 
 /**
  * **Part 3: Different Map Styles**
@@ -159,9 +159,9 @@ export const Part3_MapStyles: Story = {
     apiKey: SAMPLE_API_KEY,
     mapboxToken: SAMPLE_MAPBOX_TOKEN,
     initialZoom: 10,
-    height: "100vh",
-    width: "100vw",
-    mapStyle: "mapbox://styles/mapbox/dark-v11",
+    height: '100vh',
+    width: '100vw',
+    mapStyle: 'mapbox://styles/mapbox/dark-v11'
   },
   parameters: {
     docs: {
@@ -185,11 +185,11 @@ the visual appearance of your MapListings component.
 - Better visibility in different lighting conditions
 
 **Note:** The clustering and listing functionality remains the same across all styles.
-        `,
-      },
-    },
-  },
-};
+        `
+      }
+    }
+  }
+}
 
 /**
  * **Part 4: Custom Filters and Multi-Query Setup**
@@ -204,9 +204,9 @@ export const Part4_FilteredSearch: Story = {
     mapboxToken: SAMPLE_MAPBOX_TOKEN,
     initialCenter: [-98.5795, 39.8283], // Continental USA center
     initialZoom: 4,
-    height: "100vh",
-    width: "100vw",
-    mapStyle: "mapbox://styles/mapbox/streets-v12",
+    height: '100vh',
+    width: '100vw',
+    mapStyle: 'mapbox://styles/mapbox/streets-v12'
     // Note: These are placeholder props for future filter implementation
     // minBedrooms: 2,
     // maxPrice: 800000,
@@ -214,7 +214,7 @@ export const Part4_FilteredSearch: Story = {
   },
   parameters: {
     docs: {
-      disable: true, // Hide from docs
-    },
-  },
-};
+      disable: true // Hide from docs
+    }
+  }
+}

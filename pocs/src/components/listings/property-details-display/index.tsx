@@ -1,123 +1,123 @@
-import React, { useState } from "react";
+import React, { useState } from 'react'
 
 // Types
 interface PropertyListing {
-  id: string;
-  address: string;
-  price?: number;
-  beds?: number;
-  baths?: number;
-  sqft?: number;
-  yearBuilt?: number;
-  propertyType?: string;
-  status?: string;
-  [key: string]: any;
+  id: string
+  address: string
+  price?: number
+  beds?: number
+  baths?: number
+  sqft?: number
+  yearBuilt?: number
+  propertyType?: string
+  status?: string
+  [key: string]: any
 }
 
 interface PropertyDetailsDisplayProps {
-  listing: PropertyListing;
-  className?: string;
+  listing: PropertyListing
+  className?: string
 }
 
 export function PropertyDetailsDisplay({
   listing,
-  className = "",
+  className = ''
 }: PropertyDetailsDisplayProps) {
-  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null)
 
   const formatPrice = (price: number) => {
-    return `$${price.toLocaleString()}`;
-  };
+    return `$${price.toLocaleString()}`
+  }
 
   const formatTimestamp = (timestamp: any) => {
-    if (!timestamp) return "Not available";
+    if (!timestamp) return 'Not available'
 
     try {
-      let date: Date;
+      let date: Date
 
-      if (typeof timestamp === "number") {
+      if (typeof timestamp === 'number') {
         date =
           timestamp > 1000000000000
             ? new Date(timestamp)
-            : new Date(timestamp * 1000);
-      } else if (typeof timestamp === "string") {
-        date = new Date(timestamp);
+            : new Date(timestamp * 1000)
+      } else if (typeof timestamp === 'string') {
+        date = new Date(timestamp)
       } else {
-        return String(timestamp);
+        return String(timestamp)
       }
 
       if (isNaN(date.getTime())) {
-        return String(timestamp);
+        return String(timestamp)
       }
 
-      return date.toLocaleDateString("en-US", {
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
-        timeZoneName: "short",
-      });
+      return date.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        timeZoneName: 'short'
+      })
     } catch (error) {
-      return String(timestamp);
+      return String(timestamp)
     }
-  };
+  }
 
   const formatAddress = (address: any) => {
-    if (typeof address === "string") {
-      return address;
+    if (typeof address === 'string') {
+      return address
     }
 
-    if (typeof address === "object" && address !== null) {
-      const parts = [];
-      if (address.streetNumber) parts.push(address.streetNumber);
-      if (address.streetName) parts.push(address.streetName);
-      if (address.streetSuffix) parts.push(address.streetSuffix);
-      if (address.city) parts.push(address.city);
-      if (address.state) parts.push(address.state);
+    if (typeof address === 'object' && address !== null) {
+      const parts = []
+      if (address.streetNumber) parts.push(address.streetNumber)
+      if (address.streetName) parts.push(address.streetName)
+      if (address.streetSuffix) parts.push(address.streetSuffix)
+      if (address.city) parts.push(address.city)
+      if (address.state) parts.push(address.state)
       if (address.zip || address.postalCode)
-        parts.push(address.zip || address.postalCode);
+        parts.push(address.zip || address.postalCode)
 
-      return parts.length > 0 ? parts.join(" ") : "Address not available";
+      return parts.length > 0 ? parts.join(' ') : 'Address not available'
     }
 
-    return "Address not available";
-  };
+    return 'Address not available'
+  }
 
   const extractImages = (obj: any): string[] => {
-    const images: string[] = [];
+    const images: string[] = []
 
     const searchForImages = (value: any) => {
-      if (typeof value === "string") {
-        if (value.includes("cdn.repliers.io") && value.includes("IMG-")) {
-          images.push(value);
+      if (typeof value === 'string') {
+        if (value.includes('cdn.repliers.io') && value.includes('IMG-')) {
+          images.push(value)
         } else if (value.match(/^IMG-[A-Z0-9]+_\d+\.jpg$/i)) {
-          const fullUrl = `https://cdn.repliers.io/${value}?class=small`;
-          images.push(fullUrl);
+          const fullUrl = `https://cdn.repliers.io/${value}?class=small`
+          images.push(fullUrl)
         }
       } else if (Array.isArray(value)) {
-        value.forEach(searchForImages);
-      } else if (typeof value === "object" && value !== null) {
-        Object.values(value).forEach(searchForImages);
+        value.forEach(searchForImages)
+      } else if (typeof value === 'object' && value !== null) {
+        Object.values(value).forEach(searchForImages)
       }
-    };
+    }
 
-    searchForImages(obj);
-    return [...new Set(images)];
-  };
+    searchForImages(obj)
+    return [...new Set(images)]
+  }
 
   const getSmallImageUrl = (imageUrl: string) => {
-    return imageUrl.replace(/\?class=\w+/, "?class=small");
-  };
+    return imageUrl.replace(/\?class=\w+/, '?class=small')
+  }
 
   const getLargeImageUrl = (imageUrl: string) => {
-    return imageUrl.replace(/\?class=\w+/, "?class=large");
-  };
+    return imageUrl.replace(/\?class=\w+/, '?class=large')
+  }
 
-  const allImages = extractImages(listing);
+  const allImages = extractImages(listing)
   const validFieldCount = Object.entries(listing).filter(
     ([, value]) => value !== null && value !== undefined
-  ).length;
+  ).length
 
   return (
     <div className={className}>
@@ -171,11 +171,11 @@ export function PropertyDetailsDisplay({
           </div>
           {listing.status && (
             <span className="px-3 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">
-              {listing.status === "A"
-                ? "Available"
-                : listing.status === "U"
-                ? "Sold"
-                : listing.status}
+              {listing.status === 'A'
+                ? 'Available'
+                : listing.status === 'U'
+                  ? 'Sold'
+                  : listing.status}
             </span>
           )}
         </div>
@@ -184,110 +184,110 @@ export function PropertyDetailsDisplay({
         <div className="space-y-6">
           <details className="group">
             <summary className="cursor-pointer text-sm font-medium text-gray-700 hover:text-gray-900">
-              🔍 Complete Property Information (Click to expand) -{" "}
+              🔍 Complete Property Information (Click to expand) -{' '}
               {validFieldCount} fields
             </summary>
             <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
               {Object.entries(listing).map(([key, value]) => {
                 // Skip null/undefined values
-                if (value === null || value === undefined) return null;
+                if (value === null || value === undefined) return null
 
                 // Format the value for display
-                let displayValue;
-                if (typeof value === "object") {
-                  if (key === "address") {
-                    displayValue = formatAddress(value);
+                let displayValue
+                if (typeof value === 'object') {
+                  if (key === 'address') {
+                    displayValue = formatAddress(value)
                   } else if (Array.isArray(value)) {
                     // Check if it's an image array
                     if (
                       value.every(
                         (item) =>
-                          typeof item === "string" &&
+                          typeof item === 'string' &&
                           item.match(/^IMG-[A-Z0-9]+_\d+\.jpg$/i)
                       )
                     ) {
-                      displayValue = "images"; // Special marker for image arrays
+                      displayValue = 'images' // Special marker for image arrays
                     } else if (
                       value.length > 0 &&
-                      typeof value[0] === "object" &&
+                      typeof value[0] === 'object' &&
                       value[0] !== null
                     ) {
                       // Handle array of objects
                       const objectDescriptions = value.map((obj, index) => {
-                        if (typeof obj === "object" && obj !== null) {
+                        if (typeof obj === 'object' && obj !== null) {
                           const allProps = Object.entries(obj)
                             .filter(([, v]) => v !== null && v !== undefined)
                             .map(([k, v]) => {
                               const formattedKey = k
-                                .replace(/([A-Z])/g, " $1")
-                                .replace(/^./, (str) => str.toUpperCase());
-                              return `${formattedKey}: ${v}`;
+                                .replace(/([A-Z])/g, ' $1')
+                                .replace(/^./, (str) => str.toUpperCase())
+                              return `${formattedKey}: ${v}`
                             })
-                            .join(", ");
-                          return allProps || `Item ${index + 1}`;
+                            .join(', ')
+                          return allProps || `Item ${index + 1}`
                         }
-                        return String(obj);
-                      });
-                      displayValue = objectDescriptions.join(" | ");
+                        return String(obj)
+                      })
+                      displayValue = objectDescriptions.join(' | ')
                     } else {
-                      displayValue = value.join(", ");
+                      displayValue = value.join(', ')
                     }
                   } else if (
                     [
-                      "map",
-                      "details",
-                      "lot",
-                      "rooms",
-                      "brokerage",
-                      "taxes",
-                      "timestamps",
-                      "estimate",
-                      "office",
-                      "nearby",
-                      "openHouse",
-                      "open_house",
-                      "openhouse",
+                      'map',
+                      'details',
+                      'lot',
+                      'rooms',
+                      'brokerage',
+                      'taxes',
+                      'timestamps',
+                      'estimate',
+                      'office',
+                      'nearby',
+                      'openHouse',
+                      'open_house',
+                      'openhouse'
                     ].includes(key) &&
                     value !== null
                   ) {
                     // Handle special objects with human-readable display
-                    displayValue = null; // We'll handle this specially below
+                    displayValue = null // We'll handle this specially below
                   } else {
-                    displayValue = JSON.stringify(value, null, 2);
+                    displayValue = JSON.stringify(value, null, 2)
                   }
                 } else if (
-                  typeof value === "number" &&
-                  (key.includes("price") ||
-                    key.includes("Price") ||
-                    key.includes("cost") ||
-                    key.includes("Cost") ||
-                    key.includes("value") ||
-                    key.includes("Value"))
+                  typeof value === 'number' &&
+                  (key.includes('price') ||
+                    key.includes('Price') ||
+                    key.includes('cost') ||
+                    key.includes('Cost') ||
+                    key.includes('value') ||
+                    key.includes('Value'))
                 ) {
-                  displayValue = formatPrice(value);
-                } else if (typeof value === "number" && key.includes("sqft")) {
-                  displayValue = value.toLocaleString() + " sqft";
-                } else if (typeof value === "boolean") {
-                  displayValue = value ? "Yes" : "No";
+                  displayValue = formatPrice(value)
+                } else if (typeof value === 'number' && key.includes('sqft')) {
+                  displayValue = value.toLocaleString() + ' sqft'
+                } else if (typeof value === 'boolean') {
+                  displayValue = value ? 'Yes' : 'No'
                 } else if (
-                  typeof value === "string" &&
-                  (key.toLowerCase().includes("date") ||
-                    key.toLowerCase().includes("time") ||
-                    key.toLowerCase() === "listdate" ||
-                    key.toLowerCase() === "list date") &&
-                  (value.includes("T") ||
-                    value.includes("-") ||
+                  typeof value === 'string' &&
+                  (key.toLowerCase().includes('date') ||
+                    key.toLowerCase().includes('time') ||
+                    key.toLowerCase() === 'listdate' ||
+                    key.toLowerCase() === 'list date') &&
+                  (value.includes('T') ||
+                    value.includes('-') ||
                     !isNaN(Date.parse(value)))
                 ) {
-                  displayValue = formatTimestamp(value);
+                  displayValue = formatTimestamp(value)
                 } else {
-                  displayValue = String(value);
+                  displayValue = String(value)
                 }
 
                 // Format the key name for display
                 const displayKey = key
-                  .replace(/([A-Z])/g, " $1")
-                  .replace(/^./, (str) => str.toUpperCase());
+                  .replace(/([A-Z])/g, ' $1')
+                  .replace(/^./, (str) => str.toUpperCase())
 
                 return (
                   <div key={key} className="border-l-2 border-blue-200 pl-3">
@@ -296,74 +296,74 @@ export function PropertyDetailsDisplay({
                     </div>
                     <div className="text-sm font-medium text-gray-900 mt-1 break-words">
                       {[
-                        "map",
-                        "details",
-                        "lot",
-                        "rooms",
-                        "brokerage",
-                        "taxes",
-                        "timestamps",
-                        "estimate",
-                        "office",
-                        "nearby",
-                        "openHouse",
-                        "open_house",
-                        "openhouse",
+                        'map',
+                        'details',
+                        'lot',
+                        'rooms',
+                        'brokerage',
+                        'taxes',
+                        'timestamps',
+                        'estimate',
+                        'office',
+                        'nearby',
+                        'openHouse',
+                        'open_house',
+                        'openhouse'
                       ].includes(key) &&
-                      typeof value === "object" &&
+                      typeof value === 'object' &&
                       value !== null ? (
                         <div className="space-y-1">
                           {Object.entries(value).map(([subKey, subValue]) => {
                             if (subValue === null || subValue === undefined)
-                              return null;
+                              return null
 
                             const formattedSubKey = subKey
-                              .replace(/([A-Z])/g, " $1")
-                              .replace(/^./, (str) => str.toUpperCase());
+                              .replace(/([A-Z])/g, ' $1')
+                              .replace(/^./, (str) => str.toUpperCase())
 
-                            let formattedSubValue;
+                            let formattedSubValue
                             if (
-                              typeof subValue === "object" &&
+                              typeof subValue === 'object' &&
                               subValue !== null
                             ) {
                               if (Array.isArray(subValue)) {
-                                formattedSubValue = subValue.join(", ");
+                                formattedSubValue = subValue.join(', ')
                               } else {
-                                const nestedObj = subValue as any;
+                                const nestedObj = subValue as any
                                 if (nestedObj.count || nestedObj.number) {
                                   formattedSubValue =
-                                    nestedObj.count || nestedObj.number;
+                                    nestedObj.count || nestedObj.number
                                 } else {
                                   formattedSubValue = Object.entries(nestedObj)
                                     .filter(
                                       ([, v]) => v !== null && v !== undefined
                                     )
                                     .map(([k, v]) => `${k}: ${v}`)
-                                    .join(", ");
+                                    .join(', ')
                                 }
                               }
                             } else if (
-                              typeof subValue === "number" &&
-                              (subKey.includes("price") ||
-                                subKey.includes("Price"))
+                              typeof subValue === 'number' &&
+                              (subKey.includes('price') ||
+                                subKey.includes('Price'))
                             ) {
-                              formattedSubValue = formatPrice(subValue);
+                              formattedSubValue = formatPrice(subValue)
                             } else if (
-                              typeof subValue === "number" &&
-                              subKey.includes("sqft")
+                              typeof subValue === 'number' &&
+                              subKey.includes('sqft')
                             ) {
                               formattedSubValue =
-                                subValue.toLocaleString() + " sqft";
-                            } else if (typeof subValue === "boolean") {
-                              formattedSubValue = subValue ? "Yes" : "No";
+                                subValue.toLocaleString() + ' sqft'
+                            } else if (typeof subValue === 'boolean') {
+                              formattedSubValue = subValue ? 'Yes' : 'No'
                             } else if (
-                              key === "timestamps" ||
-                              subKey.toLowerCase().includes("date") ||
-                              subKey.toLowerCase().includes("time")
+                              key === 'timestamps' ||
+                              subKey.toLowerCase().includes('date') ||
+                              subKey.toLowerCase().includes('time')
                             ) {
-                              formattedSubValue = formatTimestamp(subValue);
+                              formattedSubValue = formatTimestamp(subValue)
                             } else {
-                              formattedSubValue = String(subValue);
+                              formattedSubValue = String(subValue)
                             }
 
                             return (
@@ -378,19 +378,19 @@ export function PropertyDetailsDisplay({
                                   {formattedSubValue}
                                 </span>
                               </div>
-                            );
+                            )
                           })}
                         </div>
-                      ) : typeof value === "object" &&
+                      ) : typeof value === 'object' &&
                         !Array.isArray(value) &&
-                        key !== "address" ? (
+                        key !== 'address' ? (
                         <pre className="text-xs bg-gray-50 p-2 rounded overflow-auto max-h-32">
                           {displayValue}
                         </pre>
-                      ) : displayValue === "images" && Array.isArray(value) ? (
+                      ) : displayValue === 'images' && Array.isArray(value) ? (
                         <div className="grid grid-cols-3 md:grid-cols-4 gap-2 mt-2">
                           {value.map((imageFilename, index) => {
-                            const fullUrl = `https://cdn.repliers.io/${imageFilename}?class=small`;
+                            const fullUrl = `https://cdn.repliers.io/${imageFilename}?class=small`
                             return (
                               <div
                                 key={index}
@@ -423,7 +423,7 @@ export function PropertyDetailsDisplay({
                                   </div>
                                 </div>
                               </div>
-                            );
+                            )
                           })}
                         </div>
                       ) : (
@@ -431,7 +431,7 @@ export function PropertyDetailsDisplay({
                       )}
                     </div>
                   </div>
-                );
+                )
               })}
             </div>
           </details>
@@ -452,5 +452,5 @@ export function PropertyDetailsDisplay({
         </div>
       </div>
     </div>
-  );
+  )
 }

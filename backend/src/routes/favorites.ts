@@ -1,15 +1,18 @@
-import Router from "@koa/router";
-import { container } from "tsyringe";
-import { Middleware } from "koa-jwt";
-import { ApiError } from "../lib/errors.js";
-import FavoritesService from "../services/favorites.js";
-import { favoritesCreateSchema, favoritesDeleteSchema } from "../validate/favorites.js";
-import type { EventsCollectionMiddleware } from "../providers/middleware/eventsCollection.js";
-import SelectSavePropertyParams from "../services/eventsCollection/selectors/selectSavePropertyParams.js";
+import Router from '@koa/router'
+import { container } from 'tsyringe'
+import { Middleware } from 'koa-jwt'
+import { ApiError } from '../lib/errors.js'
+import FavoritesService from '../services/favorites.js'
+import {
+  favoritesCreateSchema,
+  favoritesDeleteSchema
+} from '../validate/favorites.js'
+import type { EventsCollectionMiddleware } from '../providers/middleware/eventsCollection.js'
+import SelectSavePropertyParams from '../services/eventsCollection/selectors/selectSavePropertyParams.js'
 const router = new Router({
-   prefix: "/favorites"
-});
-const authMiddleware = container.resolve<Middleware>("middleware.jwt");
+  prefix: '/favorites'
+})
+const authMiddleware = container.resolve<Middleware>('middleware.jwt')
 
 /**
  * @openapi
@@ -39,30 +42,37 @@ const authMiddleware = container.resolve<Middleware>("middleware.jwt");
  *          401:
  *             $ref: '#/components/responses/Unauthorized'
  */
-router.post("/", authMiddleware, async (ctx, next) => {
-   ctx.state['enable.xff'] = true;
-   const {
-      error,
-      value
-   } = favoritesCreateSchema.validate({
+router.post(
+  '/',
+  authMiddleware,
+  async (ctx, next) => {
+    ctx.state['enable.xff'] = true
+    const { error, value } = favoritesCreateSchema.validate({
       ...ctx.request.body,
-      clientId: ctx.state["user"].sub
-   });
-   if (error) {
-      ctx.throw(new ApiError(error.message, 400));
-      return;
-   }
-   const favoritesService = ctx.state.container.resolve(FavoritesService);
-   ctx.body = await favoritesService.add(value);
-   next();
-}, (ctx, next) => {
-   const eventsCollectionMiddleware = ctx.state.container.resolve<EventsCollectionMiddleware>("middleware.eventsCollection");
-   const selectSavePropertyParams = ctx.state.container.resolve(SelectSavePropertyParams);
-   const savePropertyEventsCollector = eventsCollectionMiddleware({
+      clientId: ctx.state['user'].sub
+    })
+    if (error) {
+      ctx.throw(new ApiError(error.message, 400))
+      return
+    }
+    const favoritesService = ctx.state.container.resolve(FavoritesService)
+    ctx.body = await favoritesService.add(value)
+    next()
+  },
+  (ctx, next) => {
+    const eventsCollectionMiddleware =
+      ctx.state.container.resolve<EventsCollectionMiddleware>(
+        'middleware.eventsCollection'
+      )
+    const selectSavePropertyParams = ctx.state.container.resolve(
+      SelectSavePropertyParams
+    )
+    const savePropertyEventsCollector = eventsCollectionMiddleware({
       selector: selectSavePropertyParams.select
-   });
-   return savePropertyEventsCollector(ctx, next);
-});
+    })
+    return savePropertyEventsCollector(ctx, next)
+  }
+)
 
 /**
  * @openapi
@@ -79,11 +89,11 @@ router.post("/", authMiddleware, async (ctx, next) => {
  *          401:
  *             $ref: '#/components/responses/Unauthorized'
  */
-router.get("/", authMiddleware, async ctx => {
-   ctx.state['enable.xff'] = true;
-   const favoritesService = ctx.state.container.resolve(FavoritesService);
-   ctx.body = await favoritesService.get(ctx.state["user"].sub);
-});
+router.get('/', authMiddleware, async (ctx) => {
+  ctx.state['enable.xff'] = true
+  const favoritesService = ctx.state.container.resolve(FavoritesService)
+  ctx.body = await favoritesService.get(ctx.state['user'].sub)
+})
 
 /**
  * @openapi
@@ -105,20 +115,17 @@ router.get("/", authMiddleware, async ctx => {
  *          401:
  *             $ref: '#/components/responses/Unauthorized'
  */
-router.delete("/:favoriteId", authMiddleware, async ctx => {
-   ctx.state['enable.xff'] = true;
-   const {
-      error,
-      value
-   } = favoritesDeleteSchema.validate({
-      clientId: ctx.state["user"].sub,
-      favoriteId: ctx.params["favoriteId"]
-   });
-   if (error) {
-      ctx.throw(new ApiError(error.message, 400));
-      return;
-   }
-   const favoritesService = ctx.state.container.resolve(FavoritesService);
-   ctx.body = await favoritesService.delete(value.clientId, value.favoriteId);
-});
-export default router;
+router.delete('/:favoriteId', authMiddleware, async (ctx) => {
+  ctx.state['enable.xff'] = true
+  const { error, value } = favoritesDeleteSchema.validate({
+    clientId: ctx.state['user'].sub,
+    favoriteId: ctx.params['favoriteId']
+  })
+  if (error) {
+    ctx.throw(new ApiError(error.message, 400))
+    return
+  }
+  const favoritesService = ctx.state.container.resolve(FavoritesService)
+  ctx.body = await favoritesService.delete(value.clientId, value.favoriteId)
+})
+export default router

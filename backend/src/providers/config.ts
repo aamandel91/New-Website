@@ -1,5 +1,5 @@
-import config from "../config.js";
+import config from '../config.js'
 export default {
-   token: "config",
-   useValue: config
-};
+  token: 'config',
+  useValue: config
+}

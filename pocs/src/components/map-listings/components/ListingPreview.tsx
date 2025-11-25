@@ -1,8 +1,14 @@
-import React from "react";
-import { BedDouble, Bath, Car } from "lucide-react";
-import { ListingPreviewProps } from "../types";
-import { formatPrice, formatBedrooms, formatBathrooms, formatParking, formatAddress } from "../helper-functions/formatters";
-import { StatusTag } from "./StatusTag";
+import React from 'react'
+import { BedDouble, Bath, Car } from 'lucide-react'
+import { ListingPreviewProps } from '../types'
+import {
+  formatPrice,
+  formatBedrooms,
+  formatBathrooms,
+  formatParking,
+  formatAddress
+} from '../helper-functions/formatters'
+import { StatusTag } from './StatusTag'
 
 export function ListingPreview({ listing, onClick }: ListingPreviewProps) {
   return (
@@ -34,7 +40,7 @@ export function ListingPreview({ listing, onClick }: ListingPreviewProps) {
               <h4 className="font-semibold text-gray-800 truncate text-base">
                 {listing.listPrice
                   ? formatPrice(listing.listPrice)
-                  : "Price N/A"}
+                  : 'Price N/A'}
               </h4>
               <span className="text-gray-400 text-sm">|</span>
               <span className="text-gray-600 truncate text-sm">
@@ -70,11 +76,13 @@ export function ListingPreview({ listing, onClick }: ListingPreviewProps) {
               {formatParking(listing.details)}
             </span>
             {listing.details?.propertyType && (
-              <span className="text-gray-400">| {listing.details.propertyType}</span>
+              <span className="text-gray-400">
+                | {listing.details.propertyType}
+              </span>
             )}
           </div>
         </div>
       </div>
     </div>
-  );
+  )
 }

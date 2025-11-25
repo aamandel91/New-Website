@@ -4,38 +4,40 @@
  * @returns {Promise<Object>} - The result of the property types and styles request.
  */
 const executeFunction = async () => {
-  const baseUrl = 'https://api.repliers.io';
-  const apiKey = process.env.REPLIERS_API_KEY;
+  const baseUrl = 'https://api.repliers.io'
+  const apiKey = process.env.REPLIERS_API_KEY
   try {
     // Construct the URL for the request
-    const url = `${baseUrl}/listings/property-types`;
+    const url = `${baseUrl}/listings/property-types`
 
     // Set up headers for the request
     const headers = {
-      'Accept': 'application/json',
+      Accept: 'application/json',
       'REPLIERS-API-KEY': apiKey
-    };
+    }
 
     // Perform the fetch request
     const response = await fetch(url, {
       method: 'GET',
       headers
-    });
+    })
 
     // Check if the response was successful
     if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData);
+      const errorData = await response.json()
+      throw new Error(errorData)
     }
 
     // Parse and return the response data
-    const data = await response.json();
-    return data;
+    const data = await response.json()
+    return data
   } catch (error) {
-    console.error('Error fetching property types and styles:', error);
-    return { error: 'An error occurred while fetching property types and styles.' };
+    console.error('Error fetching property types and styles:', error)
+    return {
+      error: 'An error occurred while fetching property types and styles.'
+    }
   }
-};
+}
 
 /**
  * Tool configuration for listing property types and styles from the Repliers API.
@@ -55,6 +57,6 @@ const apiTool = {
       }
     }
   }
-};
+}
 
-export { apiTool };
+export { apiTool }

@@ -1,5 +1,5 @@
-import type { Meta, StoryObj } from "@storybook/react";
-import { AIInventoryForecast } from "./openAI-market-inventory-forecaster";
+import type { Meta, StoryObj } from '@storybook/react'
+import { AIInventoryForecast } from './openAI-market-inventory-forecaster'
 
 /**
  *
@@ -209,17 +209,17 @@ import { AIInventoryForecast } from "./openAI-market-inventory-forecaster";
  */
 
 const meta: Meta<typeof AIInventoryForecast> = {
-  title: "PoCs/Statistics/Statistics by Zip/AI Inventory Forecast",
+  title: 'PoCs/Statistics/Statistics by Zip/AI Inventory Forecast',
   component: AIInventoryForecast,
   parameters: {
-    layout: "centered",
+    layout: 'centered'
   },
-  tags: ["autodocs"],
-};
+  tags: ['autodocs']
+}
 
-export default meta;
-type Story = StoryObj<typeof AIInventoryForecast>;
+export default meta
+type Story = StoryObj<typeof AIInventoryForecast>
 
 export const WorkingDemo: Story = {
-  args: {},
-};
+  args: {}
+}

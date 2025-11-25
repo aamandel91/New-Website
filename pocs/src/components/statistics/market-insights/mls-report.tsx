@@ -1,13 +1,13 @@
-import React from "react";
-import { Button } from "@/components/ui/button";
+import React from 'react'
+import { Button } from '@/components/ui/button'
 
 interface MLSReportProps {
-  listingData: any; // We can type this more specifically if needed
+  listingData: any // We can type this more specifically if needed
 }
 
 export function MLSReport({ listingData }: MLSReportProps) {
   if (!listingData) {
-    return null;
+    return null
   }
 
   return (
@@ -21,7 +21,7 @@ export function MLSReport({ listingData }: MLSReportProps) {
             onClick={() => {
               navigator.clipboard.writeText(
                 JSON.stringify(listingData, null, 2)
-              );
+              )
             }}
           >
             Copy Raw JSON
@@ -47,8 +47,8 @@ Bedrooms: ${listingData.details?.numBedrooms} + ${
 Bathrooms: ${listingData.details?.numBathrooms}
 Square Footage: ${listingData.details?.sqft}
 Year Built: ${listingData.details?.yearBuilt}
-              `;
-              navigator.clipboard.writeText(formattedText);
+              `
+              navigator.clipboard.writeText(formattedText)
             }}
           >
             Copy Formatted
@@ -93,19 +93,19 @@ Year Built: ${listingData.details?.yearBuilt}
             <div>
               <p className="text-sm text-gray-600">Address</p>
               <p className="font-medium">
-                {listingData.address?.streetNumber}{" "}
-                {listingData.address?.streetName}{" "}
+                {listingData.address?.streetNumber}{' '}
+                {listingData.address?.streetName}{' '}
                 {listingData.address?.streetSuffix}
               </p>
               <p className="font-medium">
-                {listingData.address?.city}, {listingData.address?.state}{" "}
+                {listingData.address?.city}, {listingData.address?.state}{' '}
                 {listingData.address?.zip}
               </p>
               {listingData.map?.latitude && listingData.map?.longitude && (
                 <div className="mt-2">
                   <p className="text-sm text-gray-600">Coordinates</p>
                   <p className="font-medium">
-                    {listingData.map.latitude.toFixed(6)},{" "}
+                    {listingData.map.latitude.toFixed(6)},{' '}
                     {listingData.map.longitude.toFixed(6)}
                   </p>
                 </div>
@@ -131,7 +131,7 @@ Year Built: ${listingData.details?.yearBuilt}
             <div>
               <p className="text-sm text-gray-600">Bedrooms</p>
               <p className="font-medium">
-                {listingData.details?.numBedrooms} +{" "}
+                {listingData.details?.numBedrooms} +{' '}
                 {listingData.details?.numBedroomsPlus}
               </p>
             </div>
@@ -202,7 +202,7 @@ Year Built: ${listingData.details?.yearBuilt}
                   <div className="flex justify-between items-start mb-3">
                     <div>
                       <h5 className="font-semibold text-lg">
-                        {entry.lastStatus === "Sold" ? "Sold" : "Listed"} on{" "}
+                        {entry.lastStatus === 'Sold' ? 'Sold' : 'Listed'} on{' '}
                         {new Date(entry.listDate).toLocaleDateString()}
                       </h5>
                       <p className="text-sm text-gray-600">
@@ -213,7 +213,7 @@ Year Built: ${listingData.details?.yearBuilt}
                       <p className="text-lg font-bold text-green-600">
                         ${entry.listPrice.toLocaleString()}
                       </p>
-                      {entry.lastStatus === "Sold" && entry.soldPrice && (
+                      {entry.lastStatus === 'Sold' && entry.soldPrice && (
                         <p className="text-sm text-gray-600">
                           Sold for ${entry.soldPrice.toLocaleString()}
                         </p>
@@ -279,5 +279,5 @@ Year Built: ${listingData.details?.yearBuilt}
         )}
       </div>
     </div>
-  );
+  )
 }

@@ -1,2 +1,2 @@
-import config from "./config.js";
-export default config.db;
+import config from './config.js'
+export default config.db

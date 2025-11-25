@@ -1,5 +1,5 @@
 export default class Codegen {
-   generate() {
-      return '123456';
-   }
+  generate() {
+    return '123456'
+  }
 }

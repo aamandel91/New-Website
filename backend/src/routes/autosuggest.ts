@@ -1,16 +1,19 @@
-import Router from "@koa/router";
-import { container } from "tsyringe";
-import { ApiError } from "../lib/errors.js";
-import AutosuggestService from "../services/autosuggest.js";
-import { autosuggestAddressSchema, autosuggestSchema } from "../validate/autosuggest.js";
-import ListingsService from "../services/listings.js";
-import { RplClass } from "../types/repliers.js";
-import { RplListingsLocationsDto } from "validate/listings.js";
-import { type AppConfig } from "../config.js";
+import Router from '@koa/router'
+import { container } from 'tsyringe'
+import { ApiError } from '../lib/errors.js'
+import AutosuggestService from '../services/autosuggest.js'
+import {
+  autosuggestAddressSchema,
+  autosuggestSchema
+} from '../validate/autosuggest.js'
+import ListingsService from '../services/listings.js'
+import { RplClass } from '../types/repliers.js'
+import { RplListingsLocationsDto } from 'validate/listings.js'
+import { type AppConfig } from '../config.js'
 const router = new Router({
-   prefix: "/autosuggest"
-});
-const config = container.resolve<AppConfig>("config");
+  prefix: '/autosuggest'
+})
+const config = container.resolve<AppConfig>('config')
 
 /**
 * @openapi
@@ -179,121 +182,118 @@ const config = container.resolve<AppConfig>("config");
 *        400:
 *           $ref: '#/components/responses/BadRequest'
 */
-router.get("/", async ctx => {
-   ctx.state['enable.xff'] = true;
-   const {
-      error,
-      value
-   } = autosuggestSchema.validate(ctx.request.query);
-   if (error) {
-      ctx.throw(new ApiError(error.message, 400));
-      return;
-   }
-   const autosuggestService = ctx.state.container.resolve(AutosuggestService);
-   ctx.body = await autosuggestService.search(value);
-});
+router.get('/', async (ctx) => {
+  ctx.state['enable.xff'] = true
+  const { error, value } = autosuggestSchema.validate(ctx.request.query)
+  if (error) {
+    ctx.throw(new ApiError(error.message, 400))
+    return
+  }
+  const autosuggestService = ctx.state.container.resolve(AutosuggestService)
+  ctx.body = await autosuggestService.search(value)
+})
 
 /**
-* @openapi
-* /api/autosuggest/locations:
-*  get:
-*     tags:
-*        - Autosuggest
-*     summary: Autosuggest locations
-*     responses:
-*        200:
-*           decription: list of suggestions
-*           content:
-*              application/json:
-*                 schema:
-*                    type: object
-*                    properties:
-*                       boards:
-*                          type: array
-*                          items:
-*                             type: object
-*                             properties:
-*                                boardId:
-*                                   type: integer
-*                                name:
-*                                   type: string
-*                                updatedOn:
-*                                   type: string
-*                                   format: date-time
-*                                classes:
-*                                   type: array
-*                                   items:
-*                                      type: object
-*                                      properties:
-*                                         name:
-*                                            type: string
-*                                         areas:
-*                                            type: array
-*                                            items:
-*                                               type: object
-*                                               properties:
-*                                                  name:
-*                                                     type: string
-*                                                  cities:
-*                                                     type: array
-*                                                     items:
-*                                                        type: object
-*                                                        properties:
-*                                                           name:
-*                                                              type: string
-*                                                           activeCount:
-*                                                              type: integer
-*                                                           location:
-*                                                              type: object
-*                                                              properties:
-*                                                                 lat:
-*                                                                    type: number
-*                                                                    format: float
-*                                                                 lng:
-*                                                                    type: number
-*                                                                    format: float
-*                                                           state:
-*                                                              type: string
-*                                                           coordinates:
-*                                                              type: any
-*                                                           neighborhoods:
-*                                                              type: array
-*                                                              items:
-*                                                                 type: object
-*                                                                 properties:
-*                                                                    name:
-*                                                                       type: string
-*                                                                    activeCount:
-*                                                                       type: integer
-*                                                                    location:
-*                                                                       type: object
-*                                                                       properties:
-*                                                                          lat:
-*                                                                             type: number
-*                                                                             format: float
-*                                                                          lng:
-*                                                                             type: number
-*                                                                             format: float
-*                                                                    coordinates:
-*                                                                       type: any
-*        400:
-*           $ref: '#/components/responses/BadRequest'
-*/
-router.get("/locations", async ctx => {
-   ctx.state['enable.xff'] = true;
-   const listingsService = ctx.state.container.resolve(ListingsService);
-   const params: RplListingsLocationsDto = {
-      class: [RplClass.residential, RplClass.condo],
-      boardId: config.settings.locations.boardId,
-      dropCoordinates: config.settings.locations.drop_coordinates,
-      activeCountLimit: config.settings.locations.active_count_limit
-   };
-   const result = await listingsService.locations(params);
-   if ("expires" in result) {
-      ctx.set("Cache-Control", `private, max-age = ${result.expires}`);
-      ctx.body = result.result;
-   }
-});
+ * @openapi
+ * /api/autosuggest/locations:
+ *  get:
+ *     tags:
+ *        - Autosuggest
+ *     summary: Autosuggest locations
+ *     responses:
+ *        200:
+ *           decription: list of suggestions
+ *           content:
+ *              application/json:
+ *                 schema:
+ *                    type: object
+ *                    properties:
+ *                       boards:
+ *                          type: array
+ *                          items:
+ *                             type: object
+ *                             properties:
+ *                                boardId:
+ *                                   type: integer
+ *                                name:
+ *                                   type: string
+ *                                updatedOn:
+ *                                   type: string
+ *                                   format: date-time
+ *                                classes:
+ *                                   type: array
+ *                                   items:
+ *                                      type: object
+ *                                      properties:
+ *                                         name:
+ *                                            type: string
+ *                                         areas:
+ *                                            type: array
+ *                                            items:
+ *                                               type: object
+ *                                               properties:
+ *                                                  name:
+ *                                                     type: string
+ *                                                  cities:
+ *                                                     type: array
+ *                                                     items:
+ *                                                        type: object
+ *                                                        properties:
+ *                                                           name:
+ *                                                              type: string
+ *                                                           activeCount:
+ *                                                              type: integer
+ *                                                           location:
+ *                                                              type: object
+ *                                                              properties:
+ *                                                                 lat:
+ *                                                                    type: number
+ *                                                                    format: float
+ *                                                                 lng:
+ *                                                                    type: number
+ *                                                                    format: float
+ *                                                           state:
+ *                                                              type: string
+ *                                                           coordinates:
+ *                                                              type: any
+ *                                                           neighborhoods:
+ *                                                              type: array
+ *                                                              items:
+ *                                                                 type: object
+ *                                                                 properties:
+ *                                                                    name:
+ *                                                                       type: string
+ *                                                                    activeCount:
+ *                                                                       type: integer
+ *                                                                    location:
+ *                                                                       type: object
+ *                                                                       properties:
+ *                                                                          lat:
+ *                                                                             type: number
+ *                                                                             format: float
+ *                                                                          lng:
+ *                                                                             type: number
+ *                                                                             format: float
+ *                                                                    coordinates:
+ *                                                                       type: any
+ *        400:
+ *           $ref: '#/components/responses/BadRequest'
+ */
+router.get('/locations', async (ctx) => {
+  ctx.state['enable.xff'] = true
+  const listingsService = ctx.state.container.resolve(ListingsService)
+  const params: RplListingsLocationsDto = {
+    class: [RplClass.residential, RplClass.condo],
+    boardId: config.settings.locations.boardId,
+    dropCoordinates: config.settings.locations.drop_coordinates,
+    activeCountLimit: config.settings.locations.active_count_limit
+  }
+  const result = await listingsService.locations(params)
+  if ('expires' in result) {
+    ctx.set('Cache-Control', `private, max-age = ${result.expires}`)
+    ctx.body = result.result
+  }
+})
 
 /**
  * @openapi
@@ -350,16 +350,13 @@ router.get("/locations", async ctx => {
  *          400:
  *             $ref: '#/components/responses/BadRequest'
  */
-router.get('/address', async ctx => {
-   const {
-      error,
-      value
-   } = autosuggestAddressSchema.validate(ctx.request.query);
-   if (error) {
-      ctx.throw(new ApiError(error.message, 400));
-      return;
-   }
-   const autosuggestService = ctx.state.container.resolve(AutosuggestService);
-   ctx.body = await autosuggestService.address(value);
-});
-export default router;
+router.get('/address', async (ctx) => {
+  const { error, value } = autosuggestAddressSchema.validate(ctx.request.query)
+  if (error) {
+    ctx.throw(new ApiError(error.message, 400))
+    return
+  }
+  const autosuggestService = ctx.state.container.resolve(AutosuggestService)
+  ctx.body = await autosuggestService.address(value)
+})
+export default router

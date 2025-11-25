@@ -1,4 +1,4 @@
-import { toolPaths } from "../tools/paths.js";
+import { toolPaths } from '../tools/paths.js'
 
 /**
  * Discovers and loads available tools from the tools directory
@@ -6,12 +6,12 @@ import { toolPaths } from "../tools/paths.js";
  */
 export async function discoverTools() {
   const toolPromises = toolPaths.map(async (file) => {
-    const module = await import(`../tools/${file}`);
+    const module = await import(`../tools/${file}`)
     return {
       ...module.apiTool,
       ...module.repliersListingsSearchTool,
-      path: file,
-    };
-  });
-  return Promise.all(toolPromises);
+      path: file
+    }
+  })
+  return Promise.all(toolPromises)
 }

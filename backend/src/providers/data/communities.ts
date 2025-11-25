@@ -1,8 +1,8 @@
-import communities, { revComunities } from "../../services/stats/communities.js";
+import communities, { revComunities } from '../../services/stats/communities.js'
 export default {
-   token: "data.communities",
-   useValue: {
-      communities,
-      revComunities
-   }
-};
+  token: 'data.communities',
+  useValue: {
+    communities,
+    revComunities
+  }
+}

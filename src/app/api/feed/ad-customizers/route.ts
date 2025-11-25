@@ -5,12 +5,13 @@
  * Usage: GET /api/feed/ad-customizers?format=csv|json&campaign=Campaign&adgroup=AdGroup
  */
 
-import { NextRequest, NextResponse } from 'next/server'
+import type { NextRequest } from 'next/server'
+import { NextResponse } from 'next/server'
 
 import {
+  type RemarketingPropertyData,
   toAdCustomizerFeed,
-  toCSV,
-  type RemarketingPropertyData
+  toCSV
 } from 'services/marketing'
 
 // Mock function - replace with actual property fetching logic
@@ -24,16 +25,19 @@ async function fetchProperties(): Promise<RemarketingPropertyData[]> {
 
 // Aggregate properties by city and property type
 function aggregateProperties(properties: RemarketingPropertyData[]) {
-  const aggregated = new Map<string, {
-    city: string
-    property_type: string
-    count: number
-    min_price: number
-    max_price: number
-    currency: string
-  }>()
+  const aggregated = new Map<
+    string,
+    {
+      city: string
+      property_type: string
+      count: number
+      min_price: number
+      max_price: number
+      currency: string
+    }
+  >()
 
-  properties.forEach(property => {
+  properties.forEach((property) => {
     const key = `${property.city}|${property.property_type}`
     const existing = aggregated.get(key)
 

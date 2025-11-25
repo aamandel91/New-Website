@@ -1,12 +1,17 @@
-import Router, { Middleware } from "@koa/router";
-import { container } from "tsyringe";
-import { ApiError } from "../lib/errors.js";
-import StatsService from "../services/stats.js";
-import { statsCommunitiesSchema, statsWidgetsSchema } from "../validate/stats.js";
+import Router, { Middleware } from '@koa/router'
+import { container } from 'tsyringe'
+import { ApiError } from '../lib/errors.js'
+import StatsService from '../services/stats.js'
+import {
+  statsCommunitiesSchema,
+  statsWidgetsSchema
+} from '../validate/stats.js'
 const router = new Router({
-   prefix: "/stats"
-});
-const authMiddlewarePassthrough = container.resolve<Middleware>("middleware.jwt.passthrough");
+  prefix: '/stats'
+})
+const authMiddlewarePassthrough = container.resolve<Middleware>(
+  'middleware.jwt.passthrough'
+)
 
 /**
  * @openapi
@@ -69,27 +74,24 @@ const authMiddlewarePassthrough = container.resolve<Middleware>("middleware.jwt.
  *          400:
  *             $ref: '#/components/responses/BadRequest'
  */
-router.get("/widgets", authMiddlewarePassthrough, async ctx => {
-   ctx.state['enable.xff'] = true;
-   const {
-      error,
-      value
-   } = statsWidgetsSchema.validate({
-      ...ctx.request.query
-   });
-   if (error) {
-      ctx.throw(new ApiError(error.message, 400));
-      return;
-   }
-   const statsService = ctx.state.container.resolve(StatsService);
-   const result = await statsService.widgets(value);
-   if ("expires" in result) {
-      ctx.set("Cache-Control", `private, max-age = ${result.expires}`);
-      ctx.body = result.result;
-   } else {
-      ctx.body = result;
-   }
-});
+router.get('/widgets', authMiddlewarePassthrough, async (ctx) => {
+  ctx.state['enable.xff'] = true
+  const { error, value } = statsWidgetsSchema.validate({
+    ...ctx.request.query
+  })
+  if (error) {
+    ctx.throw(new ApiError(error.message, 400))
+    return
+  }
+  const statsService = ctx.state.container.resolve(StatsService)
+  const result = await statsService.widgets(value)
+  if ('expires' in result) {
+    ctx.set('Cache-Control', `private, max-age = ${result.expires}`)
+    ctx.body = result.result
+  } else {
+    ctx.body = result
+  }
+})
 /**
  * @openapi
  * /api/stats/communities:
@@ -119,21 +121,18 @@ router.get("/widgets", authMiddlewarePassthrough, async ctx => {
  *        400:
  *           $ref: '#/components/responses/BadRequest'
  */
-router.get("/communities", async ctx => {
-   ctx.state['enable.xff'] = true;
-   const {
-      error,
-      value
-   } = statsCommunitiesSchema.validate({
-      ...ctx.request.query
-   });
-   if (error) {
-      ctx.throw(new ApiError(error.message, 400));
-      return;
-   }
-   const statsService = ctx.state.container.resolve(StatsService);
-   ctx.set("Cache-Control", `private, max-age = 86400`); // 24 hours
-   ctx.body = statsService.getCommunities(value);
-   ctx.status = ctx.body ? 200 : 204;
-});
-export default router;
+router.get('/communities', async (ctx) => {
+  ctx.state['enable.xff'] = true
+  const { error, value } = statsCommunitiesSchema.validate({
+    ...ctx.request.query
+  })
+  if (error) {
+    ctx.throw(new ApiError(error.message, 400))
+    return
+  }
+  const statsService = ctx.state.container.resolve(StatsService)
+  ctx.set('Cache-Control', `private, max-age = 86400`) // 24 hours
+  ctx.body = statsService.getCommunities(value)
+  ctx.status = ctx.body ? 200 : 204
+})
+export default router

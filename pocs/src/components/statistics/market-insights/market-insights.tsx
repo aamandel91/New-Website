@@ -1,7 +1,7 @@
-import React from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
+import React from 'react'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import * as z from 'zod'
 
 // UI Components
 import {
@@ -10,19 +10,19 @@ import {
   FormField,
   FormItem,
   FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { ApiInput } from "@/components/api-input/api-input";
-import { MLSReport } from "@/components/statistics/market-insights/mls-report";
-import { UnifiedAddressSearch } from "@/components/unified-address-search/unified-address-search";
+  FormMessage
+} from '@/components/ui/form'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { ApiInput } from '@/components/api-input/api-input'
+import { MLSReport } from '@/components/statistics/market-insights/mls-report'
+import { UnifiedAddressSearch } from '@/components/unified-address-search/unified-address-search'
 
 // Types
-type FormValues = z.infer<typeof formSchema>;
+type FormValues = z.infer<typeof formSchema>
 
 interface MarketInsightsProps {
-  by: "mls#" | "address";
+  by: 'mls#' | 'address'
 }
 
 // Constants
@@ -35,56 +35,56 @@ const formSchema = z.object({
     city: z.string(),
     state: z.string(),
     postalCode: z.string(),
-    country: z.string(),
-  }),
-});
+    country: z.string()
+  })
+})
 
 const initialValues: FormValues = {
-  mlsNumber: "",
+  mlsNumber: '',
   address: {
-    streetNumber: "",
-    streetName: "",
-    streetSuffix: "",
-    city: "",
-    state: "",
-    postalCode: "",
-    country: "",
-  },
-};
+    streetNumber: '',
+    streetName: '',
+    streetSuffix: '',
+    city: '',
+    state: '',
+    postalCode: '',
+    country: ''
+  }
+}
 
 export function MarketInsights({ by }: MarketInsightsProps) {
-  const [isLoading, setIsLoading] = React.useState(false);
-  const [error, setError] = React.useState<string | null>(null);
-  const [apiKey, setApiKey] = React.useState("");
-  const [listingData, setListingData] = React.useState<any>(null);
-  const [nearbyListings, setNearbyListings] = React.useState<any[]>([]);
-  const [showNearbyListings, setShowNearbyListings] = React.useState(false);
-  const [totalNearbyCount, setTotalNearbyCount] = React.useState<number>(0);
-  const [recentListings, setRecentListings] = React.useState<any[]>([]);
-  const [showRecentListings, setShowRecentListings] = React.useState(false);
-  const [recentSoldListings, setRecentSoldListings] = React.useState<any[]>([]);
+  const [isLoading, setIsLoading] = React.useState(false)
+  const [error, setError] = React.useState<string | null>(null)
+  const [apiKey, setApiKey] = React.useState('')
+  const [listingData, setListingData] = React.useState<any>(null)
+  const [nearbyListings, setNearbyListings] = React.useState<any[]>([])
+  const [showNearbyListings, setShowNearbyListings] = React.useState(false)
+  const [totalNearbyCount, setTotalNearbyCount] = React.useState<number>(0)
+  const [recentListings, setRecentListings] = React.useState<any[]>([])
+  const [showRecentListings, setShowRecentListings] = React.useState(false)
+  const [recentSoldListings, setRecentSoldListings] = React.useState<any[]>([])
   const [showRecentSoldListings, setShowRecentSoldListings] =
-    React.useState(false);
+    React.useState(false)
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
-    defaultValues: initialValues,
-  });
+    defaultValues: initialValues
+  })
 
   const isWithinLastWeek = (dateString: string) => {
-    const listingDate = new Date(dateString);
-    const oneWeekAgo = new Date();
-    oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+    const listingDate = new Date(dateString)
+    const oneWeekAgo = new Date()
+    oneWeekAgo.setDate(oneWeekAgo.getDate() - 7)
 
-    return listingDate >= oneWeekAgo;
-  };
+    return listingDate >= oneWeekAgo
+  }
 
   const calculateDaysOnMarket = (listDate: string, soldDate: string) => {
-    const list = new Date(listDate);
-    const sold = new Date(soldDate);
-    const diffTime = Math.abs(sold.getTime() - list.getTime());
-    return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-  };
+    const list = new Date(listDate)
+    const sold = new Date(soldDate)
+    const diffTime = Math.abs(sold.getTime() - list.getTime())
+    return Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+  }
 
   const fetchNearbyListings = async (lat: number, long: number) => {
     try {
@@ -93,176 +93,174 @@ export function MarketInsights({ by }: MarketInsightsProps) {
         `https://api.repliers.io/listings?lat=${lat}&long=${long}&radius=2&status=A&limit=100`,
         {
           headers: {
-            "REPLIERS-API-KEY": apiKey,
-            "Content-Type": "application/json",
-          },
+            'REPLIERS-API-KEY': apiKey,
+            'Content-Type': 'application/json'
+          }
         }
-      );
+      )
 
       if (!activeResponse.ok) {
         throw new Error(
           `API request failed with status ${activeResponse.status}`
-        );
+        )
       }
 
-      const activeData = await activeResponse.json();
+      const activeData = await activeResponse.json()
 
-      const listings = activeData.listings || [];
-      setNearbyListings(listings);
-      setTotalNearbyCount(activeData.count || 0);
+      const listings = activeData.listings || []
+      setNearbyListings(listings)
+      setTotalNearbyCount(activeData.count || 0)
 
       // Filter recent listings
       const recent = listings.filter((listing: any) => {
         if (!listing.listDate) {
-          return false;
+          return false
         }
-        const isRecent = isWithinLastWeek(listing.listDate);
-        return isRecent;
-      });
+        const isRecent = isWithinLastWeek(listing.listDate)
+        return isRecent
+      })
 
-      setRecentListings(recent);
+      setRecentListings(recent)
 
       // Fetch sold listings
       const soldResponse = await fetch(
         `https://api.repliers.io/listings?lat=${lat}&long=${long}&radius=2&status=U`,
         {
           headers: {
-            "REPLIERS-API-KEY": apiKey,
-            "Content-Type": "application/json",
-          },
+            'REPLIERS-API-KEY': apiKey,
+            'Content-Type': 'application/json'
+          }
         }
-      );
+      )
 
       if (!soldResponse.ok) {
-        throw new Error(
-          `API request failed with status ${soldResponse.status}`
-        );
+        throw new Error(`API request failed with status ${soldResponse.status}`)
       }
 
-      const soldData = await soldResponse.json();
-      const soldListings = soldData.listings || [];
+      const soldData = await soldResponse.json()
+      const soldListings = soldData.listings || []
 
       // Filter recent sold listings
       const recentSold = soldListings.filter((listing: any) => {
-        const isRecent = listing.soldDate && isWithinLastWeek(listing.soldDate);
-        return isRecent;
-      });
-      setRecentSoldListings(recentSold);
+        const isRecent = listing.soldDate && isWithinLastWeek(listing.soldDate)
+        return isRecent
+      })
+      setRecentSoldListings(recentSold)
     } catch (err) {
       // Handle error silently or set error state if needed
     }
-  };
+  }
 
   const handlePlaceSelect = React.useCallback(
     (place: any) => {
       // Ensure we have the address components
       if (!place.address) {
-        return;
+        return
       }
 
       const addressData = {
-        streetNumber: place.address.streetNumber || "",
-        streetName: place.address.streetName || "",
-        streetSuffix: place.address.streetSuffix || "",
-        city: place.address.city || "",
-        state: place.address.state || "",
-        postalCode: place.address.postalCode || "",
-        country: place.address.country || "",
-      };
+        streetNumber: place.address.streetNumber || '',
+        streetName: place.address.streetName || '',
+        streetSuffix: place.address.streetSuffix || '',
+        city: place.address.city || '',
+        state: place.address.state || '',
+        postalCode: place.address.postalCode || '',
+        country: place.address.country || ''
+      }
 
       // Set each field individually to ensure proper form updates
-      form.setValue("address.streetNumber", addressData.streetNumber);
-      form.setValue("address.streetName", addressData.streetName);
-      form.setValue("address.streetSuffix", addressData.streetSuffix);
-      form.setValue("address.city", addressData.city);
-      form.setValue("address.state", addressData.state);
-      form.setValue("address.postalCode", addressData.postalCode);
-      form.setValue("address.country", addressData.country);
+      form.setValue('address.streetNumber', addressData.streetNumber)
+      form.setValue('address.streetName', addressData.streetName)
+      form.setValue('address.streetSuffix', addressData.streetSuffix)
+      form.setValue('address.city', addressData.city)
+      form.setValue('address.state', addressData.state)
+      form.setValue('address.postalCode', addressData.postalCode)
+      form.setValue('address.country', addressData.country)
 
       // Trigger form validation
-      form.trigger();
+      form.trigger()
     },
     [form]
-  );
+  )
 
   const onSubmit = async (data: FormValues) => {
     try {
-      setIsLoading(true);
-      setError(null);
-      setNearbyListings([]);
-      setShowNearbyListings(false);
-      setTotalNearbyCount(0);
-      setRecentListings([]);
-      setShowRecentListings(false);
-      setRecentSoldListings([]);
-      setShowRecentSoldListings(false);
+      setIsLoading(true)
+      setError(null)
+      setNearbyListings([])
+      setShowNearbyListings(false)
+      setTotalNearbyCount(0)
+      setRecentListings([])
+      setShowRecentListings(false)
+      setRecentSoldListings([])
+      setShowRecentSoldListings(false)
 
-      let response;
-      if (by === "mls#") {
+      let response
+      if (by === 'mls#') {
         response = await fetch(
           `https://api.repliers.io/listings/${data.mlsNumber}`,
           {
             headers: {
-              "REPLIERS-API-KEY": apiKey,
-              "Content-Type": "application/json",
-            },
+              'REPLIERS-API-KEY': apiKey,
+              'Content-Type': 'application/json'
+            }
           }
-        );
+        )
       } else {
         const params = new URLSearchParams({
           city: data.address.city,
           streetNumber: data.address.streetNumber,
-          streetName: data.address.streetName,
-        });
+          streetName: data.address.streetName
+        })
 
-        const url = `https://api.repliers.io/listings?${params.toString()}&status=A&status=U`;
+        const url = `https://api.repliers.io/listings?${params.toString()}&status=A&status=U`
 
         response = await fetch(url, {
           headers: {
-            "REPLIERS-API-KEY": apiKey,
-            "Content-Type": "application/json",
-          },
-        });
+            'REPLIERS-API-KEY': apiKey,
+            'Content-Type': 'application/json'
+          }
+        })
       }
 
       if (!response.ok) {
-        throw new Error(`API request failed with status ${response.status}`);
+        throw new Error(`API request failed with status ${response.status}`)
       }
 
-      const responseData = await response.json();
+      const responseData = await response.json()
 
       // Handle both response formats
-      let listingData;
-      if (by === "mls#") {
-        listingData = responseData;
+      let listingData
+      if (by === 'mls#') {
+        listingData = responseData
       } else {
         // For address search, get the first listing from the array
         if (!responseData.listings?.[0]) {
-          throw new Error("No listing found with the provided information");
+          throw new Error('No listing found with the provided information')
         }
-        listingData = responseData.listings[0];
+        listingData = responseData.listings[0]
       }
 
       // Check if we got a valid listing
       if (!listingData || !listingData.listPrice) {
-        throw new Error("No listing found with the provided information");
+        throw new Error('No listing found with the provided information')
       }
 
-      setListingData(listingData);
+      setListingData(listingData)
 
       // Fetch nearby listings if we have coordinates
       if (listingData?.map?.latitude && listingData?.map?.longitude) {
         await fetchNearbyListings(
           listingData.map.latitude,
           listingData.map.longitude
-        );
+        )
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : "An error occurred");
+      setError(err instanceof Error ? err.message : 'An error occurred')
     } finally {
-      setIsLoading(false);
+      setIsLoading(false)
     }
-  };
+  }
 
   return (
     <Form {...form}>
@@ -272,7 +270,7 @@ export function MarketInsights({ by }: MarketInsightsProps) {
         <div className="space-y-4">
           <h2 className="text-lg font-semibold">Property Information</h2>
           <div className="grid grid-cols-1 gap-4">
-            {by === "mls#" ? (
+            {by === 'mls#' ? (
               <FormField
                 control={form.control}
                 name="mlsNumber"
@@ -311,7 +309,7 @@ export function MarketInsights({ by }: MarketInsightsProps) {
 
         <div className="space-y-4">
           <Button type="submit" disabled={isLoading} className="w-full">
-            {isLoading ? "Loading..." : "Search"}
+            {isLoading ? 'Loading...' : 'Search'}
           </Button>
 
           {error && (
@@ -331,12 +329,12 @@ export function MarketInsights({ by }: MarketInsightsProps) {
                 {recentSoldListings.length > 0 && (
                   <span className="block mt-1">
                     (
-                    {recentSoldListings.filter((l) => l.type === "Sale").length}{" "}
-                    Sales,{" "}
+                    {recentSoldListings.filter((l) => l.type === 'Sale').length}{' '}
+                    Sales,{' '}
                     {
-                      recentSoldListings.filter((l) => l.type === "Lease")
+                      recentSoldListings.filter((l) => l.type === 'Lease')
                         .length
-                    }{" "}
+                    }{' '}
                     Leases shown)
                   </span>
                 )}
@@ -374,20 +372,20 @@ export function MarketInsights({ by }: MarketInsightsProps) {
                   <div
                     key={index}
                     className={`p-3 rounded-md hover:bg-gray-100 ${
-                      listing.type === "Lease" ? "bg-purple-50" : "bg-gray-50"
+                      listing.type === 'Lease' ? 'bg-purple-50' : 'bg-gray-50'
                     }`}
                   >
                     <div className="flex justify-between items-start">
                       <p className="font-medium">
-                        {listing.address.streetNumber}{" "}
-                        {listing.address.streetName}{" "}
+                        {listing.address.streetNumber}{' '}
+                        {listing.address.streetName}{' '}
                         {listing.address.streetSuffix}
                       </p>
                       <span
                         className={`text-sm px-2 py-1 rounded ${
-                          listing.type === "Lease"
-                            ? "bg-purple-100 text-purple-700"
-                            : "bg-blue-100 text-blue-700"
+                          listing.type === 'Lease'
+                            ? 'bg-purple-100 text-purple-700'
+                            : 'bg-blue-100 text-blue-700'
                         }`}
                       >
                         {listing.type}
@@ -412,7 +410,7 @@ export function MarketInsights({ by }: MarketInsightsProps) {
                           {calculateDaysOnMarket(
                             listing.listDate,
                             listing.soldDate
-                          )}{" "}
+                          )}{' '}
                           days
                         </p>
                       </div>
@@ -433,9 +431,9 @@ export function MarketInsights({ by }: MarketInsightsProps) {
                 within 2km radius
                 {recentListings.length > 0 && (
                   <span className="block mt-1">
-                    ({recentListings.filter((l) => l.type === "Sale").length}{" "}
-                    Sales,{" "}
-                    {recentListings.filter((l) => l.type === "Lease").length}{" "}
+                    ({recentListings.filter((l) => l.type === 'Sale').length}{' '}
+                    Sales,{' '}
+                    {recentListings.filter((l) => l.type === 'Lease').length}{' '}
                     Leases shown)
                   </span>
                 )}
@@ -475,20 +473,20 @@ export function MarketInsights({ by }: MarketInsightsProps) {
                   <div
                     key={index}
                     className={`p-3 rounded-md hover:bg-gray-100 ${
-                      listing.type === "Lease" ? "bg-purple-50" : "bg-gray-50"
+                      listing.type === 'Lease' ? 'bg-purple-50' : 'bg-gray-50'
                     }`}
                   >
                     <div className="flex justify-between items-start">
                       <p className="font-medium">
-                        {listing.address.streetNumber}{" "}
-                        {listing.address.streetName}{" "}
+                        {listing.address.streetNumber}{' '}
+                        {listing.address.streetName}{' '}
                         {listing.address.streetSuffix}
                       </p>
                       <span
                         className={`text-sm px-2 py-1 rounded ${
-                          listing.type === "Lease"
-                            ? "bg-purple-100 text-purple-700"
-                            : "bg-blue-100 text-blue-700"
+                          listing.type === 'Lease'
+                            ? 'bg-purple-100 text-purple-700'
+                            : 'bg-blue-100 text-blue-700'
                         }`}
                       >
                         {listing.type}
@@ -499,7 +497,7 @@ export function MarketInsights({ by }: MarketInsightsProps) {
                         ${listing.listPrice.toLocaleString()}
                       </p>
                       <p className="text-sm text-gray-500">
-                        Listed:{" "}
+                        Listed:{' '}
                         {new Date(listing.listDate).toLocaleDateString()}
                       </p>
                     </div>
@@ -547,20 +545,20 @@ export function MarketInsights({ by }: MarketInsightsProps) {
                   <div
                     key={index}
                     className={`p-3 rounded-md hover:bg-gray-100 ${
-                      listing.type === "Lease" ? "bg-purple-50" : "bg-gray-50"
+                      listing.type === 'Lease' ? 'bg-purple-50' : 'bg-gray-50'
                     }`}
                   >
                     <div className="flex justify-between items-start">
                       <p className="font-medium">
-                        {listing.address.streetNumber}{" "}
-                        {listing.address.streetName}{" "}
+                        {listing.address.streetNumber}{' '}
+                        {listing.address.streetName}{' '}
                         {listing.address.streetSuffix}
                       </p>
                       <span
                         className={`text-sm px-2 py-1 rounded ${
-                          listing.type === "Lease"
-                            ? "bg-purple-100 text-purple-700"
-                            : "bg-blue-100 text-blue-700"
+                          listing.type === 'Lease'
+                            ? 'bg-purple-100 text-purple-700'
+                            : 'bg-blue-100 text-blue-700'
                         }`}
                       >
                         {listing.type}
@@ -577,5 +575,5 @@ export function MarketInsights({ by }: MarketInsightsProps) {
         </div>
       </form>
     </Form>
-  );
+  )
 }

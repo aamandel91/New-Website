@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react'
 import {
   Search,
   BedDouble,
@@ -7,58 +7,58 @@ import {
   Loader2,
   AlertCircle,
   Frown,
-  MapPin,
-} from "lucide-react";
+  MapPin
+} from 'lucide-react'
 
 // Types based on actual Repliers API responses
 export interface ListingResult {
-  mlsNumber: string;
-  listPrice: number;
+  mlsNumber: string
+  listPrice: number
   address: {
-    city?: string;
-    streetDirection?: string;
-    streetName?: string;
-    streetNumber?: string;
-    streetSuffix?: string;
-    state?: string;
-  };
+    city?: string
+    streetDirection?: string
+    streetName?: string
+    streetNumber?: string
+    streetSuffix?: string
+    state?: string
+  }
   details?: {
-    numBedrooms?: number;
-    numBedroomsPlus?: number;
-    numBathrooms?: number;
-    numBathroomsPlus?: number;
-    numGarageSpaces?: number;
-    propertyType?: string;
-  };
-  images?: Array<string>;
-  type?: string;
-  lastStatus?: string;
+    numBedrooms?: number
+    numBedroomsPlus?: number
+    numBathrooms?: number
+    numBathroomsPlus?: number
+    numGarageSpaces?: number
+    propertyType?: string
+  }
+  images?: Array<string>
+  type?: string
+  lastStatus?: string
 }
 
 // Types for location autocomplete results
 export interface LocationResult {
-  name: string;
-  type: "city" | "neighborhood" | "area";
-  state?: string;
-  city?: string; // Legacy field - keeping for backward compatibility
+  name: string
+  type: 'city' | 'neighborhood' | 'area'
+  state?: string
+  city?: string // Legacy field - keeping for backward compatibility
   address?: {
-    state?: string;
-    city?: string;
-  };
+    state?: string
+    city?: string
+  }
 }
 
 export interface SearchResults {
-  properties: ListingResult[];
-  cities: LocationResult[];
-  neighborhoods: LocationResult[];
-  areas: LocationResult[];
+  properties: ListingResult[]
+  cities: LocationResult[]
+  neighborhoods: LocationResult[]
+  areas: LocationResult[]
 }
 
 export interface AutocompleteSearchProps {
   /** Repliers API key - required for production use (env fallback only works in development) */
-  apiKey?: string;
+  apiKey?: string
   /** Placeholder text for the search input */
-  placeholder?: string;
+  placeholder?: string
 }
 
 /**
@@ -81,25 +81,25 @@ export interface AutocompleteSearchProps {
  */
 export function AutocompleteSearch({
   apiKey,
-  placeholder = "Search for properties...",
+  placeholder = 'Search for properties...'
 }: AutocompleteSearchProps) {
   // Use provided apiKey or fallback to environment variable (development only)
   const effectiveApiKey =
     apiKey ||
-    (process.env.NODE_ENV === "development"
+    (process.env.NODE_ENV === 'development'
       ? process.env.NEXT_PUBLIC_REPLIERS_API_KEY
-      : undefined);
+      : undefined)
 
-  const [query, setQuery] = useState("");
+  const [query, setQuery] = useState('')
   const [results, setResults] = useState<SearchResults>({
     properties: [],
     cities: [],
     neighborhoods: [],
-    areas: [],
-  });
-  const [isLoading, setIsLoading] = useState(false);
-  const [isPending, setIsPending] = useState(false); // Track debounce state
-  const [error, setError] = useState<string | null>(null);
+    areas: []
+  })
+  const [isLoading, setIsLoading] = useState(false)
+  const [isPending, setIsPending] = useState(false) // Track debounce state
+  const [error, setError] = useState<string | null>(null)
 
   // Debounced search effect
   useEffect(() => {
@@ -108,11 +108,11 @@ export function AutocompleteSearch({
         properties: [],
         cities: [],
         neighborhoods: [],
-        areas: [],
-      });
-      setError(null);
-      setIsPending(false);
-      return;
+        areas: []
+      })
+      setError(null)
+      setIsPending(false)
+      return
     }
 
     // Require minimum 3 characters for both locations and listings
@@ -121,88 +121,88 @@ export function AutocompleteSearch({
         properties: [],
         cities: [],
         neighborhoods: [],
-        areas: [],
-      });
-      setError(null);
-      setIsPending(false);
-      return;
+        areas: []
+      })
+      setError(null)
+      setIsPending(false)
+      return
     }
 
     // Set pending immediately when query changes
-    setIsPending(true);
-    setError(null);
+    setIsPending(true)
+    setError(null)
 
     const timeoutId = setTimeout(async () => {
-      setIsPending(false); // Clear pending when search actually starts
-      await performSearch(query.trim());
-    }, 400);
+      setIsPending(false) // Clear pending when search actually starts
+      await performSearch(query.trim())
+    }, 400)
 
     return () => {
-      clearTimeout(timeoutId);
-      setIsPending(false);
-    };
-  }, [query]);
+      clearTimeout(timeoutId)
+      setIsPending(false)
+    }
+  }, [query])
 
   // Mock data for demo purposes
   const getMockData = (searchQuery: string) => {
     const mockListings: ListingResult[] = [
       {
-        mlsNumber: "X12151945",
+        mlsNumber: 'X12151945',
         listPrice: 1250000,
         address: {
-          streetNumber: "123",
-          streetName: "Demo Street",
-          city: "Toronto",
-          state: "ON",
+          streetNumber: '123',
+          streetName: 'Demo Street',
+          city: 'Toronto',
+          state: 'ON'
         },
         details: {
           numBedrooms: 3,
           numBathrooms: 2,
           numGarageSpaces: 2,
-          propertyType: "Single Family",
+          propertyType: 'Single Family'
         },
-        images: ["sample1.jpg"],
-        type: "Sale",
-        lastStatus: "New",
+        images: ['sample1.jpg'],
+        type: 'Sale',
+        lastStatus: 'New'
       },
       {
-        mlsNumber: "X12151946",
+        mlsNumber: 'X12151946',
         listPrice: 890000,
         address: {
-          streetNumber: "456",
-          streetName: "Sample Avenue",
-          city: "Vancouver",
-          state: "BC",
+          streetNumber: '456',
+          streetName: 'Sample Avenue',
+          city: 'Vancouver',
+          state: 'BC'
         },
         details: {
           numBedrooms: 2,
           numBathrooms: 1,
           numGarageSpaces: 1,
-          propertyType: "Condo",
+          propertyType: 'Condo'
         },
-        images: ["sample2.jpg"],
-        type: "Sale",
-        lastStatus: "New",
-      },
-    ];
+        images: ['sample2.jpg'],
+        type: 'Sale',
+        lastStatus: 'New'
+      }
+    ]
 
     const mockLocations: LocationResult[] = [
       {
-        name: "Toronto",
-        type: "city",
-        address: { state: "ON", city: "Toronto" },
+        name: 'Toronto',
+        type: 'city',
+        address: { state: 'ON', city: 'Toronto' }
       },
       {
-        name: "Downtown Toronto",
-        type: "neighborhood",
-        address: { state: "ON", city: "Toronto" },
+        name: 'Downtown Toronto',
+        type: 'neighborhood',
+        address: { state: 'ON', city: 'Toronto' }
       },
       {
-        name: "Greater Toronto Area",
-        type: "area",
-        address: { state: "ON" },
-      },
-    ];
+        name: 'Greater Toronto Area',
+        type: 'area',
+        address: { state: 'ON' }
+      }
+    ]
 
     // Filter based on search query
     const filteredListings = mockListings.filter(
@@ -214,49 +214,49 @@ export function AutocompleteSearch({
           ?.toLowerCase()
           .includes(searchQuery.toLowerCase()) ||
         listing.mlsNumber.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+    )
 
     const filteredLocations = mockLocations.filter((location) =>
       location.name.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+    )
 
     return {
       listings: filteredListings,
-      locations: filteredLocations,
-    };
-  };
+      locations: filteredLocations
+    }
+  }
 
   // Perform hybrid API search (both listings and locations)
   const performSearch = async (searchQuery: string) => {
     if (!effectiveApiKey) {
       setError(
-        "API key is required. Please provide the apiKey prop. Environment variable fallback only works in development mode."
-      );
-      return;
+        'API key is required. Please provide the apiKey prop. Environment variable fallback only works in development mode.'
+      )
+      return
     }
 
-    setIsLoading(true);
-    setError(null);
+    setIsLoading(true)
+    setError(null)
 
     // Use mock data for demo/sample API key
-    if (effectiveApiKey === "your_sample_api_key_here") {
+    if (effectiveApiKey === 'your_sample_api_key_here') {
       // Simulate API delay for demo
-      await new Promise((resolve) => setTimeout(resolve, 800));
+      await new Promise((resolve) => setTimeout(resolve, 800))
 
-      const mockData = getMockData(searchQuery);
-      const locations = mockData.locations;
-      const properties = mockData.listings;
+      const mockData = getMockData(searchQuery)
+      const locations = mockData.locations
+      const properties = mockData.listings
 
       setResults({
         properties,
-        cities: locations.filter((loc: LocationResult) => loc.type === "city"),
+        cities: locations.filter((loc: LocationResult) => loc.type === 'city'),
         neighborhoods: locations.filter(
-          (loc: LocationResult) => loc.type === "neighborhood"
+          (loc: LocationResult) => loc.type === 'neighborhood'
         ),
-        areas: locations.filter((loc: LocationResult) => loc.type === "area"),
-      });
-      setIsLoading(false);
-      return;
+        areas: locations.filter((loc: LocationResult) => loc.type === 'area')
+      })
+      setIsLoading(false)
+      return
     }
 
     try {
@@ -269,9 +269,9 @@ export function AutocompleteSearch({
           )}`,
           {
             headers: {
-              "REPLIERS-API-KEY": effectiveApiKey,
-              "Content-Type": "application/json",
-            },
+              'REPLIERS-API-KEY': effectiveApiKey,
+              'Content-Type': 'application/json'
+            }
           }
         ),
         // Search listings
@@ -281,52 +281,52 @@ export function AutocompleteSearch({
           )}&searchFields=address.streetNumber,address.streetName,mlsNumber,address.city&fields=address.*,mlsNumber,listPrice,details.numBedrooms,details.numBedroomsPlus,details.numBathrooms,details.numBathroomsPlus,details.numGarageSpaces,details.propertyType,type,lastStatus,images&fuzzysearch=true&status=A&status=U`,
           {
             headers: {
-              "REPLIERS-API-KEY": effectiveApiKey,
-              "Content-Type": "application/json",
-            },
+              'REPLIERS-API-KEY': effectiveApiKey,
+              'Content-Type': 'application/json'
+            }
           }
-        ),
-      ];
+        )
+      ]
 
       // Execute searches concurrently
-      const responses = await Promise.all(apiCalls);
+      const responses = await Promise.all(apiCalls)
 
       // Handle API errors with specific endpoint identification
       for (let i = 0; i < responses.length; i++) {
-        const response = responses[i];
+        const response = responses[i]
         if (!response.ok) {
-          const endpointName = i === 0 ? "locations" : "listings";
+          const endpointName = i === 0 ? 'locations' : 'listings'
 
           if (response.status === 400) {
             // For locations endpoint, check if it requires minimum 3 characters
-            if (endpointName === "locations" && searchQuery.length < 3) {
+            if (endpointName === 'locations' && searchQuery.length < 3) {
               // Set empty location results and continue without showing error to user
               setResults({
                 properties: [],
                 cities: [],
                 neighborhoods: [],
-                areas: [],
-              });
-              setIsLoading(false);
-              return;
+                areas: []
+              })
+              setIsLoading(false)
+              return
             }
             throw new Error(
               `Bad request to ${endpointName} API. Please check your search query.`
-            );
+            )
           } else if (response.status === 401) {
             throw new Error(
-              "Invalid API key. Please check your Repliers API key."
-            );
+              'Invalid API key. Please check your Repliers API key.'
+            )
           } else if (response.status === 403) {
             throw new Error(
               `API key doesn't have permission for the ${endpointName} endpoint.`
-            );
+            )
           } else if (response.status === 429) {
             throw new Error(
-              "Too many requests. Please wait a moment and try again."
-            );
+              'Too many requests. Please wait a moment and try again.'
+            )
           } else {
-            throw new Error(`${endpointName} API Error: ${response.status}`);
+            throw new Error(`${endpointName} API Error: ${response.status}`)
           }
         }
       }
@@ -334,76 +334,76 @@ export function AutocompleteSearch({
       // Parse responses
       const [locationsData, listingsData] = await Promise.all([
         responses[0].json(),
-        responses[1].json(),
-      ]);
+        responses[1].json()
+      ])
 
       // Categorize and set results
-      const locations = locationsData.locations || [];
-      const properties = listingsData.listings || [];
+      const locations = locationsData.locations || []
+      const properties = listingsData.listings || []
 
       // Set results - neighborhoods now include city information from addContext=city
       setResults({
         properties,
-        cities: locations.filter((loc: LocationResult) => loc.type === "city"),
+        cities: locations.filter((loc: LocationResult) => loc.type === 'city'),
         neighborhoods: locations.filter(
-          (loc: LocationResult) => loc.type === "neighborhood"
+          (loc: LocationResult) => loc.type === 'neighborhood'
         ),
-        areas: locations.filter((loc: LocationResult) => loc.type === "area"),
-      });
+        areas: locations.filter((loc: LocationResult) => loc.type === 'area')
+      })
     } catch (err) {
       const errorMessage =
         err instanceof Error
           ? err.message
-          : "Failed to search. Please try again.";
-      setError(errorMessage);
+          : 'Failed to search. Please try again.'
+      setError(errorMessage)
     } finally {
-      setIsLoading(false);
+      setIsLoading(false)
     }
-  };
+  }
 
   // Format price helper
   const formatPrice = (price: number) => {
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "USD",
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
       minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(price);
-  };
+      maximumFractionDigits: 0
+    }).format(price)
+  }
 
   // Format bedrooms helper
-  const formatBedrooms = (details: ListingResult["details"]) => {
-    if (!details) return "N/A";
+  const formatBedrooms = (details: ListingResult['details']) => {
+    if (!details) return 'N/A'
 
     // Use actual API field names
-    const total = details.numBedrooms;
-    const plus = details.numBedroomsPlus;
+    const total = details.numBedrooms
+    const plus = details.numBedroomsPlus
 
     if (total && plus && plus > 0) {
-      return `${total} + ${plus}`;
+      return `${total} + ${plus}`
     }
-    return total?.toString() || "N/A";
-  };
+    return total?.toString() || 'N/A'
+  }
 
   // Format bathrooms helper
-  const formatBathrooms = (details: ListingResult["details"]) => {
-    if (!details) return "N/A";
+  const formatBathrooms = (details: ListingResult['details']) => {
+    if (!details) return 'N/A'
 
-    const total = details.numBathrooms;
-    const plus = details.numBathroomsPlus;
+    const total = details.numBathrooms
+    const plus = details.numBathroomsPlus
 
     if (total && plus && plus > 0) {
-      return `${total} + ${plus}`;
+      return `${total} + ${plus}`
     }
-    return total?.toString() || "N/A";
-  };
+    return total?.toString() || 'N/A'
+  }
 
   // Format garage/parking helper
-  const formatParking = (details: ListingResult["details"]) => {
-    if (!details) return "N/A";
+  const formatParking = (details: ListingResult['details']) => {
+    if (!details) return 'N/A'
 
-    return details.numGarageSpaces?.toString() || "N/A";
-  };
+    return details.numGarageSpaces?.toString() || 'N/A'
+  }
 
   // Status mapping helper
   const getStatusLabel = (
@@ -411,114 +411,114 @@ export function AutocompleteSearch({
     lastStatus?: string
   ): string | null => {
     // If lastStatus is "New", "Pc" (Price Change), or "Ext" (Extension), show the type value
-    if (lastStatus === "New" || lastStatus === "Pc" || lastStatus === "Ext") {
-      if (type === "Sale") return "For Sale";
-      if (type === "Lease") return "For Lease";
-      return type || null;
+    if (lastStatus === 'New' || lastStatus === 'Pc' || lastStatus === 'Ext') {
+      if (type === 'Sale') return 'For Sale'
+      if (type === 'Lease') return 'For Lease'
+      return type || null
     }
 
     // For any other lastStatus, show the mapped lastStatus value
-    if (!lastStatus) return null;
+    if (!lastStatus) return null
 
     const lastStatusMap: Record<string, string> = {
-      Sus: "Suspended",
-      Exp: "Expired",
-      Sld: "Sold",
-      Ter: "Terminated",
-      Dft: "Deal Fell Through",
-      Lsd: "Leased",
-      Sc: "Sold Conditionally",
-      Sce: "Sold Conditionally (Escape Clause)",
-      Lc: "Leased Conditionally",
-      Cs: "Coming Soon",
-    };
+      Sus: 'Suspended',
+      Exp: 'Expired',
+      Sld: 'Sold',
+      Ter: 'Terminated',
+      Dft: 'Deal Fell Through',
+      Lsd: 'Leased',
+      Sc: 'Sold Conditionally',
+      Sce: 'Sold Conditionally (Escape Clause)',
+      Lc: 'Leased Conditionally',
+      Cs: 'Coming Soon'
+    }
 
-    return lastStatusMap[lastStatus] || lastStatus;
-  };
+    return lastStatusMap[lastStatus] || lastStatus
+  }
 
   // Status tag component
   const StatusTag = ({
     type,
-    lastStatus,
+    lastStatus
   }: {
-    type?: string;
-    lastStatus?: string;
+    type?: string
+    lastStatus?: string
   }) => {
-    const label = getStatusLabel(type, lastStatus);
-    if (!label) return null;
+    const label = getStatusLabel(type, lastStatus)
+    if (!label) return null
 
     // Define styling based on status with comprehensive color coding
-    let style = "bg-green-100 text-green-600"; // Default for active listings
+    let style = 'bg-green-100 text-green-600' // Default for active listings
 
     switch (label) {
       // Active listings - green
-      case "For Sale":
-      case "For Lease":
-        style = "bg-green-100 text-green-600";
-        break;
+      case 'For Sale':
+      case 'For Lease':
+        style = 'bg-green-100 text-green-600'
+        break
 
       // Sold/Completed - blue
-      case "Sold":
-        style = "bg-blue-100 text-blue-600";
-        break;
+      case 'Sold':
+        style = 'bg-blue-100 text-blue-600'
+        break
 
       // Leased - purple
-      case "Leased":
-        style = "bg-purple-100 text-purple-600";
-        break;
+      case 'Leased':
+        style = 'bg-purple-100 text-purple-600'
+        break
 
       // Conditional/Pending - yellow/amber
-      case "Sold Conditionally":
-      case "Sold Conditionally (Escape Clause)":
-      case "Leased Conditionally":
-        style = "bg-amber-100 text-amber-600";
-        break;
+      case 'Sold Conditionally':
+      case 'Sold Conditionally (Escape Clause)':
+      case 'Leased Conditionally':
+        style = 'bg-amber-100 text-amber-600'
+        break
 
       // Coming Soon - indigo
-      case "Coming Soon":
-        style = "bg-indigo-100 text-indigo-600";
-        break;
+      case 'Coming Soon':
+        style = 'bg-indigo-100 text-indigo-600'
+        break
 
       // Suspended - orange
-      case "Suspended":
-        style = "bg-orange-100 text-orange-600";
-        break;
+      case 'Suspended':
+        style = 'bg-orange-100 text-orange-600'
+        break
 
       // Expired - gray
-      case "Expired":
-        style = "bg-gray-100 text-gray-500";
-        break;
+      case 'Expired':
+        style = 'bg-gray-100 text-gray-500'
+        break
 
       // Terminated/Failed - red
-      case "Terminated":
-      case "Deal Fell Through":
-        style = "bg-red-100 text-red-600";
-        break;
+      case 'Terminated':
+      case 'Deal Fell Through':
+        style = 'bg-red-100 text-red-600'
+        break
 
       // Default fallback
       default:
-        style = "bg-gray-100 text-gray-500";
+        style = 'bg-gray-100 text-gray-500'
     }
 
     return (
       <span className={`text-xs px-2 py-1 rounded-md font-medium ${style}`}>
         {label}
       </span>
-    );
-  };
+    )
+  }
 
   const hasResults =
     results.properties.length > 0 ||
     results.cities.length > 0 ||
     results.neighborhoods.length > 0 ||
-    results.areas.length > 0;
+    results.areas.length > 0
   const hasLocationResults =
     results.cities.length > 0 ||
     results.neighborhoods.length > 0 ||
-    results.areas.length > 0;
+    results.areas.length > 0
   const showResults =
     query.trim() &&
-    (hasResults || isLoading || isPending || error || query.trim().length >= 3);
+    (hasResults || isLoading || isPending || error || query.trim().length >= 3)
 
   return (
     <div className="relative w-full max-w-[600px]">
@@ -643,7 +643,7 @@ export function AutocompleteSearch({
                       {/* Cities */}
                       {results.cities.map((city, idx) => {
                         // Get state from the address object or fallback to legacy state field
-                        const state = city.address?.state || city.state;
+                        const state = city.address?.state || city.state
 
                         return (
                           <div
@@ -662,16 +662,16 @@ export function AutocompleteSearch({
                               </span>
                             </div>
                           </div>
-                        );
+                        )
                       })}
 
                       {/* Neighborhoods */}
                       {results.neighborhoods.map((neighborhood, idx) => {
                         // Get city from the new address object or fallback to legacy city field
                         const city =
-                          neighborhood.address?.city || neighborhood.city;
+                          neighborhood.address?.city || neighborhood.city
                         const state =
-                          neighborhood.address?.state || neighborhood.state;
+                          neighborhood.address?.state || neighborhood.state
 
                         return (
                           <div
@@ -692,13 +692,13 @@ export function AutocompleteSearch({
                               </span>
                             </div>
                           </div>
-                        );
+                        )
                       })}
 
                       {/* Areas */}
                       {results.areas.map((area, idx) => {
                         // Get state from the address object or fallback to legacy state field
-                        const state = area.address?.state || area.state;
+                        const state = area.address?.state || area.state
 
                         return (
                           <div
@@ -717,7 +717,7 @@ export function AutocompleteSearch({
                               </span>
                             </div>
                           </div>
-                        );
+                        )
                       })}
                     </div>
                   </div>
@@ -762,7 +762,7 @@ export function AutocompleteSearch({
                             <h3 className="font-semibold text-base">
                               {listing.listPrice
                                 ? formatPrice(listing.listPrice)
-                                : "Price N/A"}
+                                : 'Price N/A'}
                             </h3>
                             <span className="text-gray-400">|</span>
                             <span className="text-sm text-gray-600">
@@ -775,14 +775,14 @@ export function AutocompleteSearch({
                           />
                         </div>
                         <p className="text-xs text-gray-600">
-                          {`${listing.address?.streetNumber || ""} ${
-                            listing.address?.streetName || ""
-                          } ${listing.address?.streetSuffix || ""}, ${
-                            listing.address?.city || ""
+                          {`${listing.address?.streetNumber || ''} ${
+                            listing.address?.streetName || ''
+                          } ${listing.address?.streetSuffix || ''}, ${
+                            listing.address?.city || ''
                           }${
                             listing.address?.state
                               ? `, ${listing.address.state}`
-                              : ""
+                              : ''
                           }`}
                         </p>
                         <div className="flex items-center text-xs text-gray-500 mt-1 space-x-3 flex-wrap">
@@ -812,5 +812,5 @@ export function AutocompleteSearch({
         )}
       </div>
     </div>
-  );
+  )
 }

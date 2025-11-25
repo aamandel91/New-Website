@@ -8,18 +8,18 @@
 import { useCallback } from 'react'
 
 import {
-  trackPropertyView,
-  trackPropertyImpression,
-  trackSearchResults,
-  trackLead,
-  trackConversion,
-  trackContactSubmit,
-  trackScheduleShowing,
-  trackAddToFavorites,
-  setUserData,
+  type EnhancedConversionData,
   initPageRemarketing,
   type RemarketingPropertyData,
-  type EnhancedConversionData
+  setUserData,
+  trackAddToFavorites,
+  trackContactSubmit,
+  trackConversion,
+  trackLead,
+  trackPropertyImpression,
+  trackPropertyView,
+  trackScheduleShowing,
+  trackSearchResults
 } from 'services/marketing'
 
 export const useMarketing = () => {
@@ -29,61 +29,82 @@ export const useMarketing = () => {
   }, [])
 
   // Track when properties are shown in a list
-  const onPropertyImpression = useCallback((properties: RemarketingPropertyData[]) => {
-    trackPropertyImpression(properties)
-  }, [])
+  const onPropertyImpression = useCallback(
+    (properties: RemarketingPropertyData[]) => {
+      trackPropertyImpression(properties)
+    },
+    []
+  )
 
   // Track search results
-  const onSearchResults = useCallback((
-    searchTerm: string,
-    filters: {
-      city?: string
-      property_type?: string
-      min_price?: number
-      max_price?: number
-      bedrooms?: number
-      bathrooms?: number
+  const onSearchResults = useCallback(
+    (
+      searchTerm: string,
+      filters: {
+        city?: string
+        property_type?: string
+        min_price?: number
+        max_price?: number
+        bedrooms?: number
+        bathrooms?: number
+      },
+      resultsCount: number
+    ) => {
+      trackSearchResults(searchTerm, filters, resultsCount)
     },
-    resultsCount: number
-  ) => {
-    trackSearchResults(searchTerm, filters, resultsCount)
-  }, [])
+    []
+  )
 
   // Track lead generation with optional enhanced conversion data
-  const onLead = useCallback(async (
-    value: number,
-    currency: string = 'USD',
-    userData?: EnhancedConversionData
-  ) => {
-    await trackLead(value, currency, userData)
-  }, [])
+  const onLead = useCallback(
+    async (
+      value: number,
+      currency: string = 'USD',
+      userData?: EnhancedConversionData
+    ) => {
+      await trackLead(value, currency, userData)
+    },
+    []
+  )
 
   // Track conversion with enhanced conversions
-  const onConversion = useCallback(async (
-    conversionLabel: string,
-    value?: number,
-    currency?: string,
-    transactionId?: string,
-    userData?: EnhancedConversionData
-  ) => {
-    await trackConversion(conversionLabel, value, currency, transactionId, userData)
-  }, [])
+  const onConversion = useCallback(
+    async (
+      conversionLabel: string,
+      value?: number,
+      currency?: string,
+      transactionId?: string,
+      userData?: EnhancedConversionData
+    ) => {
+      await trackConversion(
+        conversionLabel,
+        value,
+        currency,
+        transactionId,
+        userData
+      )
+    },
+    []
+  )
 
   // Track contact form submission
-  const onContactSubmit = useCallback(async (
-    propertyId: string | null,
-    userData: EnhancedConversionData
-  ) => {
-    await trackContactSubmit(propertyId, userData)
-  }, [])
+  const onContactSubmit = useCallback(
+    async (propertyId: string | null, userData: EnhancedConversionData) => {
+      await trackContactSubmit(propertyId, userData)
+    },
+    []
+  )
 
   // Track showing/tour request
-  const onScheduleShowing = useCallback(async (
-    property: RemarketingPropertyData,
-    userData: EnhancedConversionData
-  ) => {
-    await trackScheduleShowing(property, userData)
-  }, [])
+  const onScheduleShowing = useCallback(
+    async (
+      property: RemarketingPropertyData,
+      userData: EnhancedConversionData
+    ) => {
+      await trackScheduleShowing(property, userData)
+    },
+    []
+  )
 
   // Track adding property to favorites
   const onAddToFavorites = useCallback((property: RemarketingPropertyData) => {
@@ -91,17 +112,23 @@ export const useMarketing = () => {
   }, [])
 
   // Set persistent user data for enhanced conversions
-  const onSetUserData = useCallback(async (userData: EnhancedConversionData) => {
-    await setUserData(userData)
-  }, [])
+  const onSetUserData = useCallback(
+    async (userData: EnhancedConversionData) => {
+      await setUserData(userData)
+    },
+    []
+  )
 
   // Initialize page type for remarketing
-  const onPageInit = useCallback((
-    pageType: 'home' | 'search' | 'listing' | 'category' | 'other',
-    additionalData?: Record<string, unknown>
-  ) => {
-    initPageRemarketing(pageType, additionalData)
-  }, [])
+  const onPageInit = useCallback(
+    (
+      pageType: 'home' | 'search' | 'listing' | 'category' | 'other',
+      additionalData?: Record<string, unknown>
+    ) => {
+      initPageRemarketing(pageType, additionalData)
+    },
+    []
+  )
 
   return {
     onPropertyView,

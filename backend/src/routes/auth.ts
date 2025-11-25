@@ -1,29 +1,32 @@
-import Router from "@koa/router";
-import { container } from "tsyringe";
-import type { Middleware } from "koa-jwt";
-import AuthService from "../services/auth.js";
-import { ApiError } from "../lib/errors.js";
-import { authEmbedSchema, authRepliersTokenSchema, userLoginSchema, userOtpSchema, userSignupSchema } from "../validate/auth.js";
-import OAuthService from "../services/oauth.js";
-import { oauthUrlSchema } from "../validate/oauth.js";
-const authMiddleware = container.resolve<Middleware>("middleware.jwt");
+import Router from '@koa/router'
+import { container } from 'tsyringe'
+import type { Middleware } from 'koa-jwt'
+import AuthService from '../services/auth.js'
+import { ApiError } from '../lib/errors.js'
+import {
+  authEmbedSchema,
+  authRepliersTokenSchema,
+  userLoginSchema,
+  userOtpSchema,
+  userSignupSchema
+} from '../validate/auth.js'
+import OAuthService from '../services/oauth.js'
+import { oauthUrlSchema } from '../validate/oauth.js'
+const authMiddleware = container.resolve<Middleware>('middleware.jwt')
 const router = new Router({
-   prefix: "/auth"
-});
-router.param("provider", (provider, ctx, next) => {
-   const {
-      error,
-      value
-   } = oauthUrlSchema.validate({
-      provider
-   });
-   if (error) {
-      ctx.throw(new ApiError(error.message, 400));
-      return;
-   }
-   ctx["provider"] = value.provider;
-   return next();
-});
+  prefix: '/auth'
+})
+router.param('provider', (provider, ctx, next) => {
+  const { error, value } = oauthUrlSchema.validate({
+    provider
+  })
+  if (error) {
+    ctx.throw(new ApiError(error.message, 400))
+    return
+  }
+  ctx['provider'] = value.provider
+  return next()
+})
 
 /**
  * @openapi
@@ -54,13 +57,13 @@ router.param("provider", (provider, ctx, next) => {
  *                            format: uri
  *                            example: https://accounts.google.com/o/oauth2/v2/auth?redirect_uri=...&access_type=offline&scope=...&include_granted_scopes=true&response_type=code&client_id=...
  */
-router.get("/:provider/url", async ctx => {
-   const oAuthService = ctx.state.container.resolve(OAuthService);
-   const url = await oAuthService.url(ctx["provider"]);
-   ctx.body = {
-      url
-   };
-});
+router.get('/:provider/url', async (ctx) => {
+  const oAuthService = ctx.state.container.resolve(OAuthService)
+  const url = await oAuthService.url(ctx['provider'])
+  ctx.body = {
+    url
+  }
+})
 
 /**
  * @openapi
@@ -113,17 +116,17 @@ router.get("/:provider/url", async ctx => {
  *                                  type: string
  *
  */
-router.post("/:provider/cb", async ctx => {
-   const oAuthService = ctx.state.container.resolve(OAuthService);
-   const {
-      token,
-      profile
-   } = await oAuthService.callback(ctx["provider"], ctx.req);
-   ctx.body = {
-      token,
-      profile
-   };
-});
+router.post('/:provider/cb', async (ctx) => {
+  const oAuthService = ctx.state.container.resolve(OAuthService)
+  const { token, profile } = await oAuthService.callback(
+    ctx['provider'],
+    ctx.req
+  )
+  ctx.body = {
+    token,
+    profile
+  }
+})
 
 /**
  * @openapi
@@ -164,23 +167,20 @@ router.post("/:provider/cb", async ctx => {
  *          400:
  *             $ref: '#/components/responses/BadRequest'
  */
-router.post("/login", async ctx => {
-   ctx.state["enable.xff"] = true;
-   const {
-      error,
-      value
-   } = userLoginSchema.validate(ctx.request.body);
-   if (error) {
-      ctx.throw(new ApiError(error.message, 400));
-      return;
-   }
-   const authService = ctx.state.container.resolve(AuthService);
-   const maybeCode = await authService.login(value);
-   ctx.body = {
-      result: true,
-      ...maybeCode
-   };
-});
+router.post('/login', async (ctx) => {
+  ctx.state['enable.xff'] = true
+  const { error, value } = userLoginSchema.validate(ctx.request.body)
+  if (error) {
+    ctx.throw(new ApiError(error.message, 400))
+    return
+  }
+  const authService = ctx.state.container.resolve(AuthService)
+  const maybeCode = await authService.login(value)
+  ctx.body = {
+    result: true,
+    ...maybeCode
+  }
+})
 
 /**
  * @openapi
@@ -219,26 +219,20 @@ router.post("/login", async ctx => {
  *          403:
  *             $ref: '#/components/responses/Forbidden'
  */
-router.post("/otp", async ctx => {
-   ctx.state["enable.xff"] = true;
-   const {
-      error,
-      value
-   } = userOtpSchema.validate(ctx.request.body);
-   if (error) {
-      ctx.throw(new ApiError(error.message, 400));
-      return;
-   }
-   const authService = ctx.state.container.resolve(AuthService);
-   const {
-      token,
-      profile
-   } = await authService.useOtp(value);
-   ctx.body = {
-      token,
-      profile
-   };
-});
+router.post('/otp', async (ctx) => {
+  ctx.state['enable.xff'] = true
+  const { error, value } = userOtpSchema.validate(ctx.request.body)
+  if (error) {
+    ctx.throw(new ApiError(error.message, 400))
+    return
+  }
+  const authService = ctx.state.container.resolve(AuthService)
+  const { token, profile } = await authService.useOtp(value)
+  ctx.body = {
+    token,
+    profile
+  }
+})
 
 /**
  * @openapi
@@ -261,15 +255,13 @@ router.post("/otp", async ctx => {
  *          401:
  *             $ref: '#/components/responses/Unauthorized'
  */
-router.post("/refresh", authMiddleware, async ctx => {
-   const authService = ctx.state.container.resolve(AuthService);
-   const {
-      token
-   } = await authService.refresh(ctx.state["user"]);
-   ctx.body = {
-      token
-   };
-});
+router.post('/refresh', authMiddleware, async (ctx) => {
+  const authService = ctx.state.container.resolve(AuthService)
+  const { token } = await authService.refresh(ctx.state['user'])
+  ctx.body = {
+    token
+  }
+})
 
 /**
  * @openapi
@@ -292,13 +284,13 @@ router.post("/refresh", authMiddleware, async ctx => {
  *          401:
  *             $ref: '#/components/responses/Unauthorized'
  */
-router.post("/logout", authMiddleware, async ctx => {
-   const authService = ctx.state.container.resolve(AuthService);
-   await authService.logout(ctx.state["user"].jti, ctx.state["user"].exp);
-   ctx.body = {
-      result: true
-   };
-});
+router.post('/logout', authMiddleware, async (ctx) => {
+  const authService = ctx.state.container.resolve(AuthService)
+  await authService.logout(ctx.state['user'].jti, ctx.state['user'].exp)
+  ctx.body = {
+    result: true
+  }
+})
 
 /**
  * @openapi
@@ -336,26 +328,23 @@ router.post("/logout", authMiddleware, async ctx => {
  *                                  type: string
  *                      required: [message]
  */
-router.post("/signup", async ctx => {
-   ctx.state["enable.xff"] = true;
-   const {
-      error,
-      value
-   } = userSignupSchema.validate({
-      ...ctx.request.body,
-      referer: ctx.request.headers["referer"]
-   });
-   if (error) {
-      ctx.throw(new ApiError(error.message, 400));
-      return;
-   }
-   const authService = ctx.state.container.resolve(AuthService);
-   const maybeCode = await authService.signup(value);
-   ctx.body = {
-      result: true,
-      ...maybeCode
-   };
-});
+router.post('/signup', async (ctx) => {
+  ctx.state['enable.xff'] = true
+  const { error, value } = userSignupSchema.validate({
+    ...ctx.request.body,
+    referer: ctx.request.headers['referer']
+  })
+  if (error) {
+    ctx.throw(new ApiError(error.message, 400))
+    return
+  }
+  const authService = ctx.state.container.resolve(AuthService)
+  const maybeCode = await authService.signup(value)
+  ctx.body = {
+    result: true,
+    ...maybeCode
+  }
+})
 
 /**
  * @openapi
@@ -395,36 +384,30 @@ router.post("/signup", async ctx => {
  *          412:
  *             $ref: '#/components/responses/PreconditionFailed'
  */
-router.post("/repliers-token", async ctx => {
-   ctx.state["enable.xff"] = true;
-   const {
-      error,
-      value
-   } = authRepliersTokenSchema.validate(ctx.request.body);
-   if (error) {
-      ctx.throw(new ApiError(error.message, 400));
-      return;
-   }
-   const authService = ctx.state.container.resolve(AuthService);
-   const result = await authService.useRepliersToken(value);
-   ctx.body = {
-      result
-   };
-});
-router.post("/embed", async ctx => {
-   ctx.state["enable.xff"] = true;
-   const {
-      error,
-      value
-   } = authEmbedSchema.validate(ctx.request.body);
-   if (error) {
-      ctx.throw(new ApiError(error.message, 400));
-      return;
-   }
-   const authService = ctx.state.container.resolve(AuthService);
-   const result = await authService.embedLogin(value);
-   ctx.body = {
-      result
-   };
-});
-export default router;
+router.post('/repliers-token', async (ctx) => {
+  ctx.state['enable.xff'] = true
+  const { error, value } = authRepliersTokenSchema.validate(ctx.request.body)
+  if (error) {
+    ctx.throw(new ApiError(error.message, 400))
+    return
+  }
+  const authService = ctx.state.container.resolve(AuthService)
+  const result = await authService.useRepliersToken(value)
+  ctx.body = {
+    result
+  }
+})
+router.post('/embed', async (ctx) => {
+  ctx.state['enable.xff'] = true
+  const { error, value } = authEmbedSchema.validate(ctx.request.body)
+  if (error) {
+    ctx.throw(new ApiError(error.message, 400))
+    return
+  }
+  const authService = ctx.state.container.resolve(AuthService)
+  const result = await authService.embedLogin(value)
+  ctx.body = {
+    result
+  }
+})
+export default router

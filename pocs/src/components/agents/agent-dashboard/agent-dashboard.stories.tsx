@@ -1,13 +1,13 @@
-import type { Meta, StoryObj } from "@storybook/react";
-import { AgentDashboard } from "./agent-dashboard";
+import type { Meta, StoryObj } from '@storybook/react'
+import { AgentDashboard } from './agent-dashboard'
 
-const SAMPLE_API_KEY = "pxI19UMy9zfw9vz5lRxoGpjJWXrMnm";
+const SAMPLE_API_KEY = 'pxI19UMy9zfw9vz5lRxoGpjJWXrMnm'
 
 const meta: Meta<typeof AgentDashboard> = {
-  title: "POCS/Agents/Agent Performance Dashboard",
+  title: 'POCS/Agents/Agent Performance Dashboard',
   component: AgentDashboard,
   parameters: {
-    layout: "fullscreen",
+    layout: 'fullscreen',
     docs: {
       description: {
         component: `
@@ -105,32 +105,32 @@ The component uses the \`/members\` endpoint for efficient agent and brokerage d
 - ✅ **Step 5**: Auto-categorization - **COMPLETE**
 
 **🎉 Full POC is ready for testing and demonstration!**
-        `,
-      },
-    },
+        `
+      }
+    }
   },
   argTypes: {
     apiKey: {
-      control: "text",
-      description: "Your Repliers API key (required)",
+      control: 'text',
+      description: 'Your Repliers API key (required)',
       table: {
-        type: { summary: "string" },
-        defaultValue: { summary: SAMPLE_API_KEY },
-      },
+        type: { summary: 'string' },
+        defaultValue: { summary: SAMPLE_API_KEY }
+      }
     },
     className: {
-      control: "text",
-      description: "Additional CSS classes for custom styling",
+      control: 'text',
+      description: 'Additional CSS classes for custom styling',
       table: {
-        type: { summary: "string" },
-      },
-    },
+        type: { summary: 'string' }
+      }
+    }
   },
-  tags: ["autodocs"],
-};
+  tags: ['autodocs']
+}
 
-export default meta;
-type Story = StoryObj<typeof AgentDashboard>;
+export default meta
+type Story = StoryObj<typeof AgentDashboard>
 
 /**
  * **Complete Agent Performance Dashboard POC**
@@ -179,7 +179,7 @@ type Story = StoryObj<typeof AgentDashboard>;
  */
 export const FullPOC: Story = {
   args: {
-    apiKey: SAMPLE_API_KEY,
+    apiKey: SAMPLE_API_KEY
   },
   parameters: {
     docs: {
@@ -228,8 +228,8 @@ The component uses the /members endpoint for efficient discovery:
 - Parallel calls: Simultaneously fetches active count, sold count, and statistics on agent selection
 
 Use the Controls panel to test with different API keys!
-        `,
-      },
-    },
-  },
-};
+        `
+      }
+    }
+  }
+}

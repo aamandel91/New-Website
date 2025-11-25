@@ -46,13 +46,13 @@ export interface GoogleRealEstateFeedItem {
   'Final URL': string
   'Image URL': string
   'Destination name': string
-  'Price': string
+  Price: string
   'Sale price': string
   'Formatted price': string
   'Formatted sale price': string
   'Property type': string
   'Listing type': string
-  'Address': string
+  Address: string
   'Contextual keywords': string
 }
 

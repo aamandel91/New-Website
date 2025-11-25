@@ -5,25 +5,24 @@
  * Usage: GET /api/feed/google-real-estate?format=csv|xml|json&limit=1000
  */
 
-import { NextRequest, NextResponse } from 'next/server'
-
-import {
-  toGoogleRealEstateFeed,
-  toCSV,
-  toXML,
-  type RemarketingPropertyData
-} from 'services/marketing'
+import type { NextRequest } from 'next/server'
+import { NextResponse } from 'next/server'
 
 import content from '@configs/content'
+
+import {
+  type RemarketingPropertyData,
+  toCSV,
+  toGoogleRealEstateFeed,
+  toXML
+} from 'services/marketing'
 
 const { siteName, siteDescription } = content
 const baseUrl = process.env.NEXT_PUBLIC_APP_DOMAIN || 'https://example.com'
 
 // Mock function - replace with actual property fetching logic
-async function fetchProperties(
-  limit: number,
-  offset: number
-): Promise<RemarketingPropertyData[]> {
+// TODO: Add parameters when implementing: async function fetchProperties(limit: number, offset: number)
+async function fetchProperties(): Promise<RemarketingPropertyData[]> {
   // TODO: Replace with actual API call to fetch properties
   // Example: return await APISearch.getListings({ limit, offset })
 
@@ -39,7 +38,8 @@ export async function GET(request: NextRequest) {
     const offset = parseInt(searchParams.get('offset') || '0', 10)
 
     // Fetch properties
-    const properties = await fetchProperties(limit, offset)
+    // TODO: Pass limit and offset when implementing: await fetchProperties(limit, offset)
+    const properties = await fetchProperties()
 
     // Convert to Google Real Estate feed format
     const feedItems = toGoogleRealEstateFeed(properties, baseUrl)
@@ -56,7 +56,8 @@ export async function GET(request: NextRequest) {
       return new NextResponse(xml, {
         headers: {
           'Content-Type': 'application/xml',
-          'Content-Disposition': 'attachment; filename="google-real-estate-feed.xml"'
+          'Content-Disposition':
+            'attachment; filename="google-real-estate-feed.xml"'
         }
       })
     }
@@ -67,7 +68,8 @@ export async function GET(request: NextRequest) {
       return new NextResponse(csv, {
         headers: {
           'Content-Type': 'text/csv',
-          'Content-Disposition': 'attachment; filename="google-real-estate-feed.csv"'
+          'Content-Disposition':
+            'attachment; filename="google-real-estate-feed.csv"'
         }
       })
     }

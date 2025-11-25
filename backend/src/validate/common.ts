@@ -1,5 +1,13 @@
-import joi from "joi";
-import { RplClass, RplLastStatus, RplOperator, RplSortBy, RplStatus, RplType, RplYesNo } from "../types/repliers.js";
+import joi from 'joi'
+import {
+  RplClass,
+  RplLastStatus,
+  RplOperator,
+  RplSortBy,
+  RplStatus,
+  RplType,
+  RplYesNo
+} from '../types/repliers.js'
 
 /**
  * @openapi
@@ -10,7 +18,7 @@ import { RplClass, RplLastStatus, RplOperator, RplSortBy, RplStatus, RplType, Rp
  *          items:
  *             type: string
  */
-export const stringArraySchema = joi.array().items(joi.string()).single();
+export const stringArraySchema = joi.array().items(joi.string()).single()
 
 /**
  * @openapi
@@ -21,7 +29,7 @@ export const stringArraySchema = joi.array().items(joi.string()).single();
  *          maxLength: 70
  *          format: email
  */
-export const emailSchema = joi.string().email().max(70);
+export const emailSchema = joi.string().email().max(70)
 
 /**
  * @openapi
@@ -31,7 +39,7 @@ export const emailSchema = joi.string().email().max(70);
  *          type: string
  *          pattern: '^(1)([0-9]{10})$'
  */
-export const phoneSchema = joi.string().pattern(new RegExp("^(1)([0-9]{10})$"));
+export const phoneSchema = joi.string().pattern(new RegExp('^(1)([0-9]{10})$'))
 
 /**
  * @openapi
@@ -41,7 +49,9 @@ export const phoneSchema = joi.string().pattern(new RegExp("^(1)([0-9]{10})$"));
  *          type: string
  *          pattern: '^([a-zA-Z0-9]{1,32})$'
  */
-export const mlsNumberSchema = joi.string().pattern(new RegExp("^([a-zA-Z0-9]{1,32})$"));
+export const mlsNumberSchema = joi
+  .string()
+  .pattern(new RegExp('^([a-zA-Z0-9]{1,32})$'))
 
 /**
  * @openapi
@@ -52,7 +62,7 @@ export const mlsNumberSchema = joi.string().pattern(new RegExp("^([a-zA-Z0-9]{1,
  *          minLength: 1
  *          maxLength: 70
  */
-export const contactNameSchema = joi.string().min(1).max(70);
+export const contactNameSchema = joi.string().min(1).max(70)
 
 /**
  * @openapi
@@ -63,7 +73,7 @@ export const contactNameSchema = joi.string().min(1).max(70);
  *          minLength: 10
  *          maxLength: 1024
  */
-export const contactMessageSchema = joi.string().min(10).max(1024);
+export const contactMessageSchema = joi.string().min(10).max(1024)
 
 /**
  * @openapi
@@ -74,7 +84,7 @@ export const contactMessageSchema = joi.string().min(10).max(1024);
  *          minLength: 8
  *          format: password
  */
-export const passwordSchema = joi.string().max(255).min(8).required();
+export const passwordSchema = joi.string().max(255).min(8).required()
 
 /**
  * @openapi
@@ -84,7 +94,9 @@ export const passwordSchema = joi.string().max(255).min(8).required();
  *           type: string
  *           format: date
  */
-export const dateSchema = joi.string().pattern(/^(?:\d{4})-(?:0[1-9]|1[0-2])-(?:0[1-9]|[12][0-9]|3[01])$/);
+export const dateSchema = joi
+  .string()
+  .pattern(/^(?:\d{4})-(?:0[1-9]|1[0-2])-(?:0[1-9]|[12][0-9]|3[01])$/)
 
 /**
  * @openapi
@@ -108,18 +120,18 @@ export const dateSchema = joi.string().pattern(/^(?:\d{4})-(?:0[1-9]|1[0-2])-(?:
  *                  format: uuid
  */
 export const userSchema = joi.object().keys({
-   email: joi.string(),
-   sub: joi.string(),
-   iat: joi.number(),
-   exp: joi.number(),
-   iss: joi.string(),
-   jti: joi.string(),
-   role: joi.number(),
-   external: joi.object().unknown()
-});
+  email: joi.string(),
+  sub: joi.string(),
+  iat: joi.number(),
+  exp: joi.number(),
+  iss: joi.string(),
+  jti: joi.string(),
+  role: joi.number(),
+  external: joi.object().unknown()
+})
 export const appStateSchema = joi.object().keys({
-   user: userSchema
-});
+  user: userSchema
+})
 
 /**
  * @openapi
@@ -129,7 +141,7 @@ export const appStateSchema = joi.object().keys({
  *        type: string
  *        enum: [Y, N]
  */
-export const rplYesNoSchema = joi.string().valid(...Object.values(RplYesNo));
+export const rplYesNoSchema = joi.string().valid(...Object.values(RplYesNo))
 
 /**
  * @openapi
@@ -141,7 +153,10 @@ export const rplYesNoSchema = joi.string().valid(...Object.values(RplYesNo));
  *           type: string
  *           enum: [Sus, Exp, Sld, Ter, Dft, Lsd, Sc, Sce, Lc, Pc, Ext, New]
  */
-export const rplLastStatus = joi.array().items(joi.string().valid(...Object.keys(RplLastStatus))).single();
+export const rplLastStatus = joi
+  .array()
+  .items(joi.string().valid(...Object.keys(RplLastStatus)))
+  .single()
 
 /**
  * @openapi
@@ -151,7 +166,7 @@ export const rplLastStatus = joi.array().items(joi.string().valid(...Object.keys
  *        type: string
  *        enum: [AND, OR]
  */
-export const rplOperatorSchema = joi.string().valid(...Object.keys(RplOperator));
+export const rplOperatorSchema = joi.string().valid(...Object.keys(RplOperator))
 
 /**
  * @openapi
@@ -161,7 +176,7 @@ export const rplOperatorSchema = joi.string().valid(...Object.keys(RplOperator))
  *        type: string
  *        enum: [createdOnDesc, updatedOnDesc, createdOnAsc, distanceAsc, distanceDesc, updatedOnAsc, soldDateAsc, soldDateDesc, soldPriceAsc, soldPriceDesc, sqftAsc, sqftDesc, listPriceAsc, listPriceDesc, bedsAsc, bedsDesc, bathsDesc, bathsAsc, yearBuiltDesc, yearBuiltAsc, random]
  */
-export const rplSortBySchema = joi.string().valid(...Object.values(RplSortBy));
+export const rplSortBySchema = joi.string().valid(...Object.values(RplSortBy))
 
 /**
  * @openapi
@@ -173,7 +188,7 @@ export const rplSortBySchema = joi.string().valid(...Object.values(RplSortBy));
  *           type: string
  *           enum: [avg-daysOnMarket, sum-daysOnMarket, min-daysOnMarket, max-daysOnMarket, avg-listPrice, sum-listPrice, min-listPrice, max-listPrice, avg-soldPrice, sum-soldPrice, min-soldPrice, max-soldPrice, cnt-new, cnt-closed, med-listPrice, med-soldPrice, med-daysOnMarket, sd-listPrice, sd-soldPrice, sd-daysOnMarket,avg-priceSqft, grp-mth, grp-yr]
  */
-export const rplStatisticsSchema = joi.string();
+export const rplStatisticsSchema = joi.string()
 // disabling custom validation because Repliers has its own validation and very informative error messages
 // this validation makes developer experience even worse without providing any business value
 
@@ -200,7 +215,10 @@ export const rplStatisticsSchema = joi.string();
  *           type: string
  *           enum: [A, U]
  */
-export const rplStatusSchema = joi.array().items(joi.string().valid(...Object.values(RplStatus))).single();
+export const rplStatusSchema = joi
+  .array()
+  .items(joi.string().valid(...Object.values(RplStatus)))
+  .single()
 
 /**
  * @openapi
@@ -211,7 +229,10 @@ export const rplStatusSchema = joi.array().items(joi.string().valid(...Object.va
  *        items:
  *           $ref: '#/components/schemas/RplTypeEnum'
  */
-export const rplTypeSchema = joi.array().items(joi.string().valid(...Object.values(RplType))).single();
+export const rplTypeSchema = joi
+  .array()
+  .items(joi.string().valid(...Object.values(RplType)))
+  .single()
 
 /**
  * @openapi
@@ -221,8 +242,8 @@ export const rplTypeSchema = joi.array().items(joi.string().valid(...Object.valu
  *        type: string
  *        enum: [sale, lease]
  */
-export const rplTypeSingleSchema = joi;
-joi.string().valid(...Object.values(RplType));
+export const rplTypeSingleSchema = joi
+joi.string().valid(...Object.values(RplType))
 
 /**
  * @openapi
@@ -234,20 +255,29 @@ joi.string().valid(...Object.values(RplType));
  *           type: string
  *           enum: [condo, residential, commercial]
  */
-export const rplClassSchema = joi.array().items(joi.string().valid(...Object.values(RplClass))).single();
+export const rplClassSchema = joi
+  .array()
+  .items(joi.string().valid(...Object.values(RplClass)))
+  .single()
 export const csvFieldValidator = (validValues: string[]) => {
-   return joi.string().custom((value, helpers) => {
-      if (!value) return value;
-      const fields = value.split(",").map((field: string) => field.trim());
-      const allValid = fields.every((field: string) => validValues.includes(field));
+  return joi
+    .string()
+    .custom((value, helpers) => {
+      if (!value) return value
+      const fields = value.split(',').map((field: string) => field.trim())
+      const allValid = fields.every((field: string) =>
+        validValues.includes(field)
+      )
       if (!allValid) {
-         return helpers.error("string.invalidFields", {
-            value,
-            validValues: validValues.join(", ")
-         });
+        return helpers.error('string.invalidFields', {
+          value,
+          validValues: validValues.join(', ')
+        })
       }
-      return value;
-   }, "validate comma-separated fields").messages({
-      'string.invalidFields': '{{#label}} contains invalid value(s). Valid values are: {{#validValues}}'
-   });
-};
+      return value
+    }, 'validate comma-separated fields')
+    .messages({
+      'string.invalidFields':
+        '{{#label}} contains invalid value(s). Valid values are: {{#validValues}}'
+    })
+}
