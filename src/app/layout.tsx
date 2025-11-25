@@ -51,7 +51,7 @@ const Layout = async ({ children }: { children: React.ReactNode }) => {
           content="telephone=no, date=no, email=no, address=no"
         />
       </head>
-      <body>
+      <body suppressHydrationWarning>
         <TrackingInline />
         <GlobalStyles styles={globalStyles} />
         <Providers
