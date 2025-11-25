@@ -1,7 +1,7 @@
 import { inject, injectable } from "tsyringe";
 import type { Logger } from "pino";
 import type { AppConfig } from "../config.js";
-import { Knex } from "knex";
+import type { Knex } from "knex";
 import _debug from "debug";
 
 const debug = _debug("repliers:services:adminSettings");
