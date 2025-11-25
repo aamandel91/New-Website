@@ -12,6 +12,7 @@ import vtourRouter from './vtour.js';
 import agentRouter from './agent.js';
 import adminRouter from './admin.js';
 import webookRouter from './webhooks/index.js';
+import blogsRouter from './blogs.js';
 const router = new Router({
    prefix: "/api"
 });
@@ -28,4 +29,5 @@ router.use(vtourRouter.routes(), vtourRouter.allowedMethods());
 router.use(agentRouter.routes(), agentRouter.allowedMethods());
 router.use(adminRouter.routes(), adminRouter.allowedMethods());
 router.use(webookRouter.routes(), webookRouter.allowedMethods());
+router.use(blogsRouter.routes(), blogsRouter.allowedMethods());
 export default router;

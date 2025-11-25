@@ -3,9 +3,9 @@
 import { useEffect, useState } from 'react'
 import { useTranslations } from 'next-intl'
 
-import { Container, Stack } from '@mui/material'
+import { Box, Container, Grid, Stack, Typography } from '@mui/material'
 
-import { PropertyCarousel } from '@shared/Property'
+import { PropertyCard } from '@shared/Property'
 
 import { type ApiQueryParams, type Property } from 'services/API'
 import SearchService from 'services/Search'
@@ -50,11 +50,44 @@ const FeaturedProperties = () => {
     fetchRecentlySold()
   }, [])
 
+  const PropertySection = ({
+    title,
+    properties
+  }: {
+    title: string
+    properties: Property[]
+  }) => (
+    <Box sx={{ mb: 8 }}>
+      <Typography
+        variant="h2"
+        sx={{
+          color: '#b19a55',
+          mb: 4,
+          fontSize: { xs: '1.5rem', sm: '2rem' },
+          fontWeight: 400
+        }}
+      >
+        {title}
+      </Typography>
+      <Grid container spacing={3}>
+        {properties.map((property, index) => (
+          <Grid item xs={12} sm={6} md={4} lg={3} key={`${property.mlsNumber}-${index}`}>
+            <PropertyCard property={property} openInNewTab={false} />
+          </Grid>
+        ))}
+      </Grid>
+    </Box>
+  )
+
   return (
     <Container maxWidth="lg">
-      <Stack spacing={6} py={8}>
-        <PropertyCarousel title={t('justListed')} properties={featured} />
-        <PropertyCarousel title={t('recentlySold')} properties={recentlySold} />
+      <Stack spacing={0} py={8}>
+        {featured.length > 0 && (
+          <PropertySection title={t('justListed')} properties={featured} />
+        )}
+        {recentlySold.length > 0 && (
+          <PropertySection title={t('recentlySold')} properties={recentlySold} />
+        )}
       </Stack>
     </Container>
   )

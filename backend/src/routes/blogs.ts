@@ -1,0 +1,264 @@
+import { Router } from 'koa'
+import { BlogService } from '../services/blogs'
+import { ApiError } from '../providers/errors'
+import {
+  createBlogSchema,
+  updateBlogSchema,
+  getBlogSchema,
+  getBlogBySlugSchema,
+  listBlogsSchema,
+  aiSuggestionsSchema,
+  publishBlogSchema,
+  deleteBlogSchema
+} from '../validate/blogs'
+import { authMiddleware, roleMiddleware } from '../providers/middleware'
+import { UserRole } from '../constants'
+
+const router = new Router({ prefix: '/blogs' })
+
+// PUBLIC ROUTES
+
+/**
+ * GET /api/blogs - List published blogs
+ */
+router.get('/', async ctx => {
+  const { error, value } = listBlogsSchema.validate(ctx.query)
+  if (error) ctx.throw(new ApiError(error.message, 400))
+
+  const blogsService = ctx.state.container.resolve(BlogService)
+
+  const result = await blogsService.getBlogs({
+    status: 'published',
+    limit: value.limit,
+    offset: value.offset,
+    search: value.search,
+    tag: value.tag,
+    category: value.category
+  })
+
+  ctx.body = result
+})
+
+/**
+ * GET /api/blogs/featured - Get featured blogs
+ */
+router.get('/featured', async ctx => {
+  const blogsService = ctx.state.container.resolve(BlogService)
+  const blogs = await blogsService.getFeaturedBlogs(3)
+  ctx.body = { blogs }
+})
+
+/**
+ * GET /api/blogs/tags - Get all tags
+ */
+router.get('/tags', async ctx => {
+  const blogsService = ctx.state.container.resolve(BlogService)
+  const tags = await blogsService.getTags(50)
+  ctx.body = { tags }
+})
+
+/**
+ * GET /api/blogs/categories - Get all categories
+ */
+router.get('/categories', async ctx => {
+  const blogsService = ctx.state.container.resolve(BlogService)
+  const categories = await blogsService.getCategories()
+  ctx.body = { categories }
+})
+
+/**
+ * GET /api/blogs/:slug - Get blog by slug
+ */
+router.get('/:slug', async ctx => {
+  const blogsService = ctx.state.container.resolve(BlogService)
+
+  const blog = await blogsService.getBlogBySlug(ctx.params.slug)
+
+  if (!blog) {
+    ctx.throw(new ApiError('Blog not found', 404))
+  }
+
+  if (blog.status !== 'published') {
+    ctx.throw(new ApiError('Blog not available', 404))
+  }
+
+  // Get related blogs
+  const related = await blogsService.getRelatedBlogs(blog.id, 3)
+
+  ctx.body = { blog, related }
+})
+
+/**
+ * GET /api/blogs/:id/related - Get related blogs
+ */
+router.get('/:id/related', async ctx => {
+  const blogsService = ctx.state.container.resolve(BlogService)
+
+  const id = BigInt(ctx.params.id)
+  const related = await blogsService.getRelatedBlogs(id, 5)
+
+  ctx.body = { related }
+})
+
+// ADMIN ROUTES (protected)
+
+/**
+ * POST /api/blogs - Create a new blog
+ */
+router.post('/', authMiddleware, roleMiddleware([UserRole.Admin, UserRole.Root]), async ctx => {
+  const { error, value } = createBlogSchema.validate(ctx.request.body)
+  if (error) ctx.throw(new ApiError(error.message, 400))
+
+  const blogsService = ctx.state.container.resolve(BlogService)
+
+  const blog = await blogsService.createBlog({
+    ...value,
+    author_email: ctx.state.user.email
+  })
+
+  ctx.status = 201
+  ctx.body = { blog }
+})
+
+/**
+ * GET /api/blogs/admin/all - Get all blogs (draft + published) - Admin only
+ */
+router.get('/admin/all', authMiddleware, roleMiddleware([UserRole.Admin, UserRole.Root]), async ctx => {
+  const { error, value } = listBlogsSchema.validate(ctx.query)
+  if (error) ctx.throw(new ApiError(error.message, 400))
+
+  const blogsService = ctx.state.container.resolve(BlogService)
+
+  // Get all blogs regardless of status
+  const result = await blogsService.getBlogs({
+    author_email: ctx.state.user.email,
+    limit: value.limit,
+    offset: value.offset,
+    search: value.search,
+    tag: value.tag,
+    category: value.category
+  })
+
+  ctx.body = result
+})
+
+/**
+ * GET /api/blogs/admin/:id - Get blog for editing - Admin only
+ */
+router.get('/admin/:id', authMiddleware, roleMiddleware([UserRole.Admin, UserRole.Root]), async ctx => {
+  const { error, value } = getBlogSchema.validate({ id: ctx.params.id })
+  if (error) ctx.throw(new ApiError(error.message, 400))
+
+  const blogsService = ctx.state.container.resolve(BlogService)
+
+  const blog = await blogsService.getBlogById(BigInt(value.id))
+
+  if (!blog) {
+    ctx.throw(new ApiError('Blog not found', 404))
+  }
+
+  // Check authorization - only admin who created or root can edit
+  if (blog.author_email !== ctx.state.user.email && ctx.state.user.role !== UserRole.Root) {
+    ctx.throw(new ApiError('Insufficient privileges', 403))
+  }
+
+  ctx.body = { blog }
+})
+
+/**
+ * PATCH /api/blogs/:id - Update blog
+ */
+router.patch('/:id', authMiddleware, roleMiddleware([UserRole.Admin, UserRole.Root]), async ctx => {
+  const { error, value } = updateBlogSchema.validate({
+    id: ctx.params.id,
+    ...ctx.request.body
+  })
+  if (error) ctx.throw(new ApiError(error.message, 400))
+
+  const blogsService = ctx.state.container.resolve(BlogService)
+
+  const blog = await blogsService.getBlogById(BigInt(value.id))
+
+  if (!blog) {
+    ctx.throw(new ApiError('Blog not found', 404))
+  }
+
+  // Check authorization
+  if (blog.author_email !== ctx.state.user.email && ctx.state.user.role !== UserRole.Root) {
+    ctx.throw(new ApiError('Insufficient privileges', 403))
+  }
+
+  const updated = await blogsService.updateBlog(BigInt(value.id), value)
+
+  ctx.body = { blog: updated }
+})
+
+/**
+ * POST /api/blogs/:id/publish - Publish a blog
+ */
+router.post('/:id/publish', authMiddleware, roleMiddleware([UserRole.Admin, UserRole.Root]), async ctx => {
+  const { error, value } = publishBlogSchema.validate({ id: ctx.params.id })
+  if (error) ctx.throw(new ApiError(error.message, 400))
+
+  const blogsService = ctx.state.container.resolve(BlogService)
+
+  const blog = await blogsService.getBlogById(BigInt(value.id))
+
+  if (!blog) {
+    ctx.throw(new ApiError('Blog not found', 404))
+  }
+
+  // Check authorization
+  if (blog.author_email !== ctx.state.user.email && ctx.state.user.role !== UserRole.Root) {
+    ctx.throw(new ApiError('Insufficient privileges', 403))
+  }
+
+  const published = await blogsService.publishBlog(BigInt(value.id))
+
+  ctx.body = { blog: published }
+})
+
+/**
+ * DELETE /api/blogs/:id - Delete blog
+ */
+router.delete('/:id', authMiddleware, roleMiddleware([UserRole.Admin, UserRole.Root]), async ctx => {
+  const { error, value } = deleteBlogSchema.validate({ id: ctx.params.id })
+  if (error) ctx.throw(new ApiError(error.message, 400))
+
+  const blogsService = ctx.state.container.resolve(BlogService)
+
+  const blog = await blogsService.getBlogById(BigInt(value.id))
+
+  if (!blog) {
+    ctx.throw(new ApiError('Blog not found', 404))
+  }
+
+  // Check authorization
+  if (blog.author_email !== ctx.state.user.email && ctx.state.user.role !== UserRole.Root) {
+    ctx.throw(new ApiError('Insufficient privileges', 403))
+  }
+
+  const deleted = await blogsService.deleteBlog(BigInt(value.id))
+
+  if (!deleted) {
+    ctx.throw(new ApiError('Failed to delete blog', 500))
+  }
+
+  ctx.body = { success: true }
+})
+
+/**
+ * POST /api/blogs/ai/suggestions - Get AI suggestions for meta and tags
+ */
+router.post('/ai/suggestions', authMiddleware, roleMiddleware([UserRole.Admin, UserRole.Root]), async ctx => {
+  const { error, value } = aiSuggestionsSchema.validate(ctx.request.body)
+  if (error) ctx.throw(new ApiError(error.message, 400))
+
+  const blogsService = ctx.state.container.resolve(BlogService)
+
+  const suggestions = await blogsService.generateAISuggestions(value.title, value.description, value.content)
+
+  ctx.body = { suggestions }
+})
+
+export default router
