@@ -20,9 +20,15 @@ import SimilarProperties from './SimilarProperties'
 
 interface PropertyDetailLayoutProps {
   property: Property
+  similarProperties?: Property[]
+  marketStats?: any
 }
 
-const PropertyDetailLayout: React.FC<PropertyDetailLayoutProps> = ({ property }) => {
+const PropertyDetailLayout: React.FC<PropertyDetailLayoutProps> = ({
+  property,
+  similarProperties = [],
+  marketStats
+}) => {
   const { toggle: toggleFavorite, find: findFavorite } = useFavorites()
   const { addProperty: addToRecentlyViewed } = useRecentlyViewed()
 
@@ -196,14 +202,16 @@ const PropertyDetailLayout: React.FC<PropertyDetailLayoutProps> = ({ property })
                 neighborhood={property.neighborhood}
                 city={property.address?.city}
                 state={property.address?.state}
+                stats={marketStats}
               />
 
               {/* Similar Properties */}
-              {/* Note: You'll need to fetch similar properties via API */}
-              {/* <SimilarProperties
-                properties={similarProperties}
-                currentPropertyMls={property.mlsNumber}
-              /> */}
+              {similarProperties.length > 0 && (
+                <SimilarProperties
+                  properties={similarProperties}
+                  currentPropertyMls={property.mlsNumber}
+                />
+              )}
             </Box>
           </Grid>
 

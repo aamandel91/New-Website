@@ -11,6 +11,7 @@ import { extractMlsFromSlug, generatePropertyUrl } from 'utils/propertyUrls'
 import { generatePropertyJsonLd, generatePropertyBreadcrumbJsonLd } from 'utils/propertySchema'
 
 import { fetchNearbies, fetchProperty } from './utils'
+import { fetchSimilarProperties, fetchMarketStats } from './similarProperties'
 
 type PropertyDetailPageProps = {
   params: Promise<{
@@ -54,6 +55,14 @@ const PropertyDetailPage = async (props: PropertyDetailPageProps) => {
     const host = getProtocolHost(await headers())
     const propertyUrl = `${host}${generatePropertyUrl(property.address || {}, property.mlsNumber)}`
 
+    // Fetch similar properties and market stats in parallel
+    const [similarProperties, marketStats] = await Promise.all([
+      fetchSimilarProperties(property, 6),
+      property.address?.city && property.address?.state
+        ? fetchMarketStats(property.address.city, property.address.state, boardId)
+        : Promise.resolve(null)
+    ])
+
     // Generate JSON-LD structured data for SEO
     const propertyJsonLd = generatePropertyJsonLd(property, propertyUrl)
     const breadcrumbJsonLd = generatePropertyBreadcrumbJsonLd(property, host)
@@ -70,7 +79,11 @@ const PropertyDetailPage = async (props: PropertyDetailPageProps) => {
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
         />
-        <PropertyPageTemplate property={property} />
+        <PropertyPageTemplate
+          property={property}
+          similarProperties={similarProperties}
+          marketStats={marketStats}
+        />
       </>
     )
   } catch (error: any) {

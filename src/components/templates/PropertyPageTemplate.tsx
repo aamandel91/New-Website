@@ -16,7 +16,17 @@ import PropertyRegistrationDialog from '@/components/shared/Dialogs/PropertyRegi
 
 import { PageTemplate } from '.'
 
-const PropertyPageTemplate = ({ property }: { property: Property }) => {
+interface PropertyPageTemplateProps {
+  property: Property
+  similarProperties?: Property[]
+  marketStats?: any
+}
+
+const PropertyPageTemplate = ({
+  property,
+  similarProperties,
+  marketStats
+}: PropertyPageTemplateProps) => {
   const features = useFeatures()
   const noHeader = !features.pdpHeader
   const { user } = useUser()
@@ -43,7 +53,11 @@ const PropertyPageTemplate = ({ property }: { property: Property }) => {
     <PageTemplate noHeader={noHeader}>
       <PropertyProvider property={property}>
         <PropertyDetailsProvider property={property}>
-          <PropertyDetailLayout property={property} />
+          <PropertyDetailLayout
+            property={property}
+            similarProperties={similarProperties}
+            marketStats={marketStats}
+          />
         </PropertyDetailsProvider>
       </PropertyProvider>
 
