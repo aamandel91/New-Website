@@ -17,6 +17,7 @@ import LocationsProvider from 'providers/LocationsProvider'
 import SaveSearchProvider from 'providers/SaveSearchProvider'
 import SnackbarProvider from 'providers/SnackbarProvider'
 import UserProvider from 'providers/UserProvider'
+import ComparisonBar from '@/components/shared/ComparisonBar'
 import { createGrowthBook, getFeatureValues } from 'utils/features'
 
 import theme from 'styles/theme'
@@ -86,7 +87,12 @@ const Providers = ({
 
   const ProvidersTree = buildProvidersTree(providers)
 
-  return <ProvidersTree>{children}</ProvidersTree>
+  return (
+    <ProvidersTree>
+      {children}
+      <ComparisonBar />
+    </ProvidersTree>
+  )
 }
 
 export default Providers

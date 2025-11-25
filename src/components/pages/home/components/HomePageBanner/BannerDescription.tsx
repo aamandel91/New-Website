@@ -12,48 +12,44 @@ const BannerDescription = ({
   if (!title && !subtitle) return null
 
   return (
-    <Container maxWidth="lg" sx={{ position: 'relative' }}>
-      {title && (
-        <Box
-          sx={{
-            py: { xs: 4, sm: 6, md: 8 },
-            maxWidth: { xs: 'auto', md: '60%' }
-          }}
-        >
+    <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 2 }}>
+      <Box
+        sx={{
+          py: { xs: 6, sm: 8, md: 12 },
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          minHeight: { xs: '400px', md: '500px' }
+        }}
+      >
+        {title && (
           <Typography
             variant="h1"
-            color="common.white"
+            color="text.primary"
             sx={{
-              textShadow: '0 2px 4px rgba(0,0,0,0.5)',
-              fontSize: { xs: '2rem', sm: '3rem', md: '3.5rem' },
-              lineHeight: 1.3,
-              fontWeight: 700,
-              letterSpacing: '-0.02em'
+              mb: 2,
+              fontSize: { xs: '2.5rem', sm: '3.5rem', md: '4rem' },
+              lineHeight: 1.2,
+              fontWeight: 400
             }}
           >
             {title}
           </Typography>
-        </Box>
-      )}
-      {subtitle && (
-        <Box sx={{ maxWidth: { xs: 'auto', sm: '50%', md: '45%' } }}>
+        )}
+        {subtitle && (
           <Typography
-            variant="h4"
-            color="common.white"
+            variant="body1"
+            color="text.secondary"
             sx={{
-              p: 2,
-              m: -2,
-              borderRadius: 1,
-              textShadow: '0 1px 2px rgba(0,0,0,0.3)',
-              bgcolor: 'rgba(0, 0, 0, 0.4)',
-              fontWeight: 400,
-              fontSize: { xs: '1rem', sm: '1.25rem' }
+              maxWidth: '600px',
+              fontSize: { xs: '1rem', sm: '1.1rem' },
+              lineHeight: 1.6
             }}
           >
             {subtitle}
           </Typography>
-        </Box>
-      )}
+        )}
+      </Box>
     </Container>
   )
 }

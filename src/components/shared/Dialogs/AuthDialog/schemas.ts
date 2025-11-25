@@ -27,11 +27,13 @@ export const signupSchema = Joi.object<SignUpRequest>({
     }),
   phone: Joi.string()
     .trim()
-    .allow(null, '')
+    .required()
     .custom((value, helpers) =>
-      value && !validatePhone(value) ? helpers.error('string.custom') : value
+      !validatePhone(value) ? helpers.error('string.custom') : value
     )
     .messages({
+      'string.empty': 'Phone number is required',
+      'any.required': 'Phone number is required',
       'string.custom': invalidPhone
     })
 })
