@@ -7,7 +7,8 @@ import { Property404Template, PropertyPageTemplate } from '@templates'
 
 import { formatMetadata } from 'utils/properties'
 import { getProtocolHost } from 'utils/urls'
-import { extractMlsFromSlug } from 'utils/propertyUrls'
+import { extractMlsFromSlug, generatePropertyUrl } from 'utils/propertyUrls'
+import { generatePropertyJsonLd, generatePropertyBreadcrumbJsonLd } from 'utils/propertySchema'
 
 import { fetchNearbies, fetchProperty } from './utils'
 
@@ -50,7 +51,28 @@ const PropertyDetailPage = async (props: PropertyDetailPageProps) => {
 
   try {
     const property = await fetchProperty(mlsNumber, boardId)
-    return <PropertyPageTemplate property={property} />
+    const host = getProtocolHost(await headers())
+    const propertyUrl = `${host}${generatePropertyUrl(property.address || {}, property.mlsNumber)}`
+
+    // Generate JSON-LD structured data for SEO
+    const propertyJsonLd = generatePropertyJsonLd(property, propertyUrl)
+    const breadcrumbJsonLd = generatePropertyBreadcrumbJsonLd(property, host)
+
+    return (
+      <>
+        {/* JSON-LD Structured Data for Property */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(propertyJsonLd) }}
+        />
+        {/* JSON-LD Structured Data for Breadcrumbs */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+        />
+        <PropertyPageTemplate property={property} />
+      </>
+    )
   } catch (error: any) {
     // Try to fetch nearby properties for 404 page
     const properties = await fetchNearbies(params.slug)

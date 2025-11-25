@@ -22,6 +22,9 @@ import CalendarTodayIcon from '@mui/icons-material/CalendarToday'
 import ScheduleIcon from '@mui/icons-material/Schedule'
 import EmailIcon from '@mui/icons-material/Email'
 
+import { type Property } from 'services/API'
+import { getPropertyBadges, getDaysOnMarket } from 'utils/propertyBadges'
+
 interface PropertyHeaderProps {
   price: number
   status: string
@@ -35,6 +38,7 @@ interface PropertyHeaderProps {
   baths: number
   sqft: number
   yearBuilt?: number
+  property?: Property // Full property object for badge generation
   onSave?: () => void
   onShare?: () => void
   onRequestInfo?: () => void
@@ -50,6 +54,7 @@ const PropertyHeader: React.FC<PropertyHeaderProps> = ({
   baths,
   sqft,
   yearBuilt,
+  property,
   onSave,
   onShare,
   onRequestInfo,
@@ -57,6 +62,10 @@ const PropertyHeader: React.FC<PropertyHeaderProps> = ({
   isSaved = false,
 }) => {
   const theme = useTheme()
+
+  // Get dynamic badges if property object is provided
+  const badges = property ? getPropertyBadges(property) : []
+  const daysOnMarket = property ? getDaysOnMarket(property) : null
 
   const getStatusColor = (status: string): 'success' | 'warning' | 'default' => {
     const statusLower = status.toLowerCase()
@@ -91,11 +100,23 @@ const PropertyHeader: React.FC<PropertyHeaderProps> = ({
       <Stack spacing={3}>
         {/* Status Badge and Actions */}
         <Stack direction="row" justifyContent="space-between" alignItems="center" flexWrap="wrap" gap={2}>
-          <Chip
-            label={getStatusLabel(status)}
-            color={getStatusColor(status)}
-            sx={{ fontWeight: 'bold', fontSize: '0.875rem' }}
-          />
+          <Stack direction="row" spacing={1} flexWrap="wrap">
+            <Chip
+              label={getStatusLabel(status)}
+              color={getStatusColor(status)}
+              sx={{ fontWeight: 'bold', fontSize: '0.875rem' }}
+            />
+            {/* Dynamic Badges */}
+            {badges.map((badge, index) => (
+              <Chip
+                key={index}
+                label={badge.label}
+                color={badge.color}
+                size="medium"
+                sx={{ fontWeight: 'bold', fontSize: '0.875rem' }}
+              />
+            ))}
+          </Stack>
 
           <Stack direction="row" spacing={1}>
             <IconButton

@@ -119,6 +119,7 @@ const PropertyDetailLayout: React.FC<PropertyDetailLayoutProps> = ({ property })
           baths={property.baths || 0}
           sqft={property.sqft || 0}
           yearBuilt={property.yearBuilt}
+          property={property}
           onSave={handleSave}
           onShare={handleShare}
           onRequestInfo={handleRequestInfo}
