@@ -1,6 +1,8 @@
 import { Router } from 'koa'
-import { BlogService } from '../services/blogs'
-import { ApiError } from '../providers/errors'
+import { container } from 'tsyringe'
+import type { Middleware } from 'koa-jwt'
+import { BlogService } from '../services/blogs.js'
+import { ApiError } from '../lib/errors.js'
 import {
   createBlogSchema,
   updateBlogSchema,
@@ -10,11 +12,13 @@ import {
   aiSuggestionsSchema,
   publishBlogSchema,
   deleteBlogSchema
-} from '../validate/blogs'
-import { authMiddleware, roleMiddleware } from '../providers/middleware'
-import { UserRole } from '../constants'
+} from '../validate/blogs.js'
+import { RoleMiddlewareCreator } from '../providers/middleware/role.js'
+import { UserRole } from '../constants.js'
 
 const router = new Router({ prefix: '/blogs' })
+const authMiddleware = container.resolve<Middleware>("middleware.jwt")
+const roleMiddleware = container.resolve<RoleMiddlewareCreator>("middleware.role")
 
 // PUBLIC ROUTES
 
