@@ -1,87 +1,87 @@
-import { Input } from "@/components/ui/input";
-import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import { Eye, EyeOff } from "lucide-react";
-import { useApiKeys } from "@/lib/api-keys-context";
+import { Input } from '@/components/ui/input'
+import { useState, useEffect } from 'react'
+import { Button } from '@/components/ui/button'
+import { Eye, EyeOff } from 'lucide-react'
+import { useApiKeys } from '@/lib/api-keys-context'
 
 interface ApiInputProps {
-  onApiKeyChange: (apiKey: string) => void;
-  className?: string;
-  isEstimates?: boolean;
+  onApiKeyChange: (apiKey: string) => void
+  className?: string
+  isEstimates?: boolean
 }
 
 export function ApiInput({
   onApiKeyChange,
   className,
-  isEstimates,
+  isEstimates
 }: ApiInputProps) {
-  const { repliersApiKey, setRepliersApiKey } = useApiKeys();
-  const [showApiKey, setShowApiKey] = useState(false);
-  const [isValidating, setIsValidating] = useState(false);
-  const [validationError, setValidationError] = useState<string | null>(null);
+  const { repliersApiKey, setRepliersApiKey } = useApiKeys()
+  const [showApiKey, setShowApiKey] = useState(false)
+  const [isValidating, setIsValidating] = useState(false)
+  const [validationError, setValidationError] = useState<string | null>(null)
 
   // Sync with parent component when the persisted API key changes
   useEffect(() => {
-    onApiKeyChange(repliersApiKey);
-  }, [repliersApiKey, onApiKeyChange]);
+    onApiKeyChange(repliersApiKey)
+  }, [repliersApiKey, onApiKeyChange])
 
   const validateApiKey = async (key: string) => {
-    if (!key) return;
+    if (!key) return
 
-    setIsValidating(true);
-    setValidationError(null);
+    setIsValidating(true)
+    setValidationError(null)
 
     try {
       const endpoint = isEstimates
-        ? "https://api.repliers.io/estimates"
-        : "https://api.repliers.io/listings?area=toronto";
+        ? 'https://api.repliers.io/estimates'
+        : 'https://api.repliers.io/listings?area=toronto'
 
       const response = await fetch(endpoint, {
-        method: "HEAD",
+        method: 'HEAD',
         headers: {
-          "REPLIERS-API-KEY": key,
-          Accept: "application/json",
-        },
-      });
+          'REPLIERS-API-KEY': key,
+          Accept: 'application/json'
+        }
+      })
 
       if (response.status === 401) {
         setValidationError(
-          "Invalid API key. Please check your key and try again."
-        );
+          'Invalid API key. Please check your key and try again.'
+        )
       } else if (response.status === 403) {
         setValidationError(
           isEstimates
             ? "Your API key doesn't have access to the estimates feature. Please upgrade your plan or contact Repliers support to request a trial."
             : "Your API key doesn't have access to the listings feature. Please upgrade your plan or contact Repliers support to request a trial."
-        );
+        )
       } else if (!response.ok) {
-        setValidationError("Failed to validate API key. Please try again.");
+        setValidationError('Failed to validate API key. Please try again.')
       }
     } catch (error) {
-      console.error("API Error:", error);
-      setValidationError("Failed to validate API key. Please try again.");
+      console.error('API Error:', error)
+      setValidationError('Failed to validate API key. Please try again.')
     } finally {
-      setIsValidating(false);
+      setIsValidating(false)
     }
-  };
+  }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newValue = e.target.value;
-    setRepliersApiKey(newValue);
-    onApiKeyChange(newValue);
+    const newValue = e.target.value
+    setRepliersApiKey(newValue)
+    onApiKeyChange(newValue)
 
     // Clear validation error when user starts typing
     if (validationError) {
-      setValidationError(null);
+      setValidationError(null)
     }
 
     // Validate after a short delay to avoid too many requests
     const timeoutId = setTimeout(() => {
-      validateApiKey(newValue);
-    }, 500);
+      validateApiKey(newValue)
+    }, 500)
 
-    return () => clearTimeout(timeoutId);
-  };
+    return () => clearTimeout(timeoutId)
+  }
 
   return (
     <div className={`flex flex-col gap-2 ${className}`}>
@@ -91,7 +91,7 @@ export function ApiInput({
       <div className="flex gap-2 items-center">
         <Input
           id="api-key"
-          type={showApiKey ? "text" : "password"}
+          type={showApiKey ? 'text' : 'password'}
           placeholder="Enter your API key..."
           className="max-w-[300px]"
           value={repliersApiKey}
@@ -122,7 +122,7 @@ export function ApiInput({
       )}
 
       <p className="text-sm text-gray-500">
-        Don't have a Repliers API key?{" "}
+        Don't have a Repliers API key?{' '}
         <a
           href="https://repliers.com/"
           target="_blank"
@@ -133,29 +133,29 @@ export function ApiInput({
         </a>
       </p>
     </div>
-  );
+  )
 }
 
 // Google Places API Input Component
 interface GooglePlacesApiInputProps {
-  onApiKeyChange: (apiKey: string) => void;
-  className?: string;
+  onApiKeyChange: (apiKey: string) => void
+  className?: string
 }
 
 export function GooglePlacesApiInput({
   onApiKeyChange,
-  className,
+  className
 }: GooglePlacesApiInputProps) {
-  const [apiKey, setApiKey] = useState("");
-  const [showApiKey, setShowApiKey] = useState(false);
-  const [isValidating, setIsValidating] = useState(false);
-  const [validationError, setValidationError] = useState<string | null>(null);
+  const [apiKey, setApiKey] = useState('')
+  const [showApiKey, setShowApiKey] = useState(false)
+  const [isValidating, setIsValidating] = useState(false)
+  const [validationError, setValidationError] = useState<string | null>(null)
 
   const validateApiKey = async (key: string) => {
-    if (!key) return;
+    if (!key) return
 
-    setIsValidating(true);
-    setValidationError(null);
+    setIsValidating(true)
+    setValidationError(null)
 
     try {
       // Test the API key by loading the Google Maps JavaScript API
@@ -163,98 +163,98 @@ export function GooglePlacesApiInput({
       const testPromise = new Promise<void>((resolve, reject) => {
         // Remove any existing test script
         const existingScript = document.querySelector(
-          "script[data-test-google-api]"
-        );
+          'script[data-test-google-api]'
+        )
         if (existingScript) {
-          existingScript.remove();
+          existingScript.remove()
         }
 
-        const script = document.createElement("script");
-        script.src = `https://maps.googleapis.com/maps/api/js?key=${key}&libraries=places&callback=__googleMapsApiTestCallback`;
-        script.async = true;
-        script.defer = true;
-        script.setAttribute("data-test-google-api", "true");
+        const script = document.createElement('script')
+        script.src = `https://maps.googleapis.com/maps/api/js?key=${key}&libraries=places&callback=__googleMapsApiTestCallback`
+        script.async = true
+        script.defer = true
+        script.setAttribute('data-test-google-api', 'true')
 
         // Set up success callback
-        (window as any).__googleMapsApiTestCallback = () => {
+        ;(window as any).__googleMapsApiTestCallback = () => {
           // Clean up
-          delete (window as any).__googleMapsApiTestCallback;
-          script.remove();
-          resolve();
-        };
+          delete (window as any).__googleMapsApiTestCallback
+          script.remove()
+          resolve()
+        }
 
         // Handle script errors (invalid API key, quota exceeded, etc.)
         script.onerror = () => {
           // Clean up
-          delete (window as any).__googleMapsApiTestCallback;
-          script.remove();
+          delete (window as any).__googleMapsApiTestCallback
+          script.remove()
           reject(
             new Error(
-              "Failed to load Google Maps API - Invalid API key or configuration"
+              'Failed to load Google Maps API - Invalid API key or configuration'
             )
-          );
-        };
+          )
+        }
 
-        document.head.appendChild(script);
+        document.head.appendChild(script)
 
         // Timeout after 10 seconds
         setTimeout(() => {
           if ((window as any).__googleMapsApiTestCallback) {
-            delete (window as any).__googleMapsApiTestCallback;
-            script.remove();
-            reject(new Error("Google Maps API validation timeout"));
+            delete (window as any).__googleMapsApiTestCallback
+            script.remove()
+            reject(new Error('Google Maps API validation timeout'))
           }
-        }, 10000);
-      });
+        }, 10000)
+      })
 
-      await testPromise;
+      await testPromise
 
       // If we get here, the API key is valid
-      setValidationError(null);
+      setValidationError(null)
     } catch (error) {
-      console.error("Google Places API validation error:", error);
+      console.error('Google Places API validation error:', error)
 
       if (error instanceof Error) {
-        if (error.message.includes("Invalid API key")) {
+        if (error.message.includes('Invalid API key')) {
           setValidationError(
-            "Invalid Google Places API key. Please check your key and try again."
-          );
-        } else if (error.message.includes("timeout")) {
+            'Invalid Google Places API key. Please check your key and try again.'
+          )
+        } else if (error.message.includes('timeout')) {
           setValidationError(
-            "API key validation timed out. Please check your internet connection."
-          );
+            'API key validation timed out. Please check your internet connection.'
+          )
         } else {
           setValidationError(
-            "Failed to validate Google Places API key. Please ensure the key is valid and Places API is enabled."
-          );
+            'Failed to validate Google Places API key. Please ensure the key is valid and Places API is enabled.'
+          )
         }
       } else {
         setValidationError(
-          "Failed to validate Google Places API key. Please check your key and try again."
-        );
+          'Failed to validate Google Places API key. Please check your key and try again.'
+        )
       }
     } finally {
-      setIsValidating(false);
+      setIsValidating(false)
     }
-  };
+  }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newValue = e.target.value;
-    setApiKey(newValue);
-    onApiKeyChange(newValue);
+    const newValue = e.target.value
+    setApiKey(newValue)
+    onApiKeyChange(newValue)
 
     // Clear validation error when user starts typing
     if (validationError) {
-      setValidationError(null);
+      setValidationError(null)
     }
 
     // Validate after a short delay to avoid too many requests
     const timeoutId = setTimeout(() => {
-      validateApiKey(newValue);
-    }, 500);
+      validateApiKey(newValue)
+    }, 500)
 
-    return () => clearTimeout(timeoutId);
-  };
+    return () => clearTimeout(timeoutId)
+  }
 
   return (
     <div className={`flex flex-col gap-2 ${className}`}>
@@ -264,7 +264,7 @@ export function GooglePlacesApiInput({
       <div className="flex gap-2 items-center">
         <Input
           id="google-places-api-key"
-          type={showApiKey ? "text" : "password"}
+          type={showApiKey ? 'text' : 'password'}
           placeholder="Enter your Google Places API key..."
           className="max-w-[300px]"
           value={apiKey}
@@ -297,7 +297,7 @@ export function GooglePlacesApiInput({
       )}
 
       <p className="text-sm text-gray-500">
-        Don't have a Google Places API key?{" "}
+        Don't have a Google Places API key?{' '}
         <a
           href="https://console.cloud.google.com/apis/credentials"
           target="_blank"
@@ -305,9 +305,9 @@ export function GooglePlacesApiInput({
           className="text-blue-600 hover:text-blue-800 underline"
         >
           Get one here
-        </a>{" "}
+        </a>{' '}
         (Enable Places API in Google Cloud Console)
       </p>
     </div>
-  );
+  )
 }

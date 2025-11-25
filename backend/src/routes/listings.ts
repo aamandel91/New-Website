@@ -1,21 +1,30 @@
-import Router from "@koa/router";
-import { container } from "tsyringe";
-import ListingsService from "../services/listings.js";
-import { Middleware } from "koa-jwt";
-import { listingCountSchema, listingSearchSchema, listingSimilarSchema, listingsLocationsSchema, listingsSingleSchema, nlpSchema } from "../validate/listings.js";
-import { ApiError } from "../lib/errors.js";
-import { type AppConfig } from "../config.js";
-import _debug from "debug";
-import type { EventsCollectionMiddleware } from "../providers/middleware/eventsCollection.js";
-import SelectViewPropertyParams from "../services/eventsCollection/selectors/selectViewPropertyParams.js";
-import { RplClass } from "../types/repliers.js";
-import { UserRole } from "../constants.js";
-const debug = _debug("repliers:routes:listings");
+import Router from '@koa/router'
+import { container } from 'tsyringe'
+import ListingsService from '../services/listings.js'
+import { Middleware } from 'koa-jwt'
+import {
+  listingCountSchema,
+  listingSearchSchema,
+  listingSimilarSchema,
+  listingsLocationsSchema,
+  listingsSingleSchema,
+  nlpSchema
+} from '../validate/listings.js'
+import { ApiError } from '../lib/errors.js'
+import { type AppConfig } from '../config.js'
+import _debug from 'debug'
+import type { EventsCollectionMiddleware } from '../providers/middleware/eventsCollection.js'
+import SelectViewPropertyParams from '../services/eventsCollection/selectors/selectViewPropertyParams.js'
+import { RplClass } from '../types/repliers.js'
+import { UserRole } from '../constants.js'
+const debug = _debug('repliers:routes:listings')
 const router = new Router({
-   prefix: "/listings"
-});
-const authMiddleware = container.resolve<Middleware>("middleware.jwt.passthrough");
-const config = container.resolve<AppConfig>("config");
+  prefix: '/listings'
+})
+const authMiddleware = container.resolve<Middleware>(
+  'middleware.jwt.passthrough'
+)
+const config = container.resolve<AppConfig>('config')
 
 /**
  * @openapi
@@ -644,290 +653,282 @@ const config = container.resolve<AppConfig>("config");
  *          400:
  *             $ref: '#/components/responses/BadRequest'
  */
-router.post("/search", authMiddleware, async ctx => {
-   ctx.state['enable.xff'] = true;
-   const listingsService = ctx.state.container.resolve(ListingsService);
-   debug("/search query: %O", ctx.request.query);
-   const payload = {
-      ...ctx.request.query,
-      body: ctx.request.body,
-      app_state: {
-         user: ctx.state["user"]
-      }
-   };
-   const {
-      error,
-      value
-   } = listingSearchSchema.validate(payload);
-   if (error) {
-      ctx.throw(new ApiError(error.message, 400));
-      return;
-   }
-   ctx.body = await listingsService.search(value);
-});
-router.get("/search", authMiddleware, async ctx => {
-   ctx.state['enable.xff'] = true;
-   const listingsService = ctx.state.container.resolve(ListingsService);
-   debug("/search query: %O", ctx.request.query);
-   const payload = {
-      ...ctx.request.query,
-      app_state: {
-         user: ctx.state["user"]
-      }
-   };
-   const {
-      error,
-      value
-   } = listingSearchSchema.validate(payload);
-   if (error) {
-      ctx.throw(new ApiError(error.message, 400));
-      return;
-   }
-   ctx.body = await listingsService.search(value);
-});
-router.get("/count", authMiddleware, async ctx => {
-   ctx.state['enable.xff'] = true;
-   const listingsService = ctx.state.container.resolve(ListingsService);
-   debug("/count query: %O", ctx.request.query);
-   const {
-      error,
-      value
-   } = listingCountSchema.validate(ctx.request.query);
-   if (error) {
-      ctx.throw(new ApiError(error.message, 400));
-      return;
-   }
-   ctx.body = await listingsService.count(value);
-});
+router.post('/search', authMiddleware, async (ctx) => {
+  ctx.state['enable.xff'] = true
+  const listingsService = ctx.state.container.resolve(ListingsService)
+  debug('/search query: %O', ctx.request.query)
+  const payload = {
+    ...ctx.request.query,
+    body: ctx.request.body,
+    app_state: {
+      user: ctx.state['user']
+    }
+  }
+  const { error, value } = listingSearchSchema.validate(payload)
+  if (error) {
+    ctx.throw(new ApiError(error.message, 400))
+    return
+  }
+  ctx.body = await listingsService.search(value)
+})
+router.get('/search', authMiddleware, async (ctx) => {
+  ctx.state['enable.xff'] = true
+  const listingsService = ctx.state.container.resolve(ListingsService)
+  debug('/search query: %O', ctx.request.query)
+  const payload = {
+    ...ctx.request.query,
+    app_state: {
+      user: ctx.state['user']
+    }
+  }
+  const { error, value } = listingSearchSchema.validate(payload)
+  if (error) {
+    ctx.throw(new ApiError(error.message, 400))
+    return
+  }
+  ctx.body = await listingsService.search(value)
+})
+router.get('/count', authMiddleware, async (ctx) => {
+  ctx.state['enable.xff'] = true
+  const listingsService = ctx.state.container.resolve(ListingsService)
+  debug('/count query: %O', ctx.request.query)
+  const { error, value } = listingCountSchema.validate(ctx.request.query)
+  if (error) {
+    ctx.throw(new ApiError(error.message, 400))
+    return
+  }
+  ctx.body = await listingsService.count(value)
+})
 
 /**
-*  @openapi
-*     /api/listings/{propertyId}/similar:
-*        get:
-*           tags:
-*              - Listings
-*           summary:
-*           security:
-*              - bearerAuth: []
-*           parameters:
-*              - in: path
-*                name:  propertyId
-*                schema:
-*                    type: string
-*              - in: query
-*                name: boardId
-*                schema:
-*                   type: array
-*                   items:
-*                      type: integer
-*                      format: int32
-*              - in: query
-*                name: listPriceRange
-*                schema:
-*                   type: integer
-*                   format: int32
-*              - in: query
-*                name: radius
-*                schema:
-*                   type: integer
-*                   format: int32
-*              - in: query
-*                name: sortBy
-*                schema:
-*                   $ref: '#/components/schemas/RplSimilarSortBy'
-*           responses:
-*              200:
-*                 description: List of simillar properties
-*                 content:
-*                    application/json:
-*                       schema:
-*                          type: object
-*              400:
-*                 $ref: '#/components/responses/BadRequest'
-*              401:
-*                 $ref: '#/components/responses/Unauthorized'
-*/
-router.get("/:propertyId/similar", authMiddleware, async ctx => {
-   ctx.state['enable.xff'] = true;
-   const listingsService = ctx.state.container.resolve(ListingsService);
-   const payload = {
-      ...ctx.request.query,
-      propertyId: ctx.params["propertyId"],
-      app_state: {
-         user: ctx.state["user"]
-      }
-   };
-   const {
-      error,
-      value
-   } = listingSimilarSchema.validate(payload);
-   if (error) {
-      ctx.throw(new ApiError(error.message, 400));
-      return;
-   }
-   ctx.body = await listingsService.similar(value);
-});
+ *  @openapi
+ *     /api/listings/{propertyId}/similar:
+ *        get:
+ *           tags:
+ *              - Listings
+ *           summary:
+ *           security:
+ *              - bearerAuth: []
+ *           parameters:
+ *              - in: path
+ *                name:  propertyId
+ *                schema:
+ *                    type: string
+ *              - in: query
+ *                name: boardId
+ *                schema:
+ *                   type: array
+ *                   items:
+ *                      type: integer
+ *                      format: int32
+ *              - in: query
+ *                name: listPriceRange
+ *                schema:
+ *                   type: integer
+ *                   format: int32
+ *              - in: query
+ *                name: radius
+ *                schema:
+ *                   type: integer
+ *                   format: int32
+ *              - in: query
+ *                name: sortBy
+ *                schema:
+ *                   $ref: '#/components/schemas/RplSimilarSortBy'
+ *           responses:
+ *              200:
+ *                 description: List of simillar properties
+ *                 content:
+ *                    application/json:
+ *                       schema:
+ *                          type: object
+ *              400:
+ *                 $ref: '#/components/responses/BadRequest'
+ *              401:
+ *                 $ref: '#/components/responses/Unauthorized'
+ */
+router.get('/:propertyId/similar', authMiddleware, async (ctx) => {
+  ctx.state['enable.xff'] = true
+  const listingsService = ctx.state.container.resolve(ListingsService)
+  const payload = {
+    ...ctx.request.query,
+    propertyId: ctx.params['propertyId'],
+    app_state: {
+      user: ctx.state['user']
+    }
+  }
+  const { error, value } = listingSimilarSchema.validate(payload)
+  if (error) {
+    ctx.throw(new ApiError(error.message, 400))
+    return
+  }
+  ctx.body = await listingsService.similar(value)
+})
 
 /**
-*  @openapi
-*     /api/listings/locations:
-*        get:
-*           tags:
-*              - Listings
-*           summary:
-*           security:
-*              - bearerAuth: []
-*           parameters:
-*              - in: query
-*                name: boardId
-*                schema:
-*                   type: integer
-*                   format: number
-*              - in: query
-*                name: area
-*                schema:
-*                   type: string
-*              - in: query
-*                name: city
-*                schema:
-*                   type: string
-*              - in: query
-*                name: neighborhood
-*                schema:
-*                   type: string
-*              - in: query
-*                name: activeCountLimit
-*                schema:
-*                   type: number
-*                   format: int32
-*           responses:
-*              200:
-*                 description:
-*                 content:
-*                    application/json:
-*                       schema:
-*                          type: object
-*              400:
-*                 $ref: '#/components/responses/BadRequest'
-*              401:
-*                 $ref: '#/components/responses/Unauthorized'
-*/
-router.get("/locations", authMiddleware, async ctx => {
-   ctx.state['enable.xff'] = true;
-   const dropCoordinates = ctx.request.query["dropCoordinates"] === undefined ? config.settings.locations.drop_coordinates : ctx.request.query["dropCoordinates"];
-   const payload = {
-      ...ctx.request.query,
-      class: [RplClass.residential, RplClass.condo],
-      dropCoordinates
-   };
-   const {
-      error,
-      value
-   } = listingsLocationsSchema.validate(payload);
-   if (error) {
-      ctx.throw(new ApiError(error.message, 400));
-      return;
-   }
-   const listingsService = ctx.state.container.resolve(ListingsService);
-   const data = await listingsService.locations(value);
-   if ("expires" in data) {
-      ctx.set("Cache-Control", `private, max-age = ${data.expires}`);
-      ctx.body = data.result;
-   } else {
-      ctx.body = data;
-   }
-});
-router.post('/nlp', authMiddleware, async ctx => {
-   ctx.state['enable.xff'] = true;
-   const payload = {
-      ...ctx.request.body,
-      state: {
-         user: ctx.state["user"]
-      }
-   };
-   const {
-      error,
-      value
-   } = nlpSchema.validate(payload);
-   if (error) {
-      ctx.throw(new ApiError(error.message, 400));
-      return;
-   }
-   const listingsService = ctx.state.container.resolve(ListingsService);
-   ctx.body = await listingsService.nlp(value);
-});
+ *  @openapi
+ *     /api/listings/locations:
+ *        get:
+ *           tags:
+ *              - Listings
+ *           summary:
+ *           security:
+ *              - bearerAuth: []
+ *           parameters:
+ *              - in: query
+ *                name: boardId
+ *                schema:
+ *                   type: integer
+ *                   format: number
+ *              - in: query
+ *                name: area
+ *                schema:
+ *                   type: string
+ *              - in: query
+ *                name: city
+ *                schema:
+ *                   type: string
+ *              - in: query
+ *                name: neighborhood
+ *                schema:
+ *                   type: string
+ *              - in: query
+ *                name: activeCountLimit
+ *                schema:
+ *                   type: number
+ *                   format: int32
+ *           responses:
+ *              200:
+ *                 description:
+ *                 content:
+ *                    application/json:
+ *                       schema:
+ *                          type: object
+ *              400:
+ *                 $ref: '#/components/responses/BadRequest'
+ *              401:
+ *                 $ref: '#/components/responses/Unauthorized'
+ */
+router.get('/locations', authMiddleware, async (ctx) => {
+  ctx.state['enable.xff'] = true
+  const dropCoordinates =
+    ctx.request.query['dropCoordinates'] === undefined
+      ? config.settings.locations.drop_coordinates
+      : ctx.request.query['dropCoordinates']
+  const payload = {
+    ...ctx.request.query,
+    class: [RplClass.residential, RplClass.condo],
+    dropCoordinates
+  }
+  const { error, value } = listingsLocationsSchema.validate(payload)
+  if (error) {
+    ctx.throw(new ApiError(error.message, 400))
+    return
+  }
+  const listingsService = ctx.state.container.resolve(ListingsService)
+  const data = await listingsService.locations(value)
+  if ('expires' in data) {
+    ctx.set('Cache-Control', `private, max-age = ${data.expires}`)
+    ctx.body = data.result
+  } else {
+    ctx.body = data
+  }
+})
+router.post('/nlp', authMiddleware, async (ctx) => {
+  ctx.state['enable.xff'] = true
+  const payload = {
+    ...ctx.request.body,
+    state: {
+      user: ctx.state['user']
+    }
+  }
+  const { error, value } = nlpSchema.validate(payload)
+  if (error) {
+    ctx.throw(new ApiError(error.message, 400))
+    return
+  }
+  const listingsService = ctx.state.container.resolve(ListingsService)
+  ctx.body = await listingsService.nlp(value)
+})
 
 /**
-*  @openapi
-*     /api/listings/{mlsNumber}:
-*        get:
-*           tags:
-*              - Listings
-*           summary:
-*           security:
-*              - bearerAuth: []
-*           parameters:
-*              - in: path
-*                name:  mlsNumber
-*                schema:
-*                    type: integer
-*                    format: int32
-*                required: true
-*              - in: query
-*                name: boardId
-*                schema:
-*                   type: integer
-*                   format: number
-*              - in: query
-*                name: fields
-*                schema:
-*                   type: string
-*                   enum: [raw]
-*           responses:
-*              200:
-*                 description:
-*                 content:
-*                    application/json:
-*                       schema:
-*                          type: object
-*              400:
-*                 $ref: '#/components/responses/BadRequest'
-*              401:
-*                 $ref: '#/components/responses/Unauthorized'
-*/
-router.get('/:mlsNumber', authMiddleware, async (ctx, next) => {
-   ctx.state['enable.xff'] = true;
-   const listingsService = ctx.state.container.resolve(ListingsService);
-   const payload = {
+ *  @openapi
+ *     /api/listings/{mlsNumber}:
+ *        get:
+ *           tags:
+ *              - Listings
+ *           summary:
+ *           security:
+ *              - bearerAuth: []
+ *           parameters:
+ *              - in: path
+ *                name:  mlsNumber
+ *                schema:
+ *                    type: integer
+ *                    format: int32
+ *                required: true
+ *              - in: query
+ *                name: boardId
+ *                schema:
+ *                   type: integer
+ *                   format: number
+ *              - in: query
+ *                name: fields
+ *                schema:
+ *                   type: string
+ *                   enum: [raw]
+ *           responses:
+ *              200:
+ *                 description:
+ *                 content:
+ *                    application/json:
+ *                       schema:
+ *                          type: object
+ *              400:
+ *                 $ref: '#/components/responses/BadRequest'
+ *              401:
+ *                 $ref: '#/components/responses/Unauthorized'
+ */
+router.get(
+  '/:mlsNumber',
+  authMiddleware,
+  async (ctx, next) => {
+    ctx.state['enable.xff'] = true
+    const listingsService = ctx.state.container.resolve(ListingsService)
+    const payload = {
       mlsNumber: ctx.params['mlsNumber'],
       ...ctx.request.query,
       app_state: {
-         user: ctx.state["user"]
+        user: ctx.state['user']
       }
-   };
-   const {
-      error,
-      value
-   } = listingsSingleSchema.validate(payload);
-   if (error) {
-      ctx.throw(new ApiError(error.message, 400));
-      return;
-   }
-   const data = await listingsService.single(value);
-   debug("[/:mlsNumber]: %O", data);
-   ctx.body = data;
-   next();
-}, (ctx, next) => {
-   const user = ctx.state["user"];
-   if (user && user.role === UserRole.Agent) {
+    }
+    const { error, value } = listingsSingleSchema.validate(payload)
+    if (error) {
+      ctx.throw(new ApiError(error.message, 400))
+      return
+    }
+    const data = await listingsService.single(value)
+    debug('[/:mlsNumber]: %O', data)
+    ctx.body = data
+    next()
+  },
+  (ctx, next) => {
+    const user = ctx.state['user']
+    if (user && user.role === UserRole.Agent) {
       // skipping view events for agents
-      return next();
-   }
-   const selectViewPropertyParams = ctx.state.container.resolve(SelectViewPropertyParams);
-   const eventsCollectionMiddleware = ctx.state.container.resolve<EventsCollectionMiddleware>("middleware.eventsCollection");
-   const showPropertyEventsCollector = eventsCollectionMiddleware({
+      return next()
+    }
+    const selectViewPropertyParams = ctx.state.container.resolve(
+      SelectViewPropertyParams
+    )
+    const eventsCollectionMiddleware =
+      ctx.state.container.resolve<EventsCollectionMiddleware>(
+        'middleware.eventsCollection'
+      )
+    const showPropertyEventsCollector = eventsCollectionMiddleware({
       selector: selectViewPropertyParams.select
-   });
-   return showPropertyEventsCollector(ctx, next);
-});
-export default router;
+    })
+    return showPropertyEventsCollector(ctx, next)
+  }
+)
+export default router

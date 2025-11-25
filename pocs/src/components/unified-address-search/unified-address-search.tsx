@@ -1,49 +1,49 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from 'react'
 
 // Types
 interface AddressComponents {
-  city: string;
-  streetNumber: string;
-  streetName: string;
-  streetSuffix: string;
-  state: string;
-  postalCode: string;
-  country: string;
+  city: string
+  streetNumber: string
+  streetName: string
+  streetSuffix: string
+  state: string
+  postalCode: string
+  country: string
 }
 
 interface GoogleAddressComponent {
-  long_name: string;
-  short_name: string;
-  types: string[];
+  long_name: string
+  short_name: string
+  types: string[]
 }
 
 interface PlaceDetails {
-  address: AddressComponents;
-  formattedAddress: string;
-  placeId: string;
+  address: AddressComponents
+  formattedAddress: string
+  placeId: string
   geometry?: {
-    lat: number;
-    lng: number;
-  };
+    lat: number
+    lng: number
+  }
 }
 
 interface UnifiedAddressSearchProps {
-  onPlaceSelect: (place: PlaceDetails) => void;
-  placeholder?: string;
-  className?: string;
-  disabled?: boolean;
-  displayAddressComponents?: boolean;
+  onPlaceSelect: (place: PlaceDetails) => void
+  placeholder?: string
+  className?: string
+  disabled?: boolean
+  displayAddressComponents?: boolean
 }
 
 // Declare Google Maps types
 declare global {
   interface Window {
-    google: any;
+    google: any
   }
 }
 
 // Hardcoded API key (restricted to specific domains)
-const GOOGLE_PLACES_API_KEY = "AIzaSyBqlRCVfRWu5PagapW3CsV1VVba9fIdknA";
+const GOOGLE_PLACES_API_KEY = 'AIzaSyBqlRCVfRWu5PagapW3CsV1VVba9fIdknA'
 
 /**
  * UnifiedAddressSearch Component
@@ -54,210 +54,210 @@ const GOOGLE_PLACES_API_KEY = "AIzaSyBqlRCVfRWu5PagapW3CsV1VVba9fIdknA";
  */
 export function UnifiedAddressSearch({
   onPlaceSelect,
-  placeholder = "Enter an address...",
+  placeholder = 'Enter an address...',
   className,
   disabled = false,
-  displayAddressComponents = false,
+  displayAddressComponents = false
 }: UnifiedAddressSearchProps) {
-  const inputRef = useRef<HTMLInputElement>(null);
-  const autocompleteRef = useRef<any>(null);
-  const [isGoogleLoaded, setIsGoogleLoaded] = useState(false);
-  const [loadingError, setLoadingError] = useState<string | null>(null);
-  const [savedAddress, setSavedAddress] = useState<PlaceDetails | null>(null);
+  const inputRef = useRef<HTMLInputElement>(null)
+  const autocompleteRef = useRef<any>(null)
+  const [isGoogleLoaded, setIsGoogleLoaded] = useState(false)
+  const [loadingError, setLoadingError] = useState<string | null>(null)
+  const [savedAddress, setSavedAddress] = useState<PlaceDetails | null>(null)
 
   // Load Google Maps API
   useEffect(() => {
     const loadGoogleMapsAPI = async () => {
       if (window.google?.maps?.places?.Autocomplete) {
-        setIsGoogleLoaded(true);
-        return;
+        setIsGoogleLoaded(true)
+        return
       }
 
       try {
-        const script = document.createElement("script");
-        script.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_PLACES_API_KEY}&libraries=places&loading=async&v=weekly`;
-        script.async = true;
-        script.defer = true;
+        const script = document.createElement('script')
+        script.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_PLACES_API_KEY}&libraries=places&loading=async&v=weekly`
+        script.async = true
+        script.defer = true
 
         const loadPromise = new Promise<void>((resolve, reject) => {
           script.onload = () => {
             // Wait for Google Maps to be fully initialized
             const checkGoogleMaps = () => {
               if (window.google?.maps?.places?.Autocomplete) {
-                resolve();
+                resolve()
               } else {
-                setTimeout(checkGoogleMaps, 100);
+                setTimeout(checkGoogleMaps, 100)
               }
-            };
-            checkGoogleMaps();
-          };
+            }
+            checkGoogleMaps()
+          }
           script.onerror = (error) => {
-            console.error("Script loading failed:", error);
-            reject(new Error("Failed to load Google Maps API script"));
-          };
-        });
+            console.error('Script loading failed:', error)
+            reject(new Error('Failed to load Google Maps API script'))
+          }
+        })
 
-        document.head.appendChild(script);
-        await loadPromise;
-        setIsGoogleLoaded(true);
-        setLoadingError(null);
+        document.head.appendChild(script)
+        await loadPromise
+        setIsGoogleLoaded(true)
+        setLoadingError(null)
       } catch (error) {
-        console.error("Error loading Google Maps API:", error);
-        setIsGoogleLoaded(false);
+        console.error('Error loading Google Maps API:', error)
+        setIsGoogleLoaded(false)
         setLoadingError(
           error instanceof Error
             ? error.message
-            : "Failed to load Google Maps API"
-        );
+            : 'Failed to load Google Maps API'
+        )
       }
-    };
+    }
 
-    loadGoogleMapsAPI();
-  }, []);
+    loadGoogleMapsAPI()
+  }, [])
 
   // Initialize autocomplete
   useEffect(() => {
     if (!isGoogleLoaded || !inputRef.current || autocompleteRef.current) {
-      return;
+      return
     }
 
     // Double-check that Google Maps is actually available
     if (!window.google?.maps?.places?.Autocomplete) {
       console.error(
-        "Google Maps Autocomplete not available even though isGoogleLoaded is true"
-      );
-      setIsGoogleLoaded(false);
-      return;
+        'Google Maps Autocomplete not available even though isGoogleLoaded is true'
+      )
+      setIsGoogleLoaded(false)
+      return
     }
 
     try {
       const autocomplete = new window.google.maps.places.Autocomplete(
         inputRef.current,
         {
-          types: ["address"],
+          types: ['address'],
           fields: [
-            "address_components",
-            "formatted_address",
-            "place_id",
-            "geometry",
-          ],
+            'address_components',
+            'formatted_address',
+            'place_id',
+            'geometry'
+          ]
         }
-      );
+      )
 
-      autocompleteRef.current = autocomplete;
+      autocompleteRef.current = autocomplete
 
       const handlePlaceChanged = () => {
-        const place = autocomplete.getPlace();
+        const place = autocomplete.getPlace()
 
         if (!place.address_components) {
-          return;
+          return
         }
 
         const addressComponents: AddressComponents = {
-          city: "",
-          streetNumber: "",
-          streetName: "",
-          streetSuffix: "",
-          state: "",
-          postalCode: "",
-          country: "",
-        };
+          city: '',
+          streetNumber: '',
+          streetName: '',
+          streetSuffix: '',
+          state: '',
+          postalCode: '',
+          country: ''
+        }
 
         place.address_components.forEach(
           (component: GoogleAddressComponent) => {
-            const types = component.types;
-            const value = component.long_name;
+            const types = component.types
+            const value = component.long_name
 
-            if (types.includes("street_number")) {
-              addressComponents.streetNumber = value;
-            } else if (types.includes("route")) {
+            if (types.includes('street_number')) {
+              addressComponents.streetNumber = value
+            } else if (types.includes('route')) {
               // Parse street name and suffix
-              const parts = value.split(" ");
+              const parts = value.split(' ')
               if (parts.length > 1) {
-                const lastPart = parts[parts.length - 1].toLowerCase();
+                const lastPart = parts[parts.length - 1].toLowerCase()
                 const commonSuffixes = [
-                  "street",
-                  "st",
-                  "avenue",
-                  "ave",
-                  "road",
-                  "rd",
-                  "boulevard",
-                  "blvd",
-                  "lane",
-                  "ln",
-                  "drive",
-                  "dr",
-                  "court",
-                  "ct",
-                  "circle",
-                  "cir",
-                  "way",
-                  "place",
-                  "pl",
-                  "terrace",
-                  "ter",
-                  "trail",
-                  "trl",
-                  "parkway",
-                  "pkwy",
-                  "square",
-                  "sq",
-                  "highway",
-                  "hwy",
-                ];
+                  'street',
+                  'st',
+                  'avenue',
+                  'ave',
+                  'road',
+                  'rd',
+                  'boulevard',
+                  'blvd',
+                  'lane',
+                  'ln',
+                  'drive',
+                  'dr',
+                  'court',
+                  'ct',
+                  'circle',
+                  'cir',
+                  'way',
+                  'place',
+                  'pl',
+                  'terrace',
+                  'ter',
+                  'trail',
+                  'trl',
+                  'parkway',
+                  'pkwy',
+                  'square',
+                  'sq',
+                  'highway',
+                  'hwy'
+                ]
 
                 if (commonSuffixes.includes(lastPart)) {
-                  addressComponents.streetSuffix = parts.pop() || "";
-                  addressComponents.streetName = parts.join(" ");
+                  addressComponents.streetSuffix = parts.pop() || ''
+                  addressComponents.streetName = parts.join(' ')
                 } else {
-                  addressComponents.streetName = value;
+                  addressComponents.streetName = value
                 }
               } else {
-                addressComponents.streetName = value;
+                addressComponents.streetName = value
               }
-            } else if (types.includes("locality")) {
-              addressComponents.city = value;
-            } else if (types.includes("administrative_area_level_1")) {
-              addressComponents.state = value;
-            } else if (types.includes("postal_code")) {
-              addressComponents.postalCode = value;
-            } else if (types.includes("country")) {
-              addressComponents.country = value;
+            } else if (types.includes('locality')) {
+              addressComponents.city = value
+            } else if (types.includes('administrative_area_level_1')) {
+              addressComponents.state = value
+            } else if (types.includes('postal_code')) {
+              addressComponents.postalCode = value
+            } else if (types.includes('country')) {
+              addressComponents.country = value
             }
           }
-        );
+        )
 
         const placeDetails: PlaceDetails = {
           address: addressComponents,
-          formattedAddress: place.formatted_address || "",
-          placeId: place.place_id || "",
+          formattedAddress: place.formatted_address || '',
+          placeId: place.place_id || '',
           geometry: place.geometry
             ? {
                 lat: place.geometry.location.lat(),
-                lng: place.geometry.location.lng(),
+                lng: place.geometry.location.lng()
               }
-            : undefined,
-        };
+            : undefined
+        }
 
-        setSavedAddress(placeDetails);
-        onPlaceSelect(placeDetails);
-      };
+        setSavedAddress(placeDetails)
+        onPlaceSelect(placeDetails)
+      }
 
-      autocomplete.addListener("place_changed", handlePlaceChanged);
+      autocomplete.addListener('place_changed', handlePlaceChanged)
 
       return () => {
         if (autocompleteRef.current) {
           window.google.maps.event.clearInstanceListeners(
             autocompleteRef.current
-          );
-          autocompleteRef.current = null;
+          )
+          autocompleteRef.current = null
         }
-      };
+      }
     } catch (error) {
-      console.error("Error initializing autocomplete:", error);
+      console.error('Error initializing autocomplete:', error)
     }
-  }, [isGoogleLoaded, onPlaceSelect]);
+  }, [isGoogleLoaded, onPlaceSelect])
 
   return (
     <div className={className}>
@@ -320,5 +320,5 @@ export function UnifiedAddressSearch({
         )}
       </div>
     </div>
-  );
+  )
 }

@@ -1,26 +1,26 @@
-import { ApiRequest, ApiResponse } from "./index.js";
+import { ApiRequest, ApiResponse } from './index.js'
 
 export interface AddRequest extends ApiRequest {
-   clientId: number;
-   mlsNumber: string;
-   boardId?: number;
+  clientId: number
+  mlsNumber: string
+  boardId?: number
 }
 
 export interface AddResponse extends ApiResponse {}
 export interface DeleteRequest extends ApiRequest {
-   favoriteId: number;
+  favoriteId: number
 }
 export interface DeleteResponse extends ApiResponse {}
 export interface GetRequest extends ApiRequest {
-   clientId: number;
+  clientId: number
 }
 export interface GetResponse extends ApiResponse {
-   page: number;
-   numPages: number;
-   pageSize: number;
-   count: number;
-   favorites: Array<{
-      [key: string]: unknown;
-      favoriteId: number;
-   }>;
+  page: number
+  numPages: number
+  pageSize: number
+  count: number
+  favorites: Array<{
+    [key: string]: unknown
+    favoriteId: number
+  }>
 }

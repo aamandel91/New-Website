@@ -1,31 +1,40 @@
-import Router from "@koa/router";
-import { container } from "tsyringe";
-import { Middleware } from "koa-jwt";
-import { ApiError } from "../lib/errors.js";
-import { maybeClientId } from "../lib/utils.js";
-import EstimateService from "../services/estimate.js";
-import { deleteEstimateSchema, estimateAddSchema, estimateGetSchema, estimatePatchSchema, estimatePropertyDetailsSchema, estimatesByClientIdGetSchema } from "../validate/estimate.js";
-import { EventsCollectionMiddleware } from "../providers/middleware/eventsCollection.js";
-import SelectEstimateParams from "../services/eventsCollection/selectors/selectEstimateParams.js";
-import SelectViewEstimateParams from "../services/eventsCollection/selectors/selectViewEstimateParams.js";
-import { UserRole } from "../constants.js";
-import { Context, Next } from "koa";
-import SelectEstimateNoteParams from "../services/eventsCollection/selectors/selectEstimateNoteParams.js";
+import Router from '@koa/router'
+import { container } from 'tsyringe'
+import { Middleware } from 'koa-jwt'
+import { ApiError } from '../lib/errors.js'
+import { maybeClientId } from '../lib/utils.js'
+import EstimateService from '../services/estimate.js'
+import {
+  deleteEstimateSchema,
+  estimateAddSchema,
+  estimateGetSchema,
+  estimatePatchSchema,
+  estimatePropertyDetailsSchema,
+  estimatesByClientIdGetSchema
+} from '../validate/estimate.js'
+import { EventsCollectionMiddleware } from '../providers/middleware/eventsCollection.js'
+import SelectEstimateParams from '../services/eventsCollection/selectors/selectEstimateParams.js'
+import SelectViewEstimateParams from '../services/eventsCollection/selectors/selectViewEstimateParams.js'
+import { UserRole } from '../constants.js'
+import { Context, Next } from 'koa'
+import SelectEstimateNoteParams from '../services/eventsCollection/selectors/selectEstimateNoteParams.js'
 const router = new Router({
-   prefix: "/estimate"
-});
-const authMiddleware = container.resolve<Middleware>("middleware.jwt.passthrough");
-const authBlockingMiddleware = container.resolve<Middleware>("middleware.jwt");
+  prefix: '/estimate'
+})
+const authMiddleware = container.resolve<Middleware>(
+  'middleware.jwt.passthrough'
+)
+const authBlockingMiddleware = container.resolve<Middleware>('middleware.jwt')
 async function assertOwnership(ctx: Context, next: Next) {
-   const estimateService = ctx.state.container.resolve(EstimateService);
-   const userId = ctx.state["user"].sub;
-   const isOwnEstimate = await estimateService.checkOwnership({
-      estimateId: +ctx["params"].estimateId,
-      userId,
-      userRole: UserRole.User
-   });
-   ctx.assert(isOwnEstimate, 403, "You are not allowed to access this estimate");
-   return next();
+  const estimateService = ctx.state.container.resolve(EstimateService)
+  const userId = ctx.state['user'].sub
+  const isOwnEstimate = await estimateService.checkOwnership({
+    estimateId: +ctx['params'].estimateId,
+    userId,
+    userRole: UserRole.User
+  })
+  ctx.assert(isOwnEstimate, 403, 'You are not allowed to access this estimate')
+  return next()
 }
 
 /**
@@ -73,7 +82,7 @@ async function assertOwnership(ctx: Context, next: Next) {
  *                      type: object
  *                      unknown: true
  *
-*/
+ */
 
 /**
  * @openapi
@@ -295,52 +304,62 @@ async function assertOwnership(ctx: Context, next: Next) {
  *          401:
  *             $ref: '#/components/responses/Unauthorized'
  */
-router.post("/", authMiddleware, async (ctx, next) => {
-   ctx.state["enable.xff"] = true;
-   const {
-      error,
-      value
-   } = estimateAddSchema.validate({
+router.post(
+  '/',
+  authMiddleware,
+  async (ctx, next) => {
+    ctx.state['enable.xff'] = true
+    const { error, value } = estimateAddSchema.validate({
       ...ctx.request.body,
-      clientId: maybeClientId(ctx.state?.["user"]?.sub)
-   });
-   if (error) {
-      ctx.throw(new ApiError(error.message, 400));
-      return;
-   }
-   const estimateService = ctx.state.container.resolve(EstimateService);
-   ctx.body = await estimateService.add(value);
-   next();
-}, (ctx, next) => {
-   const eventsCollectionMiddleware = ctx.state.container.resolve<EventsCollectionMiddleware>("middleware.eventsCollection");
-   const selectEstimateParams = ctx.state.container.resolve(SelectEstimateParams);
-   const selectEstimateNoteParams = ctx.state.container.resolve(SelectEstimateNoteParams);
-   const estimateCollector = eventsCollectionMiddleware({
+      clientId: maybeClientId(ctx.state?.['user']?.sub)
+    })
+    if (error) {
+      ctx.throw(new ApiError(error.message, 400))
+      return
+    }
+    const estimateService = ctx.state.container.resolve(EstimateService)
+    ctx.body = await estimateService.add(value)
+    next()
+  },
+  (ctx, next) => {
+    const eventsCollectionMiddleware =
+      ctx.state.container.resolve<EventsCollectionMiddleware>(
+        'middleware.eventsCollection'
+      )
+    const selectEstimateParams =
+      ctx.state.container.resolve(SelectEstimateParams)
+    const selectEstimateNoteParams = ctx.state.container.resolve(
+      SelectEstimateNoteParams
+    )
+    const estimateCollector = eventsCollectionMiddleware({
       selector: selectEstimateParams.select,
       notesSelector: selectEstimateNoteParams.select,
       options: {
-         allowIncognito: true
+        allowIncognito: true
       }
-   });
-   return estimateCollector(ctx, next);
-});
-router.patch("/:estimateId", authBlockingMiddleware, assertOwnership, async ctx => {
-   ctx.state['enable.xff'] = true;
-   const {
-      error,
-      value
-   } = estimatePatchSchema.validate({
+    })
+    return estimateCollector(ctx, next)
+  }
+)
+router.patch(
+  '/:estimateId',
+  authBlockingMiddleware,
+  assertOwnership,
+  async (ctx) => {
+    ctx.state['enable.xff'] = true
+    const { error, value } = estimatePatchSchema.validate({
       ...ctx.request.body,
-      estimateId: ctx.params["estimateId"],
-      clientId: maybeClientId(ctx.state?.["user"]?.sub)
-   });
-   if (error) {
-      ctx.throw(new ApiError(error.message, 400));
-      return;
-   }
-   const estimateService = ctx.state.container.resolve(EstimateService);
-   ctx.body = await estimateService.patch(value);
-});
+      estimateId: ctx.params['estimateId'],
+      clientId: maybeClientId(ctx.state?.['user']?.sub)
+    })
+    if (error) {
+      ctx.throw(new ApiError(error.message, 400))
+      return
+    }
+    const estimateService = ctx.state.container.resolve(EstimateService)
+    ctx.body = await estimateService.patch(value)
+  }
+)
 
 /**
  * @openapi
@@ -367,33 +386,40 @@ router.patch("/:estimateId", authBlockingMiddleware, assertOwnership, async ctx 
  *          404:
  *             $ref: '#/components/responses/NotFound'
  */
-router.get("/", authMiddleware, async (ctx, next) => {
-   ctx.state["enable.xff"] = true;
-   const {
-      error,
-      value
-   } = estimateGetSchema.validate({
+router.get(
+  '/',
+  authMiddleware,
+  async (ctx, next) => {
+    ctx.state['enable.xff'] = true
+    const { error, value } = estimateGetSchema.validate({
       ...ctx.request.query,
-      clientId: maybeClientId(ctx.state?.["user"]?.sub)
-   });
-   if (error) {
-      ctx.throw(new ApiError(error.message, 400));
-      return;
-   }
-   const estimateService = ctx.state.container.resolve(EstimateService);
-   ctx.body = await estimateService.get(value);
-   next();
-}, (ctx, next) => {
-   const eventsCollectionMiddleware = ctx.state.container.resolve<EventsCollectionMiddleware>("middleware.eventsCollection");
-   const selectViewEstimateParams = ctx.state.container.resolve(SelectViewEstimateParams);
-   const viewEstimateCollector = eventsCollectionMiddleware({
+      clientId: maybeClientId(ctx.state?.['user']?.sub)
+    })
+    if (error) {
+      ctx.throw(new ApiError(error.message, 400))
+      return
+    }
+    const estimateService = ctx.state.container.resolve(EstimateService)
+    ctx.body = await estimateService.get(value)
+    next()
+  },
+  (ctx, next) => {
+    const eventsCollectionMiddleware =
+      ctx.state.container.resolve<EventsCollectionMiddleware>(
+        'middleware.eventsCollection'
+      )
+    const selectViewEstimateParams = ctx.state.container.resolve(
+      SelectViewEstimateParams
+    )
+    const viewEstimateCollector = eventsCollectionMiddleware({
       selector: selectViewEstimateParams.select,
       options: {
-         allowIncognito: false
+        allowIncognito: false
       }
-   });
-   return viewEstimateCollector(ctx, next);
-});
+    })
+    return viewEstimateCollector(ctx, next)
+  }
+)
 
 /**
  * @openapi
@@ -412,21 +438,18 @@ router.get("/", authMiddleware, async (ctx, next) => {
  *          404:
  *             $ref: '#/components/responses/NotFound'
  */
-router.get("/my", authBlockingMiddleware, async ctx => {
-   ctx.state["enable.xff"] = true;
-   const {
-      error,
-      value
-   } = estimatesByClientIdGetSchema.validate({
-      clientId: ctx.state?.["user"].sub
-   });
-   if (error) {
-      ctx.throw(new ApiError(error.message, 400));
-      return;
-   }
-   const estimateService = ctx.state.container.resolve(EstimateService);
-   ctx.body = await estimateService.getByClientId(value);
-});
+router.get('/my', authBlockingMiddleware, async (ctx) => {
+  ctx.state['enable.xff'] = true
+  const { error, value } = estimatesByClientIdGetSchema.validate({
+    clientId: ctx.state?.['user'].sub
+  })
+  if (error) {
+    ctx.throw(new ApiError(error.message, 400))
+    return
+  }
+  const estimateService = ctx.state.container.resolve(EstimateService)
+  ctx.body = await estimateService.getByClientId(value)
+})
 
 /**
  * @openapi
@@ -451,25 +474,27 @@ router.get("/my", authBlockingMiddleware, async ctx => {
  *          404:
  *             $ref: '#/components/responses/NotFound'
  */
-router.delete("/:estimateId", authBlockingMiddleware, assertOwnership, async ctx => {
-   ctx.state["enable.xff"] = true;
-   const {
-      error,
-      value
-   } = deleteEstimateSchema.validate({
-      estimateId: ctx.params["estimateId"]
-   });
-   if (error) {
-      ctx.throw(new ApiError(error.message, 400));
-      return;
-   }
-   const estimateService = ctx.state.container.resolve(EstimateService);
-   const result = await estimateService.delete(value);
-   if (!result) {
-      ctx.throw(new ApiError("Not found", 404));
-   }
-   ctx.body = result;
-});
+router.delete(
+  '/:estimateId',
+  authBlockingMiddleware,
+  assertOwnership,
+  async (ctx) => {
+    ctx.state['enable.xff'] = true
+    const { error, value } = deleteEstimateSchema.validate({
+      estimateId: ctx.params['estimateId']
+    })
+    if (error) {
+      ctx.throw(new ApiError(error.message, 400))
+      return
+    }
+    const estimateService = ctx.state.container.resolve(EstimateService)
+    const result = await estimateService.delete(value)
+    if (!result) {
+      ctx.throw(new ApiError('Not found', 404))
+    }
+    ctx.body = result
+  }
+)
 
 /**
  * @openapi
@@ -510,20 +535,19 @@ router.delete("/:estimateId", authBlockingMiddleware, assertOwnership, async ctx
  *          400:
  *             $ref: '#/components/responses/BadRequest'
  */
-router.get("/property_details", authMiddleware, async ctx => {
-   ctx.state["enable.xff"] = true;
-   const {
-      error,
-      value
-   } = estimatePropertyDetailsSchema.validate({
-      ...ctx.request.query,
-      clientId: ctx.state?.["user"]?.sub ? maybeClientId(ctx.state?.["user"]?.sub) : undefined
-   });
-   if (error) {
-      ctx.throw(new ApiError(error.message, 400));
-      return;
-   }
-   const estimateService = ctx.state.container.resolve(EstimateService);
-   ctx.body = await estimateService.propertyDetails(value);
-});
-export default router;
+router.get('/property_details', authMiddleware, async (ctx) => {
+  ctx.state['enable.xff'] = true
+  const { error, value } = estimatePropertyDetailsSchema.validate({
+    ...ctx.request.query,
+    clientId: ctx.state?.['user']?.sub
+      ? maybeClientId(ctx.state?.['user']?.sub)
+      : undefined
+  })
+  if (error) {
+    ctx.throw(new ApiError(error.message, 400))
+    return
+  }
+  const estimateService = ctx.state.container.resolve(EstimateService)
+  ctx.body = await estimateService.propertyDetails(value)
+})
+export default router

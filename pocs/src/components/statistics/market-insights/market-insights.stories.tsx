@@ -1,26 +1,26 @@
-import type { Meta, StoryObj } from "@storybook/react";
-import { MarketInsights } from "./market-insights";
+import type { Meta, StoryObj } from '@storybook/react'
+import { MarketInsights } from './market-insights'
 
 const meta: Meta<typeof MarketInsights> = {
-  title: "POCS/Reports/Market Insights Report",
+  title: 'POCS/Reports/Market Insights Report',
   component: MarketInsights,
   parameters: {
-    layout: "centered",
+    layout: 'centered'
   },
-  tags: ["autodocs"],
-};
+  tags: ['autodocs']
+}
 
-export default meta;
-type Story = StoryObj<typeof MarketInsights>;
+export default meta
+type Story = StoryObj<typeof MarketInsights>
 
 export const MarketInsightsByMLS: Story = {
   args: {
-    by: "mls#",
-  },
-};
+    by: 'mls#'
+  }
+}
 
 export const MarketInsightsByAddress: Story = {
   args: {
-    by: "address",
-  },
-};
+    by: 'address'
+  }
+}

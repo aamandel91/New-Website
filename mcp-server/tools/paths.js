@@ -6,5 +6,5 @@ export const toolPaths = [
   'repliers/repliers-api/buildings.js',
   'repliers/repliers-api/get-a-listing.js',
   'repliers/repliers-api/find-similar-listings.js',
-  'repliers/repliers-api/search.js',
-];
+  'repliers/repliers-api/search.js'
+]

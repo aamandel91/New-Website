@@ -8,42 +8,42 @@
  * @returns {Promise<Object>} - The response from the Repliers API containing deleted listings.
  */
 const executeFunction = async ({ updatedOn, minUpdatedOn, maxUpdatedOn }) => {
-  const baseUrl = 'https://api.repliers.io';
-  const apiKey = process.env.REPLIERS_API_KEY;
+  const baseUrl = 'https://api.repliers.io'
+  const apiKey = process.env.REPLIERS_API_KEY
 
   try {
     // Construct the URL with query parameters
-    const url = new URL(`${baseUrl}/listings/deleted`);
-    url.searchParams.append('updatedOn', updatedOn);
-    url.searchParams.append('minUpdatedOn', minUpdatedOn);
-    url.searchParams.append('maxUpdatedOn', maxUpdatedOn);
+    const url = new URL(`${baseUrl}/listings/deleted`)
+    url.searchParams.append('updatedOn', updatedOn)
+    url.searchParams.append('minUpdatedOn', minUpdatedOn)
+    url.searchParams.append('maxUpdatedOn', maxUpdatedOn)
 
     // Set up headers for the request
     const headers = {
-      'Accept': 'application/json',
+      Accept: 'application/json',
       'REPLIERS-API-KEY': apiKey
-    };
+    }
 
     // Perform the fetch request
     const response = await fetch(url.toString(), {
       method: 'GET',
       headers
-    });
+    })
 
     // Check if the response was successful
     if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData);
+      const errorData = await response.json()
+      throw new Error(errorData)
     }
 
     // Parse and return the response data
-    const data = await response.json();
-    return data;
+    const data = await response.json()
+    return data
   } catch (error) {
-    console.error('Error retrieving deleted listings:', error);
-    return { error: 'An error occurred while retrieving deleted listings.' };
+    console.error('Error retrieving deleted listings:', error)
+    return { error: 'An error occurred while retrieving deleted listings.' }
   }
-};
+}
 
 /**
  * Tool configuration for retrieving deleted listings from the Repliers API.
@@ -76,6 +76,6 @@ const apiTool = {
       }
     }
   }
-};
+}
 
-export { apiTool };
+export { apiTool }

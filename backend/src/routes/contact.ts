@@ -1,18 +1,25 @@
-import Router from "@koa/router";
-import { container } from "tsyringe";
-import { Middleware } from "koa-jwt";
-import { ApiError } from "../lib/errors.js";
-import { maybeClientId } from "../lib/utils.js";
-import { contactContactusSchema, contactRequestInfoSchema, contactScheduleEstimateSchema, contactScheduleSchema } from "../validate/contact.js";
-import ContactService from "../services/contact.js";
-import type { EventsCollectionMiddleware } from "../providers/middleware/eventsCollection.js";
-import SelectContactUsParams from "../services/eventsCollection/selectors/selectContactUsParams.js";
-import SelectRequestInfoParams from "../services/eventsCollection/selectors/selectRequestInfoParams.js";
-import SelectScheduleParams from "../services/eventsCollection/selectors/selectScheduleParams.js";
+import Router from '@koa/router'
+import { container } from 'tsyringe'
+import { Middleware } from 'koa-jwt'
+import { ApiError } from '../lib/errors.js'
+import { maybeClientId } from '../lib/utils.js'
+import {
+  contactContactusSchema,
+  contactRequestInfoSchema,
+  contactScheduleEstimateSchema,
+  contactScheduleSchema
+} from '../validate/contact.js'
+import ContactService from '../services/contact.js'
+import type { EventsCollectionMiddleware } from '../providers/middleware/eventsCollection.js'
+import SelectContactUsParams from '../services/eventsCollection/selectors/selectContactUsParams.js'
+import SelectRequestInfoParams from '../services/eventsCollection/selectors/selectRequestInfoParams.js'
+import SelectScheduleParams from '../services/eventsCollection/selectors/selectScheduleParams.js'
 const router = new Router({
-   prefix: "/contact"
-});
-const authMiddleware = container.resolve<Middleware>("middleware.jwt.passthrough");
+  prefix: '/contact'
+})
+const authMiddleware = container.resolve<Middleware>(
+  'middleware.jwt.passthrough'
+)
 
 /**
  * @openapi
@@ -45,34 +52,41 @@ const authMiddleware = container.resolve<Middleware>("middleware.jwt.passthrough
  *          401:
  *             $ref: '#/components/responses/Unauthorized'
  */
-router.post("/contactus", authMiddleware, async (ctx, next) => {
-   ctx.state['enable.xff'] = true;
-   const {
-      error,
-      value
-   } = contactContactusSchema.validate({
+router.post(
+  '/contactus',
+  authMiddleware,
+  async (ctx, next) => {
+    ctx.state['enable.xff'] = true
+    const { error, value } = contactContactusSchema.validate({
       ...ctx.request.body,
-      clientId: maybeClientId(ctx.state?.["user"]?.sub)
-   });
-   if (error) {
-      ctx.throw(new ApiError(error.message, 400));
-      return;
-   }
-   const contactService = ctx.state.container.resolve(ContactService);
-   await contactService.contactUs(value);
-   ctx.body = "OK";
-   next();
-}, (ctx, next) => {
-   const eventsCollectionMiddleware = ctx.state.container.resolve<EventsCollectionMiddleware>("middleware.eventsCollection");
-   const selectContactUsParams = ctx.state.container.resolve(SelectContactUsParams);
-   const contactUsCollector = eventsCollectionMiddleware({
+      clientId: maybeClientId(ctx.state?.['user']?.sub)
+    })
+    if (error) {
+      ctx.throw(new ApiError(error.message, 400))
+      return
+    }
+    const contactService = ctx.state.container.resolve(ContactService)
+    await contactService.contactUs(value)
+    ctx.body = 'OK'
+    next()
+  },
+  (ctx, next) => {
+    const eventsCollectionMiddleware =
+      ctx.state.container.resolve<EventsCollectionMiddleware>(
+        'middleware.eventsCollection'
+      )
+    const selectContactUsParams = ctx.state.container.resolve(
+      SelectContactUsParams
+    )
+    const contactUsCollector = eventsCollectionMiddleware({
       selector: selectContactUsParams.select,
       options: {
-         allowIncognito: true
+        allowIncognito: true
       }
-   });
-   return contactUsCollector(ctx, next);
-});
+    })
+    return contactUsCollector(ctx, next)
+  }
+)
 
 /**
  * @openapi
@@ -114,51 +128,54 @@ router.post("/contactus", authMiddleware, async (ctx, next) => {
  *          401:
  *             $ref: '#/components/responses/Unauthorized'
  */
-router.post("/schedule", authMiddleware, async (ctx, next) => {
-   ctx.state['enable.xff'] = true;
-   const {
-      error,
-      value
-   } = contactScheduleSchema.validate({
+router.post(
+  '/schedule',
+  authMiddleware,
+  async (ctx, next) => {
+    ctx.state['enable.xff'] = true
+    const { error, value } = contactScheduleSchema.validate({
       ...ctx.request.body,
-      clientId: maybeClientId(ctx.state?.["user"]?.sub)
-   });
-   if (error) {
-      ctx.throw(new ApiError(error.message, 400));
-      return;
-   }
-   const contactService = ctx.state.container.resolve(ContactService);
-   await contactService.schedule(value);
-   ctx.body = "OK";
-   next();
-}, (ctx, next) => {
-   const eventsCollectionMiddleware = ctx.state.container.resolve<EventsCollectionMiddleware>("middleware.eventsCollection");
-   const selectScheduleParams = ctx.state.container.resolve(SelectScheduleParams);
-   const scheduleCollector = eventsCollectionMiddleware({
+      clientId: maybeClientId(ctx.state?.['user']?.sub)
+    })
+    if (error) {
+      ctx.throw(new ApiError(error.message, 400))
+      return
+    }
+    const contactService = ctx.state.container.resolve(ContactService)
+    await contactService.schedule(value)
+    ctx.body = 'OK'
+    next()
+  },
+  (ctx, next) => {
+    const eventsCollectionMiddleware =
+      ctx.state.container.resolve<EventsCollectionMiddleware>(
+        'middleware.eventsCollection'
+      )
+    const selectScheduleParams =
+      ctx.state.container.resolve(SelectScheduleParams)
+    const scheduleCollector = eventsCollectionMiddleware({
       selector: selectScheduleParams.select,
       options: {
-         allowIncognito: true
+        allowIncognito: true
       }
-   });
-   return scheduleCollector(ctx, next);
-});
-router.post("/schedule/estimate", authMiddleware, async ctx => {
-   ctx.state['enable.xff'] = true;
-   const {
-      error,
-      value
-   } = contactScheduleEstimateSchema.validate({
-      ...ctx.request.body,
-      clientId: maybeClientId(ctx.state?.["user"]?.sub)
-   });
-   if (error) {
-      ctx.throw(new ApiError(error.message, 400));
-      return;
-   }
-   const contactService = ctx.state.container.resolve(ContactService);
-   await contactService.scheduleEstimate(value);
-   ctx.body = "OK";
-});
+    })
+    return scheduleCollector(ctx, next)
+  }
+)
+router.post('/schedule/estimate', authMiddleware, async (ctx) => {
+  ctx.state['enable.xff'] = true
+  const { error, value } = contactScheduleEstimateSchema.validate({
+    ...ctx.request.body,
+    clientId: maybeClientId(ctx.state?.['user']?.sub)
+  })
+  if (error) {
+    ctx.throw(new ApiError(error.message, 400))
+    return
+  }
+  const contactService = ctx.state.container.resolve(ContactService)
+  await contactService.scheduleEstimate(value)
+  ctx.body = 'OK'
+})
 
 /**
  * @openapi
@@ -194,32 +211,39 @@ router.post("/schedule/estimate", authMiddleware, async ctx => {
  *          401:
  *             $ref: '#/components/responses/Unauthorized'
  */
-router.post("/requestinfo", authMiddleware, async (ctx, next) => {
-   ctx.state['enable.xff'] = true;
-   const {
-      error,
-      value
-   } = contactRequestInfoSchema.validate({
+router.post(
+  '/requestinfo',
+  authMiddleware,
+  async (ctx, next) => {
+    ctx.state['enable.xff'] = true
+    const { error, value } = contactRequestInfoSchema.validate({
       ...ctx.request.body,
-      clientId: maybeClientId(ctx.state?.["user"]?.sub)
-   });
-   if (error) {
-      ctx.throw(new ApiError(error.message, 400));
-      return;
-   }
-   const contactService = ctx.state.container.resolve(ContactService);
-   await contactService.requestInfo(value);
-   ctx.body = "OK";
-   next();
-}, (ctx, next) => {
-   const eventsCollectionMiddleware = ctx.state.container.resolve<EventsCollectionMiddleware>("middleware.eventsCollection");
-   const selectRequestInfoParams = ctx.state.container.resolve(SelectRequestInfoParams);
-   const requestInfoCollector = eventsCollectionMiddleware({
+      clientId: maybeClientId(ctx.state?.['user']?.sub)
+    })
+    if (error) {
+      ctx.throw(new ApiError(error.message, 400))
+      return
+    }
+    const contactService = ctx.state.container.resolve(ContactService)
+    await contactService.requestInfo(value)
+    ctx.body = 'OK'
+    next()
+  },
+  (ctx, next) => {
+    const eventsCollectionMiddleware =
+      ctx.state.container.resolve<EventsCollectionMiddleware>(
+        'middleware.eventsCollection'
+      )
+    const selectRequestInfoParams = ctx.state.container.resolve(
+      SelectRequestInfoParams
+    )
+    const requestInfoCollector = eventsCollectionMiddleware({
       selector: selectRequestInfoParams.select,
       options: {
-         allowIncognito: true
+        allowIncognito: true
       }
-   });
-   return requestInfoCollector(ctx, next);
-});
-export default router;
+    })
+    return requestInfoCollector(ctx, next)
+  }
+)
+export default router

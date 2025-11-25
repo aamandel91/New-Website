@@ -11,49 +11,52 @@
  * @param {string} args.zip - The zip code of the property (required).
  * @returns {Promise<Object>} - The result of the address history request.
  */
-const executeFunction = async (args) => {  // Fixed parameter destructuring
-  const baseUrl = "https://api.repliers.io";
-  const apiKey = process.env.REPLIERS_API_KEY;
-  let finalUrl;
+const executeFunction = async (args) => {
+  // Fixed parameter destructuring
+  const baseUrl = 'https://api.repliers.io'
+  const apiKey = process.env.REPLIERS_API_KEY
+  let finalUrl
 
   try {
-    const url = new URL(`${baseUrl}/listings`);
-    url.searchParams.set("city", args.city);
-    url.searchParams.set("streetName", args.streetName);
-    url.searchParams.set("streetNumber", args.streetNumber);
-    if (args.unitNumber) url.searchParams.set("unitNumber", args.unitNumber);
-    if (args.streetSuffix) url.searchParams.set("streetSuffix", args.streetSuffix);
-    if (args.streetDirection) url.searchParams.set("streetDirection", args.streetDirection);
-    url.searchParams.set("zip", args.zip);
+    const url = new URL(`${baseUrl}/listings`)
+    url.searchParams.set('city', args.city)
+    url.searchParams.set('streetName', args.streetName)
+    url.searchParams.set('streetNumber', args.streetNumber)
+    if (args.unitNumber) url.searchParams.set('unitNumber', args.unitNumber)
+    if (args.streetSuffix)
+      url.searchParams.set('streetSuffix', args.streetSuffix)
+    if (args.streetDirection)
+      url.searchParams.set('streetDirection', args.streetDirection)
+    url.searchParams.set('zip', args.zip)
 
-    finalUrl = url.toString();
-    const headers = { 
-      Accept: "application/json",
-      "REPLIERS-API-KEY": apiKey 
-    };
+    finalUrl = url.toString()
+    const headers = {
+      Accept: 'application/json',
+      'REPLIERS-API-KEY': apiKey
+    }
 
     // Fixed fetch call - removed invalid 'url' property
     const response = await fetch(finalUrl, {
-      method: "GET",
-      headers,
-    });
+      method: 'GET',
+      headers
+    })
 
     if (!response.ok) {
-      const errorData = await response.json();
-      return { url: finalUrl, error: errorData };
+      const errorData = await response.json()
+      return { url: finalUrl, error: errorData }
     }
 
-    const data = await response.json();
-    return { url: finalUrl, data };
+    const data = await response.json()
+    return { url: finalUrl, data }
   } catch (error) {
-    console.error("Error getting address history:", error);
-    return { 
+    console.error('Error getting address history:', error)
+    return {
       url: finalUrl,
-      error: "An error occurred while retrieving the address history.",
-      details: error.message 
-    };
+      error: 'An error occurred while retrieving the address history.',
+      details: error.message
+    }
   }
-};
+}
 
 /**
  * Tool configuration for getting address history from the Repliers API.
@@ -62,25 +65,40 @@ const executeFunction = async (args) => {  // Fixed parameter destructuring
 const apiTool = {
   function: executeFunction,
   definition: {
-    type: "function",
+    type: 'function',
     function: {
-      name: "get_address_history",
-      description: "Retrieve the MLS history of a specific address.",
+      name: 'get_address_history',
+      description: 'Retrieve the MLS history of a specific address.',
       parameters: {
-        type: "object",
+        type: 'object',
         properties: {
-          city: { type: "string", description: "The city of the property." },
-          streetName: { type: "string", description: "The street name of the property." },
-          streetNumber: { type: "string", description: "The street number of the property." },
-          unitNumber: { type: "string", description: "The unit number of the property." },
-          streetSuffix: { type: "string", description: "The street suffix of the property." },
-          streetDirection: { type: "string", description: "The street direction of the property." },
-          zip: { type: "string", description: "The zip code of the property." },
+          city: { type: 'string', description: 'The city of the property.' },
+          streetName: {
+            type: 'string',
+            description: 'The street name of the property.'
+          },
+          streetNumber: {
+            type: 'string',
+            description: 'The street number of the property.'
+          },
+          unitNumber: {
+            type: 'string',
+            description: 'The unit number of the property.'
+          },
+          streetSuffix: {
+            type: 'string',
+            description: 'The street suffix of the property.'
+          },
+          streetDirection: {
+            type: 'string',
+            description: 'The street direction of the property.'
+          },
+          zip: { type: 'string', description: 'The zip code of the property.' }
         },
-        required: ["city", "streetName", "streetNumber", "zip"],
-      },
-    },
-  },
-};
+        required: ['city', 'streetName', 'streetNumber', 'zip']
+      }
+    }
+  }
+}
 
-export { apiTool };
+export { apiTool }

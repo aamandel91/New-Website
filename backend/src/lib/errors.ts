@@ -60,13 +60,17 @@
  *
  */
 export class ApiError extends Error {
-   status: number | undefined;
-   opts: Record<string, string | string[]> | undefined;
-   constructor(message: string, status?: number, opts?: Record<string, string | string[]>) {
-      super(message);
-      this.status = status;
-      this.opts = opts;
-   }
+  status: number | undefined
+  opts: Record<string, string | string[]> | undefined
+  constructor(
+    message: string,
+    status?: number,
+    opts?: Record<string, string | string[]>
+  ) {
+    super(message)
+    this.status = status
+    this.opts = opts
+  }
 }
 export class DBError extends Error {}
 export class ApiWarning extends Error {}

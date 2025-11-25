@@ -1,15 +1,15 @@
-"use client";
+'use client'
 
-import { MapPin, Home as HomeIcon, Phone, Mail, Menu, X } from "lucide-react";
-import { useState } from "react";
-import { AutocompleteSearch } from "@/components/autocomplete-search";
+import { MapPin, Home as HomeIcon, Phone, Mail, Menu, X } from 'lucide-react'
+import { useState } from 'react'
+import { AutocompleteSearch } from '@/components/autocomplete-search'
 
 export default function Home() {
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
   const toggleMobileMenu = () => {
-    setIsMobileMenuOpen(!isMobileMenuOpen);
-  };
+    setIsMobileMenuOpen(!isMobileMenuOpen)
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -44,10 +44,12 @@ export default function Home() {
                   <a href="#" className="text-gray-600 hover:text-blue-600">
                     Rent
                   </a>
-                  <a href="/storybook-static/index.html?path=/docs/tutorials-map-search-with-property-clustering-using-mapbox-and-repliers-api--docs" 
-                     className="text-gray-600 hover:text-blue-600" 
-                     target="_blank"
-                     rel="noopener noreferrer">
+                  <a
+                    href="/storybook-static/index.html?path=/docs/tutorials-map-search-with-property-clustering-using-mapbox-and-repliers-api--docs"
+                    className="text-gray-600 hover:text-blue-600"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
                     Map Search
                   </a>
                   <a href="#" className="text-gray-600 hover:text-blue-600">
@@ -136,7 +138,7 @@ export default function Home() {
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
           style={{
             backgroundImage:
-              "url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIwMCIgaGVpZ2h0PSI2MDAiIHZpZXdCb3g9IjAgMCAxMjAwIDYwMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjEyMDAiIGhlaWdodD0iNjAwIiBmaWxsPSIjMzc0MTUxIi8+CjxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgY2xpcC1ydWxlPSJldmVub2RkIiBkPSJNMCAwSDEyMDBWNjAwSDBWMFoiIGZpbGw9InVybCgjcGFpbnQwX2xpbmVhcikiLz4KPGRlZnM+CjxsaW5lYXJHcmFkaWVudCBpZD0icGFpbnQwX2xpbmVhciIgeDE9IjAiIHkxPSIwIiB4Mj0iMTIwMCIgeTI9IjYwMCIgZ3JhZGllbnRVbml0cz0idXNlclNwYWNlT25Vc2UiPgo8c3RvcCBzdG9wLWNvbG9yPSIjMjU2M0VCIi8+CjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzFENEVEOCIvPgo8L2xpbmVhckdyYWRpZW50Pgo8L2RlZnM+Cjwvc3ZnPgo=')",
+              "url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIwMCIgaGVpZ2h0PSI2MDAiIHZpZXdCb3g9IjAgMCAxMjAwIDYwMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjEyMDAiIGhlaWdodD0iNjAwIiBmaWxsPSIjMzc0MTUxIi8+CjxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgY2xpcC1ydWxlPSJldmVub2RkIiBkPSJNMCAwSDEyMDBWNjAwSDBWMFoiIGZpbGw9InVybCgjcGFpbnQwX2xpbmVhcikiLz4KPGRlZnM+CjxsaW5lYXJHcmFkaWVudCBpZD0icGFpbnQwX2xpbmVhciIgeDE9IjAiIHkxPSIwIiB4Mj0iMTIwMCIgeTI9IjYwMCIgZ3JhZGllbnRVbml0cz0idXNlclNwYWNlT25Vc2UiPgo8c3RvcCBzdG9wLWNvbG9yPSIjMjU2M0VCIi8+CjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzFENEVEOCIvPgo8L2xpbmVhckdyYWRpZW50Pgo8L2RlZnM+Cjwvc3ZnPgo=')"
           }}
         ></div>
 
@@ -334,5 +336,5 @@ export default function Home() {
         </div>
       </footer>
     </div>
-  );
+  )
 }

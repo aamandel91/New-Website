@@ -1,19 +1,19 @@
 class DummyNatsConsumer {
-   public async consume() {
-      return [];
-   }
+  public async consume() {
+    return []
+  }
 }
 class DummyNatsConsumers {
-   get() {
-      return new DummyNatsConsumer();
-   }
+  get() {
+    return new DummyNatsConsumer()
+  }
 }
 export default class DummyNats {
-   public consumers: DummyNatsConsumers;
-   constructor() {
-      this.consumers = new DummyNatsConsumers();
-   }
-   async publish() {
-      return;
-   }
+  public consumers: DummyNatsConsumers
+  constructor() {
+    this.consumers = new DummyNatsConsumers()
+  }
+  async publish() {
+    return
+  }
 }

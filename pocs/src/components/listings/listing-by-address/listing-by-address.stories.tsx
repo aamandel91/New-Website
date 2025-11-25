@@ -1,25 +1,25 @@
-import type { Meta, StoryObj } from "@storybook/react";
-import { ListingByAddress } from "./listing-by-address";
+import type { Meta, StoryObj } from '@storybook/react'
+import { ListingByAddress } from './listing-by-address'
 
 // Types for the story
 interface PropertyListing {
-  id: string;
-  address: string;
-  price?: number;
-  beds?: number;
-  baths?: number;
-  sqft?: number;
-  yearBuilt?: number;
-  propertyType?: string;
-  status?: string;
-  [key: string]: any;
+  id: string
+  address: string
+  price?: number
+  beds?: number
+  baths?: number
+  sqft?: number
+  yearBuilt?: number
+  propertyType?: string
+  status?: string
+  [key: string]: any
 }
 
 const meta: Meta<typeof ListingByAddress> = {
-  title: "POCS/Listings/ListingByAddress",
+  title: 'POCS/Listings/ListingByAddress',
   component: ListingByAddress,
   parameters: {
-    layout: "padded",
+    layout: 'padded',
     docs: {
       description: {
         component: `
@@ -171,15 +171,15 @@ function RealEstateApp() {
   );
 }
 \`\`\`
-        `,
-      },
-    },
+        `
+      }
+    }
   },
-  tags: ["autodocs"],
-};
+  tags: ['autodocs']
+}
 
-export default meta;
-type Story = StoryObj<typeof ListingByAddress>;
+export default meta
+type Story = StoryObj<typeof ListingByAddress>
 
 export const Default: Story = {
   args: {},
@@ -188,6 +188,6 @@ export const Default: Story = {
       <div className="container mx-auto max-w-4xl p-6">
         <Story />
       </div>
-    ),
-  ],
-};
+    )
+  ]
+}

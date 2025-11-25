@@ -75,7 +75,8 @@
     "react-markdown": "^10.1.0",
     "recharts": "^3.0.2",
     "sharp": "^0.33.5",
-    "uuid": "^11.1.0"
+    "uuid": "^11.1.0",
+    "zustand": "^5.0.8"
   },
   "engines": {
     "node": "^v22.14.0",

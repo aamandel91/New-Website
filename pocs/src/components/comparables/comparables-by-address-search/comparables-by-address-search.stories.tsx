@@ -1,5 +1,5 @@
-import type { Meta, StoryObj } from "@storybook/react";
-import { ComparablesByAddressSearch } from "./comparables-by-address-search";
+import type { Meta, StoryObj } from '@storybook/react'
+import { ComparablesByAddressSearch } from './comparables-by-address-search'
 
 /**
  * ## 👤 User Story
@@ -95,56 +95,56 @@ import { ComparablesByAddressSearch } from "./comparables-by-address-search";
  */
 
 const meta: Meta<typeof ComparablesByAddressSearch> = {
-  title: "POCS/Comparables/ComparablesByAddressSearch",
+  title: 'POCS/Comparables/ComparablesByAddressSearch',
   component: ComparablesByAddressSearch,
   parameters: {
-    layout: "padded",
+    layout: 'padded',
     docs: {
       description: {
         component:
-          "A comprehensive component for searching comparable properties by address using Google Places API integration.",
-      },
-    },
+          'A comprehensive component for searching comparable properties by address using Google Places API integration.'
+      }
+    }
   },
-  tags: ["autodocs"],
+  tags: ['autodocs'],
   argTypes: {
     className: {
-      control: "text",
-      description: "Additional CSS classes to apply to the component",
+      control: 'text',
+      description: 'Additional CSS classes to apply to the component'
     },
     onComparablesFound: {
-      action: "comparables-found",
+      action: 'comparables-found',
       description:
-        "Callback function called when comparable properties are found",
+        'Callback function called when comparable properties are found'
     },
 
     searchRadius: {
-      control: { type: "number", min: 0.1, max: 5.0, step: 0.1 },
-      description: "Search radius in miles",
-    },
-  },
-};
+      control: { type: 'number', min: 0.1, max: 5.0, step: 0.1 },
+      description: 'Search radius in miles'
+    }
+  }
+}
 
-export default meta;
-type Story = StoryObj<typeof ComparablesByAddressSearch>;
+export default meta
+type Story = StoryObj<typeof ComparablesByAddressSearch>
 
 export const Default: Story = {
   args: {
-    searchRadius: 2.0,
+    searchRadius: 2.0
   },
   decorators: [
     (Story) => (
       <div className="max-w-4xl mx-auto p-6">
         <Story />
       </div>
-    ),
+    )
   ],
   parameters: {
     docs: {
       description: {
         story:
-          "The default configuration with standard search parameters. Users can search for an address and find comparable properties within 2 km.",
-      },
-    },
-  },
-};
+          'The default configuration with standard search parameters. Users can search for an address and find comparable properties within 2 km.'
+      }
+    }
+  }
+}
