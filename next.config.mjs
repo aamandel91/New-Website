@@ -44,6 +44,15 @@ const nextConfig = {
       }
     ]
   },
+  async redirects() {
+    return [
+      {
+        source: '/listing/:slug*',
+        destination: '/homedetails/:slug*',
+        permanent: true, // 301 redirect for SEO
+      },
+    ]
+  },
   ...loggingConfig
 }
 

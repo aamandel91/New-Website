@@ -4,7 +4,7 @@ import React, { useEffect } from 'react'
 
 import { Box } from '@mui/material'
 
-import PropertyPageContent from '@pages/listing'
+import { PropertyDetailLayout } from '@/components/property-detail'
 
 import { type Property } from 'services/API'
 import { useFeatures } from 'providers/FeaturesProvider'
@@ -43,15 +43,7 @@ const PropertyPageTemplate = ({ property }: { property: Property }) => {
     <PageTemplate noHeader={noHeader}>
       <PropertyProvider property={property}>
         <PropertyDetailsProvider property={property}>
-          <Box
-            sx={{
-              width: '100%',
-              pt: { xs: 0, sm: 2 },
-              overflow: { xs: 'hidden', md: 'visible' }
-            }}
-          >
-            <PropertyPageContent />
-          </Box>
+          <PropertyDetailLayout property={property} />
         </PropertyDetailsProvider>
       </PropertyProvider>
 
