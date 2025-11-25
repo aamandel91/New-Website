@@ -119,8 +119,11 @@ const Autosuggestion = ({
             await APISearch.fetchAutosuggestions(query)
           setAddress(address)
           setListings(listings)
-        } catch (error) {
-          console.error('Failed to fetch autosuggestions:', error)
+        } catch (error: any) {
+          // Suppress 401 errors (expected when user not authenticated)
+          if (error?.status !== 401) {
+            console.error('Failed to fetch autosuggestions:', error)
+          }
           // Handle error state here, e.g., show a message to the user
         } finally {
           setLoading(false)
