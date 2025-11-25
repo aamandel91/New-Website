@@ -81,24 +81,37 @@ class APISearch extends APIBase {
   }
 
   async fetchAutosuggestions(q: string) {
-    const params = queryString.stringify({
-      mapboxSearchSession: getSessionToken(),
-      q
-    })
+    try {
+      const params = queryString.stringify({
+        mapboxSearchSession: getSessionToken(),
+        q
+      })
 
-    const response = await this.fetchJSON<MapboxAutosuggestions>(
-      `/autosuggest?${params}`
-    )
+      const response = await this.fetchJSON<MapboxAutosuggestions>(
+        `/autosuggest?${params}`
+      )
 
-    const {
-      mapbox,
-      listings: { count, listings }
-    } = response
+      const {
+        mapbox,
+        listings: { count, listings }
+      } = response
 
-    return {
-      address: (Array.from(mapbox) as MapboxAddress[]) || [],
-      listings,
-      count
+      return {
+        address: (Array.from(mapbox) as MapboxAddress[]) || [],
+        listings,
+        count
+      }
+    } catch (error: any) {
+      // Suppress 401 errors (expected when user not authenticated)
+      // Return empty results to allow search to continue
+      if (error?.status !== 401) {
+        console.error('[Autosuggestions] error fetching data', error)
+      }
+      return {
+        address: [],
+        listings: [],
+        count: 0
+      }
     }
   }
 }

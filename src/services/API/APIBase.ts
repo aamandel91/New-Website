@@ -37,9 +37,9 @@ class APIBase {
         headers
       })
       if (!response.ok) {
-        // Suppress 401 errors for /autosuggest/locations during SSR (expected when no auth token)
+        // Suppress 401 errors for autosuggest endpoints (expected when user not authenticated)
         const shouldSuppressLog =
-          response.status === 401 && request.includes('/autosuggest/locations')
+          response.status === 401 && request.includes('/autosuggest')
         if (!shouldSuppressLog) {
           console.error(`HTTP Error: ${response.status}`, request)
         }
