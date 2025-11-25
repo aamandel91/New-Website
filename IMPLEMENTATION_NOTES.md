@@ -2,7 +2,7 @@
 
 ## Overview
 
-This implementation adds differentiated registration requirements based on traffic source (PPC vs organic). PPC traffic users are required to register on their first property details view, while organic traffic users see an optional registration prompt that can be dismissed.
+This implementation adds differentiated registration requirements based on traffic source (PPC vs organic). PPC traffic users are required to register on their **first** property details view, while organic traffic users see an optional registration prompt on their **fourth** property view that can be dismissed.
 
 ## Features Implemented
 
@@ -25,12 +25,16 @@ This implementation adds differentiated registration requirements based on traff
 - `src/app/admin/settings/page.tsx` - Admin panel for configuring PPC/organic registration settings
 - Configure which utm_medium values are considered "PPC traffic"
 - Toggle registration requirements on/off for each traffic type
+- **Configure view thresholds**: Set which property view number triggers the registration modal
 
 **Backend:**
 - `backend/src/services/adminSettings.ts` - Service for managing admin settings
 - `backend/src/routes/admin.ts` - API endpoints for settings CRUD
 - `backend/src/migrations/20251125000000_admin_settings.ts` - Database table for admin settings
-- Default settings: PPC sources = ['ppc', 'cpc', 'paid']
+- **Default settings**:
+  - PPC sources = ['ppc', 'cpc', 'paid']
+  - PPC view threshold = 1 (first view)
+  - Organic view threshold = 4 (fourth view)
 
 **API Endpoints:**
 - `GET /admin/settings` - Get all settings
@@ -46,9 +50,9 @@ This implementation adds differentiated registration requirements based on traff
 **Component:** `src/components/shared/Dialogs/PropertyRegistrationDialog/PropertyRegistrationDialog.tsx`
 
 **Features:**
-- Shows on first property details view for unauthenticated users
-- **PPC Traffic:** Modal cannot be dismissed (required registration)
-- **Organic Traffic:** Modal can be dismissed with "Maybe Later" button
+- Shows at configurable property view thresholds for unauthenticated users
+- **PPC Traffic:** Modal appears on **1st property view** and cannot be dismissed (required registration)
+- **Organic Traffic:** Modal appears on **4th property view** and can be dismissed with "Maybe Later" button
 - Includes Google OAuth option
 - Includes standard email/password registration form
 - All required fields: First name, Last name, Email, Phone number
@@ -57,6 +61,7 @@ This implementation adds differentiated registration requirements based on traff
 - Automatically displays modal based on traffic source and view count
 - Tracks property view count in sessionStorage
 - Only shows for non-authenticated users
+- Fetches view thresholds from backend admin settings
 
 ### 4. Enhanced Registration
 
@@ -155,8 +160,8 @@ CREATE TABLE client_traffic_sources (
 2. **Arriving via Organic Search:**
    - User clicks organic search result
    - Lands on site, traffic type detected as "organic"
-   - Navigates to property details page
-   - Registration modal appears with "Maybe Later" option
+   - Browses 1st, 2nd, and 3rd properties freely
+   - On **4th property view**, registration modal appears with "Maybe Later" option
    - Can dismiss and continue browsing
 
 3. **Registration Options:**
@@ -171,11 +176,13 @@ CREATE TABLE client_traffic_sources (
 
 2. **Configure PPC Settings:**
    - Toggle "Require registration for PPC traffic" on/off
+   - Set property view threshold (default: 1 = first view)
    - Add/remove traffic sources that are considered PPC (e.g., "paidsearch", "cpm")
    - Click "Save Settings"
 
 3. **Configure Organic Settings:**
    - Toggle "Show registration suggestion for organic traffic" on/off
+   - Set property view threshold (default: 4 = fourth view)
    - Click "Save Settings"
 
 ## Traffic Type Detection
@@ -204,10 +211,11 @@ Traffic is classified based on utm_medium and utm_source:
 ### Test Organic Flow
 ```
 1. Visit: http://localhost:3000?utm_source=google&utm_medium=organic
-2. Click on any property listing
-3. Verify modal appears with "Maybe Later" button
-4. Click "Maybe Later" to dismiss
-5. OR complete registration
+2. Click on 1st property listing - no modal (view count = 1)
+3. Click on 2nd property listing - no modal (view count = 2)
+4. Click on 3rd property listing - no modal (view count = 3)
+5. Click on 4th property listing - modal appears with "Maybe Later" button (view count = 4)
+6. Click "Maybe Later" to dismiss OR complete registration
 ```
 
 ### Test Direct Traffic
@@ -221,10 +229,15 @@ Traffic is classified based on utm_medium and utm_source:
 ```
 1. Login as admin user
 2. Navigate to /admin/settings
-3. Add new PPC source: "paidsocial"
-4. Save settings
-5. Test with: ?utm_medium=paidsocial
-6. Verify forced registration modal appears
+3. Change organic view threshold from 4 to 2
+4. Add new PPC source: "paidsocial"
+5. Save settings
+6. Test organic with changed threshold:
+   - Visit with: ?utm_medium=organic
+   - View 1st property - no modal
+   - View 2nd property - modal appears (new threshold = 2)
+7. Test new PPC source with: ?utm_medium=paidsocial
+8. Verify forced registration modal appears on first view
 ```
 
 ## Known Limitations & Future Enhancements
@@ -262,7 +275,9 @@ No new environment variables required. Uses existing database configuration.
 
 PPC sources: `["ppc", "cpc", "paid"]`
 PPC registration required: `true`
+PPC view threshold: `1` (first property view)
 Organic registration optional: `true`
+Organic view threshold: `4` (fourth property view)
 
 ## Migration Instructions
 
@@ -296,7 +311,16 @@ Organic registration optional: `true`
 ```json
 {
   "enabled": true,
-  "sources": ["ppc", "cpc", "paid", "paidsearch"]
+  "sources": ["ppc", "cpc", "paid", "paidsearch"],
+  "viewThreshold": 1
+}
+```
+
+### GET /admin/settings/organic/registration
+```json
+{
+  "enabled": true,
+  "viewThreshold": 4
 }
 ```
 

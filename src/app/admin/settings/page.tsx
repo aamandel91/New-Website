@@ -22,10 +22,12 @@ import APIBase from '@/services/API/APIBase'
 interface PpcSettings {
   enabled: boolean
   sources: string[]
+  viewThreshold: number
 }
 
 interface OrganicSettings {
   enabled: boolean
+  viewThreshold: number
 }
 
 const AdminSettingsPage = () => {
@@ -39,10 +41,12 @@ const AdminSettingsPage = () => {
   const [ppcSettings, setPpcSettings] = useState<PpcSettings>({
     enabled: true,
     sources: ['ppc', 'cpc', 'paid'],
+    viewThreshold: 1,
   })
 
   const [organicSettings, setOrganicSettings] = useState<OrganicSettings>({
     enabled: true,
+    viewThreshold: 4,
   })
 
   const [newSource, setNewSource] = useState('')
@@ -179,6 +183,26 @@ const AdminSettingsPage = () => {
 
             <Box>
               <Typography variant="subtitle2" gutterBottom>
+                Property View Threshold
+              </Typography>
+              <Typography variant="caption" color="text.secondary" display="block" sx={{ mb: 2 }}>
+                Show registration modal on property view number:
+              </Typography>
+              <TextField
+                type="number"
+                size="small"
+                value={ppcSettings.viewThreshold}
+                onChange={(e) =>
+                  setPpcSettings({ ...ppcSettings, viewThreshold: parseInt(e.target.value) || 1 })
+                }
+                inputProps={{ min: 1, max: 100 }}
+                sx={{ width: 120 }}
+                helperText="1 = first view (recommended)"
+              />
+            </Box>
+
+            <Box>
+              <Typography variant="subtitle2" gutterBottom>
                 PPC Traffic Sources
               </Typography>
               <Typography variant="caption" color="text.secondary" display="block" sx={{ mb: 2 }}>
@@ -225,17 +249,39 @@ const AdminSettingsPage = () => {
             Show optional (dismissible) registration modal for organic traffic
           </Typography>
 
-          <FormControlLabel
-            control={
-              <Switch
-                checked={organicSettings.enabled}
+          <Stack spacing={3}>
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={organicSettings.enabled}
+                  onChange={(e) =>
+                    setOrganicSettings({ ...organicSettings, enabled: e.target.checked })
+                  }
+                />
+              }
+              label="Show registration suggestion for organic traffic"
+            />
+
+            <Box>
+              <Typography variant="subtitle2" gutterBottom>
+                Property View Threshold
+              </Typography>
+              <Typography variant="caption" color="text.secondary" display="block" sx={{ mb: 2 }}>
+                Show registration modal on property view number:
+              </Typography>
+              <TextField
+                type="number"
+                size="small"
+                value={organicSettings.viewThreshold}
                 onChange={(e) =>
-                  setOrganicSettings({ ...organicSettings, enabled: e.target.checked })
+                  setOrganicSettings({ ...organicSettings, viewThreshold: parseInt(e.target.value) || 4 })
                 }
+                inputProps={{ min: 1, max: 100 }}
+                sx={{ width: 120 }}
+                helperText="4 = fourth view (recommended)"
               />
-            }
-            label="Show registration suggestion for organic traffic"
-          />
+            </Box>
+          </Stack>
         </Paper>
 
         {/* Save Button */}

@@ -13,8 +13,8 @@ export async function up(knex: Knex): Promise<void> {
 
   // Insert default settings for PPC registration
   await knex.schema.raw(`insert into admin_settings (key, value, description) values
-    ('ppc_registration_required', '{"enabled": true, "sources": ["ppc", "cpc", "paid"]}'::jsonb, 'Force registration on first property view for paid traffic sources'),
-    ('organic_registration_optional', '{"enabled": true}'::jsonb, 'Show optional registration modal for organic traffic')
+    ('ppc_registration_required', '{"enabled": true, "sources": ["ppc", "cpc", "paid"], "viewThreshold": 1}'::jsonb, 'Force registration on first property view for paid traffic sources'),
+    ('organic_registration_optional', '{"enabled": true, "viewThreshold": 4}'::jsonb, 'Show optional registration modal for organic traffic after 4th property view')
   `);
 }
 

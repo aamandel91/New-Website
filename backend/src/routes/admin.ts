@@ -93,13 +93,13 @@ router.get('/settings/ppc/registration', async ctx => {
 
 router.patch('/settings/ppc/registration', async ctx => {
    const adminSettingsService = ctx.state.container.resolve(AdminSettingsService);
-   const { enabled, sources } = ctx.request.body;
-   if (enabled === undefined || !sources) {
-      ctx.throw(new ApiError('enabled and sources are required', 400));
+   const { enabled, sources, viewThreshold } = ctx.request.body;
+   if (enabled === undefined || !sources || viewThreshold === undefined) {
+      ctx.throw(new ApiError('enabled, sources, and viewThreshold are required', 400));
       return;
    }
    const userEmail = ctx.state.user?.email;
-   ctx.body = await adminSettingsService.updatePpcRegistrationSettings({ enabled, sources }, userEmail);
+   ctx.body = await adminSettingsService.updatePpcRegistrationSettings({ enabled, sources, viewThreshold }, userEmail);
 });
 
 router.get('/settings/organic/registration', async ctx => {
@@ -109,13 +109,13 @@ router.get('/settings/organic/registration', async ctx => {
 
 router.patch('/settings/organic/registration', async ctx => {
    const adminSettingsService = ctx.state.container.resolve(AdminSettingsService);
-   const { enabled } = ctx.request.body;
-   if (enabled === undefined) {
-      ctx.throw(new ApiError('enabled is required', 400));
+   const { enabled, viewThreshold } = ctx.request.body;
+   if (enabled === undefined || viewThreshold === undefined) {
+      ctx.throw(new ApiError('enabled and viewThreshold are required', 400));
       return;
    }
    const userEmail = ctx.state.user?.email;
-   ctx.body = await adminSettingsService.updateOrganicRegistrationSettings({ enabled }, userEmail);
+   ctx.body = await adminSettingsService.updateOrganicRegistrationSettings({ enabled, viewThreshold }, userEmail);
 });
 
 export default router;

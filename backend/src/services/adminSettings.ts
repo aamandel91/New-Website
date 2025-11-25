@@ -19,10 +19,12 @@ export interface AdminSetting {
 export interface PpcRegistrationSettings {
   enabled: boolean;
   sources: string[];
+  viewThreshold: number; // Which property view number to show registration (e.g., 1 = first view)
 }
 
 export interface OrganicRegistrationSettings {
   enabled: boolean;
+  viewThreshold: number; // Which property view number to show registration (e.g., 4 = fourth view)
 }
 
 @injectable()
@@ -119,7 +121,7 @@ export default class AdminSettingsService {
    */
   async getPpcRegistrationSettings(): Promise<PpcRegistrationSettings> {
     const setting = await this.getSetting("ppc_registration_required");
-    return setting?.value || { enabled: true, sources: ["ppc", "cpc", "paid"] };
+    return setting?.value || { enabled: true, sources: ["ppc", "cpc", "paid"], viewThreshold: 1 };
   }
 
   /**
@@ -127,7 +129,7 @@ export default class AdminSettingsService {
    */
   async getOrganicRegistrationSettings(): Promise<OrganicRegistrationSettings> {
     const setting = await this.getSetting("organic_registration_optional");
-    return setting?.value || { enabled: true };
+    return setting?.value || { enabled: true, viewThreshold: 4 };
   }
 
   /**
@@ -171,10 +173,12 @@ export default class AdminSettingsService {
     const defaults: Record<string, any> = {
       ppc_registration_required: {
         enabled: true,
-        sources: ["ppc", "cpc", "paid"]
+        sources: ["ppc", "cpc", "paid"],
+        viewThreshold: 1
       },
       organic_registration_optional: {
-        enabled: true
+        enabled: true,
+        viewThreshold: 4
       }
     };
 
