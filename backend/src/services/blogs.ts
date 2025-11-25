@@ -1,8 +1,8 @@
 import { injectable, inject } from 'tsyringe'
 import { Anthropic } from '@anthropic-ai/sdk'
-import { BlogRepository } from '../repository/blogs'
-import type { Blog, CreateBlogInput, UpdateBlogInput, BlogFilters, AISuggestions } from '../types/blog'
-import { deleteFromCloudinary } from '../utils/cloudinary'
+import { BlogRepository } from '../repository/blogs.js'
+import type { Blog, CreateBlogInput, UpdateBlogInput, BlogFilters, AISuggestions } from '../types/blog.js'
+import { deleteFromCloudinary } from '../utils/cloudinary.js'
 
 @injectable()
 export class BlogService {

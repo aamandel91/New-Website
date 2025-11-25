@@ -1,6 +1,6 @@
 import 'reflect-metadata'
 import { container } from 'tsyringe'
-import { Knex } from 'knex'
+import type { Knex } from 'knex'
 import '../test/providers/index.js'
 export const mochaHooks = {
   beforeEach(done: () => void) {
