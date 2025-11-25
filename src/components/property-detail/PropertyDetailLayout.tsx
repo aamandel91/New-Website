@@ -13,6 +13,10 @@ import PropertyDescription from './PropertyDescription'
 import PropertyKeyFacts from './PropertyKeyFacts'
 import PropertyFeatures from './PropertyFeatures'
 import PropertyContactForm from './PropertyContactForm'
+import PropertyHistory from './PropertyHistory'
+import PropertyLocation from './PropertyLocation'
+import PropertyMarketStats from './PropertyMarketStats'
+import SimilarProperties from './SimilarProperties'
 
 interface PropertyDetailLayoutProps {
   property: Property
@@ -167,9 +171,39 @@ const PropertyDetailLayout: React.FC<PropertyDetailLayoutProps> = ({ property })
                 <PropertyFeatures features={features} />
               )}
 
-              {/* TODO: Add PropertyHistory component */}
-              {/* TODO: Add PropertyLocation component with map */}
-              {/* TODO: Add Similar Properties section */}
+              {/* Property History */}
+              <PropertyHistory
+                listingDate={property.listingDate}
+                currentPrice={property.price}
+                originalPrice={property.originalPrice}
+                daysOnMarket={property.daysOnMarket}
+              />
+
+              {/* Property Location */}
+              <PropertyLocation
+                address={address}
+                coordinates={{
+                  latitude: property.map?.latitude || 0,
+                  longitude: property.map?.longitude || 0,
+                }}
+                neighborhood={property.neighborhood}
+                county={property.county}
+                schoolDistrict={property.schoolDistrict}
+              />
+
+              {/* Market Statistics */}
+              <PropertyMarketStats
+                neighborhood={property.neighborhood}
+                city={property.address?.city}
+                state={property.address?.state}
+              />
+
+              {/* Similar Properties */}
+              {/* Note: You'll need to fetch similar properties via API */}
+              {/* <SimilarProperties
+                properties={similarProperties}
+                currentPropertyMls={property.mlsNumber}
+              /> */}
             </Box>
           </Grid>
 
