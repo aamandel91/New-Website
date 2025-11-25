@@ -966,7 +966,14 @@ export interface SignUpRequest {
   fname: string
   lname: string
   email: string
-  phone?: string
+  phone: string // Now required for all registrations
+  referer?: string
+  utmSource?: string
+  utmMedium?: string
+  utmCampaign?: string
+  utmTerm?: string
+  utmContent?: string
+  landingPage?: string
 }
 
 export interface LogInRequest {

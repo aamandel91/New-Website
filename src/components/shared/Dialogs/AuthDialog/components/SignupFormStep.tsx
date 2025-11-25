@@ -128,6 +128,7 @@ const SignupFormStep = ({
                 render={({ field, fieldState }) => (
                   <TextField
                     {...field}
+                    required
                     fullWidth
                     label="Phone number"
                     placeholder="(555) 555-1234"

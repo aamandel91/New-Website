@@ -16,6 +16,7 @@ import _debug from "debug";
 import EventsCollectionService from "./eventsCollection/eventsCollection.js";
 import BossService from "./boss.js";
 import SelectClientRegistrationParams from "./eventsCollection/selectors/selectClientRegistrationParams.js";
+import TrafficSourceService from "./trafficSource.js";
 import type { Logger } from "pino";
 const debug = _debug("repliers:services:oauth");
 @injectable()
@@ -23,7 +24,7 @@ export default class OAuthService {
    constructor(@inject("logger")
    private logger: Logger, @inject("config")
    // used normally for each request
-   private config: AppConfig, private repliersClients: RepliersClients, private repliersAgents: RepliersAgents, private authService: AuthService, private eventsCollection: EventsCollectionService, private boss: BossService, private registerClientSelector: SelectClientRegistrationParams) {}
+   private config: AppConfig, private repliersClients: RepliersClients, private repliersAgents: RepliersAgents, private authService: AuthService, private eventsCollection: EventsCollectionService, private boss: BossService, private registerClientSelector: SelectClientRegistrationParams, private trafficSourceService: TrafficSourceService) {}
    private adapters: Record<OAuthProviders, OAuthBaseAdapter> = {
       facebook: container.resolve(OAuthFacebookAdapter),
       google: container.resolve(OAuthGoogleAdapter)
@@ -124,9 +125,19 @@ export default class OAuthService {
       };
    }
    private async reportClientRegistration(user: RplClientsClient, provider: string) {
+      // Try to get traffic source for the user
+      const trafficSource = await this.trafficSourceService.getTrafficSource(user.clientId);
+
       const params = await this.registerClientSelector.select({
          user,
-         provider
+         provider,
+         trafficSource: trafficSource ? {
+            utmSource: trafficSource.utmSource,
+            utmMedium: trafficSource.utmMedium,
+            utmCampaign: trafficSource.utmCampaign,
+            trafficType: trafficSource.trafficType,
+            landingPage: trafficSource.landingPage
+         } : undefined
       });
       if (!params) {
          debug("reportClientRegistration: params is null");
