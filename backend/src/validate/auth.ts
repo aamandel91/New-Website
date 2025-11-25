@@ -18,16 +18,27 @@ export const userSignupSchema = joi.object<UserSignupDto>().keys({
    fname: joi.string().required(),
    lname: joi.string().required(),
    email: emailSchema.required(),
-   phone: phoneSchema,
-   referer: joi.string()
+   phone: phoneSchema.required(), // Make phone required for all registrations
+   referer: joi.string(),
+   utmSource: joi.string().allow(''),
+   utmMedium: joi.string().allow(''),
+   utmCampaign: joi.string().allow(''),
+   utmTerm: joi.string().allow(''),
+   utmContent: joi.string().allow(''),
+   landingPage: joi.string().allow('')
 });
 export interface UserSignupDto {
    email: string;
    fname: string;
    lname: string;
-   // password: string;
-   phone?: string;
-   referer: string;
+   phone: string; // Make phone required
+   referer?: string;
+   utmSource?: string;
+   utmMedium?: string;
+   utmCampaign?: string;
+   utmTerm?: string;
+   utmContent?: string;
+   landingPage?: string;
 }
 export const authRepliersTokenSchema = joi.object<AuthRepliersTokenDto>().keys({
    token: joi.string().uuid().required()

@@ -20,6 +20,7 @@ import { RplAgentsAgent } from "./repliers/agents.js";
 import SelectClientRegistrationParams from "./eventsCollection/selectors/selectClientRegistrationParams.js";
 import { BossEmbedContext, isFromFollowUpBoss } from "../lib/boss/auth.js";
 import { calcSignature } from "../lib/utils.js";
+import TrafficSourceService from "./trafficSource.js";
 const debug = _debug("repliers:services:auth");
 export type AgentProfile = Pick<RplAgentsAgent, "email" | "fname" | "lname" | "phone" | "status">;
 export type UserProfile = Pick<RplClientsClient, "email" | "fname" | "lname" | "phone" | "status" | "preferences" | "tags">;
@@ -45,7 +46,7 @@ export default class AuthService {
       private: Buffer;
       public: Buffer;
    }, @inject("keyv.otp")
-   private db: Keyv, private clients: RepliersClients, private messages: RepliersMessages, private blocklistRepository: BlocklistRepository, private codegen: Codegen, private eventsCollection: EventsCollectionService, private aclRepo: AclRepository, private registerClientSelector: SelectClientRegistrationParams) {}
+   private db: Keyv, private clients: RepliersClients, private messages: RepliersMessages, private blocklistRepository: BlocklistRepository, private codegen: Codegen, private eventsCollection: EventsCollectionService, private aclRepo: AclRepository, private registerClientSelector: SelectClientRegistrationParams, private trafficSourceService: TrafficSourceService) {}
    public async generateToken(payload: JwtPayload, expiresIn?: string): Promise<string> {
       let defaultExpire = this.config.auth.jwt.expire;
       if (!this.config.app.disable_persistence) {
@@ -241,9 +242,7 @@ export default class AuthService {
          fname: params.fname,
          lname: params.lname,
          email: params.email,
-         ...(params?.phone && {
-            phone: params.phone
-         }),
+         phone: params.phone, // Now required
          preferences: {
             email: true,
             sms: true,
@@ -251,15 +250,31 @@ export default class AuthService {
          },
          status: true
       });
-      this.reportClientRegistration(userInfo, params.referer);
+
+      // Store traffic source information
+      const trafficSourceData = await this.trafficSourceService.storeTrafficSource({
+         clientId: userInfo.clientId,
+         utmSource: params.utmSource,
+         utmMedium: params.utmMedium,
+         utmCampaign: params.utmCampaign,
+         utmTerm: params.utmTerm,
+         utmContent: params.utmContent,
+         referer: params.referer,
+         landingPage: params.landingPage
+      });
+
+      // Report registration with traffic source information
+      this.reportClientRegistration(userInfo, params.referer, trafficSourceData ? {
+         utmSource: trafficSourceData.utmSource,
+         utmMedium: trafficSourceData.utmMedium,
+         utmCampaign: trafficSourceData.utmCampaign,
+         trafficType: trafficSourceData.trafficType,
+         landingPage: trafficSourceData.landingPage
+      } : undefined);
       // and follow otp login flow
       return this.login({
-         ...(userInfo?.email && {
-            email: userInfo.email
-         }),
-         ...(userInfo?.phone && {
-            phone: userInfo.phone
-         })
+         email: userInfo.email,
+         phone: userInfo.phone
       }, userInfo);
    }
    async useRepliersToken(params: AuthRepliersTokenDto) {
@@ -312,12 +327,23 @@ export default class AuthService {
          profile
       };
    }
-   private async reportClientRegistration(user: RplClientsClient, referer: string) {
+   private async reportClientRegistration(
+      user: RplClientsClient,
+      referer: string,
+      trafficSource?: {
+         utmSource?: string;
+         utmMedium?: string;
+         utmCampaign?: string;
+         trafficType?: string;
+         landingPage?: string;
+      }
+   ) {
       try {
          const params = await this.registerClientSelector.select({
             user,
             provider: "otp",
-            referer
+            referer,
+            trafficSource
          });
          if (!params) {
             debug("reportClientRegistration: params is null");

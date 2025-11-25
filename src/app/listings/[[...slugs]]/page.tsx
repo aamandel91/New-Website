@@ -3,8 +3,8 @@ import { features } from 'features'
 import { Page404Template, PageTemplate } from '@templates'
 import CatalogPageContent from '@pages/catalog'
 
-import { generateMetadata as generatePropertyMetadata } from 'app/listing/[[...listingName]]/page'
-import PropertyPage from 'app/listing/[[...listingName]]/page'
+import { generateMetadata as generatePropertyMetadata } from 'app/homedetails/[slug]/page'
+import PropertyPage from 'app/homedetails/[slug]/page'
 
 import { type ApiBoardCity } from 'services/API'
 
@@ -40,8 +40,8 @@ export const generateMetadata = async (props: LocationsPageProps) => {
 
   if (listingId) {
     return generatePropertyMetadata({
-      params: { listingName: [`${localAddress}-${listingId}`] },
-      searchParams: { boardId }
+      params: Promise.resolve({ slug: `${localAddress}-${listingId}` }),
+      searchParams: Promise.resolve({ boardId })
     })
   }
 
@@ -71,8 +71,8 @@ const LocationsCatalogPage = async (props: {
   if (listingId) {
     return (
       <PropertyPage
-        params={{ listingName: [`${localAddress}-${listingId}`] }}
-        searchParams={{ boardId }}
+        params={Promise.resolve({ slug: `${localAddress}-${listingId}` })}
+        searchParams={Promise.resolve({ boardId })}
       />
     )
   }
