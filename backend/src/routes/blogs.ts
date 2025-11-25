@@ -1,4 +1,4 @@
-import { Router } from 'koa'
+import Router from '@koa/router'
 import { container } from 'tsyringe'
 import type { Middleware } from 'koa-jwt'
 import { BlogService } from '../services/blogs.js'
