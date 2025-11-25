@@ -32,7 +32,8 @@ export default class RepliersBase {
          },
          paramsSerializer: {
             indexes: null
-         }
+         },
+         proxy: false // Bypass any proxy for direct HTTPS connection
       });
       const throttler = pThrottle({
          limit: this.config.repliers.limit,

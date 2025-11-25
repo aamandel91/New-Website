@@ -7,7 +7,7 @@ const proximitySearchConfig = {
    long: "-94.540129",
    radius_m: 150_000_000
 };
-const boardId = 110; // Sample Data board
+const boardId = 2505; // User's Repliers API board
 
 // just follow the AppConfig structure
 export default {
