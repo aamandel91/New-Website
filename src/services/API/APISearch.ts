@@ -71,8 +71,11 @@ class APISearch extends APIBase {
         '/autosuggest/locations',
         options
       )
-    } catch (error) {
-      console.error('[Locations] error fetching data', error)
+    } catch (error: any) {
+      // Suppress 401 errors (expected during SSR when no auth token)
+      if (error?.status !== 401) {
+        console.error('[Locations] error fetching data', error)
+      }
       return null
     }
   }
