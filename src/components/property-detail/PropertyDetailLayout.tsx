@@ -17,6 +17,9 @@ import PropertyHistory from './PropertyHistory'
 import PropertyLocation from './PropertyLocation'
 import PropertyMarketStats from './PropertyMarketStats'
 import SimilarProperties from './SimilarProperties'
+import RelatedPages from './RelatedPages'
+import MoreProperties from './MoreProperties'
+import RelatedBlogs from './RelatedBlogs'
 
 interface PropertyDetailLayoutProps {
   property: Property
@@ -56,6 +59,16 @@ const PropertyDetailLayout: React.FC<PropertyDetailLayoutProps> = ({
   }
 
   const propertyAddress = `${address.street}, ${address.city}, ${address.state} ${address.zip}`
+
+  // Format price for display
+  const formatPrice = (price: number): string => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(price)
+  }
 
   // Calculate price per sqft
   const pricePerSqft = property.price && property.sqft
@@ -205,13 +218,48 @@ const PropertyDetailLayout: React.FC<PropertyDetailLayoutProps> = ({
                 stats={marketStats}
               />
 
-              {/* Similar Properties */}
+              {/* Similar Properties - Visual Carousel */}
               {similarProperties.length > 0 && (
                 <SimilarProperties
                   properties={similarProperties}
                   currentPropertyMls={property.mlsNumber}
+                  city={property.address?.city}
+                  state={property.address?.state}
+                  address={propertyAddress}
+                  zipCode={property.address?.zip}
+                  propertyType={property.propertyType}
                 />
               )}
+
+              {/* Related CMS Pages - Dynamic Links */}
+              <RelatedPages
+                city={property.address?.city}
+                state={property.address?.state}
+                neighborhood={property.neighborhood}
+                propertyType={property.propertyType}
+                zipCode={property.address?.zip}
+                schoolDistrict={property.schoolDistrict}
+              />
+
+              {/* More Properties - Text-based with Descriptions (SEO) */}
+              {similarProperties.length > 0 && (
+                <MoreProperties
+                  properties={similarProperties}
+                  currentPropertyMls={property.mlsNumber}
+                  city={property.address?.city}
+                  state={property.address?.state}
+                  neighborhood={property.neighborhood}
+                  priceRange={property.price ? formatPrice(property.price) : undefined}
+                />
+              )}
+
+              {/* Related Blog Posts - Optional, pass empty array if no blogs */}
+              {/* <RelatedBlogs
+                posts={[]}
+                city={property.address?.city}
+                state={property.address?.state}
+                propertyType={property.propertyType}
+              /> */}
             </Box>
           </Grid>
 

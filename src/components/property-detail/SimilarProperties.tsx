@@ -21,13 +21,45 @@ interface SimilarPropertiesProps {
   properties: Property[]
   currentPropertyMls?: string
   title?: string
+  city?: string
+  state?: string
+  address?: string
+  zipCode?: string
+  propertyType?: string
 }
 
 const SimilarProperties: React.FC<SimilarPropertiesProps> = ({
   properties,
   currentPropertyMls,
-  title = 'Similar Properties',
+  title,
+  city,
+  state,
+  address,
+  zipCode,
+  propertyType,
 }) => {
+  // Build SEO-optimized heading with keywords
+  const buildTitle = () => {
+    if (title) return title
+
+    const parts = ['Similar Properties']
+
+    if (address) {
+      parts.push(`to ${address}`)
+    } else if (zipCode) {
+      parts.push(`in ${zipCode}`)
+    } else if (city && state) {
+      parts.push(`in ${city}, ${state}`)
+    }
+
+    if (propertyType) {
+      parts.push(`- ${propertyType}s`)
+    }
+
+    return parts.join(' ')
+  }
+
+  const headingTitle = buildTitle()
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'))
   const isTablet = useMediaQuery(theme.breakpoints.down('md'))
@@ -68,7 +100,7 @@ const SimilarProperties: React.FC<SimilarPropertiesProps> = ({
           mb: 2,
         }}
       >
-        <Typography variant="h6">{title}</Typography>
+        <Typography variant="h6" component="h3">{headingTitle}</Typography>
         <Box sx={{ display: 'flex', gap: 1 }}>
           <IconButton
             onClick={() => scroll('left')}
