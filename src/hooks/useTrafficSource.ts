@@ -51,14 +51,14 @@ export function usePropertyViewTracking() {
       try {
         // Note: These endpoints are public, no auth required for reading settings
         const [ppcResponse, organicResponse] = await Promise.all([
-          fetch('/api/admin/settings/ppc/registration').then(r => r.json()),
-          fetch('/api/admin/settings/organic/registration').then(r => r.json())
+          fetch('/api/admin/settings/ppc/registration').then(r => r.ok ? r.json() : null),
+          fetch('/api/admin/settings/organic/registration').then(r => r.ok ? r.json() : null)
         ]);
 
-        if (ppcResponse.viewThreshold !== undefined) {
+        if (ppcResponse?.viewThreshold !== undefined) {
           setPpcThreshold(ppcResponse.viewThreshold);
         }
-        if (organicResponse.viewThreshold !== undefined) {
+        if (organicResponse?.viewThreshold !== undefined) {
           setOrganicThreshold(organicResponse.viewThreshold);
         }
       } catch (error) {
