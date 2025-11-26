@@ -9,10 +9,10 @@ const config = {
   clusterPrecision: 12,
   clusterLimit: 200,
   // boards
-  defaultBoardId: 2,
+  defaultBoardId: 110, // Repliers SAMPLE-DATA board
   // VOW boards explanation:
   // https://repliers.com/understanding-mls-data-feeds-idx-vow-and-back-office-whats-the-difference/
-  vowBoardId: 2, // same as defaultBoardId
+  vowBoardId: 110, // same as defaultBoardId
 
   similarListingsRadius: 15
 }
