@@ -12,11 +12,20 @@ export interface PropertySlugParts {
 /**
  * Extract MLS number from property slug
  * @param slug - URL slug (e.g., "133-reagan-crest-dr-clayton-nc-27520-10134772")
+ *               Can optionally include boardId at end (e.g., "...10134772-110")
  * @returns MLS number (e.g., "10134772")
  */
 export function extractMlsFromSlug(slug: string): string {
   const segments = slug.split('-')
-  return segments[segments.length - 1]
+  const lastSegment = segments[segments.length - 1]
+
+  // Check if last segment is a 1-3 digit boardId (e.g., "110")
+  // If so, the MLS number is the second-to-last segment
+  if (lastSegment && /^\d{1,3}$/.test(lastSegment)) {
+    return segments[segments.length - 2] || lastSegment
+  }
+
+  return lastSegment
 }
 
 /**
