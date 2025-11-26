@@ -35,9 +35,10 @@ yarn-debug.log*
 yarn-error.log*
 
 # local env files
-.env*.local
-.env
-.env.*
+# WARNING: Tracking .env files (not recommended - API keys will be in git history)
+# .env*.local
+# .env
+# .env.*
 
 # vercel
 .vercel
