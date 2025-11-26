@@ -96,10 +96,43 @@ const PropertyHeader: React.FC<PropertyHeaderProps> = ({
   }
 
   return (
-    <Box sx={{ py: 4 }}>
-      <Stack spacing={3}>
-        {/* Status Badge and Actions */}
+    <Box>
+      <Stack spacing={2}>
+        {/* Address and Price Row */}
+        <Box>
+          <Typography
+            variant="h4"
+            component="h1"
+            fontWeight="bold"
+            sx={{
+              fontSize: { xs: '1.5rem', md: '2rem' },
+            }}
+          >
+            {address.street}
+          </Typography>
+          <Typography
+            variant="body1"
+            color="text.secondary"
+            sx={{ fontSize: { xs: '0.875rem', md: '1rem' } }}
+          >
+            {address.city}, {address.state} {address.zip}
+          </Typography>
+        </Box>
+
+        {/* Price and Status Row */}
         <Stack direction="row" justifyContent="space-between" alignItems="center" flexWrap="wrap" gap={2}>
+          <Typography
+            variant="h3"
+            component="div"
+            fontWeight="bold"
+            sx={{
+              fontSize: { xs: '1.75rem', md: '2.5rem' },
+              color: 'primary.main',
+            }}
+          >
+            {formatPrice(price)}
+          </Typography>
+
           <Stack direction="row" spacing={1} flexWrap="wrap">
             <Chip
               label={getStatusLabel(status)}
@@ -116,6 +149,84 @@ const PropertyHeader: React.FC<PropertyHeaderProps> = ({
                 sx={{ fontWeight: 'bold', fontSize: '0.875rem' }}
               />
             ))}
+          </Stack>
+        </Stack>
+
+        {/* Key Stats - Compact Single Row */}
+        <Stack
+          direction="row"
+          spacing={{ xs: 2, md: 3 }}
+          divider={<Divider orientation="vertical" flexItem />}
+          sx={{ py: 1 }}
+          flexWrap="wrap"
+        >
+          <Box>
+            <Typography variant="h6" fontWeight="bold" component="span">
+              {beds}
+            </Typography>
+            <Typography variant="body2" color="text.secondary" component="span" sx={{ ml: 0.5 }}>
+              Beds
+            </Typography>
+          </Box>
+
+          <Box>
+            <Typography variant="h6" fontWeight="bold" component="span">
+              {baths}
+            </Typography>
+            <Typography variant="body2" color="text.secondary" component="span" sx={{ ml: 0.5 }}>
+              Baths
+            </Typography>
+          </Box>
+
+          <Box>
+            <Typography variant="h6" fontWeight="bold" component="span">
+              {formatNumber(sqft)}
+            </Typography>
+            <Typography variant="body2" color="text.secondary" component="span" sx={{ ml: 0.5 }}>
+              Sq Ft
+            </Typography>
+          </Box>
+
+          {yearBuilt && (
+            <Box>
+              <Typography variant="h6" fontWeight="bold" component="span">
+                {yearBuilt}
+              </Typography>
+              <Typography variant="body2" color="text.secondary" component="span" sx={{ ml: 0.5 }}>
+                Built
+              </Typography>
+            </Box>
+          )}
+        </Stack>
+
+        <Divider />
+
+        {/* Action Buttons and Icons */}
+        <Stack
+          direction={{ xs: 'column', sm: 'row' }}
+          spacing={2}
+          alignItems={{ xs: 'stretch', sm: 'center' }}
+          justifyContent="space-between"
+        >
+          <Stack direction="row" spacing={1} sx={{ flex: 1 }}>
+            <Button
+              variant="contained"
+              size="large"
+              startIcon={<ScheduleIcon />}
+              onClick={onScheduleTour}
+              sx={{ py: 1.5, flex: 1, textTransform: 'none', fontWeight: 600 }}
+            >
+              Request a Tour
+            </Button>
+            <Button
+              variant="outlined"
+              size="large"
+              startIcon={<EmailIcon />}
+              onClick={onRequestInfo}
+              sx={{ py: 1.5, flex: 1, textTransform: 'none', fontWeight: 600 }}
+            >
+              Ask a Question
+            </Button>
           </Stack>
 
           <Stack direction="row" spacing={1}>
@@ -140,122 +251,6 @@ const PropertyHeader: React.FC<PropertyHeaderProps> = ({
               <ShareIcon />
             </IconButton>
           </Stack>
-        </Stack>
-
-        {/* Price */}
-        <Typography
-          variant="h3"
-          component="h1"
-          fontWeight="bold"
-          sx={{
-            fontSize: { xs: '2rem', md: '3rem' },
-            color: theme.palette.mode === 'dark' ? 'primary.main' : 'text.primary',
-          }}
-        >
-          {formatPrice(price)}
-        </Typography>
-
-        {/* Address */}
-        <Typography
-          variant="h6"
-          component="h2"
-          color="text.secondary"
-          sx={{ fontSize: { xs: '1rem', md: '1.25rem' } }}
-        >
-          {address.street}, {address.city}, {address.state} {address.zip}
-        </Typography>
-
-        <Divider />
-
-        {/* Key Stats Row */}
-        <Grid container spacing={{ xs: 2, md: 4 }} sx={{ py: 2 }}>
-          <Grid item xs={6} sm={3}>
-            <Stack direction="row" spacing={1} alignItems="center">
-              <BedIcon color="action" />
-              <Box>
-                <Typography variant="h6" fontWeight="bold">
-                  {beds}
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  Beds
-                </Typography>
-              </Box>
-            </Stack>
-          </Grid>
-
-          <Grid item xs={6} sm={3}>
-            <Stack direction="row" spacing={1} alignItems="center">
-              <BathtubIcon color="action" />
-              <Box>
-                <Typography variant="h6" fontWeight="bold">
-                  {baths}
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  Baths
-                </Typography>
-              </Box>
-            </Stack>
-          </Grid>
-
-          <Grid item xs={6} sm={3}>
-            <Stack direction="row" spacing={1} alignItems="center">
-              <SquareFootIcon color="action" />
-              <Box>
-                <Typography variant="h6" fontWeight="bold">
-                  {formatNumber(sqft)}
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  Sq Ft
-                </Typography>
-              </Box>
-            </Stack>
-          </Grid>
-
-          {yearBuilt && (
-            <Grid item xs={6} sm={3}>
-              <Stack direction="row" spacing={1} alignItems="center">
-                <CalendarTodayIcon color="action" />
-                <Box>
-                  <Typography variant="h6" fontWeight="bold">
-                    {yearBuilt}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Built
-                  </Typography>
-                </Box>
-              </Stack>
-            </Grid>
-          )}
-        </Grid>
-
-        <Divider />
-
-        {/* Action Buttons */}
-        <Stack
-          direction={{ xs: 'column', sm: 'row' }}
-          spacing={2}
-          sx={{ pt: 2 }}
-        >
-          <Button
-            variant="contained"
-            size="large"
-            startIcon={<ScheduleIcon />}
-            onClick={onScheduleTour}
-            fullWidth
-            sx={{ py: 1.5 }}
-          >
-            Schedule Tour
-          </Button>
-          <Button
-            variant="outlined"
-            size="large"
-            startIcon={<EmailIcon />}
-            onClick={onRequestInfo}
-            fullWidth
-            sx={{ py: 1.5 }}
-          >
-            Request Info
-          </Button>
         </Stack>
       </Stack>
     </Box>
