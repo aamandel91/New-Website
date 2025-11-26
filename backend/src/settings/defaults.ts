@@ -1,13 +1,13 @@
 import { DeepPartial } from '../lib/settings.js'
 import { AppConfig } from '../config.js'
 
-// Benton County, AR, USA - starting point in the middle of the US
+// Tampa, Florida, USA - center for Florida Home Finder
 const proximitySearchConfig = {
-  lat: '36.489108',
-  long: '-94.540129',
+  lat: '27.8',
+  long: '-82.0',
   radius_m: 150_000_000
 }
-const boardId = 2505 // User's Repliers API board
+const boardId = 110 // Repliers Sample Data Board (use correct boardId from /boards endpoint)
 
 // just follow the AppConfig structure
 export default {
