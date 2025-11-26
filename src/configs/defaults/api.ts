@@ -1,5 +1,8 @@
 const config = {
-  apiRequestTimeout: 20_000, // 20 seconds
+  apiRequestTimeout: parseInt(
+    process.env.NEXT_PUBLIC_API_TIMEOUT || '10000',
+    10
+  ), // Default: 10 seconds (configurable via NEXT_PUBLIC_API_TIMEOUT)
   // Google Maps API
   gmapsApiUrl: 'https://maps.googleapis.com/maps/api/',
   gmapsApiKey: process.env.NEXT_PUBLIC_GMAPS_KEY || '',

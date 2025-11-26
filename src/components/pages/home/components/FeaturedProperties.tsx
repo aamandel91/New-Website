@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useTranslations } from 'next-intl'
 
 import { Box, Container, Grid, Stack, Typography } from '@mui/material'
@@ -10,45 +10,46 @@ import { PropertyCard } from '@shared/Property'
 import { type ApiQueryParams, type Property } from 'services/API'
 import SearchService from 'services/Search'
 
+// Static filters - defined outside component to prevent unnecessary re-renders
+const FEATURED_FILTERS: Partial<ApiQueryParams> = {
+  class: 'residential',
+  minPrice: 1_000_000,
+  resultsPerPage: 12
+}
+
+const SOLD_FILTERS: Partial<ApiQueryParams> = {
+  ...FEATURED_FILTERS,
+  status: 'U',
+  sortBy: 'soldDateDesc'
+}
+
 const FeaturedProperties = () => {
   const [featured, setFeatured] = useState<Property[]>([])
   const [recentlySold, setRecentlySold] = useState<Property[]>([])
   const t = useTranslations('HomePage')
 
-  const filters: Partial<ApiQueryParams> = {
-    class: 'residential',
-    minPrice: 1_000_000,
-    resultsPerPage: 12
-  }
-
-  const soldFilters: Partial<ApiQueryParams> = {
-    ...filters,
-    status: 'U',
-    sortBy: 'soldDateDesc'
-  }
-
-  const fetchFeatured = async () => {
+  const fetchFeatured = useCallback(async () => {
     try {
-      const response = await SearchService.fetchListings(filters)
+      const response = await SearchService.fetchListings(FEATURED_FILTERS)
       if (response) setFeatured(response.listings)
     } catch (error) {
       console.error('Featured::Error fetching data', error)
     }
-  }
+  }, [])
 
-  const fetchRecentlySold = async () => {
+  const fetchRecentlySold = useCallback(async () => {
     try {
-      const response = await SearchService.fetchListings(soldFilters)
+      const response = await SearchService.fetchListings(SOLD_FILTERS)
       if (response) setRecentlySold(response.listings)
     } catch (error) {
       console.error('RecentlySold::Error fetching data', error)
     }
-  }
+  }, [])
 
   useEffect(() => {
     fetchFeatured()
     fetchRecentlySold()
-  }, [])
+  }, [fetchFeatured, fetchRecentlySold])
 
   const PropertySection = ({
     title,
