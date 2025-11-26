@@ -19,39 +19,29 @@ export const fetchSimilarProperties = cache(
       const priceMin = Math.floor(price * 0.8)
       const priceMax = Math.ceil(price * 1.2)
 
-      // Build search parameters
+      // Build search parameters - all as query parameters, not POST body
       const searchParams = {
         get: {
           boardId,
           page: 1,
           pageSize: limit + 1, // Get one extra in case current property is in results
-        },
-        post: {
-          filters: {
-            // Price range
-            'price.current': {
-              $gte: priceMin,
-              $lte: priceMax,
-            },
-            // Same city
-            'address.city': address.city,
-            // Similar bed count (+/- 1)
-            ...(beds && {
-              beds: {
-                $gte: Math.max(0, beds - 1),
-                $lte: beds + 1,
-              },
-            }),
-            // Similar bath count (+/- 1)
-            ...(baths && {
-              baths: {
-                $gte: Math.max(0, baths - 1),
-                $lte: baths + 1,
-              },
-            }),
-            // Only active listings
-            status: 'active',
-          },
+          // Price range
+          minPrice: priceMin,
+          maxPrice: priceMax,
+          // Same city
+          city: [address.city],
+          // Similar bed count (+/- 1)
+          ...(beds && {
+            minBeds: Math.max(0, beds - 1),
+            maxBeds: beds + 1,
+          }),
+          // Similar bath count (+/- 1)
+          ...(baths && {
+            minBaths: Math.max(0, baths - 1),
+            maxBaths: baths + 1,
+          }),
+          // Only active listings
+          status: ['A'],
         },
       }
 
@@ -83,13 +73,9 @@ export const fetchMarketStats = cache(
           boardId,
           page: 1,
           pageSize: 100, // Get enough for statistical analysis
-        },
-        post: {
-          filters: {
-            'address.city': city,
-            'address.state': state,
-            status: 'active',
-          },
+          city: [city],
+          state: state,
+          status: ['A'], // A = Active
         },
       }
 
