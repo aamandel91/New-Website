@@ -11,7 +11,7 @@ const routes = {
   area: '/search/area',
   address: '/search/address',
 
-  listing: '/listing', // [...id]
+  listing: '/homedetails', // [...id] - Changed from /listing to /homedetails
   listings: '/listings',
   estimate: '/estimate',
   dashboard: '/dashboard',
