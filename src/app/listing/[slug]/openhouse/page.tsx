@@ -84,7 +84,7 @@ export default async function OpenHousePage({ params }: PageProps) {
       {/* Back Link */}
       <Box sx={{ mb: 3 }}>
         <Link
-          href={`/homedetails/${params.slug}`}
+          href={`/listing/${params.slug}`}
           style={{
             display: 'inline-flex',
             alignItems: 'center',
