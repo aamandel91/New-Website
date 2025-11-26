@@ -3,8 +3,8 @@ import { features } from 'features'
 import { Page404Template, PageTemplate } from '@templates'
 import CatalogPageContent from '@pages/catalog'
 
-import { generateMetadata as generatePropertyMetadata } from 'app/homedetails/[slug]/page'
-import PropertyPage from 'app/homedetails/[slug]/page'
+import { generateMetadata as generatePropertyMetadata } from 'app/listing/[slug]/page'
+import PropertyPage from 'app/listing/[slug]/page'
 
 import { type ApiBoardCity } from 'services/API'
 

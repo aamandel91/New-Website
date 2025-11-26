@@ -1,5 +1,5 @@
 /**
- * Property URL utilities for /homedetails/[slug] routing
+ * Property URL utilities for /listing/[slug] routing
  * Slug format: street-city-state-zip-mlsNumber
  * Example: 133-reagan-crest-dr-clayton-nc-27520-10134772
  */
@@ -47,7 +47,7 @@ export function parsePropertySlug(slug: string): PropertySlugParts {
  * Generate property detail URL from address and MLS number
  * @param address - Property address object
  * @param mlsNumber - MLS listing number
- * @returns URL path (e.g., "/homedetails/133-reagan-crest-dr-clayton-nc-27520-10134772")
+ * @returns URL path (e.g., "/listing/133-reagan-crest-dr-clayton-nc-27520-10134772")
  */
 export function generatePropertyUrl(
   address: { street?: string; city?: string; state?: string; zip?: string },
@@ -68,14 +68,14 @@ export function generatePropertyUrl(
     .replace(/-+/g, '-') // Replace multiple hyphens with single
     .replace(/^-|-$/g, '') // Remove leading/trailing hyphens
 
-  return `/homedetails/${slug}`
+  return `/listing/${slug}`
 }
 
 /**
  * Generate direct property URL using only MLS number
  * @param mlsNumber - MLS listing number
- * @returns URL path (e.g., "/homedetails/10134772")
+ * @returns URL path (e.g., "/listing/10134772")
  */
 export function generateDirectPropertyUrl(mlsNumber: string | number): string {
-  return `/homedetails/${mlsNumber}`
+  return `/listing/${mlsNumber}`
 }
