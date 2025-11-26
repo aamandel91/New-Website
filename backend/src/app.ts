@@ -75,6 +75,7 @@ app.use(container.resolve('middleware.compress') satisfies Middleware)
 app.use(container.resolve('middleware.cors') satisfies Middleware)
 app.use(container.resolve('middleware.helmet') satisfies Middleware)
 app.use(container.resolve('middleware.bodyparser') satisfies Middleware)
+app.use(container.resolve('middleware.tenantContext') satisfies Middleware) // Set organization context
 app.use(container.resolve('middleware.xss') satisfies Middleware)
 app.use(container.resolve('middleware.sslify') satisfies Middleware)
 app.use(container.resolve('middleware.swagger') satisfies Middleware)
