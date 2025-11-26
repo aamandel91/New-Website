@@ -124,14 +124,20 @@ const removeTokenFromUrl = () => {
 const UserContext = createContext<UserContextType | undefined>(undefined)
 
 const UserProvider = ({ children }: { children: ReactNode }) => {
-  const localProfile =
-    typeof localStorage !== 'undefined'
-      ? localStorage.getItem(profileKey)
-      : null
+  const getStoredProfile = () => {
+    if (typeof localStorage === 'undefined') return {}
 
-  const [profile, setProfile] = useState(
-    localProfile ? JSON.parse(localProfile) : {}
-  )
+    try {
+      const stored = localStorage.getItem(profileKey)
+      return stored ? JSON.parse(stored) : {}
+    } catch (error) {
+      console.error('Failed to parse stored profile, clearing corrupted data:', error)
+      localStorage.removeItem(profileKey)
+      return {}
+    }
+  }
+
+  const [profile, setProfile] = useState(getStoredProfile())
   const [loading, setLoading] = useState(false)
   // eslint-disable-next-line no-undef
   const refreshTimeout = useRef<NodeJS.Timeout | null>(null)

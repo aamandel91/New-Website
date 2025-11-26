@@ -109,9 +109,9 @@ const content = {
   } as Metadata,
   estimateMetadata: {
     title:
-      'DEFAULTNAME lorem ipsum dolor sit amet, consectetur adipiscing elit DEFAULTSTATE.',
+      'Florida Home Valuation - Get Your Free Property Estimate | Florida Home Finder',
     description:
-      'DEFAULTNAME lorem ipsum dolor sit amet, consectetur adipiscing elit DEFAULTSTATE.'
+      'Get an instant, accurate home valuation for your Florida property. Our AI-powered tool provides comprehensive market analysis and pricing insights.'
   } as Metadata,
   estimateResultMetadata: {
     title: '$ Property Valuation Report',
