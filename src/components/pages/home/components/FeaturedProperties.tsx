@@ -13,7 +13,7 @@ import SearchService from 'services/Search'
 // Static filters - defined outside component to prevent unnecessary re-renders
 const FEATURED_FILTERS: Partial<ApiQueryParams> = {
   class: 'residential',
-  minPrice: 1_000_000,
+  minPrice: 200_000,
   resultsPerPage: 12
 }
 
