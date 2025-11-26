@@ -73,9 +73,29 @@ export default class RepliersBase {
           'x-repliers-forwarded-for': this.xff.getHeader()
         }
       : {}
+
+    // Enhanced logging: Always log API requests
+    const fullUrl = `${this.config.repliers.base_url}${url}`
+    console.log('[Repliers API Request]', {
+      method,
+      url: fullUrl,
+      query: query ? JSON.stringify(query) : 'none',
+      body: body ? JSON.stringify(body).slice(0, 500) : 'none',
+      headers: {
+        'REPLIERS-API-KEY': this.config.repliers.api_key?.slice(0, 10) + '...',
+        'x-repliers-forwarded-for': options.headers?.['x-repliers-forwarded-for'] || 'not set'
+      }
+    })
+
     debug(options)
     return this.throttledRequest(options)
       .then((axiosResponse) => {
+        console.log('[Repliers API Success]', {
+          method,
+          url: fullUrl,
+          status: axiosResponse.status,
+          dataPreview: JSON.stringify(axiosResponse.data)?.slice(0, 500)
+        })
         debug('HTTP response', {
           status: axiosResponse.status,
           dataPreview: JSON.stringify(axiosResponse.data)?.slice(0, 1500) // log only first 1500 chars
@@ -83,6 +103,15 @@ export default class RepliersBase {
         return axiosResponse.data
       })
       .catch((e) => {
+        console.error('[Repliers API Error]', {
+          method,
+          url: fullUrl,
+          status: e.response?.status || 'NO_RESPONSE',
+          statusText: e.response?.statusText || e.message,
+          data: e.response?.data || 'No data',
+          code: e.code,
+          message: e.message
+        })
         debug(e.response)
         throw new ApiError(
           'Repliers API error',
