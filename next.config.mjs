@@ -21,22 +21,14 @@ const loggingConfig =
 const nextConfig = {
   // Configure `pageExtensions` to include markdown and MDX files
   pageExtensions: ['tsx', 'ts', 'jsx', 'js', 'mdx', 'md'],
-  eslint: {
-    // Warning: This allows production builds to successfully complete even if
-    // your project has ESLint errors.
-    ignoreDuringBuilds: true
-  },
   trailingSlash: false,
   reactStrictMode: true,
-  typescript: {
-    ignoreBuildErrors: true
-  },
   images: {
-    unoptimized: true,
     minimumCacheTTL: 3600,
     path: '/_next/image',
     contentDispositionType: 'attachment',
     disableStaticImages: false,
+    formats: ['image/avif', 'image/webp'],
     remotePatterns: [
       {
         protocol: 'https',

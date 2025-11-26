@@ -83,26 +83,33 @@ export const setToken = (token: string): void => {
   })
 }
 
-export const expired = (token: string) => {
-  const currentTime = Math.floor(Date.now() / 1000)
+export const expired = (token: string): boolean => {
   try {
     const decoded = jwtDecode(token)
-    return currentTime > decoded.exp!
+    if (!decoded.exp) return true
+    const currentTime = Math.floor(Date.now() / 1000)
+    return currentTime > decoded.exp
   } catch (e) {
-    console.error('expired -> error')
+    console.error('Failed to decode token:', e)
     return true
   }
 }
 
-export const refreshNeeded = (token: string) => {
-  const currentTime = Math.floor(Date.now() / 1000)
-  const decoded = jwtDecode(token)
+export const refreshNeeded = (token: string): boolean => {
+  try {
+    const decoded = jwtDecode(token)
+    if (!decoded.exp || !decoded.iat) return true
 
-  const tokenLifespan = decoded.exp! - decoded.iat!
-  const timeLeft = decoded.exp! - currentTime
-  const refreshTime = tokenLifespan * 0.5 // 50% of the token lifespan, see JWT_EXPIRE .env var on server-side
+    const currentTime = Math.floor(Date.now() / 1000)
+    const tokenLifespan = decoded.exp - decoded.iat
+    const timeLeft = decoded.exp - currentTime
+    const refreshTime = tokenLifespan * 0.5 // 50% of the token lifespan, see JWT_EXPIRE .env var on server-side
 
-  return timeLeft < refreshTime
+    return timeLeft < refreshTime
+  } catch (e) {
+    console.error('Failed to check token refresh:', e)
+    return true
+  }
 }
 
 let sessionToken = ''

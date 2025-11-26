@@ -37,10 +37,8 @@ class APIBase {
         headers
       })
       if (!response.ok) {
-        // Suppress 401 errors for autosuggest endpoints (expected when user not authenticated)
-        const shouldSuppressLog =
-          response.status === 401 && request.includes('/autosuggest')
-        if (!shouldSuppressLog) {
+        // Suppress 401 errors (expected for unauthenticated users)
+        if (response.status !== 401) {
           console.error(`HTTP Error: ${response.status}`, request)
         }
       }

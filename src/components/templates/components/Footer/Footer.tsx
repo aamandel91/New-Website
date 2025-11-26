@@ -43,7 +43,8 @@ const Footer = () => {
               sx={{ flex: 1 }}
               spacing={{ xs: 2, md: 4 }}
             >
-              <Box
+              {/* TODO: Uncomment and add proper routes when these pages are created */}
+              {/* <Box
                 sx={{
                   flex: 1,
                   color: 'grey.400',
@@ -54,31 +55,13 @@ const Footer = () => {
                   <Typography variant="h5" color="common.white">
                     About
                   </Typography>
-                  <Link
-                    href="/"
-                    sx={{
-                      color: 'grey.400',
-                      '&:hover': { color: 'secondary.main' }
-                    }}
-                  >
+                  <Link href="/about" sx={{ color: 'grey.400', '&:hover': { color: 'secondary.main' } }}>
                     About Us
                   </Link>
-                  <Link
-                    href="/"
-                    sx={{
-                      color: 'grey.400',
-                      '&:hover': { color: 'secondary.main' }
-                    }}
-                  >
+                  <Link href="/news" sx={{ color: 'grey.400', '&:hover': { color: 'secondary.main' } }}>
                     News
                   </Link>
-                  <Link
-                    href="/"
-                    sx={{
-                      color: 'grey.400',
-                      '&:hover': { color: 'secondary.main' }
-                    }}
-                  >
+                  <Link href="/careers" sx={{ color: 'grey.400', '&:hover': { color: 'secondary.main' } }}>
                     Careers
                   </Link>
                 </Stack>
@@ -94,40 +77,16 @@ const Footer = () => {
                   <Typography variant="h5" color="common.white">
                     Company
                   </Typography>
-                  <Link
-                    href="/"
-                    sx={{
-                      color: 'grey.400',
-                      '&:hover': { color: 'secondary.main' }
-                    }}
-                  >
+                  <Link href="/team" sx={{ color: 'grey.400', '&:hover': { color: 'secondary.main' } }}>
                     Our Team
                   </Link>
-                  <Link
-                    href="/"
-                    sx={{
-                      color: 'grey.400',
-                      '&:hover': { color: 'secondary.main' }
-                    }}
-                  >
+                  <Link href="/partners" sx={{ color: 'grey.400', '&:hover': { color: 'secondary.main' } }}>
                     Partner With Us
                   </Link>
-                  <Link
-                    href="/"
-                    sx={{
-                      color: 'grey.400',
-                      '&:hover': { color: 'secondary.main' }
-                    }}
-                  >
+                  <Link href="/faq" sx={{ color: 'grey.400', '&:hover': { color: 'secondary.main' } }}>
                     FAQ
                   </Link>
-                  <Link
-                    href="/"
-                    sx={{
-                      color: 'grey.400',
-                      '&:hover': { color: 'secondary.main' }
-                    }}
-                  >
+                  <Link href="/blog" sx={{ color: 'grey.400', '&:hover': { color: 'secondary.main' } }}>
                     Blog
                   </Link>
                 </Stack>
@@ -143,44 +102,20 @@ const Footer = () => {
                   <Typography variant="h5" color="common.white">
                     Support
                   </Typography>
-                  <Link
-                    href="/"
-                    sx={{
-                      color: 'grey.400',
-                      '&:hover': { color: 'secondary.main' }
-                    }}
-                  >
+                  <Link href={routes.profile} sx={{ color: 'grey.400', '&:hover': { color: 'secondary.main' } }}>
                     Account
                   </Link>
-                  <Link
-                    href="/"
-                    sx={{
-                      color: 'grey.400',
-                      '&:hover': { color: 'secondary.main' }
-                    }}
-                  >
+                  <Link href="/support" sx={{ color: 'grey.400', '&:hover': { color: 'secondary.main' } }}>
                     Support Center
                   </Link>
-                  <Link
-                    href="/"
-                    sx={{
-                      color: 'grey.400',
-                      '&:hover': { color: 'secondary.main' }
-                    }}
-                  >
+                  <Link href="/feedback" sx={{ color: 'grey.400', '&:hover': { color: 'secondary.main' } }}>
                     Feedback
                   </Link>
-                  <Link
-                    href="/"
-                    sx={{
-                      color: 'grey.400',
-                      '&:hover': { color: 'secondary.main' }
-                    }}
-                  >
+                  <Link href="/contact" sx={{ color: 'grey.400', '&:hover': { color: 'secondary.main' } }}>
                     Contact Us
                   </Link>
                 </Stack>
-              </Box>
+              </Box> */}
             </Stack>
           </Stack>
           <Stack spacing={2}>
