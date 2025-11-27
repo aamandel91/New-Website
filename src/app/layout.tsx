@@ -15,6 +15,7 @@ import 'styles/globals.css'
 import 'mapbox-gl/dist/mapbox-gl.css'
 
 import Providers from './_providers'
+import AgentSubdomainSEO from '@/components/shared/AgentSubdomainSEO'
 
 const gbInitMode = process.env.NEXT_PUBLIC_GROWTHBOOK_INIT || 'ssg'
 
@@ -59,6 +60,7 @@ const Layout = async ({ children }: { children: React.ReactNode }) => {
           featureOptions={options}
           locations={locations}
         >
+          <AgentSubdomainSEO />
           {children}
         </Providers>
       </body>
