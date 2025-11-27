@@ -223,6 +223,53 @@ Body: {
 - **Search Dialog**: `src/components/shared/Dialogs/AiSearchDialog/`
 - **API Client**: `src/services/API/APIChat.ts`
 
+## 7. Market Trends Visualization
+
+**Location**: `src/components/shared/MarketTrends/`
+
+A reusable widget for displaying real estate market trends on any page.
+
+### Features
+
+- **Interactive Charts**: Recharts-based visualization showing median price and days on market
+- **Summary Statistics**: Cards displaying median price, days on market, active listings, and market condition
+- **Market Condition Indicator**: Automatically determines seller's/buyer's/balanced market based on inventory
+- **Flexible Integration**: Can be added to any page with minimal configuration
+- **Server-Side Rendering**: Fetches data on server for optimal performance
+
+### Components
+
+- `MarketTrendsWidget`: Main async server component
+- `MarketTrendsChart`: Recharts visualization component
+- `fetchMarketTrends`: Cached data fetching utility
+
+### Usage
+
+```typescript
+import { MarketTrendsWidget } from '@shared/MarketTrends'
+
+<MarketTrendsWidget
+  city="Denver"
+  state="CO"
+  boardId={1}
+  monthsBack={12}
+  showDaysOnMarket={true}
+  title="Denver Market Trends"
+/>
+```
+
+### Example Pages
+
+- **City Pages**: `/city/[state]/[city]/page.tsx`
+- **Neighborhood Pages**: `/neighborhood/[state]/[city]/[neighborhood]/page.tsx`
+
+### Market Conditions
+
+The widget determines market condition based on inventory months:
+- **Seller's Market** (< 5 months): High demand, low inventory
+- **Balanced Market** (5-7 months): Supply meets demand
+- **Buyer's Market** (> 7 months): Low demand, high inventory
+
 ## Summary of Integrations
 
 | Feature | Status | Files Modified |
@@ -231,13 +278,14 @@ Body: {
 | Comparables Display | ✅ Implemented | `src/components/property-detail/PropertyComparables.tsx` |
 | Image Quality Sorting | ✅ Implemented | `src/utils/imageQuality.ts`, `PropertyPhotoGallery.tsx` |
 | Advanced Notifications | ✅ Implemented | `SaveSearchDialog/SaveSearchForm.tsx` |
+| Market Trends Widget | ✅ Implemented | `src/components/shared/MarketTrends/`, example city/neighborhood pages |
 | Normalization API | 📚 Documented | Backend already implemented |
 | NLP Search | ⚠️ Partially Used | Basic implementation exists |
 
 ## Future Enhancements
 
 1. **Room-Filtered Gallery**: Add UI tabs to filter photos by room type
-2. **Market Trends Chart**: Visualize month-over-month price changes
-3. **Automated CMA Reports**: Generate PDF reports using comparables
-4. **Smart Recommendations**: Use NLP to suggest properties based on user behavior
-5. **Image Quality Warnings**: Alert agents about low-quality photos before listing
+2. **Automated CMA Reports**: Generate PDF reports using comparables
+3. **Smart Recommendations**: Use NLP to suggest properties based on user behavior
+4. **Image Quality Warnings**: Alert agents about low-quality photos before listing
+5. **Multi-City Comparison**: Compare market trends across multiple cities side-by-side
