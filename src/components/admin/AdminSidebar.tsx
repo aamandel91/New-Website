@@ -20,7 +20,11 @@ import {
   Settings as SettingsIcon,
   Business as BusinessIcon,
   Contacts as ContactsIcon,
-  BarChart as BarChartIcon
+  BarChart as BarChartIcon,
+  Pages as PagesIcon,
+  Navigation as NavigationIcon,
+  AutoAwesome as AIIcon,
+  LibraryAdd as BulkIcon
 } from '@mui/icons-material'
 
 const drawerWidth = 260
@@ -42,6 +46,27 @@ const navItems: NavItem[] = [
     title: 'Leads',
     path: '/admin/leads',
     icon: <ContactsIcon />,
+    divider: true
+  },
+  {
+    title: 'Content Pages',
+    path: '/admin/content-pages',
+    icon: <PagesIcon />
+  },
+  {
+    title: 'Navigation',
+    path: '/admin/navigation',
+    icon: <NavigationIcon />
+  },
+  {
+    title: 'AI Content',
+    path: '/admin/ai-content',
+    icon: <AIIcon />
+  },
+  {
+    title: 'Bulk Pages',
+    path: '/admin/bulk-pages',
+    icon: <BulkIcon />,
     divider: true
   },
   {
