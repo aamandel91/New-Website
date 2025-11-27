@@ -14,6 +14,7 @@ import adminRouter from './admin.js';
 import webookRouter from './webhooks/index.js';
 import blogsRouter from './blogs.js';
 import organizationRouter from './organization.js';
+import leadsRouter from './leads.js';
 const router = new Router({
    prefix: "/api"
 });
@@ -32,4 +33,5 @@ router.use(adminRouter.routes(), adminRouter.allowedMethods());
 router.use(webookRouter.routes(), webookRouter.allowedMethods());
 router.use(blogsRouter.routes(), blogsRouter.allowedMethods());
 router.use(organizationRouter.routes(), organizationRouter.allowedMethods());
+router.use(leadsRouter.routes(), leadsRouter.allowedMethods());
 export default router;
