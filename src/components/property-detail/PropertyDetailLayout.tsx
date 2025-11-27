@@ -1,12 +1,11 @@
 'use client'
 
-import React, { useEffect, useMemo } from 'react'
+import React, { useEffect } from 'react'
 import { Box, Container, Grid } from '@mui/material'
 import { Property } from 'services/API'
 
 import { useFavorites } from 'providers/FavoritesProvider'
 import { useRecentlyViewed } from '@/hooks/useRecentlyViewed'
-import { normalizeProperty } from 'utils/propertyDataMapper'
 
 import PropertyPhotoGallery from './PropertyPhotoGallery'
 import PropertyHeader from './PropertyHeader'
@@ -32,9 +31,6 @@ const PropertyDetailLayout: React.FC<PropertyDetailLayoutProps> = ({
   const { toggle: toggleFavorite, find: findFavorite } = useFavorites()
   const { addProperty: addToRecentlyViewed } = useRecentlyViewed()
 
-  // Normalize property data for consistent field access
-  const normalizedProperty = useMemo(() => normalizeProperty(property), [property])
-
   // Check if property is favorited
   const isFavorited = Boolean(findFavorite(property))
 
@@ -43,10 +39,10 @@ const PropertyDetailLayout: React.FC<PropertyDetailLayoutProps> = ({
     addToRecentlyViewed(property)
   }, [property.mlsNumber])
 
-  // Map property photos
-  const photos = property.images?.map((img, index) => ({
-    url: img.url || '',
-    caption: img.caption,
+  // Map property photos - images is an array of strings
+  const photos = property.images?.map((imgUrl, index) => ({
+    url: imgUrl || '',
+    caption: undefined,
     order: index,
   })) || []
 
@@ -60,14 +56,23 @@ const PropertyDetailLayout: React.FC<PropertyDetailLayoutProps> = ({
 
   const propertyAddress = `${address.street}, ${address.city}, ${address.state} ${address.zip}`
 
-  // Agent info
-  const agent = property.agent
+  // Parse property data from API
+  const price = property.listPrice ? parseFloat(property.listPrice) : 0
+  const beds = property.details?.numBedrooms ? parseInt(property.details.numBedrooms) : 0
+  const baths = property.details?.numBathrooms ? parseInt(property.details.numBathrooms) : 0
+  const sqft = property.details?.sqft ? parseFloat(property.details.sqft) : 0
+  const yearBuilt = property.details?.yearBuilt ? parseInt(property.details.yearBuilt) : undefined
+
+  // Agent info - use first agent from agents array
+  const agent = property.agents && property.agents.length > 0
     ? {
-        name: property.agent.name,
-        phone: property.agent.phone,
-        email: property.agent.email,
-        photo: property.agent.photo,
-        license: property.agent.license,
+        name: property.agents[0].name || undefined,
+        phone: property.agents[0].phones && property.agents[0].phones.length > 0
+          ? property.agents[0].phones[0]
+          : undefined,
+        email: undefined,
+        photo: property.agents[0].photo?.large || property.agents[0].photo?.small,
+        license: undefined,
       }
     : undefined
 
@@ -111,7 +116,7 @@ const PropertyDetailLayout: React.FC<PropertyDetailLayoutProps> = ({
   }
 
   // Get virtual tour URL
-  const virtualTourUrl = normalizedProperty.virtualTourUrl
+  const virtualTourUrl = property.details?.virtualTourUrl
 
   return (
     <Box sx={{ bgcolor: 'background.default', minHeight: '100vh' }}>
@@ -129,13 +134,13 @@ const PropertyDetailLayout: React.FC<PropertyDetailLayoutProps> = ({
         {/* Property Header */}
         <Box sx={{ mb: 3 }}>
           <PropertyHeader
-            price={normalizedProperty.price || 0}
+            price={price}
             status={property.status || ''}
             address={address}
-            beds={normalizedProperty.beds || 0}
-            baths={normalizedProperty.baths || 0}
-            sqft={normalizedProperty.sqft || 0}
-            yearBuilt={normalizedProperty.yearBuilt}
+            beds={beds}
+            baths={baths}
+            sqft={sqft}
+            yearBuilt={yearBuilt}
             property={property}
             isSaved={isFavorited}
             onSave={handleSave}
@@ -160,7 +165,7 @@ const PropertyDetailLayout: React.FC<PropertyDetailLayoutProps> = ({
 
               {/* Tab-based Content */}
               <PropertyTabs
-                property={normalizedProperty}
+                property={property}
                 similarProperties={similarProperties}
                 marketStats={marketStats}
                 defaultInterestRate={defaultInterestRate}
