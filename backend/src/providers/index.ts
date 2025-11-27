@@ -28,6 +28,7 @@ import containerXffMiddleware from './middleware/container/xff.js'
 import dummyXFFProvider from './dummy.xff.js'
 import bossWebhookAuth from './middleware/boss.webhook.auth.js'
 import asyncLocalStore from './asyncLocalStore.js'
+import tenantContextMiddleware from './middleware/tenantContext.js'
 @registry([
   asyncLocalStore,
   config,
@@ -57,6 +58,7 @@ import asyncLocalStore from './asyncLocalStore.js'
   containerMiddleware,
   containerXffMiddleware,
   dummyXFFProvider,
-  bossWebhookAuth
+  bossWebhookAuth,
+  tenantContextMiddleware
 ])
 export default class ContainerRegistry {}
