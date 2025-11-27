@@ -63,13 +63,50 @@ const PropertyTabs: React.FC<PropertyTabsProps> = ({
     setValue(newValue)
   }
 
-  // Normalize price and sqft to numbers
-  const price = typeof property.price === 'number' ? property.price : parseFloat(property.price || '0')
-  const sqft = typeof property.sqft === 'number' ? property.sqft : parseFloat(property.sqft || '0')
+  // Parse price and sqft from API data
+  const price = property.listPrice ? parseFloat(property.listPrice) : 0
+  const sqft = property.details?.sqft ? parseFloat(property.details.sqft) : 0
   const pricePerSqft = price && sqft ? Math.round(price / sqft) : undefined
 
-  // Map features to categorized format
-  const features: Record<string, string[]> = property.features || {}
+  // Map features from details - build categorized format
+  const features: Record<string, string[]> = {}
+
+  if (property.details) {
+    // Interior features
+    const interior: string[] = []
+    if (property.details.airConditioning) interior.push(`Air Conditioning: ${property.details.airConditioning}`)
+    if (property.details.heating) interior.push(`Heating: ${property.details.heating}`)
+    if (property.details.basement1) interior.push(`Basement: ${property.details.basement1}`)
+    if (property.details.numFireplaces) interior.push(`Fireplaces: ${property.details.numFireplaces}`)
+    if (property.details.flooringType) interior.push(`Flooring: ${property.details.flooringType}`)
+    if (interior.length > 0) features['Interior'] = interior
+
+    // Exterior features
+    const exterior: string[] = []
+    if (property.details.exteriorConstruction1) exterior.push(`Construction: ${property.details.exteriorConstruction1}`)
+    if (property.details.driveway) exterior.push(`Driveway: ${property.details.driveway}`)
+    if (property.details.garage) exterior.push(`Garage: ${property.details.garage}`)
+    if (property.details.patio) exterior.push(`Patio: ${property.details.patio}`)
+    if (property.details.swimmingPool) exterior.push(`Pool: ${property.details.swimmingPool}`)
+    if (exterior.length > 0) features['Exterior'] = exterior
+
+    // Parking
+    const parking: string[] = []
+    if (property.details.numGarageSpaces) parking.push(`Garage Spaces: ${property.details.numGarageSpaces}`)
+    if (property.details.numParkingSpaces) parking.push(`Parking Spaces: ${property.details.numParkingSpaces}`)
+    if (parking.length > 0) features['Parking'] = parking
+
+    // Utilities
+    const utilities: string[] = []
+    if (property.details.waterSource) utilities.push(`Water: ${property.details.waterSource}`)
+    if (property.details.sewer) utilities.push(`Sewer: ${property.details.sewer}`)
+    if (utilities.length > 0) features['Utilities'] = utilities
+
+    // Additional features
+    if (property.details.extras) {
+      features['Additional Features'] = property.details.extras.split(',').map(s => s.trim())
+    }
+  }
 
   // Property address
   const address = {
@@ -91,17 +128,15 @@ const PropertyTabs: React.FC<PropertyTabsProps> = ({
     }).format(numPrice)
   }
 
-  // Get taxes and HOA as numbers
-  const taxes = typeof property.taxes === 'number'
-    ? property.taxes
-    : property.taxes?.annualAmount || 0
-  const hoa = typeof property.hoa === 'number'
-    ? property.hoa
-    : property.condominium?.fees?.maintenance
-      ? parseFloat(property.condominium.fees.maintenance)
-      : property.condominium?.maintenance
-        ? parseFloat(property.condominium.maintenance)
-        : 0
+  // Get taxes and HOA from API structure
+  const taxes = property.taxes?.annualAmount
+    ? parseFloat(property.taxes.annualAmount)
+    : 0
+  const hoa = property.condominium?.fees?.maintenance
+    ? parseFloat(property.condominium.fees.maintenance)
+    : property.condominium?.maintenance
+      ? parseFloat(property.condominium.maintenance)
+      : 0
 
   return (
     <Box sx={{ width: '100%' }}>
@@ -145,10 +180,10 @@ const PropertyTabs: React.FC<PropertyTabsProps> = ({
           {/* Key Facts */}
           <PropertyKeyFacts
             mlsNumber={property.mlsNumber || ''}
-            propertyType={property.propertyType || property.details?.propertyType}
+            propertyType={property.details?.propertyType}
             status={property.status}
-            yearBuilt={property.yearBuilt}
-            lotSize={property.lotSize || property.lot?.acres || property.lot?.size}
+            yearBuilt={property.details?.yearBuilt ? parseInt(property.details.yearBuilt) : undefined}
+            lotSize={property.lot?.acres || property.lot?.size}
             pricePerSqft={pricePerSqft}
             hoa={hoa}
             annualTaxes={taxes}
@@ -180,9 +215,9 @@ const PropertyTabs: React.FC<PropertyTabsProps> = ({
             latitude: property.map?.latitude || 0,
             longitude: property.map?.longitude || 0,
           }}
-          neighborhood={property.neighborhood || property.address?.neighborhood}
-          county={property.county || property.address?.district}
-          schoolDistrict={property.schoolDistrict}
+          neighborhood={property.address?.neighborhood}
+          county={property.address?.district}
+          schoolDistrict={undefined}
         />
       </TabPanel>
 
@@ -208,7 +243,7 @@ const PropertyTabs: React.FC<PropertyTabsProps> = ({
                 state={property.address?.state}
                 address={propertyAddress}
                 zipCode={property.address?.zip}
-                propertyType={property.propertyType || property.details?.propertyType}
+                propertyType={property.details?.propertyType}
               />
 
               <MoreProperties
@@ -216,7 +251,7 @@ const PropertyTabs: React.FC<PropertyTabsProps> = ({
                 currentPropertyMls={property.mlsNumber}
                 city={property.address?.city}
                 state={property.address?.state}
-                neighborhood={property.neighborhood || property.address?.neighborhood}
+                neighborhood={property.address?.neighborhood}
                 priceRange={formatPrice(price)}
               />
             </>
@@ -234,10 +269,10 @@ const PropertyTabs: React.FC<PropertyTabsProps> = ({
           <RelatedPages
             city={property.address?.city}
             state={property.address?.state}
-            neighborhood={property.neighborhood || property.address?.neighborhood}
-            propertyType={property.propertyType || property.details?.propertyType}
+            neighborhood={property.address?.neighborhood}
+            propertyType={property.details?.propertyType}
             zipCode={property.address?.zip}
-            schoolDistrict={property.schoolDistrict}
+            schoolDistrict={undefined}
           />
         </Box>
       </TabPanel>
