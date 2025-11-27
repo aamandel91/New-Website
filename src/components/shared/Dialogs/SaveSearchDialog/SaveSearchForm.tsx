@@ -14,7 +14,10 @@ import {
   TextField,
   ToggleButton,
   ToggleButtonGroup,
-  Typography
+  Typography,
+  FormControlLabel,
+  Switch,
+  Divider
 } from '@mui/material'
 
 import i18nConfig from '@configs/i18n'
@@ -45,6 +48,8 @@ type ApiSaveSearch = {
   searchId?: number
   clientId?: number
   notificationFrequency: NotificationFrequency
+  priceChangeNotifications?: boolean
+  soldNotifications?: boolean
 }
 
 const SaveSearchForm = ({
@@ -68,30 +73,39 @@ const SaveSearchForm = ({
   const {
     control,
     handleSubmit,
-    formState: { errors }
+    formState: { errors },
+    watch
   } = useForm<Partial<ApiSaveSearch>>({
     mode: 'onBlur',
     resolver: joiResolver(schema),
     values: {
       name: data?.name || searchName,
-      notificationFrequency: data?.notificationFrequency || 'instant'
+      notificationFrequency: data?.notificationFrequency || 'instant',
+      priceChangeNotifications: data?.priceChangeNotifications ?? true,
+      soldNotifications: data?.soldNotifications ?? true
     }
   })
 
+  const notificationFrequency = watch('notificationFrequency')
+
   const onFormSubmit: SubmitHandler<Partial<ApiSaveSearch>> = async (data) => {
-    const { name, notificationFrequency } = data
+    const { name, notificationFrequency, priceChangeNotifications, soldNotifications } = data
     if (editId) {
       await editSearch(editId, {
         name,
         searchId: editId,
-        notificationFrequency
+        notificationFrequency,
+        priceChangeNotifications,
+        soldNotifications
       } as ApiSavedSearchUpdateRequest)
     } else {
       await createSearch({
         name,
         filters,
         ...(polygon ? { polygon } : { bounds }),
-        notificationFrequency
+        notificationFrequency,
+        priceChangeNotifications,
+        soldNotifications
       })
     }
     onSubmit?.()
@@ -205,7 +219,67 @@ const SaveSearchForm = ({
                   </ToggleButtonGroup>
                 )}
               />
+              <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 1 }}>
+                Get notified about new listings matching your search criteria
+              </Typography>
             </Box>
+
+            {notificationFrequency !== 'monthly' && (
+              <>
+                <Divider sx={{ my: 1 }} />
+                <Box>
+                  <SelectLabel>Alert Preferences</SelectLabel>
+                  <Stack spacing={1}>
+                    <Controller
+                      name="priceChangeNotifications"
+                      control={control}
+                      render={({ field }) => (
+                        <FormControlLabel
+                          control={
+                            <Switch
+                              {...field}
+                              checked={field.value ?? true}
+                              disabled={processing}
+                            />
+                          }
+                          label={
+                            <Box>
+                              <Typography variant="body2">Price Change Alerts</Typography>
+                              <Typography variant="caption" color="text.secondary">
+                                Notify me when properties in my saved search change price
+                              </Typography>
+                            </Box>
+                          }
+                        />
+                      )}
+                    />
+                    <Controller
+                      name="soldNotifications"
+                      control={control}
+                      render={({ field }) => (
+                        <FormControlLabel
+                          control={
+                            <Switch
+                              {...field}
+                              checked={field.value ?? true}
+                              disabled={processing}
+                            />
+                          }
+                          label={
+                            <Box>
+                              <Typography variant="body2">Sold Alerts</Typography>
+                              <Typography variant="caption" color="text.secondary">
+                                Notify me when properties in my saved search are sold
+                              </Typography>
+                            </Box>
+                          }
+                        />
+                      )}
+                    />
+                  </Stack>
+                </Box>
+              </>
+            )}
           </Stack>
         </Stack>
       </DialogContent>

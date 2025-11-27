@@ -9,12 +9,17 @@ import {
   Grid,
   useTheme,
   useMediaQuery,
+  Chip,
 } from '@mui/material'
 import CloseIcon from '@mui/icons-material/Close'
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
 import ChevronRightIcon from '@mui/icons-material/ChevronRight'
 import PhotoLibraryIcon from '@mui/icons-material/PhotoLibrary'
+import StarIcon from '@mui/icons-material/Star'
 import Image from 'next/image'
+
+import { type Property } from 'services/API'
+import { sortImagesByQuality, type EnhancedPhoto } from 'utils/imageQuality'
 
 interface PropertyPhoto {
   url: string
@@ -23,12 +28,14 @@ interface PropertyPhoto {
 }
 
 interface PropertyPhotoGalleryProps {
-  photos: PropertyPhoto[]
+  photos?: PropertyPhoto[]
+  property?: Property
   propertyAddress?: string
 }
 
 const PropertyPhotoGallery: React.FC<PropertyPhotoGalleryProps> = ({
   photos,
+  property,
   propertyAddress,
 }) => {
   const theme = useTheme()
@@ -36,8 +43,16 @@ const PropertyPhotoGallery: React.FC<PropertyPhotoGalleryProps> = ({
   const [lightboxOpen, setLightboxOpen] = useState(false)
   const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0)
 
-  // Sort photos by order if available
-  const sortedPhotos = [...photos].sort((a, b) => (a.order || 0) - (b.order || 0))
+  // Use enhanced image sorting if property data is available, otherwise use basic photos
+  const sortedPhotos: EnhancedPhoto[] = property
+    ? sortImagesByQuality(
+        property.images || [],
+        property.imagesScore,
+        property.imageInsights
+      )
+    : photos
+    ? [...photos].sort((a, b) => (a.order || 0) - (b.order || 0))
+    : []
 
   const heroPhoto = sortedPhotos[0]
   const thumbnailPhotos = sortedPhotos.slice(1, isMobile ? 4 : 5)
@@ -107,7 +122,7 @@ const PropertyPhotoGallery: React.FC<PropertyPhotoGalleryProps> = ({
                 priority
                 sizes="(max-width: 768px) 100vw, 66vw"
               />
-              {/* Photo count overlay */}
+              {/* Photo count and quality overlay */}
               <Box
                 className="photo-overlay"
                 sx={{
@@ -116,20 +131,41 @@ const PropertyPhotoGallery: React.FC<PropertyPhotoGalleryProps> = ({
                   right: 16,
                   display: 'flex',
                   alignItems: 'center',
-                  gap: 1,
-                  bgcolor: 'rgba(0, 0, 0, 0.7)',
-                  color: 'white',
-                  px: 2,
-                  py: 1,
-                  borderRadius: 2,
+                  flexDirection: 'column',
+                  gap: 0.5,
                   opacity: { xs: 1, md: 0 },
                   transition: 'opacity 0.2s',
                 }}
               >
-                <PhotoLibraryIcon fontSize="small" />
-                <Typography variant="body2" fontWeight="medium">
-                  {sortedPhotos.length} Photos
-                </Typography>
+                <Box
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 1,
+                    bgcolor: 'rgba(0, 0, 0, 0.7)',
+                    color: 'white',
+                    px: 2,
+                    py: 1,
+                    borderRadius: 2,
+                  }}
+                >
+                  <PhotoLibraryIcon fontSize="small" />
+                  <Typography variant="body2" fontWeight="medium">
+                    {sortedPhotos.length} Photos
+                  </Typography>
+                </Box>
+                {heroPhoto.qualityLabel && (
+                  <Chip
+                    icon={<StarIcon />}
+                    label={heroPhoto.qualityLabel}
+                    size="small"
+                    sx={{
+                      bgcolor: 'rgba(0, 0, 0, 0.7)',
+                      color: 'white',
+                      '& .MuiChip-icon': { color: 'gold' },
+                    }}
+                  />
+                )}
               </Box>
             </Box>
           </Grid>
@@ -283,7 +319,7 @@ const PropertyPhotoGallery: React.FC<PropertyPhotoGalleryProps> = ({
             <CloseIcon />
           </IconButton>
 
-          {/* Photo counter */}
+          {/* Photo counter and info */}
           <Box
             sx={{
               position: 'absolute',
@@ -296,11 +332,34 @@ const PropertyPhotoGallery: React.FC<PropertyPhotoGalleryProps> = ({
               py: 1,
               borderRadius: 2,
               zIndex: 2,
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: 0.5,
             }}
           >
             <Typography variant="body2">
               {currentPhotoIndex + 1} / {sortedPhotos.length}
             </Typography>
+            {sortedPhotos[currentPhotoIndex]?.roomType && (
+              <Typography variant="caption" sx={{ opacity: 0.8 }}>
+                {sortedPhotos[currentPhotoIndex].roomType}
+              </Typography>
+            )}
+            {sortedPhotos[currentPhotoIndex]?.qualityLabel && (
+              <Chip
+                icon={<StarIcon />}
+                label={sortedPhotos[currentPhotoIndex].qualityLabel}
+                size="small"
+                sx={{
+                  height: 20,
+                  fontSize: '0.7rem',
+                  bgcolor: 'rgba(255, 255, 255, 0.2)',
+                  color: 'white',
+                  '& .MuiChip-icon': { color: 'gold', fontSize: 14 },
+                }}
+              />
+            )}
           </Box>
 
           {/* Previous button */}

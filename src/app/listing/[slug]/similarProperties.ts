@@ -72,17 +72,17 @@ export const fetchSimilarProperties = cache(
 
 /**
  * Fetch market statistics for a specific area
- * Calculates average price, median price, average DOM, etc.
+ * Uses API-provided statistics for accurate market data
  */
 export const fetchMarketStats = cache(
   async (city: string, state: string, boardId: number = searchConfig.defaultBoardId) => {
     try {
-      // Fetch active listings in the area
+      // Fetch active listings with statistics
       const searchParams = {
         get: {
           boardId,
           page: 1,
-          pageSize: 100, // Get enough for statistical analysis
+          pageSize: 100,
         },
         post: {
           filters: {
@@ -94,46 +94,68 @@ export const fetchMarketStats = cache(
       }
 
       const response = await APISearch.fetch(searchParams)
-      const { listings, count } = response
+      const { listings, count, statistics } = response
 
-      if (listings.length === 0) {
+      if (!statistics || count === 0) {
         return null
       }
 
-      // Calculate statistics
-      const prices = listings.map((p: Property) => p.price || 0).filter((p: number) => p > 0)
+      // Use API-provided statistics for accuracy
+      const averagePrice = statistics.listPrice ?
+        Math.round((parseFloat(statistics.listPrice.min) + parseFloat(statistics.listPrice.max)) / 2) :
+        0
+
+      const medianPrice = statistics.soldPrice?.med || 0
+      const averageDaysOnMarket = Math.round(statistics.daysOnMarket?.avg || 0)
+
+      // Calculate price per sqft from listings
       const sqfts = listings.map((p: Property) => p.sqft || 0).filter((s: number) => s > 0)
-      const daysOnMarket = listings
-        .map((p: Property) => {
-          if (!p.listingDate) return null
-          const days = Math.floor(
-            (Date.now() - new Date(p.listingDate).getTime()) / (1000 * 60 * 60 * 24)
-          )
-          return days
-        })
-        .filter((d): d is number => d !== null)
+      const prices = listings.map((p: Property) => p.price || 0).filter((p: number) => p > 0)
+      const pricePerSqft = sqfts.length > 0 && prices.length > 0 ?
+        Math.round(prices.reduce((sum, p) => sum + p, 0) / prices.length /
+                   (sqfts.reduce((sum, s) => sum + s, 0) / sqfts.length)) : 0
 
-      // Calculate average
-      const average = (arr: number[]) =>
-        arr.length > 0 ? arr.reduce((sum, val) => sum + val, 0) / arr.length : 0
-
-      // Calculate median
-      const median = (arr: number[]) => {
-        if (arr.length === 0) return 0
-        const sorted = [...arr].sort((a, b) => a - b)
-        const mid = Math.floor(sorted.length / 2)
-        return sorted.length % 2 === 0 ? (sorted[mid - 1] + sorted[mid]) / 2 : sorted[mid]
+      // Calculate month-over-month change from monthly statistics
+      let monthOverMonthChange: number | undefined
+      if (statistics.soldPrice?.mth) {
+        const months = Object.keys(statistics.soldPrice.mth).sort().reverse()
+        if (months.length >= 2) {
+          const currentMonth = statistics.soldPrice.mth[months[0]]
+          const previousMonth = statistics.soldPrice.mth[months[1]]
+          if (currentMonth && previousMonth && previousMonth.avg > 0) {
+            monthOverMonthChange = ((currentMonth.avg - previousMonth.avg) / previousMonth.avg) * 100
+          }
+        }
       }
 
-      const averagePrice = Math.round(average(prices))
-      const medianPrice = Math.round(median(prices))
-      const averageDaysOnMarket = Math.round(average(daysOnMarket))
-      const pricePerSqft = sqfts.length > 0 ? Math.round(average(prices) / average(sqfts)) : 0
+      // Calculate year-over-year change from monthly statistics
+      let yearOverYearChange: number | undefined
+      if (statistics.soldPrice?.mth) {
+        const months = Object.keys(statistics.soldPrice.mth).sort().reverse()
+        if (months.length >= 12) {
+          const currentMonth = statistics.soldPrice.mth[months[0]]
+          const yearAgoMonth = statistics.soldPrice.mth[months[11]]
+          if (currentMonth && yearAgoMonth && yearAgoMonth.avg > 0) {
+            yearOverYearChange = ((currentMonth.avg - yearAgoMonth.avg) / yearAgoMonth.avg) * 100
+          }
+        }
+      }
 
-      // Estimate inventory months (simplified calculation)
-      // Typical: (Active Listings / Avg Monthly Sales)
-      // Using rough estimate: assume 10% of active listings sell per month
-      const inventoryMonths = count > 0 ? count / (count * 0.1) : 0
+      // Estimate inventory months using sold statistics
+      let inventoryMonths = 10 // Default balanced market
+      if (statistics.soldPrice?.mth) {
+        const months = Object.keys(statistics.soldPrice.mth).sort().reverse()
+        if (months.length > 0) {
+          const recentMonths = months.slice(0, 3)
+          const avgMonthlySales = recentMonths.reduce((sum, month) => {
+            return sum + (statistics.soldPrice?.mth[month]?.count || 0)
+          }, 0) / recentMonths.length
+
+          if (avgMonthlySales > 0) {
+            inventoryMonths = count / avgMonthlySales
+          }
+        }
+      }
 
       return {
         averagePrice,
@@ -141,10 +163,9 @@ export const fetchMarketStats = cache(
         averageDaysOnMarket,
         totalActiveListings: count,
         pricePerSqft,
-        inventoryMonths: Math.round(inventoryMonths * 10) / 10, // Round to 1 decimal
-        // These would need historical data from API
-        monthOverMonthChange: undefined,
-        yearOverYearChange: undefined,
+        inventoryMonths: Math.round(inventoryMonths * 10) / 10,
+        monthOverMonthChange: monthOverMonthChange ? Math.round(monthOverMonthChange * 10) / 10 : undefined,
+        yearOverYearChange: yearOverYearChange ? Math.round(yearOverYearChange * 10) / 10 : undefined,
       }
     } catch (error) {
       console.error('Error fetching market stats:', error)
