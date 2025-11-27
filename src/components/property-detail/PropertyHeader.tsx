@@ -25,6 +25,8 @@ import EmailIcon from '@mui/icons-material/Email'
 import { type Property } from 'services/API'
 import { getPropertyBadges, getDaysOnMarket } from 'utils/propertyBadges'
 
+import PropertyValueEstimate from 'components/shared/Property/PropertyValueEstimate'
+
 interface PropertyHeaderProps {
   price: number
   status: string
@@ -151,6 +153,13 @@ const PropertyHeader: React.FC<PropertyHeaderProps> = ({
             ))}
           </Stack>
         </Stack>
+
+        {/* Value Estimate */}
+        {property?.estimate && (
+          <Box sx={{ maxWidth: { xs: '100%', md: '400px' } }}>
+            <PropertyValueEstimate estimate={property.estimate} variant="detailed" />
+          </Box>
+        )}
 
         {/* Key Stats - Compact Single Row */}
         <Stack

@@ -50,7 +50,8 @@ export const listingFields: Array<ListingFields> = [
   'lot',
   'updatedOn',
   'daysOnMarket',
-  'boardId'
+  'boardId',
+  'estimate'
 ]
 
 export type PropertyClass = 'residential' | 'condo' | 'commercial' | 'all'

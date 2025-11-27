@@ -24,6 +24,8 @@ import {
 import { createPropertyI18nUtils } from 'utils/properties'
 import { toRem } from 'utils/theme'
 
+import PropertyValueEstimate from '../../PropertyValueEstimate'
+
 type ContentProps = {
   property: Property
   size: PropertyCardSize
@@ -34,7 +36,7 @@ const Content = ({ property, size }: ContentProps) => {
   const t = useTranslations()
   const { getDaysSinceListed } = createPropertyI18nUtils(t)
 
-  const { address, listPrice, soldPrice, details } = property
+  const { address, listPrice, soldPrice, details, estimate } = property
 
   const beds = getBedrooms(details)
   const baths = getBathrooms(details)
@@ -119,6 +121,9 @@ const Content = ({ property, size }: ContentProps) => {
         >
           <ScrubbedText>{formatFullAddress(address)}</ScrubbedText>
         </Typography>
+        {estimate && !sizeMap && (
+          <PropertyValueEstimate estimate={estimate} variant="compact" />
+        )}
         <Typography
           component="div"
           fontWeight={500}
