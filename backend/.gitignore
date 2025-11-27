@@ -3,9 +3,10 @@ dist
 node_modules
 .DS_Store
 .nyc_output
-# WARNING: Tracking .env files (not recommended - API keys will be in git history)
-# .env
-# .env.*
+# Keep .env files out of git to protect API keys and secrets
+.env
+.env.*
+!.env.example
 .nova
 keys
 coverage
