@@ -9,6 +9,7 @@ import PropertyKeyFacts from './PropertyKeyFacts'
 import PropertyFeatures from './PropertyFeatures'
 import PropertyHistory from './PropertyHistory'
 import PropertyLocation from './PropertyLocation'
+import PropertyComparables from './PropertyComparables'
 import PropertyMortgageCalculator from './PropertyMortgageCalculator'
 import SimilarProperties from './SimilarProperties'
 import RelatedPages from './RelatedPages'
@@ -138,6 +139,17 @@ const PropertyTabs: React.FC<PropertyTabsProps> = ({
       ? parseFloat(property.condominium.maintenance)
       : 0
 
+  // Tab indices - adjust based on whether comparables exist
+  const hasComparables = property.comparables && property.comparables.length > 0
+  const tabIndices = {
+    overview: 0,
+    location: 1,
+    comparables: hasComparables ? 2 : -1,
+    mortgage: hasComparables ? 3 : 2,
+    similarHomes: hasComparables ? 4 : 3,
+    related: hasComparables ? 5 : 4
+  }
+
   return (
     <Box sx={{ width: '100%' }}>
       <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
@@ -161,16 +173,19 @@ const PropertyTabs: React.FC<PropertyTabsProps> = ({
             }
           }}
         >
-          <Tab label="Overview" {...a11yProps(0)} />
-          <Tab label="Location" {...a11yProps(1)} />
-          <Tab label="Mortgage" {...a11yProps(2)} />
-          <Tab label="Similar Homes" {...a11yProps(3)} />
-          <Tab label="Related" {...a11yProps(4)} />
+          <Tab label="Overview" {...a11yProps(tabIndices.overview)} />
+          <Tab label="Location" {...a11yProps(tabIndices.location)} />
+          {hasComparables && (
+            <Tab label="Comparables" {...a11yProps(tabIndices.comparables)} />
+          )}
+          <Tab label="Mortgage" {...a11yProps(tabIndices.mortgage)} />
+          <Tab label="Similar Homes" {...a11yProps(tabIndices.similarHomes)} />
+          <Tab label="Related" {...a11yProps(tabIndices.related)} />
         </Tabs>
       </Box>
 
       {/* Overview Tab */}
-      <TabPanel value={value} index={0}>
+      <TabPanel value={value} index={tabIndices.overview}>
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
           {/* Description */}
           {(property.description || property.details?.description) && (
@@ -208,7 +223,7 @@ const PropertyTabs: React.FC<PropertyTabsProps> = ({
       </TabPanel>
 
       {/* Location Tab */}
-      <TabPanel value={value} index={1}>
+      <TabPanel value={value} index={tabIndices.location}>
         <PropertyLocation
           address={address}
           coordinates={{
@@ -221,8 +236,18 @@ const PropertyTabs: React.FC<PropertyTabsProps> = ({
         />
       </TabPanel>
 
+      {/* Comparables Tab */}
+      {hasComparables && (
+        <TabPanel value={value} index={tabIndices.comparables}>
+          <PropertyComparables
+            comparables={property.comparables || []}
+            currentProperty={property}
+          />
+        </TabPanel>
+      )}
+
       {/* Mortgage Tab */}
-      <TabPanel value={value} index={2}>
+      <TabPanel value={value} index={tabIndices.mortgage}>
         <PropertyMortgageCalculator
           price={price}
           defaultInterestRate={defaultInterestRate}
@@ -232,7 +257,7 @@ const PropertyTabs: React.FC<PropertyTabsProps> = ({
       </TabPanel>
 
       {/* Similar Homes Tab */}
-      <TabPanel value={value} index={3}>
+      <TabPanel value={value} index={tabIndices.similarHomes}>
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
           {similarProperties.length > 0 ? (
             <>
@@ -264,7 +289,7 @@ const PropertyTabs: React.FC<PropertyTabsProps> = ({
       </TabPanel>
 
       {/* Related Tab */}
-      <TabPanel value={value} index={4}>
+      <TabPanel value={value} index={tabIndices.related}>
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
           <RelatedPages
             city={property.address?.city}
