@@ -9,28 +9,24 @@ import { useRecentlyViewed } from '@/hooks/useRecentlyViewed'
 
 import PropertyPhotoGallery from './PropertyPhotoGallery'
 import PropertyHeader from './PropertyHeader'
-import PropertyDescription from './PropertyDescription'
-import PropertyKeyFacts from './PropertyKeyFacts'
-import PropertyFeatures from './PropertyFeatures'
+import PropertyBreadcrumbs from './PropertyBreadcrumbs'
 import PropertyContactForm from './PropertyContactForm'
-import PropertyHistory from './PropertyHistory'
-import PropertyLocation from './PropertyLocation'
-import PropertyMarketStats from './PropertyMarketStats'
-import SimilarProperties from './SimilarProperties'
-import RelatedPages from './RelatedPages'
-import MoreProperties from './MoreProperties'
-import RelatedBlogs from './RelatedBlogs'
+import PropertyTabs from './PropertyTabs'
+import Property3DTour from './Property3DTour'
+import HomeWorthCheckCTA from './HomeWorthCheckCTA'
 
 interface PropertyDetailLayoutProps {
   property: Property
   similarProperties?: Property[]
   marketStats?: any
+  defaultInterestRate?: number
 }
 
 const PropertyDetailLayout: React.FC<PropertyDetailLayoutProps> = ({
   property,
   similarProperties = [],
-  marketStats
+  marketStats,
+  defaultInterestRate = 7.0
 }) => {
   const { toggle: toggleFavorite, find: findFavorite } = useFavorites()
   const { addProperty: addToRecentlyViewed } = useRecentlyViewed()
@@ -43,10 +39,10 @@ const PropertyDetailLayout: React.FC<PropertyDetailLayoutProps> = ({
     addToRecentlyViewed(property)
   }, [property.mlsNumber])
 
-  // Map property photos
-  const photos = property.images?.map((img, index) => ({
-    url: img.url || '',
-    caption: img.caption,
+  // Map property photos - images is an array of strings
+  const photos = property.images?.map((imgUrl, index) => ({
+    url: imgUrl || '',
+    caption: undefined,
     order: index,
   })) || []
 
@@ -60,44 +56,23 @@ const PropertyDetailLayout: React.FC<PropertyDetailLayoutProps> = ({
 
   const propertyAddress = `${address.street}, ${address.city}, ${address.state} ${address.zip}`
 
-  // Format price for display
-  const formatPrice = (price: number): string => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(price)
-  }
+  // Parse property data from API
+  const price = property.listPrice ? parseFloat(property.listPrice) : 0
+  const beds = property.details?.numBedrooms ? parseInt(property.details.numBedrooms) : 0
+  const baths = property.details?.numBathrooms ? parseInt(property.details.numBathrooms) : 0
+  const sqft = property.details?.sqft ? parseFloat(property.details.sqft) : 0
+  const yearBuilt = property.details?.yearBuilt ? parseInt(property.details.yearBuilt) : undefined
 
-  // Calculate price per sqft
-  const pricePerSqft = property.price && property.sqft
-    ? Math.round(property.price / property.sqft)
-    : undefined
-
-  // Map features to categorized format
-  const features: Record<string, string[]> = {}
-
-  // Example mapping - adjust based on your API structure
-  if (property.features) {
-    Object.entries(property.features).forEach(([key, value]) => {
-      if (Array.isArray(value)) {
-        features[key] = value
-      } else if (typeof value === 'string') {
-        if (!features['General']) features['General'] = []
-        features['General'].push(`${key}: ${value}`)
-      }
-    })
-  }
-
-  // Agent info
-  const agent = property.agent
+  // Agent info - use first agent from agents array
+  const agent = property.agents && property.agents.length > 0
     ? {
-        name: property.agent.name,
-        phone: property.agent.phone,
-        email: property.agent.email,
-        photo: property.agent.photo,
-        license: property.agent.license,
+        name: property.agents[0].name || undefined,
+        phone: property.agents[0].phones && property.agents[0].phones.length > 0
+          ? property.agents[0].phones[0]
+          : undefined,
+        email: undefined,
+        photo: property.agents[0].photo?.large || property.agents[0].photo?.small,
+        license: undefined,
       }
     : undefined
 
@@ -140,132 +115,80 @@ const PropertyDetailLayout: React.FC<PropertyDetailLayoutProps> = ({
     contactForm?.scrollIntoView({ behavior: 'smooth' })
   }
 
+  // Get virtual tour URL
+  const virtualTourUrl = property.details?.virtualTourUrl
+
   return (
     <Box sx={{ bgcolor: 'background.default', minHeight: '100vh' }}>
       {/* Full-width Photo Gallery */}
       <PropertyPhotoGallery photos={photos} propertyAddress={propertyAddress} />
 
       <Container maxWidth="xl" sx={{ py: 4 }}>
-        {/* Property Header */}
-        <PropertyHeader
-          price={property.price || 0}
-          status={property.status || ''}
-          address={address}
-          beds={property.beds || 0}
-          baths={property.baths || 0}
-          sqft={property.sqft || 0}
-          yearBuilt={property.yearBuilt}
-          property={property}
-          isSaved={isFavorited}
-          onSave={handleSave}
-          onShare={handleShare}
-          onRequestInfo={handleRequestInfo}
-          onScheduleTour={handleScheduleTour}
+        {/* Breadcrumbs */}
+        <PropertyBreadcrumbs
+          state={address.state}
+          city={address.city}
+          street={address.street}
         />
 
+        {/* Property Header */}
+        <Box sx={{ mb: 3 }}>
+          <PropertyHeader
+            price={price}
+            status={property.status || ''}
+            address={address}
+            beds={beds}
+            baths={baths}
+            sqft={sqft}
+            yearBuilt={yearBuilt}
+            property={property}
+            isSaved={isFavorited}
+            onSave={handleSave}
+            onShare={handleShare}
+            onRequestInfo={handleRequestInfo}
+            onScheduleTour={handleScheduleTour}
+          />
+        </Box>
+
         {/* Two-Column Layout */}
-        <Grid container spacing={4} sx={{ mt: 2 }}>
+        <Grid container spacing={4}>
           {/* Left Column - 2/3 width */}
           <Grid item xs={12} lg={8}>
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-              {/* Description */}
-              {property.description && (
-                <PropertyDescription description={property.description} />
-              )}
-
-              {/* Key Facts */}
-              <PropertyKeyFacts
-                mlsNumber={property.mlsNumber || ''}
-                propertyType={property.propertyType}
-                status={property.status}
-                yearBuilt={property.yearBuilt}
-                lotSize={property.lotSize}
-                pricePerSqft={pricePerSqft}
-                hoa={property.hoa}
-                annualTaxes={property.taxes}
-              />
-
-              {/* Features */}
-              {Object.keys(features).length > 0 && (
-                <PropertyFeatures features={features} />
-              )}
-
-              {/* Property History */}
-              <PropertyHistory
-                listingDate={property.listingDate}
-                currentPrice={property.price}
-                originalPrice={property.originalPrice}
-                daysOnMarket={property.daysOnMarket}
-              />
-
-              {/* Property Location */}
-              <PropertyLocation
-                address={address}
-                coordinates={{
-                  latitude: property.map?.latitude || 0,
-                  longitude: property.map?.longitude || 0,
-                }}
-                neighborhood={property.neighborhood}
-                county={property.county}
-                schoolDistrict={property.schoolDistrict}
-              />
-
-              {/* Market Statistics */}
-              <PropertyMarketStats
-                neighborhood={property.neighborhood}
-                city={property.address?.city}
-                state={property.address?.state}
-                stats={marketStats}
-              />
-
-              {/* Similar Properties - Visual Carousel */}
-              {similarProperties.length > 0 && (
-                <SimilarProperties
-                  properties={similarProperties}
-                  currentPropertyMls={property.mlsNumber}
-                  city={property.address?.city}
-                  state={property.address?.state}
-                  address={propertyAddress}
-                  zipCode={property.address?.zip}
-                  propertyType={property.propertyType}
+              {/* 3D Tour */}
+              {virtualTourUrl && (
+                <Property3DTour
+                  virtualTourUrl={virtualTourUrl}
+                  propertyAddress={propertyAddress}
                 />
               )}
 
-              {/* Related CMS Pages - Dynamic Links */}
-              <RelatedPages
-                city={property.address?.city}
-                state={property.address?.state}
-                neighborhood={property.neighborhood}
-                propertyType={property.propertyType}
-                zipCode={property.address?.zip}
-                schoolDistrict={property.schoolDistrict}
+              {/* Tab-based Content */}
+              <PropertyTabs
+                property={property}
+                similarProperties={similarProperties}
+                marketStats={marketStats}
+                defaultInterestRate={defaultInterestRate}
               />
 
-              {/* More Properties - Text-based with Descriptions (SEO) */}
-              {similarProperties.length > 0 && (
-                <MoreProperties
-                  properties={similarProperties}
-                  currentPropertyMls={property.mlsNumber}
-                  city={property.address?.city}
-                  state={property.address?.state}
-                  neighborhood={property.neighborhood}
-                  priceRange={property.price ? formatPrice(property.price) : undefined}
-                />
-              )}
-
-              {/* Related Blog Posts - Optional, pass empty array if no blogs */}
-              {/* <RelatedBlogs
-                posts={[]}
+              {/* Home Worth Check CTA */}
+              <HomeWorthCheckCTA
                 city={property.address?.city}
                 state={property.address?.state}
-                propertyType={property.propertyType}
-              /> */}
+              />
             </Box>
           </Grid>
 
           {/* Right Column - 1/3 width, Sticky */}
           <Grid item xs={12} lg={4}>
-            <Box id="contact-form">
+            <Box
+              id="contact-form"
+              sx={{
+                position: { lg: 'sticky' },
+                top: { lg: 80 },
+                alignSelf: 'flex-start'
+              }}
+            >
               <PropertyContactForm
                 propertyAddress={propertyAddress}
                 agent={agent}
