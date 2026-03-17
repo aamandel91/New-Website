@@ -1,3 +1,4 @@
+import TableRowsRoundedIcon from '@mui/icons-material/TableRowsRounded'
 import ViewModuleRoundedIcon from '@mui/icons-material/ViewModuleRounded'
 import { Skeleton, ToggleButton, ToggleButtonGroup } from '@mui/material'
 
@@ -15,7 +16,7 @@ const LayoutSelect = () => {
   }
 
   if (!clientSide) {
-    return <Skeleton variant="rounded" sx={{ width: 107, height: 38 }} />
+    return <Skeleton variant="rounded" sx={{ width: 160, height: 38 }} />
   }
 
   return (
@@ -25,7 +26,7 @@ const LayoutSelect = () => {
       value={layout}
       onChange={handleChange}
       sx={{
-        width: 107,
+        width: 160,
         maxHeight: 38,
         '& .MuiToggleButton-root': { px: 2 }
       }}
@@ -35,6 +36,9 @@ const LayoutSelect = () => {
       </ToggleButton>
       <ToggleButton value="grid">
         <ViewModuleRoundedIcon fontSize="small" />
+      </ToggleButton>
+      <ToggleButton value="table">
+        <TableRowsRoundedIcon fontSize="small" />
       </ToggleButton>
     </ToggleButtonGroup>
   )

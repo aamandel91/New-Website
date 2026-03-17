@@ -1,7 +1,7 @@
 import { type MapStyle } from '@configs/map'
 
 export type Params = {
-  layout: 'map' | 'grid'
+  layout: 'map' | 'grid' | 'table'
   style: MapStyle
 }
 

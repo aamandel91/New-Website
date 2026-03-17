@@ -8,6 +8,7 @@ import { Stack } from '@mui/material'
 import { useProperty } from 'providers/PropertyProvider'
 import useBreakpoints from 'hooks/useBreakpoints'
 import useClientSide from 'hooks/useClientSide'
+import VideoDialog from '@shared/Dialogs/VideoDialog'
 
 import {
   DesktopGallery,
@@ -32,9 +33,12 @@ const PropertyGallery = () => {
 
   const [activeIndex, setActiveIndex] = useState(startImage)
   const [activeThumbnailIndex, setActiveThumbnailIndex] = useState(startImage)
+  const [videoOpen, setVideoOpen] = useState(false)
 
   const clientSide = useClientSide()
   const { mobile } = useBreakpoints()
+
+  const virtualTourUrl = property.virtualTourUrl
 
   const handleChange = (index: number) => {
     if (index === activeIndex) return
@@ -71,6 +75,14 @@ const PropertyGallery = () => {
         </>
       ) : (
         <ThumbnailsSkeleton />
+      )}
+
+      {virtualTourUrl && (
+        <VideoDialog
+          open={videoOpen}
+          videoUrl={virtualTourUrl}
+          onClose={() => setVideoOpen(false)}
+        />
       )}
     </Stack>
   )

@@ -7,6 +7,7 @@ import { Box } from '@mui/material'
 
 import gridConfig from '@configs/cards-grids'
 import { type PropertyClass } from '@defaults/filters'
+import { InsiderGate } from '@shared/InsiderGate'
 import { ArrayWidget, BarsWidget, CountWidget } from '@shared/Widgets'
 import calendarImg from 'assets/common/calendar.svg'
 import houseImg from 'assets/common/house.svg'
@@ -97,14 +98,16 @@ export const StatsTabPanel = ({
         />
       </Box>
       <Box gridColumn="span 1" order={{ xs: 3, sm: 5, md: 2 }}>
-        <ArrayWidget
-          index={1} // 100ms delay
-          icon={houseImg}
-          data={soldCounts}
-          title={`${label} Sold`}
-          formatter={(value) => toSafeString(value)}
-          error={hasError}
-        />
+        <InsiderGate title="Become an Insider" description="Sign up for free to see trending neighbourhoods and market insights.">
+          <ArrayWidget
+            index={1} // 100ms delay
+            icon={houseImg}
+            data={soldCounts}
+            title={`${label} Sold`}
+            formatter={(value) => toSafeString(value)}
+            error={hasError}
+          />
+        </InsiderGate>
       </Box>
       <Box
         gridColumn="span 1"
@@ -130,14 +133,16 @@ export const StatsTabPanel = ({
         />
       </Box>
       <Box gridColumn="span 1" order={{ xs: 4, sm: 2, md: 4 }}>
-        <ArrayWidget
-          index={3} // 300ms delay
-          data={volumes}
-          icon={salesImg}
-          title="Sales Volume"
-          formatter={(v) => formatPrice(v)}
-          error={hasError}
-        />
+        <InsiderGate title="Become an Insider" description="Sign up for free to see trending neighbourhoods and market insights.">
+          <ArrayWidget
+            index={3} // 300ms delay
+            data={volumes}
+            icon={salesImg}
+            title="Sales Volume"
+            formatter={(v) => formatPrice(v)}
+            error={hasError}
+          />
+        </InsiderGate>
       </Box>
     </Box>
   )

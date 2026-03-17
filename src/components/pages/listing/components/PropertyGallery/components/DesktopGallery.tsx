@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import Image from 'next/legacy/image'
 
+import CameraAltOutlinedIcon from '@mui/icons-material/CameraAltOutlined'
 import { Box, CircularProgress, Stack } from '@mui/material'
 
 import propsConfig from '@configs/properties'
@@ -175,6 +176,31 @@ const DesktopGallery = ({
                         <AiSubmitButton image={activeImage} />
                       )}
                     </Stack>
+                  </Box>
+
+                  <Box
+                    sx={{
+                      position: 'absolute',
+                      top: 12,
+                      right: 12,
+                      bgcolor: 'rgba(0,0,0,0.6)',
+                      color: 'white',
+                      borderRadius: 1,
+                      px: 1,
+                      py: 0.25,
+                      fontSize: '0.75rem',
+                      fontWeight: 600,
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 0.5,
+                      opacity: showControls ? 1 : 0.7,
+                      transition: 'opacity 0.2s linear',
+                      pointerEvents: 'none',
+                      zIndex: 1,
+                    }}
+                  >
+                    <CameraAltOutlinedIcon sx={{ fontSize: 16 }} />
+                    {images.length}
                   </Box>
                 </>
               )}

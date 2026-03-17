@@ -44,7 +44,8 @@ import {
   MobileCircularProgress,
   OpenDrawerButton,
   PropertyDrawer,
-  SaveSearchCanvas
+  SaveSearchCanvas,
+  TableContent
 } from './components'
 
 type MapRootProps = {
@@ -331,6 +332,8 @@ const MapRoot = ({ zoom, center, polygon, onMove, onLoad }: MapRootProps) => {
           <GridFilters />
           <GridContent onCardClick={handleCardClick} />
         </GridMobileDrawer>
+      ) : layout === 'table' ? (
+        <TableContent />
       ) : (
         <GridDesktopContainer>
           <GridFilters />

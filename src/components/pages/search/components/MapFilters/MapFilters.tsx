@@ -85,11 +85,7 @@ const MapFilters = () => {
 
       <AdvancedFiltersButton size={size} />
 
-      {features.saveSearch && (
-        <DesktopOnly>
-          <SaveSearchButton size={size} />
-        </DesktopOnly>
-      )}
+      {features.saveSearch && <SaveSearchButton size={size} />}
 
       {features.aiSearch && <AiSearchButton size={size} />}
 

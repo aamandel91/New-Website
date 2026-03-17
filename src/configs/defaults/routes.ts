@@ -6,6 +6,7 @@ const routes = {
   map: '/search/map',
   ai: '/search/map?dialog=ai', // NOTE: alias for the toolbar
   grid: '/search/grid',
+  table: '/search/table',
 
   city: '/search/city',
   area: '/search/area',

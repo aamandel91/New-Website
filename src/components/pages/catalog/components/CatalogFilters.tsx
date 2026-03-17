@@ -6,8 +6,8 @@ import {
   Box,
   Skeleton,
   Stack,
-  ToggleButton,
-  ToggleButtonGroup
+  Tab,
+  Tabs
 } from '@mui/material'
 
 import { type ListingStatus, type ListingType } from '@configs/filters'
@@ -25,7 +25,9 @@ import { getCatalogUrl } from 'utils/urls'
 
 const statusItems: Array<[ListingStatus, string]> = [
   ['active', 'For Sale'],
-  ['rent', 'For Rent']
+  ['sold', 'Sold'],
+  ['rent', 'For Rent'],
+  ['all', 'All']
 ]
 
 const CatalogFilters = ({
@@ -55,6 +57,8 @@ const CatalogFilters = ({
 
     if (type !== 'allListings') filters.push(type)
     if (status === 'rent') filters.push('for-rent')
+    if (status === 'sold') filters.push('sold')
+    if (status === 'all') filters.push('all')
     if (sort !== 'createdOnDesc') filters.push('sort-' + sort)
 
     return filters
@@ -62,6 +66,11 @@ const CatalogFilters = ({
 
   const handleTypeChange = (value: ListingType) => {
     const filters = createFiltersArray({ type: value })
+    router.push(getCatalogUrl(city, hood, filters))
+  }
+
+  const handleStatusChange = (value: ListingStatus) => {
+    const filters = createFiltersArray({ status: value })
     router.push(getCatalogUrl(city, hood, filters))
   }
 
@@ -97,30 +106,26 @@ const CatalogFilters = ({
             )}
 
             {clientSide ? (
-              <ToggleButtonGroup
-                exclusive
-                value={listingStatus}
+              <Tabs
+                value={listingStatus || 'active'}
+                onChange={(_e, value) => handleStatusChange(value as ListingStatus)}
+                variant="scrollable"
+                scrollButtons="auto"
                 sx={{
-                  '& .MuiToggleButton-root': {
-                    px: { md: 3, lg: 4 },
-                    fontWeight: 400
-                  }
+                  minHeight: 36,
+                  '& .MuiTab-root': {
+                    minHeight: 36,
+                    textTransform: 'none',
+                    fontWeight: 600,
+                    fontSize: '0.875rem',
+                    px: 2,
+                  },
                 }}
               >
-                {statusItems.map(([key, label]) => (
-                  <ToggleButton
-                    key={key}
-                    value={key}
-                    href={getCatalogUrl(
-                      city,
-                      hood,
-                      createFiltersArray({ status: key })
-                    )}
-                  >
-                    {label}
-                  </ToggleButton>
+                {statusItems.map(([value, label]) => (
+                  <Tab key={value} value={value} label={label} />
                 ))}
-              </ToggleButtonGroup>
+              </Tabs>
             ) : (
               <Skeleton variant="rounded" sx={{ width: 257, height: 48 }} />
             )}
