@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react'
 import { Box, Tabs, Tab, Paper } from '@mui/material'
-import { Property } from 'services/API'
+import type { Property } from 'services/API'
 
 import PropertyDescription from './PropertyDescription'
 import PropertyKeyFacts from './PropertyKeyFacts'
@@ -112,7 +112,7 @@ const PropertyTabs: React.FC<PropertyTabsProps> = ({
 
   // Property address
   const address = {
-    street: property.address?.street || '',
+    street: `${property.address?.streetNumber || ''} ${property.address?.streetName || ''} ${property.address?.streetSuffix || ''}`.trim(),
     city: property.address?.city || '',
     state: property.address?.state || '',
     zip: property.address?.zip || '',
@@ -131,13 +131,11 @@ const PropertyTabs: React.FC<PropertyTabsProps> = ({
   }
 
   // Get taxes and HOA from API structure
-  const taxes = property.taxes?.annualAmount
-    ? parseFloat(property.taxes.annualAmount)
-    : 0
+  const taxes = property.taxes?.annualAmount ?? 0
   const hoa = property.condominium?.fees?.maintenance
     ? parseFloat(property.condominium.fees.maintenance)
     : property.condominium?.maintenance
-      ? parseFloat(property.condominium.maintenance)
+      ? parseFloat(String(property.condominium.maintenance))
       : 0
 
   // Tab indices - adjust based on whether comparables exist
@@ -189,8 +187,8 @@ const PropertyTabs: React.FC<PropertyTabsProps> = ({
       <TabPanel value={value} index={tabIndices.overview}>
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
           {/* Description */}
-          {(property.description || property.details?.description) && (
-            <PropertyDescription description={property.description || property.details?.description || ''} />
+          {property.details?.description && (
+            <PropertyDescription description={property.details.description} />
           )}
 
           {/* Key Facts */}
@@ -199,7 +197,7 @@ const PropertyTabs: React.FC<PropertyTabsProps> = ({
             propertyType={property.details?.propertyType}
             status={property.status}
             yearBuilt={property.details?.yearBuilt ? parseInt(property.details.yearBuilt) : undefined}
-            lotSize={property.lot?.acres || property.lot?.size}
+            lotSize={property.lot?.acres ?? undefined}
             pricePerSqft={pricePerSqft}
             hoa={hoa}
             annualTaxes={taxes}
@@ -216,7 +214,7 @@ const PropertyTabs: React.FC<PropertyTabsProps> = ({
             history={property.history}
             currentPrice={price}
             originalPrice={property.originalPrice
-              ? (typeof property.originalPrice === 'number' ? property.originalPrice : parseFloat(property.originalPrice))
+              ? (typeof property.originalPrice === 'number' ? property.originalPrice : parseFloat(property.originalPrice as string))
               : price}
             listDate={property.listDate}
             sqft={sqft}

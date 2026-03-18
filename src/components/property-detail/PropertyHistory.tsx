@@ -11,7 +11,8 @@ import {
   TableHead,
   TableRow,
 } from '@mui/material'
-import { HistoryItemType, listingLastStatusMapping, ListingLastStatus } from 'services/API/types'
+import type { HistoryItemType, ListingLastStatus } from 'services/API/types'
+import { listingLastStatusMapping } from 'services/API/types'
 
 interface PropertyHistoryProps {
   history?: HistoryItemType[]
