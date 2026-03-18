@@ -22,6 +22,8 @@ import CalendarTodayIcon from '@mui/icons-material/CalendarToday'
 import ScheduleIcon from '@mui/icons-material/Schedule'
 import EmailIcon from '@mui/icons-material/Email'
 
+import Link from '@mui/material/Link'
+
 import { type Property } from 'services/API'
 import { getPropertyBadges, getDaysOnMarket } from 'utils/propertyBadges'
 
@@ -97,6 +99,79 @@ const PropertyHeader: React.FC<PropertyHeaderProps> = ({
     return new Intl.NumberFormat('en-US').format(num)
   }
 
+  // Feature #2: Estimated monthly payment calculation
+  const calculateMonthlyPayment = (): string | null => {
+    if (!price || price <= 0) return null
+    const downPayment = price * 0.2
+    const loanAmount = price - downPayment
+    const monthlyRate = 0.065 / 12
+    const numPayments = 30 * 12
+    const monthlyPI =
+      (loanAmount * (monthlyRate * Math.pow(1 + monthlyRate, numPayments))) /
+      (Math.pow(1 + monthlyRate, numPayments) - 1)
+    const monthlyTax = (property?.taxes?.annualAmount ?? 0) / 12
+    const totalMonthly = monthlyPI + monthlyTax
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(totalMonthly)
+  }
+
+  const estimatedMonthly = calculateMonthlyPayment()
+
+  // Feature #5: Open house badge
+  const getUpcomingOpenHouse = (): { date: string; startTime: string; endTime: string } | null => {
+    if (!property?.openHouse) return null
+    const now = new Date()
+    const entries = Object.values(property.openHouse) as Array<{
+      date: string | null
+      startTime: string | null
+      endTime: string | null
+    }>
+    for (const entry of entries) {
+      if (!entry?.date) continue
+      const ohDate = new Date(entry.date)
+      if (isNaN(ohDate.getTime())) continue
+      // Consider open house as upcoming if date is today or in the future
+      const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+      if (ohDate >= todayStart) {
+        return {
+          date: entry.date,
+          startTime: entry.startTime ?? '',
+          endTime: entry.endTime ?? '',
+        }
+      }
+    }
+    return null
+  }
+
+  const upcomingOpenHouse = getUpcomingOpenHouse()
+
+  const formatOpenHouseDisplay = (): string | null => {
+    if (!upcomingOpenHouse) return null
+    const ohDate = new Date(upcomingOpenHouse.date)
+    const dayStr = ohDate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })
+    const parts = [dayStr]
+    if (upcomingOpenHouse.startTime) {
+      const formatTime = (t: string) => {
+        const d = new Date(`2000-01-01T${t}`)
+        return isNaN(d.getTime()) ? t : d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })
+      }
+      const start = formatTime(upcomingOpenHouse.startTime)
+      if (upcomingOpenHouse.endTime) {
+        const end = formatTime(upcomingOpenHouse.endTime)
+        parts.push(`${start} \u2013 ${end}`)
+      } else {
+        parts.push(start)
+      }
+    }
+    return parts.join(' \u00B7 ')
+  }
+
+  const openHouseDisplay = formatOpenHouseDisplay()
+
   return (
     <Box>
       <Stack spacing={2}>
@@ -121,19 +196,50 @@ const PropertyHeader: React.FC<PropertyHeaderProps> = ({
           </Typography>
         </Box>
 
+        {/* Open House Banner */}
+        {openHouseDisplay && (
+          <Chip
+            label={`\uD83C\uDFE0 Open House: ${openHouseDisplay}`}
+            sx={{
+              alignSelf: 'flex-start',
+              fontWeight: 'bold',
+              fontSize: '0.875rem',
+              bgcolor: '#e8f5e9',
+              color: '#2e7d32',
+              border: '1px solid #a5d6a7',
+              py: 0.5,
+            }}
+          />
+        )}
+
         {/* Price and Status Row */}
         <Stack direction="row" justifyContent="space-between" alignItems="center" flexWrap="wrap" gap={2}>
-          <Typography
-            variant="h3"
-            component="div"
-            fontWeight="bold"
-            sx={{
-              fontSize: { xs: '1.75rem', md: '2.5rem' },
-              color: 'primary.main',
-            }}
-          >
-            {formatPrice(price)}
-          </Typography>
+          <Box>
+            <Typography
+              variant="h3"
+              component="div"
+              fontWeight="bold"
+              sx={{
+                fontSize: { xs: '1.75rem', md: '2.5rem' },
+                color: 'primary.main',
+              }}
+            >
+              {formatPrice(price)}
+            </Typography>
+            {estimatedMonthly && (
+              <Link
+                href="#mortgage-calculator"
+                underline="hover"
+                sx={{ color: 'text.secondary', fontSize: '0.875rem', cursor: 'pointer' }}
+                onClick={(e) => {
+                  e.preventDefault()
+                  document.getElementById('mortgage-calculator')?.scrollIntoView({ behavior: 'smooth' })
+                }}
+              >
+                Est. {estimatedMonthly}/mo
+              </Link>
+            )}
+          </Box>
 
           <Stack direction="row" spacing={1} flexWrap="wrap">
             <Chip

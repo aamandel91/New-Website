@@ -57,6 +57,23 @@ const PropertyPhotoGallery: React.FC<PropertyPhotoGalleryProps> = ({
   const heroPhoto = sortedPhotos[0]
   const thumbnailPhotos = sortedPhotos.slice(1, isMobile ? 4 : 5)
 
+  // Feature #6: Freshness badge
+  const getFreshnessBadge = (): string | null => {
+    const dateStr = property?.listDate || property?.timestamps?.listingEntryDate
+    if (!dateStr) return null
+    const listDate = new Date(dateStr)
+    if (isNaN(listDate.getTime())) return null
+    const now = new Date()
+    const diffMs = now.getTime() - listDate.getTime()
+    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24))
+    if (diffDays < 0 || diffDays > 7) return null
+    if (diffDays === 0) return 'NEW TODAY'
+    if (diffDays === 1) return 'NEW 1 DAY AGO'
+    return `NEW ${diffDays} DAYS AGO`
+  }
+
+  const freshnessBadge = getFreshnessBadge()
+
   const handleOpenLightbox = (index: number) => {
     setCurrentPhotoIndex(index)
     setLightboxOpen(true)
@@ -122,6 +139,24 @@ const PropertyPhotoGallery: React.FC<PropertyPhotoGalleryProps> = ({
                 priority
                 sizes="(max-width: 768px) 100vw, 66vw"
               />
+              {/* Freshness badge */}
+              {freshnessBadge && (
+                <Chip
+                  label={freshnessBadge}
+                  size="small"
+                  sx={{
+                    position: 'absolute',
+                    top: 12,
+                    left: 12,
+                    zIndex: 1,
+                    bgcolor: '#2e7d32',
+                    color: 'white',
+                    fontWeight: 'bold',
+                    fontSize: '0.75rem',
+                    boxShadow: '0 2px 4px rgba(0,0,0,0.3)',
+                  }}
+                />
+              )}
               {/* Photo count and quality overlay */}
               <Box
                 className="photo-overlay"
