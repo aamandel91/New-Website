@@ -8,6 +8,7 @@ import PropertyDescription from './PropertyDescription'
 import PropertyKeyFacts from './PropertyKeyFacts'
 import PropertyFeatures from './PropertyFeatures'
 import PropertyHistory from './PropertyHistory'
+import PropertyTaxHistory from './PropertyTaxHistory'
 import PropertyLocation from './PropertyLocation'
 import PropertyComparables from './PropertyComparables'
 import PropertyMortgageCalculator from './PropertyMortgageCalculator'
@@ -212,13 +213,17 @@ const PropertyTabs: React.FC<PropertyTabsProps> = ({
 
           {/* Property History */}
           <PropertyHistory
-            listingDate={property.listingDate || property.listDate}
+            history={property.history}
             currentPrice={price}
             originalPrice={property.originalPrice
               ? (typeof property.originalPrice === 'number' ? property.originalPrice : parseFloat(property.originalPrice))
               : price}
-            daysOnMarket={property.daysOnMarket}
+            listDate={property.listDate}
+            sqft={sqft}
           />
+
+          {/* Tax History */}
+          <PropertyTaxHistory taxes={property.taxes} />
         </Box>
       </TabPanel>
 
@@ -252,7 +257,7 @@ const PropertyTabs: React.FC<PropertyTabsProps> = ({
           price={price}
           defaultInterestRate={defaultInterestRate}
           propertyTaxes={taxes}
-          hoaFees={hoa}
+          hoaMonthly={hoa}
         />
       </TabPanel>
 

@@ -4,226 +4,176 @@ import React from 'react'
 import {
   Box,
   Typography,
-  Paper,
-  Timeline,
-  TimelineItem,
-  TimelineSeparator,
-  TimelineConnector,
-  TimelineContent,
-  TimelineDot,
-  TimelineOppositeContent,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
 } from '@mui/material'
-import {
-  TrendingUp as TrendingUpIcon,
-  TrendingDown as TrendingDownIcon,
-  Home as HomeIcon,
-  Update as UpdateIcon,
-} from '@mui/icons-material'
-
-interface PriceChange {
-  date: string
-  price: number
-  priceChange?: number
-  event: 'listed' | 'price_change' | 'status_change' | 'updated'
-  status?: string
-}
+import { HistoryItemType, listingLastStatusMapping, ListingLastStatus } from 'services/API/types'
 
 interface PropertyHistoryProps {
-  listingDate?: string
+  history?: HistoryItemType[]
   currentPrice?: number
   originalPrice?: number
-  priceHistory?: PriceChange[]
-  daysOnMarket?: number
-  statusHistory?: Array<{
-    date: string
-    status: string
-  }>
+  listDate?: string
+  sqft?: number
 }
 
 const PropertyHistory: React.FC<PropertyHistoryProps> = ({
-  listingDate,
+  history,
   currentPrice,
   originalPrice,
-  priceHistory = [],
-  daysOnMarket,
-  statusHistory = [],
+  listDate,
+  sqft,
 }) => {
-  // Build timeline from available data
-  const buildTimeline = (): PriceChange[] => {
-    const timeline: PriceChange[] = []
-
-    // Add listing date as first event
-    if (listingDate && originalPrice) {
-      timeline.push({
-        date: listingDate,
-        price: originalPrice,
-        event: 'listed',
-        status: 'Active',
-      })
-    }
-
-    // Add price history if available
-    if (priceHistory.length > 0) {
-      timeline.push(...priceHistory)
-    } else if (originalPrice && currentPrice && originalPrice !== currentPrice) {
-      // If no detailed history but prices differ, add a single price change
-      timeline.push({
-        date: new Date().toISOString(),
-        price: currentPrice,
-        priceChange: currentPrice - originalPrice,
-        event: 'price_change',
-      })
-    }
-
-    // Add status history
-    statusHistory.forEach((status) => {
-      timeline.push({
-        date: status.date,
-        price: currentPrice || 0,
-        event: 'status_change',
-        status: status.status,
-      })
-    })
-
-    // Sort by date (newest first)
-    return timeline.sort(
-      (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
-    )
-  }
-
-  const timeline = buildTimeline()
-
-  // If no history data available, show simple summary
-  if (timeline.length === 0) {
-    return (
-      <Paper elevation={2} sx={{ p: 3, mb: 3 }}>
-        <Typography variant="h6" gutterBottom>
-          Property History
-        </Typography>
-        <Box sx={{ py: 2 }}>
-          <Typography variant="body2" color="text.secondary">
-            {listingDate ? (
-              <>
-                Listed on {new Date(listingDate).toLocaleDateString()}
-                {daysOnMarket && ` • ${daysOnMarket} days on market`}
-              </>
-            ) : (
-              'No history information available'
-            )}
-          </Typography>
-        </Box>
-      </Paper>
-    )
-  }
-
-  const formatPrice = (price: number) => {
+  const formatPrice = (price: number | string | null | undefined): string => {
+    if (price == null) return '—'
+    const num = typeof price === 'number' ? price : parseFloat(price)
+    if (isNaN(num)) return '—'
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD',
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
-    }).format(price)
+    }).format(num)
   }
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
+  const formatDate = (dateString: string | null | undefined): string => {
+    if (!dateString) return '—'
+    const d = new Date(dateString)
+    if (isNaN(d.getTime())) return '—'
+    return d.toLocaleDateString('en-US', {
       month: 'short',
       day: 'numeric',
       year: 'numeric',
     })
   }
 
-  const getEventIcon = (event: string) => {
-    switch (event) {
-      case 'listed':
-        return <HomeIcon />
-      case 'price_change':
-        return <TrendingDownIcon />
-      case 'status_change':
-        return <UpdateIcon />
-      default:
-        return <UpdateIcon />
-    }
+  const getEventLabel = (status: ListingLastStatus): string => {
+    return listingLastStatusMapping[status] || status
   }
 
-  const getEventColor = (event: string, priceChange?: number) => {
-    if (event === 'listed') return 'primary'
-    if (event === 'price_change') {
-      return priceChange && priceChange < 0 ? 'success' : 'warning'
-    }
-    return 'default'
+  const getRowDate = (item: HistoryItemType): string => {
+    if (item.lastStatus === 'Sld' && item.soldDate) return item.soldDate
+    return item.listDate
   }
 
-  const getEventTitle = (item: PriceChange) => {
-    switch (item.event) {
-      case 'listed':
-        return 'Listed for Sale'
-      case 'price_change':
-        return item.priceChange && item.priceChange < 0
-          ? 'Price Reduced'
-          : 'Price Increased'
-      case 'status_change':
-        return `Status changed to ${item.status}`
-      default:
-        return 'Updated'
+  const getRowPrice = (item: HistoryItemType): number | string | null => {
+    if (item.lastStatus === 'Sld' && item.soldPrice != null) return item.soldPrice
+    return item.listPrice
+  }
+
+  const getPricePerSqft = (price: number | string | null | undefined): string => {
+    if (!sqft || !price) return '—'
+    const num = typeof price === 'number' ? price : parseFloat(String(price))
+    if (isNaN(num)) return '—'
+    return `$${Math.round(num / sqft).toLocaleString()}`
+  }
+
+  if (!history || history.length === 0) {
+    return (
+      <Box sx={{ py: 2 }}>
+        <Typography variant="h6" gutterBottom>
+          Price History
+        </Typography>
+        <Typography variant="body2" color="text.secondary">
+          No price history available
+        </Typography>
+      </Box>
+    )
+  }
+
+  // Sort by date descending
+  const sorted = [...history].sort((a, b) => {
+    const dateA = new Date(getRowDate(a)).getTime()
+    const dateB = new Date(getRowDate(b)).getTime()
+    return dateB - dateA
+  })
+
+  // Calculate price changes between consecutive entries
+  const getPriceChange = (item: HistoryItemType, index: number): { direction: 'up' | 'down' | null; amount: number } => {
+    const currentRowPrice = getRowPrice(item)
+    const currentNum = typeof currentRowPrice === 'number' ? currentRowPrice : parseFloat(String(currentRowPrice))
+    if (isNaN(currentNum)) return { direction: null, amount: 0 }
+
+    // Compare with next entry (older, since sorted descending)
+    const nextItem = sorted[index + 1]
+    if (!nextItem) return { direction: null, amount: 0 }
+
+    const prevPrice = getRowPrice(nextItem)
+    const prevNum = typeof prevPrice === 'number' ? prevPrice : parseFloat(String(prevPrice))
+    if (isNaN(prevNum) || prevNum === 0) return { direction: null, amount: 0 }
+
+    const diff = currentNum - prevNum
+    if (diff === 0) return { direction: null, amount: 0 }
+    return {
+      direction: diff > 0 ? 'up' : 'down',
+      amount: Math.abs(diff),
     }
   }
 
   return (
-    <Paper elevation={2} sx={{ p: 3, mb: 3 }}>
+    <Box>
       <Typography variant="h6" gutterBottom>
-        Property History
+        Price History
       </Typography>
-
-      {daysOnMarket && (
-        <Box sx={{ mb: 3, p: 2, bgcolor: 'background.default', borderRadius: 1 }}>
-          <Typography variant="body2" color="text.secondary">
-            Days on Market: <strong>{daysOnMarket}</strong>
-          </Typography>
-        </Box>
-      )}
-
-      <Timeline position="right">
-        {timeline.map((item, index) => (
-          <TimelineItem key={index}>
-            <TimelineOppositeContent
-              sx={{ py: 1.5, px: 2, flex: 0.3 }}
-              color="text.secondary"
-            >
-              <Typography variant="caption">{formatDate(item.date)}</Typography>
-            </TimelineOppositeContent>
-            <TimelineSeparator>
-              <TimelineDot color={getEventColor(item.event, item.priceChange)}>
-                {getEventIcon(item.event)}
-              </TimelineDot>
-              {index < timeline.length - 1 && <TimelineConnector />}
-            </TimelineSeparator>
-            <TimelineContent sx={{ py: 1.5, px: 2 }}>
-              <Typography variant="subtitle2">{getEventTitle(item)}</Typography>
-              <Typography variant="h6" sx={{ mt: 0.5 }}>
-                {formatPrice(item.price)}
-              </Typography>
-              {item.priceChange && (
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mt: 0.5 }}>
-                  {item.priceChange < 0 ? (
-                    <TrendingDownIcon fontSize="small" color="success" />
-                  ) : (
-                    <TrendingUpIcon fontSize="small" color="warning" />
-                  )}
-                  <Typography
-                    variant="body2"
-                    color={item.priceChange < 0 ? 'success.main' : 'warning.main'}
-                  >
-                    {item.priceChange > 0 ? '+' : ''}
-                    {formatPrice(Math.abs(item.priceChange))}
-                  </Typography>
-                </Box>
-              )}
-            </TimelineContent>
-          </TimelineItem>
-        ))}
-      </Timeline>
-    </Paper>
+      <TableContainer>
+        <Table size="small">
+          <TableHead>
+            <TableRow>
+              <TableCell sx={{ fontWeight: 600 }}>Date</TableCell>
+              <TableCell sx={{ fontWeight: 600 }}>Event</TableCell>
+              <TableCell sx={{ fontWeight: 600 }} align="right">Price</TableCell>
+              <TableCell sx={{ fontWeight: 600 }} align="right">$/Sq Ft</TableCell>
+              <TableCell sx={{ fontWeight: 600 }}>Source</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {sorted.map((item, index) => {
+              const rowPrice = getRowPrice(item)
+              const change = getPriceChange(item, index)
+              return (
+                <TableRow key={`${item.mlsNumber}-${index}`} sx={{ '&:last-child td': { borderBottom: 0 } }}>
+                  <TableCell>
+                    <Typography variant="body2">{formatDate(getRowDate(item))}</Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Typography variant="body2">{getEventLabel(item.lastStatus)}</Typography>
+                  </TableCell>
+                  <TableCell align="right">
+                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 0.5 }}>
+                      <Typography variant="body2" fontWeight={500}>
+                        {formatPrice(rowPrice)}
+                      </Typography>
+                      {change.direction === 'down' && (
+                        <Typography variant="caption" sx={{ color: 'success.main' }}>
+                          ▼
+                        </Typography>
+                      )}
+                      {change.direction === 'up' && (
+                        <Typography variant="caption" sx={{ color: 'error.main' }}>
+                          ▲
+                        </Typography>
+                      )}
+                    </Box>
+                  </TableCell>
+                  <TableCell align="right">
+                    <Typography variant="body2">{getPricePerSqft(rowPrice)}</Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Typography variant="body2" color="text.secondary" noWrap sx={{ maxWidth: 200 }}>
+                      {item.office?.brokerageName || '—'}
+                    </Typography>
+                  </TableCell>
+                </TableRow>
+              )
+            })}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </Box>
   )
 }
 
