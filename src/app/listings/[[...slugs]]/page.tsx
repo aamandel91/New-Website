@@ -2,11 +2,14 @@ import { features } from 'features'
 
 import { Page404Template, PageTemplate } from '@templates'
 import CatalogPageContent from '@pages/catalog'
+import StructuredData from '@shared/StructuredData'
 
 import { generateMetadata as generatePropertyMetadata } from 'app/listing/[slug]/page'
 import PropertyPage from 'app/listing/[slug]/page'
 
 import { type ApiBoardCity } from 'services/API'
+import { localBusinessSchema, breadcrumbSchema } from 'utils/structuredData'
+import { getCatalogUrl } from 'utils/urls'
 
 import { parseUrlFilters, parseUrlParams } from './_parsers'
 import { fetchListings, fetchLocations } from './_requests'
@@ -101,23 +104,43 @@ const LocationsCatalogPage = async (props: {
       ? (currentLocation as ApiBoardCity).neighborhoods || []
       : []
 
+  const baseUrl = 'https://floridahomefinder.com'
+  const breadcrumbItems = [
+    { name: 'Home', url: baseUrl },
+    { name: 'Listings', url: `${baseUrl}/listings` }
+  ]
+  if (city) {
+    breadcrumbItems.push({ name: city, url: `${baseUrl}${getCatalogUrl(city)}` })
+  }
+  if (hood) {
+    breadcrumbItems.push({ name: hood, url: `${baseUrl}${getCatalogUrl(city, hood)}` })
+  }
+
   return (
-    <PageTemplate>
-      <CatalogPageContent
-        listings={listings}
-        count={count}
-        page={page}
-        area={area}
-        city={city}
-        hood={hood}
-        areas={areas}
-        hoods={hoods}
-        cities={cities}
-        location={currentLocation}
-        urlFilters={filters}
-        searchFilters={searchFilters}
-      />
-    </PageTemplate>
+    <>
+      {city && (
+        <StructuredData
+          data={localBusinessSchema({ city, state: 'FL', zipCode: '' })}
+        />
+      )}
+      <StructuredData data={breadcrumbSchema(breadcrumbItems)} />
+      <PageTemplate>
+        <CatalogPageContent
+          listings={listings}
+          count={count}
+          page={page}
+          area={area}
+          city={city}
+          hood={hood}
+          areas={areas}
+          hoods={hoods}
+          cities={cities}
+          location={currentLocation}
+          urlFilters={filters}
+          searchFilters={searchFilters}
+        />
+      </PageTemplate>
+    </>
   )
 }
 

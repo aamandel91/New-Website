@@ -213,7 +213,7 @@ const TableContent = () => {
                 <TableCell>{property.details?.numBedrooms || '—'}</TableCell>
                 <TableCell>{property.details?.numBathrooms || '—'}</TableCell>
                 <TableCell>
-                  {property.details?.sqft || property.details?.area || '—'}
+                  {property.details?.sqft || '—'}
                 </TableCell>
                 <TableCell>{property.type || '—'}</TableCell>
                 <TableCell>{property.lastStatus || property.status}</TableCell>

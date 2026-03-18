@@ -1,6 +1,6 @@
-import { MetadataRoute } from 'next'
+import type { MetadataRoute } from 'next'
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = 'https://floridahomefinder.com'
 
   // Static pages
@@ -42,6 +42,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.8,
     },
     {
+      url: `${baseUrl}/recently-viewed`,
+      lastModified: new Date(),
+      changeFrequency: 'daily',
+      priority: 0.5,
+    },
+    {
       url: `${baseUrl}/privacy`,
       lastModified: new Date(),
       changeFrequency: 'yearly',
@@ -55,11 +61,20 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
   ]
 
-  // TODO: In production, fetch dynamic pages from database
-  // - Property listings
-  // - Agent profiles
-  // - Blog posts
-  // - Location-based landing pages
+  // Blog posts
+  let blogPages: MetadataRoute.Sitemap = []
+  try {
+    const APIBlogs = (await import('services/API/APIBlogs')).default
+    const { blogs } = await APIBlogs.getBlogs({ status: 'published', limit: 1000 })
+    blogPages = blogs.map((blog: { slug: string; updated_at: Date; published_at: Date | null }) => ({
+      url: `${baseUrl}/blog/${blog.slug}`,
+      lastModified: new Date(blog.updated_at || blog.published_at || new Date()),
+      changeFrequency: 'monthly' as const,
+      priority: 0.6,
+    }))
+  } catch {
+    /* API not available at build time */
+  }
 
-  return staticPages
+  return [...staticPages, ...blogPages]
 }

@@ -38,7 +38,7 @@ const PropertyGallery = () => {
   const clientSide = useClientSide()
   const { mobile } = useBreakpoints()
 
-  const virtualTourUrl = property.virtualTourUrl
+  const virtualTourUrl = property.details?.virtualTourUrl
 
   const handleChange = (index: number) => {
     if (index === activeIndex) return

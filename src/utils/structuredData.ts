@@ -195,6 +195,26 @@ export function localBusinessSchema(location: {
 }
 
 /**
+ * WebSite schema with SearchAction for sitelinks search box
+ */
+export function websiteSearchSchema(): StructuredDataProps {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: 'Florida Home Finder',
+    url: 'https://floridahomefinder.com',
+    potentialAction: {
+      '@type': 'SearchAction',
+      target: {
+        '@type': 'EntryPoint',
+        urlTemplate: 'https://floridahomefinder.com/search/gallery?search={search_term_string}'
+      },
+      'query-input': 'required name=search_term_string'
+    }
+  }
+}
+
+/**
  * FAQPage schema for FAQ sections
  */
 export function faqSchema(

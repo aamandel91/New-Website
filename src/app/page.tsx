@@ -10,7 +10,7 @@ import EstimatePage, {
 } from 'app/(Estimates)/estimate/[[...slugs]]/page'
 
 import { fetchFeatures } from 'utils/features'
-import { organizationSchema, breadcrumbSchema } from 'utils/structuredData'
+import { organizationSchema, breadcrumbSchema, websiteSearchSchema } from 'utils/structuredData'
 
 // NOTE: Dynamically generate metadata for the Estimate Landing Page based on feature flags.
 // When manually setting rootPage with feature flags for the estimate page,
@@ -43,11 +43,13 @@ const HomePage = async (props: any) => {
   const breadcrumbs = breadcrumbSchema([
     { name: 'Home', url: 'https://floridahomefinder.com' }
   ])
+  const siteSearch = websiteSearchSchema()
 
   return (
     <>
       <StructuredData data={orgSchema} />
       <StructuredData data={breadcrumbs} />
+      <StructuredData data={siteSearch} />
       <PageTemplate>
         <HomePageContent />
       </PageTemplate>
