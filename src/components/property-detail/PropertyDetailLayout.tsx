@@ -14,7 +14,6 @@ import PropertyContactForm from './PropertyContactForm'
 import PropertyTabs from './PropertyTabs'
 import Property3DTour from './Property3DTour'
 import HomeWorthCheckCTA from './HomeWorthCheckCTA'
-import PropertyTourScheduler from './PropertyTourScheduler'
 
 interface PropertyDetailLayoutProps {
   property: Property
@@ -166,9 +165,6 @@ const PropertyDetailLayout: React.FC<PropertyDetailLayoutProps> = ({
                   propertyAddress={propertyAddress}
                 />
               )}
-
-              {/* Tour Scheduler */}
-              <PropertyTourScheduler />
 
               {/* Tab-based Content */}
               <PropertyTabs
