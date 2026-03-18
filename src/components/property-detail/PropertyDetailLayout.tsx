@@ -14,6 +14,7 @@ import PropertyContactForm from './PropertyContactForm'
 import PropertyTabs from './PropertyTabs'
 import Property3DTour from './Property3DTour'
 import HomeWorthCheckCTA from './HomeWorthCheckCTA'
+import PropertyTourScheduler from './PropertyTourScheduler'
 
 interface PropertyDetailLayoutProps {
   property: Property
@@ -48,7 +49,7 @@ const PropertyDetailLayout: React.FC<PropertyDetailLayoutProps> = ({
 
   // Property address
   const address = {
-    street: property.address?.street || '',
+    street: `${property.address?.streetNumber || ''} ${property.address?.streetName || ''} ${property.address?.streetSuffix || ''}`.trim(),
     city: property.address?.city || '',
     state: property.address?.state || '',
     zip: property.address?.zip || '',
@@ -162,6 +163,9 @@ const PropertyDetailLayout: React.FC<PropertyDetailLayoutProps> = ({
                   propertyAddress={propertyAddress}
                 />
               )}
+
+              {/* Tour Scheduler */}
+              <PropertyTourScheduler />
 
               {/* Tab-based Content */}
               <PropertyTabs

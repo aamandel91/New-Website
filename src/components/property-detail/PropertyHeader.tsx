@@ -21,6 +21,7 @@ import SquareFootIcon from '@mui/icons-material/SquareFoot'
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday'
 import ScheduleIcon from '@mui/icons-material/Schedule'
 import EmailIcon from '@mui/icons-material/Email'
+import GavelIcon from '@mui/icons-material/Gavel'
 
 import Link from '@mui/material/Link'
 
@@ -171,6 +172,14 @@ const PropertyHeader: React.FC<PropertyHeaderProps> = ({
   }
 
   const openHouseDisplay = formatOpenHouseDisplay()
+
+  // Feature #4: Only show "Start an Offer" for active listings
+  const isActiveListing = ['a', 'active'].includes(status.toLowerCase())
+
+  const handleStartOffer = () => {
+    const contactForm = document.getElementById('contact-form')
+    contactForm?.scrollIntoView({ behavior: 'smooth' })
+  }
 
   return (
     <Box>
@@ -342,6 +351,28 @@ const PropertyHeader: React.FC<PropertyHeaderProps> = ({
             >
               Ask a Question
             </Button>
+            {isActiveListing && (
+              <Button
+                variant="outlined"
+                size="large"
+                startIcon={<GavelIcon />}
+                onClick={handleStartOffer}
+                sx={{
+                  py: 1.5,
+                  flex: 1,
+                  textTransform: 'none',
+                  fontWeight: 600,
+                  color: '#e65100',
+                  borderColor: '#e65100',
+                  '&:hover': {
+                    borderColor: '#bf360c',
+                    bgcolor: 'rgba(230, 81, 0, 0.04)',
+                  },
+                }}
+              >
+                Start an Offer
+              </Button>
+            )}
           </Stack>
 
           <Stack direction="row" spacing={1}>

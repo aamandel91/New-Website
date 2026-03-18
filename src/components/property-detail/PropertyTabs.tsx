@@ -18,6 +18,7 @@ import SimilarProperties from './SimilarProperties'
 import RelatedPages from './RelatedPages'
 import MoreProperties from './MoreProperties'
 import RelatedBlogs from './RelatedBlogs'
+import PropertyPublicRecords from './PropertyPublicRecords'
 
 interface PropertyTabsProps {
   property: Property
@@ -233,6 +234,9 @@ const PropertyTabs: React.FC<PropertyTabsProps> = ({
 
           {/* Tax History */}
           <PropertyTaxHistory taxes={property.taxes} />
+
+          {/* Public Records */}
+          <PropertyPublicRecords property={property} />
         </Box>
       </TabPanel>
 
