@@ -6,7 +6,9 @@ import type { Property } from 'services/API'
 
 import PropertyDescription from './PropertyDescription'
 import PropertyKeyFacts from './PropertyKeyFacts'
+import PropertyValueEstimate from './PropertyValueEstimate'
 import PropertyFeatures from './PropertyFeatures'
+import PropertyNarrative from './PropertyNarrative'
 import PropertyHistory from './PropertyHistory'
 import PropertyTaxHistory from './PropertyTaxHistory'
 import PropertyLocation from './PropertyLocation'
@@ -186,6 +188,9 @@ const PropertyTabs: React.FC<PropertyTabsProps> = ({
       {/* Overview Tab */}
       <TabPanel value={value} index={tabIndices.overview}>
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+          {/* SEO Narrative */}
+          <PropertyNarrative property={property} />
+
           {/* Description */}
           {property.details?.description && (
             <PropertyDescription description={property.details.description} />
@@ -202,6 +207,12 @@ const PropertyTabs: React.FC<PropertyTabsProps> = ({
             hoa={hoa}
             annualTaxes={taxes}
             daysOnMarket={property.daysOnMarket ? parseInt(property.daysOnMarket) : undefined}
+          />
+
+          {/* Value Estimate */}
+          <PropertyValueEstimate
+            estimate={property.estimate}
+            listPrice={parseFloat(property.listPrice)}
           />
 
           {/* Features */}
