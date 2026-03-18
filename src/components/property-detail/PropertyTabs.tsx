@@ -12,6 +12,7 @@ import PropertyNarrative from './PropertyNarrative'
 import PropertyHistory from './PropertyHistory'
 import PropertyTaxHistory from './PropertyTaxHistory'
 import PropertyLocation from './PropertyLocation'
+import PropertyNeighborhood from './PropertyNeighborhood'
 import PropertyComparables from './PropertyComparables'
 import PropertyMortgageCalculator from './PropertyMortgageCalculator'
 import SimilarProperties from './SimilarProperties'
@@ -251,6 +252,12 @@ const PropertyTabs: React.FC<PropertyTabsProps> = ({
           neighborhood={property.address?.neighborhood}
           county={property.address?.district}
           schoolDistrict={undefined}
+        />
+        <PropertyNeighborhood
+          neighborhood={property.address?.neighborhood}
+          city={property.address?.city}
+          state={property.address?.state}
+          zip={property.address?.zip}
         />
       </TabPanel>
 

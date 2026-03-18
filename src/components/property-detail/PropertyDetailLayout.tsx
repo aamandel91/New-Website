@@ -130,6 +130,9 @@ const PropertyDetailLayout: React.FC<PropertyDetailLayoutProps> = ({
           state={address.state}
           city={address.city}
           street={address.street}
+          county={property.address?.district}
+          neighborhood={property.address?.neighborhood}
+          zip={property.address?.zip}
         />
 
         {/* Property Header */}
