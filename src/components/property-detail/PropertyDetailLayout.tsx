@@ -2,7 +2,7 @@
 
 import React, { useEffect } from 'react'
 import { Box, Container, Grid } from '@mui/material'
-import { Property } from 'services/API'
+import type { Property } from 'services/API'
 
 import { useFavorites } from 'providers/FavoritesProvider'
 import { useRecentlyViewed } from '@/hooks/useRecentlyViewed'
@@ -69,7 +69,7 @@ const PropertyDetailLayout: React.FC<PropertyDetailLayoutProps> = ({
     ? {
         name: property.agents[0].name || undefined,
         phone: property.agents[0].phones && property.agents[0].phones.length > 0
-          ? property.agents[0].phones[0]
+          ? String(property.agents[0].phones[0])
           : undefined,
         email: undefined,
         photo: property.agents[0].photo?.large || property.agents[0].photo?.small,
