@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation'
 import { Box, Container, Typography, Breadcrumbs, Link, Grid, Chip, Card, CardContent } from '@mui/material'
 
 import { PageTemplate } from '@templates'
+import MarketTimelineGraph from '@shared/MarketTimelineGraph'
 import StructuredData from '@shared/StructuredData'
 
 import { subTypes, getSubTypeBySlug, slugToCounty } from '@configs/page-generation'
@@ -331,6 +332,9 @@ async function renderCityPage(
           </Typography>
         </Box>
 
+        {/* Market Timeline Graph */}
+        <MarketTimelineGraph city={cityName} />
+
         {/* Sub-types */}
         <Typography variant="h5" gutterBottom sx={{ mt: 4 }}>
           Browse by Property Type
@@ -495,6 +499,9 @@ async function renderSubTypePage(
             </Typography>
           </Link>
         </Box>
+
+        {/* Market Timeline Graph */}
+        <MarketTimelineGraph city={cityName} />
 
         {/* About section */}
         <Box sx={{ mb: 4 }}>

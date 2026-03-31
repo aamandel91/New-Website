@@ -23,6 +23,8 @@ import {
   BarChart as BarChartIcon,
 } from '@mui/icons-material'
 
+import MarketTimelineGraph from '@shared/MarketTimelineGraph'
+
 interface MarketStats {
   averagePrice?: number
   medianPrice?: number
@@ -392,6 +394,13 @@ const PropertyMarketStats: React.FC<PropertyMarketStatsProps> = ({
       <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 2 }}>
         * Market statistics are estimates based on recent sales and active listings in the area.
       </Typography>
+
+      {/* Market Timeline Graph */}
+      {city && (
+        <Box sx={{ mt: 3 }}>
+          <MarketTimelineGraph city={city} />
+        </Box>
+      )}
     </Paper>
   )
 }
