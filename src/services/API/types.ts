@@ -25,6 +25,11 @@ export type ApiSortBy =
   | 'distanceDes'
   | 'qualityAsc'
   | 'qualityDesc'
+  // Client-side sort values (not sent to API)
+  | 'bedsDesc'
+  | 'bathsDesc'
+  | 'sqftDesc'
+  | 'lotSizeDesc'
 
 export type ApiSimilarSortBy =
   | 'createdOnAsc'
@@ -489,6 +494,7 @@ export interface ApiQueryParams {
   radius: number // in KM
   fields: string
   imageSearchItems: ApiImageSearchItem[]
+  minOpenHouseDate: string
 }
 
 export interface ApiAggregates {

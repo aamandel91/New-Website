@@ -69,6 +69,10 @@ export interface Filters {
   bedroomQuality?: QualitativeInsightValue | null
   bathroomQuality?: QualitativeInsightValue | null
   frontOfStructureQuality?: QualitativeInsightValue | null
+
+  priceReduced?: boolean
+  openHouses?: boolean
+  minOpenHouseDate?: string
 }
 
 export type FilterKeys = keyof Filters

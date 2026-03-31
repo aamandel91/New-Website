@@ -298,3 +298,46 @@ export const getBathrooms = (details: PropertyDetails) => {
   const { numBathrooms, numBathroomsPlus } = details || {}
   return getAmenities(numBathrooms, numBathroomsPlus)
 }
+
+/** Sort properties client-side by custom sort fields. Returns a new array. */
+export const sortPropertiesClientSide = (
+  properties: Property[],
+  sortBy: string | undefined
+): Property[] => {
+  if (!sortBy) return properties
+
+  const sorted = [...properties]
+
+  switch (sortBy) {
+    case 'bedsDesc':
+      return sorted.sort(
+        (a, b) =>
+          getBedrooms(b.details).count - getBedrooms(a.details).count
+      )
+    case 'bathsDesc':
+      return sorted.sort(
+        (a, b) =>
+          getBathrooms(b.details).count - getBathrooms(a.details).count
+      )
+    case 'sqftDesc':
+      return sorted.sort(
+        (a, b) => getSqft(b).number - getSqft(a).number
+      )
+    case 'lotSizeDesc':
+      return sorted.sort(
+        (a, b) => getLotSize(b).number - getLotSize(a).number
+      )
+    default:
+      return properties
+  }
+}
+
+/** Filter to only price-reduced listings (listPrice < originalPrice). */
+export const filterPriceReduced = (properties: Property[]): Property[] =>
+  properties.filter((p) => {
+    const list = parseFloat(p.listPrice)
+    const original = parseFloat(p.originalPrice)
+    return (
+      !isNaN(list) && !isNaN(original) && original > 0 && list < original
+    )
+  })

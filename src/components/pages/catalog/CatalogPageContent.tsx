@@ -15,8 +15,13 @@ import {
   type ApiNeighborhood,
   type Property
 } from 'services/API'
+import { isClientSideSort } from 'services/Search'
 import type { Filters } from 'services/Search'
 import MapOptionsProvider from 'providers/MapOptionsProvider'
+import {
+  filterPriceReduced,
+  sortPropertiesClientSide
+} from 'utils/properties'
 
 import {
   Breadcrumbs,
@@ -62,6 +67,15 @@ const CatalogPageContent = ({
   urlFilters: string[]
   searchFilters: Partial<Filters>
 }) => {
+  const processedListings = (() => {
+    let result = listings
+    if (searchFilters.priceReduced) result = filterPriceReduced(result)
+    if (isClientSideSort(searchFilters.sortBy)) {
+      result = sortPropertiesClientSide(result, searchFilters.sortBy)
+    }
+    return result
+  })()
+
   return (
     <MapOptionsProvider layout="map" style="map">
       <Box minHeight="calc(100vh - 72px)">
@@ -94,11 +108,11 @@ const CatalogPageContent = ({
             pt: gridConfig.gridSpacing
           }}
         >
-          {listings?.length > 0 ? (
+          {processedListings?.length > 0 ? (
             <>
-              <TrackListView listings={listings} />
+              <TrackListView listings={processedListings} />
               <Stack spacing={4} direction="row" flexWrap="wrap">
-                {listings.map((property, index) => (
+                {processedListings.map((property, index) => (
                   <PropertyCard key={index} property={property} />
                 ))}
               </Stack>

@@ -37,6 +37,10 @@ const SortModesSelect = ({
     { value: 'updatedOnDesc', label: 'Recently updated' },
     { value: 'listPriceDesc', label: 'Price (high to low)' },
     { value: 'listPriceAsc', label: 'Price (low to high)' },
+    { value: 'bedsDesc', label: 'Most Bedrooms' },
+    { value: 'bathsDesc', label: 'Most Bathrooms' },
+    { value: 'sqftDesc', label: 'Largest (sqft)' },
+    { value: 'lotSizeDesc', label: 'Largest Lot' },
     ...qualitySortModes
   ]
 

@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation'
 
 import {
   Box,
+  Button,
   Skeleton,
   Stack,
   Tab,
@@ -46,13 +47,22 @@ const CatalogFilters = ({
   const { mobile } = useBreakpoints()
   const size = mobile ? 'small' : 'medium'
 
-  const { listingStatus, listingType, sortBy } = searchFilters
+  const { listingStatus, listingType, sortBy, priceReduced, openHouses } =
+    searchFilters
 
   const createFiltersArray = ({
     type = listingType || 'allListings',
     status = listingStatus,
-    sort = sortBy
-  }) => {
+    sort = sortBy,
+    priceReducedFlag = priceReduced,
+    openHousesFlag = openHouses
+  }: {
+    type?: ListingType
+    status?: ListingStatus
+    sort?: ApiSortBy
+    priceReducedFlag?: boolean
+    openHousesFlag?: boolean
+  } = {}) => {
     const filters: string[] = []
 
     if (type !== 'allListings') filters.push(type)
@@ -60,6 +70,8 @@ const CatalogFilters = ({
     if (status === 'sold') filters.push('sold')
     if (status === 'all') filters.push('all')
     if (sort !== 'createdOnDesc') filters.push('sort-' + sort)
+    if (priceReducedFlag) filters.push('price-reduced')
+    if (openHousesFlag) filters.push('open-houses')
 
     return filters
   }
@@ -76,6 +88,20 @@ const CatalogFilters = ({
 
   const handleSortChange = (value: ApiSortBy) => {
     const filters = createFiltersArray({ sort: value })
+    router.push(getCatalogUrl(city, hood, filters))
+  }
+
+  const handlePriceReducedToggle = () => {
+    const filters = createFiltersArray({
+      priceReducedFlag: !priceReduced
+    })
+    router.push(getCatalogUrl(city, hood, filters))
+  }
+
+  const handleOpenHousesToggle = () => {
+    const filters = createFiltersArray({
+      openHousesFlag: !openHouses
+    })
     router.push(getCatalogUrl(city, hood, filters))
   }
 
@@ -128,6 +154,41 @@ const CatalogFilters = ({
               </Tabs>
             ) : (
               <Skeleton variant="rounded" sx={{ width: 257, height: 48 }} />
+            )}
+
+            {clientSide && (
+              <Stack direction="row" spacing={0.5}>
+                <Button
+                  size={size}
+                  variant={priceReduced ? 'contained' : 'outlined'}
+                  onClick={handlePriceReducedToggle}
+                  sx={{
+                    whiteSpace: 'nowrap',
+                    textTransform: 'none',
+                    fontWeight: 600,
+                    fontSize: '0.8125rem',
+                    minWidth: 'auto',
+                    px: 1.5
+                  }}
+                >
+                  Price Reduced
+                </Button>
+                <Button
+                  size={size}
+                  variant={openHouses ? 'contained' : 'outlined'}
+                  onClick={handleOpenHousesToggle}
+                  sx={{
+                    whiteSpace: 'nowrap',
+                    textTransform: 'none',
+                    fontWeight: 600,
+                    fontSize: '0.8125rem',
+                    minWidth: 'auto',
+                    px: 1.5
+                  }}
+                >
+                  Open Houses
+                </Button>
+              </Stack>
             )}
           </Stack>
 

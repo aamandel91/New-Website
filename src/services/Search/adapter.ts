@@ -117,6 +117,20 @@ export const createRequestGroups = (
   )
 }
 
+/** Sort values that are handled client-side, not by the API */
+const clientSideSortValues = new Set([
+  'bedsDesc',
+  'bathsDesc',
+  'sqftDesc',
+  'lotSizeDesc'
+])
+
+/** Filter keys that are UI-only and should not be sent to the API */
+const clientOnlyFilterKeys = new Set(['priceReduced', 'openHouses'])
+
+export const isClientSideSort = (sortBy: string | undefined): boolean =>
+  !!sortBy && clientSideSortValues.has(sortBy)
+
 export const processParams = (params: Partial<ApiQueryParams>) => {
   //
   // Here lies Balin, Son of Fundin, Lord of Moria...
@@ -125,6 +139,14 @@ export const processParams = (params: Partial<ApiQueryParams>) => {
   // This is the main logic of finding and transforming SOME items from
   // the params object, while passing the rest of the object properties as is.
   // We name those items `filters`, but it's not exactly what they are.
+
+  // Step 0: Strip client-only keys and handle client-side sort values
+  if (clientSideSortValues.has(params.sortBy as string)) {
+    delete params.sortBy
+  }
+  clientOnlyFilterKeys.forEach((key) => {
+    delete (params as Record<string, unknown>)[key]
+  })
 
   // Step 1: Get keys to transform
   const transformKeys = getTransformKeys(params)

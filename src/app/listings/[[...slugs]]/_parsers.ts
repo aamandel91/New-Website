@@ -188,10 +188,13 @@ export const parseUrlFilters = (filters: string[]) => {
         break
     }
 
-    // if (filter === 'open') {
-    //   // eslint-disable-next-line prefer-destructuring
-    //   searchFilters.minOpenHouseDate = new Date().toISOString().split('T')[0]
-    // }
+    if (filter === 'open-houses') {
+      searchFilters.openHouses = true
+      searchFilters.minOpenHouseDate = new Date().toISOString().split('T')[0]
+    }
+    if (filter === 'price-reduced') {
+      searchFilters.priceReduced = true
+    }
 
     // non strict equality
     if (filter.startsWith('sort-')) {

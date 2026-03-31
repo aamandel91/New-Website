@@ -20,6 +20,7 @@ import {
   AiSearchButton,
   AiSpacesSelect,
   AutosuggestionField,
+  FilterToggleChips,
   LayoutSelect,
   MapFiltersBar,
   SaveSearchButton
@@ -92,6 +93,8 @@ const MapFilters = () => {
       />
 
       <AdvancedFiltersButton size={size} />
+
+      <FilterToggleChips size={size} />
 
       {features.saveSearch && <SaveSearchButton size={size} />}
 

@@ -1,4 +1,5 @@
 export { default as AdvancedFiltersButton } from './AdvancedFiltersButton'
+export { default as FilterToggleChips } from './FilterToggleChips'
 export { default as AiChat } from './AiChat'
 export { default as AiQualityButton } from './AiQualityButton'
 export { default as AiSearchButton } from './AiSearchButton'

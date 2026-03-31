@@ -16,12 +16,17 @@ import {
   getListingFields,
   getMapPolygon,
   getMapRectangle,
-  getPageParams
+  getPageParams,
+  isClientSideSort
 } from 'services/Search'
 import { useMapOptions } from 'providers/MapOptionsProvider'
 import { useSearch } from 'providers/SearchProvider'
 import useBreakpoints from 'hooks/useBreakpoints'
 import { matchesKeyword } from 'utils/keywordSearch'
+import {
+  filterPriceReduced,
+  sortPropertiesClientSide
+} from 'utils/properties'
 import { getMarkerName } from 'utils/map'
 import {
   slicePropertiesPerPage,
@@ -196,8 +201,17 @@ const GridContent = ({
     })
   }
 
-  const propsOrUnits = filterByKeyword(
-    showMultiUnits ? multiUnits : clientProperties
+  const applyClientFilters = (properties: Property[]) => {
+    let result = properties
+    if (filters.priceReduced) result = filterPriceReduced(result)
+    if (isClientSideSort(filters.sortBy)) {
+      result = sortPropertiesClientSide(result, filters.sortBy)
+    }
+    return result
+  }
+
+  const propsOrUnits = applyClientFilters(
+    filterByKeyword(showMultiUnits ? multiUnits : clientProperties)
   )
 
   return (
