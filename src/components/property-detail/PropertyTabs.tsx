@@ -333,6 +333,12 @@ const PropertyTabs: React.FC<PropertyTabsProps> = ({
             zipCode={property.address?.zip}
             schoolDistrict={undefined}
           />
+          <RelatedBlogs
+            posts={[]}
+            city={property.address?.city}
+            state={property.address?.state}
+            propertyType={property.details?.propertyType}
+          />
         </Box>
       </TabPanel>
     </Box>

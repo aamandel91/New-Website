@@ -13,8 +13,9 @@ import {
   slugToDisplayName,
   generateMetaTitle,
   generateMetaDescription,
+  generateHeadingVariations,
 } from 'utils/templateEngine'
-import type { FloridaPageType, ParsedSlug } from 'utils/templateEngine'
+import type { FloridaPageType, ParsedSlug, HeadingVariations } from 'utils/templateEngine'
 import APIContentPages from 'services/API/APIContentPages'
 import type { ContentPage } from 'services/API/APIContentPages'
 import {
@@ -324,20 +325,23 @@ async function renderCityPage(
 
         <Box sx={{ mb: 4 }}>
           <Typography variant="h3" component="h1" gutterBottom>
-            {cityName}, FL Real Estate
+            {count.toLocaleString()} Homes for Sale in {cityName}, FL
           </Typography>
           <Typography variant="body1" color="text.secondary">
-            Browse {count.toLocaleString()} homes for sale in {cityName},{' '}
+            Browse homes for sale in {cityName},{' '}
             {countyName} County, Florida.
           </Typography>
         </Box>
 
         {/* Market Timeline Graph */}
+        <Typography variant="h5" component="h2" gutterBottom sx={{ mt: 4 }}>
+          {countyName} County Housing Market
+        </Typography>
         <MarketTimelineGraph city={cityName} />
 
         {/* Sub-types */}
-        <Typography variant="h5" gutterBottom sx={{ mt: 4 }}>
-          Browse by Property Type
+        <Typography variant="h5" component="h3" gutterBottom sx={{ mt: 4 }}>
+          {cityName} Florida Real Estate — Browse by Property Type
         </Typography>
         <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 4 }}>
           {subTypes.map((st) => (
@@ -444,6 +448,7 @@ async function renderSubTypePage(
 
   const count = await fetchSubTypeCount(cityName, stConfig)
   const breadcrumbItems = buildBreadcrumbs(parsed, countyName, baseUrl)
+  const headings = generateHeadingVariations(cityName, countyName, 'Florida', stConfig.label, count)
 
   // Other sub-types for cross-linking
   const otherSubTypes = subTypes.filter((st) => st.slug !== parsed.subType)
@@ -468,7 +473,7 @@ async function renderSubTypePage(
 
         <Box sx={{ mb: 4 }}>
           <Typography variant="h3" component="h1" gutterBottom>
-            {stConfig.label} in {cityName}, {countyName} County, Florida
+            {headings.h1}
           </Typography>
           <Typography variant="body1" color="text.secondary">
             Explore {count.toLocaleString()} {stConfig.label.toLowerCase()} currently
@@ -501,12 +506,15 @@ async function renderSubTypePage(
         </Box>
 
         {/* Market Timeline Graph */}
+        <Typography variant="h5" component="h2" gutterBottom sx={{ mt: 4 }}>
+          {headings.h2}
+        </Typography>
         <MarketTimelineGraph city={cityName} />
 
         {/* About section */}
-        <Box sx={{ mb: 4 }}>
-          <Typography variant="h5" gutterBottom>
-            About {stConfig.label} in {cityName}
+        <Box sx={{ mb: 4, mt: 4 }}>
+          <Typography variant="h5" component="h3" gutterBottom>
+            {headings.h3}
           </Typography>
           <Typography variant="body1" color="text.secondary" paragraph>
             {cityName} offers a variety of {stConfig.label.toLowerCase()} options across
@@ -517,8 +525,8 @@ async function renderSubTypePage(
         </Box>
 
         {/* Explore more sub-types */}
-        <Typography variant="h5" gutterBottom sx={{ mt: 4 }}>
-          Explore More in {cityName}
+        <Typography variant="h5" component="h4" gutterBottom sx={{ mt: 4 }}>
+          {headings.h4}
         </Typography>
         <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 3 }}>
           {otherSubTypes.slice(0, 12).map((st) => (

@@ -11,6 +11,8 @@ import type { Property } from 'services/API'
 import { useFavorites } from 'providers/FavoritesProvider'
 import { useFeatures } from 'providers/FeaturesProvider'
 
+import CommunityLink from './CommunityLink'
+import ExploreMore from './ExploreMore'
 import HiddenPropertyDescription from './HiddenPropertyDescription'
 import HomeWorthCheckCTA from './HomeWorthCheckCTA'
 import MobileContactBar from './MobileContactBar'
@@ -197,6 +199,19 @@ const PropertyDetailLayout: React.FC<PropertyDetailLayoutProps> = ({
                 similarProperties={similarProperties}
                 marketStats={marketStats}
                 defaultInterestRate={defaultInterestRate}
+              />
+
+              {/* Community Information Link */}
+              <CommunityLink
+                city={property.address?.city}
+                state={property.address?.state}
+                county={property.address?.district}
+              />
+
+              {/* Explore More Suggestions */}
+              <ExploreMore
+                property={property}
+                similarProperties={similarProperties}
               />
 
               {/* Home Worth Check CTA */}

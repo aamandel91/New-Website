@@ -7,6 +7,7 @@ import type { Blog } from '@/types/blog'
 import APIBlogs from '@/services/API/APIBlogs'
 import YouTubeFacade from '@/components/shared/YouTubeFacade'
 import VideoSchema from '@/components/shared/VideoSchema'
+import RelatedListings from './RelatedListings'
 import { processYouTubeUrls, splitContentByYouTube } from '@/utils/markdownPlugins'
 
 interface BlogDisplayProps {
@@ -207,6 +208,9 @@ const BlogDisplay = ({ slug, onRelatedBlogs }: BlogDisplayProps) => {
             </Stack>
           </Box>
         )}
+
+        {/* Related Listings */}
+        <RelatedListings tags={blog.tags} />
       </Box>
     </Container>
   )

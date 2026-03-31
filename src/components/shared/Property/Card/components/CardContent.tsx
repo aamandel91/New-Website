@@ -176,6 +176,27 @@ const Content = ({ property, size }: ContentProps) => {
               ))}
           </Stack>
         </Typography>
+        {/* SEO-crawlable description snippet — hidden on map/compact cards */}
+        {!sizeMap && details?.description && (
+          <Typography
+            variant="body2"
+            color="text.secondary"
+            sx={{
+              fontSize: toRem(12),
+              lineHeight: toRem(16),
+              display: '-webkit-box',
+              WebkitLineClamp: 2,
+              WebkitBoxOrient: 'vertical',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              mt: 0.5,
+            }}
+          >
+            {details.description.length > 120
+              ? `${details.description.slice(0, 120)}...`
+              : details.description}
+          </Typography>
+        )}
       </Stack>
     </Stack>
   )

@@ -154,3 +154,34 @@ export function displayNameToSlug(name: string): string {
     .replace(/\s+/g, '-')
     .replace(/[^a-z0-9-]/g, '')
 }
+
+/**
+ * Heading variation object for keyword-diverse SEO headings.
+ */
+export interface HeadingVariations {
+  h1: string
+  h2: string
+  h3: string
+  h4: string
+}
+
+/**
+ * Generate varied heading text for use across a page.
+ * Avoids repeating the same city+subtype phrase, boosting keyword coverage.
+ */
+export function generateHeadingVariations(
+  city: string,
+  county: string,
+  state: string,
+  subType: string,
+  count?: number
+): HeadingVariations {
+  const stateCode = state === 'Florida' ? 'FL' : state
+  const prefix = count !== undefined ? `${count} ` : ''
+  return {
+    h1: `${prefix}${subType} in ${city}, ${stateCode}`,
+    h2: `${county} County ${subType} Market`,
+    h3: `${city} Florida Real Estate — ${subType}`,
+    h4: `Browse ${subType} for Sale in ${city}, ${stateCode}`,
+  }
+}
