@@ -26,7 +26,8 @@ import {
   AutoAwesome as AIIcon,
   LibraryAdd as BulkIcon,
   DynamicFeed as PageGenIcon,
-  FileUpload as ImportIcon
+  FileUpload as ImportIcon,
+  SmartToy as RobotsIcon
 } from '@mui/icons-material'
 
 const drawerWidth = 260
@@ -96,6 +97,11 @@ const navItems: NavItem[] = [
     title: 'Import Blog',
     path: '/admin/blog/import',
     icon: <ImportIcon />
+  },
+  {
+    title: 'Robots.txt',
+    path: '/admin/robots',
+    icon: <RobotsIcon />
   },
   {
     title: 'Settings',
