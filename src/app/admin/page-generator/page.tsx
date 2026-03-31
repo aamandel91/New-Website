@@ -43,7 +43,7 @@ import APIContentPages from '@/services/API/APIContentPages'
 import type { ContentPage } from '@/services/API/APIContentPages'
 import type { ApiBoardCity } from '@/services/API'
 import { targetCounties, subTypes } from '@configs/page-generation'
-import type { SubType } from '@configs/page-generation'
+import type { SubTypeConfig as SubType } from '@configs/page-generation'
 import {
   processTemplate,
   generateMetaTitle,
@@ -237,7 +237,7 @@ function GenerateSection() {
           city,
           county,
           subType: st,
-          slug: generateSlug(city, county, st.slug),
+          slug: generateSlug(['florida', county, city, st.slug]),
           title: `${st.label} in ${city}, FL`,
           status: 'pending'
         })
@@ -807,7 +807,7 @@ function CopySection() {
           contentStr = contentStr.replace(regex, replace)
         }
 
-        const slug = generateSlug(city, county)
+        const slug = generateSlug(['florida', county, city])
 
         const page = await APIContentPages.createPage({
           title,
