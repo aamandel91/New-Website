@@ -1,18 +1,27 @@
-export const targetCounties = ['Broward', 'Palm Beach']
+import type { ApiLastStatus } from 'services/API'
 
-export interface SubType {
+/**
+ * Page generation configuration for Florida county/city/sub-type pages.
+ * Defines target counties, property sub-types with search filters, and template variables.
+ */
+
+export const targetCounties = ['Broward', 'Palm Beach'] as const
+
+export type TargetCounty = (typeof targetCounties)[number]
+
+export interface SubTypeConfig {
   slug: string
   label: string
-  filterType: string
+  filterType: 'residential' | 'condo' | 'rental' | 'land'
   propertyType?: string
-  minPrice?: number
   keywords?: string
+  minPrice?: number
   stories?: number
-  lastStatus?: string
+  lastStatus?: ApiLastStatus
   minLotSize?: number
 }
 
-export const subTypes: SubType[] = [
+export const subTypes: SubTypeConfig[] = [
   { slug: 'single-family-homes', label: 'Single Family Homes', filterType: 'residential', propertyType: 'Detached' },
   { slug: 'condos', label: 'Condos', filterType: 'condo', propertyType: 'Apartment' },
   { slug: 'townhomes', label: 'Townhomes', filterType: 'residential', propertyType: 'Att/Row/Twnhouse' },
@@ -46,4 +55,23 @@ export interface TemplateVariables {
   subTypeSlug: string
   count: number
   year: number
+}
+
+/** Map a sub-type slug to its config */
+export function getSubTypeBySlug(slug: string): SubTypeConfig | undefined {
+  return subTypes.find((st) => st.slug === slug)
+}
+
+/** County slug helpers */
+export function countyToSlug(county: string): string {
+  return `${county.toLowerCase().replace(/\s+/g, '-')}-county`
+}
+
+export function slugToCounty(slug: string): string | undefined {
+  const name = slug
+    .replace(/-county$/, '')
+    .split('-')
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+    .join(' ')
+  return (targetCounties as readonly string[]).includes(name) ? name : undefined
 }
