@@ -27,7 +27,8 @@ import {
   LibraryAdd as BulkIcon,
   DynamicFeed as PageGenIcon,
   FileUpload as ImportIcon,
-  SmartToy as RobotsIcon
+  SmartToy as RobotsIcon,
+  House as OpenHouseIcon
 } from '@mui/icons-material'
 
 const drawerWidth = 260
@@ -97,6 +98,11 @@ const navItems: NavItem[] = [
     title: 'Import Blog',
     path: '/admin/blog/import',
     icon: <ImportIcon />
+  },
+  {
+    title: 'Open House',
+    path: '/admin/open-house',
+    icon: <OpenHouseIcon />
   },
   {
     title: 'Robots.txt',
