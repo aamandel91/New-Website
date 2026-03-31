@@ -12,6 +12,7 @@ import { defaultFilters } from '@configs/filters'
 
 import { type ApiQueryResponse, type Property } from 'services/API'
 import SearchService, { type Filters } from 'services/Search'
+import { type KeywordParseResult } from 'utils/keywordSearch'
 import { sortPropertyScoredImages } from 'utils/properties'
 
 import { type SavedResponse, type SearchContextType } from './types'
@@ -45,6 +46,9 @@ const SearchProvider = ({
   const [searchPolygon, setPolygon] = useState<Position[] | null>(
     polygon || null
   )
+
+  const [keywordFilter, setKeywordFilter] =
+    useState<KeywordParseResult | null>(null)
 
   const setFilter = (key: keyof Filters, value: any) =>
     setFilters((prev) => ({ ...prev, [key]: value }))
@@ -128,9 +132,11 @@ const SearchProvider = ({
       clearPolygon,
       multiUnits,
       saveMultiUnits,
-      clearMultiUnits: () => saveMultiUnits([])
+      clearMultiUnits: () => saveMultiUnits([]),
+      keywordFilter,
+      setKeywordFilter
     }),
-    [searchFilters, searchPolygon, loading, saved, multiUnits]
+    [searchFilters, searchPolygon, loading, saved, multiUnits, keywordFilter]
   )
 
   return (

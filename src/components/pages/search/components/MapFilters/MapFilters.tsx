@@ -8,6 +8,7 @@ import { type ListingStatus, type ListingType } from '@configs/filters'
 import { AdvancedFiltersDialog, AiSearchDialog } from '@shared/Dialogs'
 import { ListingStatusSelect, ListingTypeSelect } from '@shared/Filters'
 
+import KeywordSearchInput from 'components/search/KeywordSearchInput'
 import { useFeatures } from 'providers/FeaturesProvider'
 import { useSearch } from 'providers/SearchProvider'
 import useBreakpoints from 'hooks/useBreakpoints'
@@ -33,7 +34,7 @@ const MapFilters = () => {
   const { mobile } = useBreakpoints()
   const size = mobile ? 'small' : 'medium'
 
-  const { filters, setFilter, addFilters } = useSearch()
+  const { filters, setFilter, addFilters, setKeywordFilter } = useSearch()
 
   const typeValue = filters.listingType || 'allListings'
   const statusValue = filters.listingStatus || 'all'
@@ -81,6 +82,13 @@ const MapFilters = () => {
         value={statusValue}
         variant={statusSelectVariant}
         onChange={handleStatusChange}
+      />
+
+      <KeywordSearchInput
+        size={size}
+        onSearch={(result) =>
+          setKeywordFilter(result.regex ? result : null)
+        }
       />
 
       <AdvancedFiltersButton size={size} />

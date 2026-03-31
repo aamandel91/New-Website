@@ -21,6 +21,7 @@ import {
 import { useMapOptions } from 'providers/MapOptionsProvider'
 import { useSearch } from 'providers/SearchProvider'
 import useBreakpoints from 'hooks/useBreakpoints'
+import { matchesKeyword } from 'utils/keywordSearch'
 import { getMarkerName } from 'utils/map'
 import {
   slicePropertiesPerPage,
@@ -56,8 +57,17 @@ const GridContent = ({
   const [serverProperties, setServerProperties] = useState<Property[]>([])
   const [clientProperties, setClientProperties] = useState<Property[]>([])
 
-  const { search, filters, polygon, list, loading, count, page, multiUnits } =
-    useSearch()
+  const {
+    search,
+    filters,
+    polygon,
+    list,
+    loading,
+    count,
+    page,
+    multiUnits,
+    keywordFilter
+  } = useSearch()
 
   const pagesCount = Math.ceil(count / searchConfig.pageSize)
 
@@ -177,7 +187,18 @@ const GridContent = ({
   }
 
   const showMultiUnits = multiUnits.length > 0
-  const propsOrUnits = showMultiUnits ? multiUnits : clientProperties
+
+  const filterByKeyword = (properties: Property[]) => {
+    if (!keywordFilter?.regex) return properties
+    return properties.filter((p) => {
+      const text = p.details?.description || p.details?.extras || ''
+      return matchesKeyword(text, keywordFilter.regex, keywordFilter.excludeTerms)
+    })
+  }
+
+  const propsOrUnits = filterByKeyword(
+    showMultiUnits ? multiUnits : clientProperties
+  )
 
   return (
     <GridScrollContainer ref={scrollRef}>

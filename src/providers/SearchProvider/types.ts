@@ -6,6 +6,7 @@ import {
   type Property
 } from 'services/API'
 import { type Filters } from 'services/Search'
+import { type KeywordParseResult } from 'utils/keywordSearch'
 
 export type SavedResponse = {
   count: number
@@ -33,4 +34,6 @@ export type SearchContextType = SavedResponse & {
   multiUnits: Property[]
   saveMultiUnits: (properties: Property[]) => void
   clearMultiUnits: () => void
+  keywordFilter: KeywordParseResult | null
+  setKeywordFilter: (result: KeywordParseResult | null) => void
 }

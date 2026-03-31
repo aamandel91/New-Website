@@ -22,6 +22,7 @@ import {
   restricted,
   sold
 } from 'utils/properties'
+import { getListingBadges } from 'components/listings/ListingBadges'
 
 import { CardContainer, CardContent, FavoritesButton, Tags } from './components'
 
@@ -65,7 +66,16 @@ const PropertyCard = React.memo(
 
     const tags: PropertyTag[] = []
 
-    if (sold(property)) tags.push({ label: 'Sold', color: 'secondary' })
+    // Listing status badges (open house, under contract, new, price reduced, sold)
+    const listingBadges = getListingBadges(property)
+    for (const badge of listingBadges) {
+      tags.push({ label: badge.label, color: badge.color })
+    }
+
+    // Fallback: ensure sold tag is present if no listing badge covers it
+    if (sold(property) && !listingBadges.some((b) => b.label === 'SOLD')) {
+      tags.push({ label: 'Sold', color: 'secondary' })
+    }
 
     const qualityTag = features.aiQuality ? getQualityTag(property) : null
     if (qualityTag) tags.push(qualityTag)
@@ -116,7 +126,7 @@ const PropertyCard = React.memo(
             onMouseEnter={() => onGalleryEnter?.()}
             onMouseLeave={() => onGalleryLeave?.()}
           />
-          {size === 'normal' && <Tags tags={tags} />}
+          <Tags tags={tags} />
           <CardContent size={size} property={property} />
           <TouchRipple ref={rippleRef} center={false} />
         </a>
