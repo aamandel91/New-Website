@@ -6,6 +6,7 @@ import type { Property } from 'services/API'
 
 import { useFavorites } from 'providers/FavoritesProvider'
 import { useRecentlyViewed } from '@/hooks/useRecentlyViewed'
+import { trackPropertyView } from '@/utils/analytics'
 
 import PropertyPhotoGallery from './PropertyPhotoGallery'
 import PropertyHeader from './PropertyHeader'
@@ -38,6 +39,7 @@ const PropertyDetailLayout: React.FC<PropertyDetailLayoutProps> = ({
   // Track as recently viewed on mount
   useEffect(() => {
     addToRecentlyViewed(property)
+    trackPropertyView(property)
   }, [property.mlsNumber])
 
   // Map property photos - images is an array of strings

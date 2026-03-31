@@ -19,6 +19,7 @@ import { type MapPosition, useMapOptions } from 'providers/MapOptionsProvider'
 import { useSearch } from 'providers/SearchProvider'
 import { getMapUrl } from 'utils/map'
 import { updateWindowHistory } from 'utils/urls'
+import { trackSearch } from '@/utils/analytics'
 
 import MapFilters from './components/MapFilters'
 import MapRoot from './components/MapRoot'
@@ -58,6 +59,7 @@ const MapPageContent = () => {
     const { list, clusters, count } = save(response)
 
     MapService.update(list, clusters, count)
+    trackSearch({ ...filters, resultCount: count })
   }
 
   const handleMapLoad = (

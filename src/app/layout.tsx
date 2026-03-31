@@ -7,6 +7,8 @@ import { GlobalStyles } from '@mui/material'
 import content from '@configs/content'
 import globalStyles from '@configs/theme/global'
 import TrackingInline from '@templates/TrackingInline'
+import GoogleTagManager, { GoogleTagManagerNoscript } from '@/components/analytics/GoogleTagManager'
+import GTMPageView from '@/components/analytics/GTMPageView'
 
 import { APISearch } from 'services/API'
 import { fetchFeatureOptions } from 'utils/features'
@@ -45,12 +47,15 @@ const Layout = async ({ children }: { children: React.ReactNode }) => {
   return (
     <html lang={locale}>
       <head>
+        <GoogleTagManager />
         <meta
           name="format-detection"
           content="telephone=no, date=no, email=no, address=no"
         />
       </head>
       <body suppressHydrationWarning>
+        <GoogleTagManagerNoscript />
+        <GTMPageView />
         <TrackingInline />
         <GlobalStyles styles={globalStyles} />
         <Providers

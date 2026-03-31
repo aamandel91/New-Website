@@ -19,6 +19,7 @@ import SendIcon from '@mui/icons-material/Send'
 import HomeIcon from '@mui/icons-material/Home'
 import VideocamIcon from '@mui/icons-material/Videocam'
 import dayjs from 'dayjs'
+import { trackFormSubmission } from '@/utils/analytics'
 
 interface Agent {
   name?: string
@@ -141,6 +142,7 @@ const PropertyContactForm: React.FC<PropertyContactFormProps> = ({
       if (onSubmit) {
         await onSubmit(formData)
       }
+      trackFormSubmission(formData, 'tour_request')
       setSuccess(true)
       setFormData({
         name: '',

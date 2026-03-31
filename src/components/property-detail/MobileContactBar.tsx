@@ -24,6 +24,7 @@ import VideocamIcon from '@mui/icons-material/Videocam'
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday'
 import PhoneIcon from '@mui/icons-material/Phone'
 import dayjs from 'dayjs'
+import { trackFormSubmission } from '@/utils/analytics'
 import type { ContactFormData } from './PropertyContactForm'
 
 interface Agent {
@@ -178,6 +179,7 @@ const MobileContactBar: React.FC<MobileContactBarProps> = ({
       if (onSubmit) {
         await onSubmit(formData)
       }
+      trackFormSubmission(formData, modalMode === 'tour' ? 'tour_request' : 'contact')
       setSuccess(true)
       setFormData({ name: '', email: '', phone: '', message: '' })
       setSelectedTimeSlot(null)
