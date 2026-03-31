@@ -1,21 +1,25 @@
 'use client'
 
 import React, { useEffect } from 'react'
-import { Box, Container, Grid } from '@mui/material'
-import type { Property } from 'services/API'
 
-import { useFavorites } from 'providers/FavoritesProvider'
+import { Box, Container, Grid } from '@mui/material'
+
 import { useRecentlyViewed } from '@/hooks/useRecentlyViewed'
 import { trackPropertyView } from '@/utils/analytics'
 
-import PropertyPhotoGallery from './PropertyPhotoGallery'
-import PropertyHeader from './PropertyHeader'
-import PropertyBreadcrumbs from './PropertyBreadcrumbs'
-import PropertyContactForm from './PropertyContactForm'
-import PropertyTabs from './PropertyTabs'
-import Property3DTour from './Property3DTour'
+import type { Property } from 'services/API'
+import { useFavorites } from 'providers/FavoritesProvider'
+import { useFeatures } from 'providers/FeaturesProvider'
+
+import HiddenPropertyDescription from './HiddenPropertyDescription'
 import HomeWorthCheckCTA from './HomeWorthCheckCTA'
 import MobileContactBar from './MobileContactBar'
+import Property3DTour from './Property3DTour'
+import PropertyBreadcrumbs from './PropertyBreadcrumbs'
+import PropertyContactForm from './PropertyContactForm'
+import PropertyHeader from './PropertyHeader'
+import PropertyPhotoGallery from './PropertyPhotoGallery'
+import PropertyTabs from './PropertyTabs'
 
 interface PropertyDetailLayoutProps {
   property: Property
@@ -32,6 +36,7 @@ const PropertyDetailLayout: React.FC<PropertyDetailLayoutProps> = ({
 }) => {
   const { toggle: toggleFavorite, find: findFavorite } = useFavorites()
   const { addProperty: addToRecentlyViewed } = useRecentlyViewed()
+  const features = useFeatures()
 
   // Check if property is favorited
   const isFavorited = Boolean(findFavorite(property))
@@ -43,41 +48,52 @@ const PropertyDetailLayout: React.FC<PropertyDetailLayoutProps> = ({
   }, [property.mlsNumber])
 
   // Map property photos - images is an array of strings
-  const photos = property.images?.map((imgUrl, index) => ({
-    url: imgUrl || '',
-    caption: undefined,
-    order: index,
-  })) || []
+  const photos =
+    property.images?.map((imgUrl, index) => ({
+      url: imgUrl || '',
+      caption: undefined,
+      order: index
+    })) || []
 
   // Property address
   const address = {
-    street: `${property.address?.streetNumber || ''} ${property.address?.streetName || ''} ${property.address?.streetSuffix || ''}`.trim(),
+    street:
+      `${property.address?.streetNumber || ''} ${property.address?.streetName || ''} ${property.address?.streetSuffix || ''}`.trim(),
     city: property.address?.city || '',
     state: property.address?.state || '',
-    zip: property.address?.zip || '',
+    zip: property.address?.zip || ''
   }
 
   const propertyAddress = `${address.street}, ${address.city}, ${address.state} ${address.zip}`
 
   // Parse property data from API
   const price = property.listPrice ? parseFloat(property.listPrice) : 0
-  const beds = property.details?.numBedrooms ? parseInt(property.details.numBedrooms) : 0
-  const baths = property.details?.numBathrooms ? parseInt(property.details.numBathrooms) : 0
+  const beds = property.details?.numBedrooms
+    ? parseInt(property.details.numBedrooms)
+    : 0
+  const baths = property.details?.numBathrooms
+    ? parseInt(property.details.numBathrooms)
+    : 0
   const sqft = property.details?.sqft ? parseFloat(property.details.sqft) : 0
-  const yearBuilt = property.details?.yearBuilt ? parseInt(property.details.yearBuilt) : undefined
+  const yearBuilt = property.details?.yearBuilt
+    ? parseInt(property.details.yearBuilt)
+    : undefined
 
   // Agent info - use first agent from agents array
-  const agent = property.agents && property.agents.length > 0
-    ? {
-        name: property.agents[0].name || undefined,
-        phone: property.agents[0].phones && property.agents[0].phones.length > 0
-          ? String(property.agents[0].phones[0])
-          : undefined,
-        email: undefined,
-        photo: property.agents[0].photo?.large || property.agents[0].photo?.small,
-        license: undefined,
-      }
-    : undefined
+  const agent =
+    property.agents && property.agents.length > 0
+      ? {
+          name: property.agents[0].name || undefined,
+          phone:
+            property.agents[0].phones && property.agents[0].phones.length > 0
+              ? String(property.agents[0].phones[0])
+              : undefined,
+          email: undefined,
+          photo:
+            property.agents[0].photo?.large || property.agents[0].photo?.small,
+          license: undefined
+        }
+      : undefined
 
   // Handle form submission
   const handleContactSubmit = async (formData: any) => {
@@ -99,7 +115,7 @@ const PropertyDetailLayout: React.FC<PropertyDetailLayoutProps> = ({
       navigator.share({
         title: propertyAddress,
         text: `Check out this property: ${propertyAddress}`,
-        url: window.location.href,
+        url: window.location.href
       })
     }
   }
@@ -123,6 +139,12 @@ const PropertyDetailLayout: React.FC<PropertyDetailLayoutProps> = ({
 
   return (
     <Box sx={{ bgcolor: 'background.default', minHeight: '100vh' }}>
+      {/* Hidden Property Description for SEO */}
+      <HiddenPropertyDescription
+        description={property.details?.description || ''}
+        enabled={features.hiddenPropertyDescription}
+      />
+
       {/* Full-width Photo Gallery */}
       <PropertyPhotoGallery photos={photos} propertyAddress={propertyAddress} />
 
@@ -186,7 +208,12 @@ const PropertyDetailLayout: React.FC<PropertyDetailLayoutProps> = ({
           </Grid>
 
           {/* Right Column - 1/3 width, Sticky (desktop only) */}
-          <Grid item xs={12} lg={4} sx={{ display: { xs: 'none', lg: 'block' } }}>
+          <Grid
+            item
+            xs={12}
+            lg={4}
+            sx={{ display: { xs: 'none', lg: 'block' } }}
+          >
             <Box
               id="contact-form"
               sx={{

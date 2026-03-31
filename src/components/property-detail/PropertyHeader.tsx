@@ -1,34 +1,35 @@
 'use client'
 
 import React from 'react'
-import {
-  Box,
-  Typography,
-  Chip,
-  Stack,
-  IconButton,
-  Button,
-  Grid,
-  Divider,
-  useTheme,
-} from '@mui/material'
+
+import BathtubIcon from '@mui/icons-material/Bathtub'
+import BedIcon from '@mui/icons-material/Bed'
+import CalendarTodayIcon from '@mui/icons-material/CalendarToday'
+import EmailIcon from '@mui/icons-material/Email'
 import FavoriteIcon from '@mui/icons-material/Favorite'
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder'
-import ShareIcon from '@mui/icons-material/Share'
-import BedIcon from '@mui/icons-material/Bed'
-import BathtubIcon from '@mui/icons-material/Bathtub'
-import SquareFootIcon from '@mui/icons-material/SquareFoot'
-import CalendarTodayIcon from '@mui/icons-material/CalendarToday'
-import ScheduleIcon from '@mui/icons-material/Schedule'
-import EmailIcon from '@mui/icons-material/Email'
 import GavelIcon from '@mui/icons-material/Gavel'
-
+import OpenInNewIcon from '@mui/icons-material/OpenInNew'
+import ScheduleIcon from '@mui/icons-material/Schedule'
+import ShareIcon from '@mui/icons-material/Share'
+import SquareFootIcon from '@mui/icons-material/SquareFoot'
+import {
+  Box,
+  Button,
+  Chip,
+  Divider,
+  Grid,
+  IconButton,
+  Stack,
+  Typography,
+  useTheme
+} from '@mui/material'
 import Link from '@mui/material/Link'
 
-import { type Property } from 'services/API'
-import { getPropertyBadges, getDaysOnMarket } from 'utils/propertyBadges'
-
 import PropertyValueEstimate from 'components/shared/Property/PropertyValueEstimate'
+
+import { type Property } from 'services/API'
+import { getDaysOnMarket, getPropertyBadges } from 'utils/propertyBadges'
 
 interface PropertyHeaderProps {
   price: number
@@ -64,7 +65,7 @@ const PropertyHeader: React.FC<PropertyHeaderProps> = ({
   onShare,
   onRequestInfo,
   onScheduleTour,
-  isSaved = false,
+  isSaved = false
 }) => {
   const theme = useTheme()
 
@@ -72,7 +73,9 @@ const PropertyHeader: React.FC<PropertyHeaderProps> = ({
   const badges = property ? getPropertyBadges(property) : []
   const daysOnMarket = property ? getDaysOnMarket(property) : null
 
-  const getStatusColor = (status: string): 'success' | 'warning' | 'default' => {
+  const getStatusColor = (
+    status: string
+  ): 'success' | 'warning' | 'default' => {
     const statusLower = status.toLowerCase()
     if (statusLower === 'active' || statusLower === 'a') return 'success'
     if (statusLower === 'pending' || statusLower === 'p') return 'warning'
@@ -92,7 +95,7 @@ const PropertyHeader: React.FC<PropertyHeaderProps> = ({
       style: 'currency',
       currency: 'USD',
       minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
+      maximumFractionDigits: 0
     }).format(price)
   }
 
@@ -116,14 +119,18 @@ const PropertyHeader: React.FC<PropertyHeaderProps> = ({
       style: 'currency',
       currency: 'USD',
       minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
+      maximumFractionDigits: 0
     }).format(totalMonthly)
   }
 
   const estimatedMonthly = calculateMonthlyPayment()
 
   // Feature #5: Open house badge
-  const getUpcomingOpenHouse = (): { date: string; startTime: string; endTime: string } | null => {
+  const getUpcomingOpenHouse = (): {
+    date: string
+    startTime: string
+    endTime: string
+  } | null => {
     if (!property?.openHouse) return null
     const now = new Date()
     const entries = Object.values(property.openHouse) as Array<{
@@ -136,12 +143,16 @@ const PropertyHeader: React.FC<PropertyHeaderProps> = ({
       const ohDate = new Date(entry.date)
       if (isNaN(ohDate.getTime())) continue
       // Consider open house as upcoming if date is today or in the future
-      const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+      const todayStart = new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        now.getDate()
+      )
       if (ohDate >= todayStart) {
         return {
           date: entry.date,
           startTime: entry.startTime ?? '',
-          endTime: entry.endTime ?? '',
+          endTime: entry.endTime ?? ''
         }
       }
     }
@@ -153,12 +164,21 @@ const PropertyHeader: React.FC<PropertyHeaderProps> = ({
   const formatOpenHouseDisplay = (): string | null => {
     if (!upcomingOpenHouse) return null
     const ohDate = new Date(upcomingOpenHouse.date)
-    const dayStr = ohDate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })
+    const dayStr = ohDate.toLocaleDateString('en-US', {
+      weekday: 'short',
+      month: 'short',
+      day: 'numeric'
+    })
     const parts = [dayStr]
     if (upcomingOpenHouse.startTime) {
       const formatTime = (t: string) => {
         const d = new Date(`2000-01-01T${t}`)
-        return isNaN(d.getTime()) ? t : d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })
+        return isNaN(d.getTime())
+          ? t
+          : d.toLocaleTimeString('en-US', {
+              hour: 'numeric',
+              minute: '2-digit'
+            })
       }
       const start = formatTime(upcomingOpenHouse.startTime)
       if (upcomingOpenHouse.endTime) {
@@ -191,7 +211,7 @@ const PropertyHeader: React.FC<PropertyHeaderProps> = ({
             component="h1"
             fontWeight="bold"
             sx={{
-              fontSize: { xs: '1.5rem', md: '2rem' },
+              fontSize: { xs: '1.5rem', md: '2rem' }
             }}
           >
             {address.street}
@@ -216,13 +236,19 @@ const PropertyHeader: React.FC<PropertyHeaderProps> = ({
               bgcolor: '#e8f5e9',
               color: '#2e7d32',
               border: '1px solid #a5d6a7',
-              py: 0.5,
+              py: 0.5
             }}
           />
         )}
 
         {/* Price and Status Row */}
-        <Stack direction="row" justifyContent="space-between" alignItems="center" flexWrap="wrap" gap={2}>
+        <Stack
+          direction="row"
+          justifyContent="space-between"
+          alignItems="center"
+          flexWrap="wrap"
+          gap={2}
+        >
           <Box>
             <Typography
               variant="h3"
@@ -230,7 +256,7 @@ const PropertyHeader: React.FC<PropertyHeaderProps> = ({
               fontWeight="bold"
               sx={{
                 fontSize: { xs: '1.75rem', md: '2.5rem' },
-                color: 'primary.main',
+                color: 'primary.main'
               }}
             >
               {formatPrice(price)}
@@ -239,10 +265,16 @@ const PropertyHeader: React.FC<PropertyHeaderProps> = ({
               <Link
                 href="#mortgage-calculator"
                 underline="hover"
-                sx={{ color: 'text.secondary', fontSize: '0.875rem', cursor: 'pointer' }}
+                sx={{
+                  color: 'text.secondary',
+                  fontSize: '0.875rem',
+                  cursor: 'pointer'
+                }}
                 onClick={(e) => {
                   e.preventDefault()
-                  document.getElementById('mortgage-calculator')?.scrollIntoView({ behavior: 'smooth' })
+                  document
+                    .getElementById('mortgage-calculator')
+                    ?.scrollIntoView({ behavior: 'smooth' })
                 }}
               >
                 Est. {estimatedMonthly}/mo
@@ -272,7 +304,10 @@ const PropertyHeader: React.FC<PropertyHeaderProps> = ({
         {/* Value Estimate */}
         {property?.estimate && (
           <Box sx={{ maxWidth: { xs: '100%', md: '400px' } }}>
-            <PropertyValueEstimate estimate={property.estimate} variant="detailed" />
+            <PropertyValueEstimate
+              estimate={property.estimate}
+              variant="detailed"
+            />
           </Box>
         )}
 
@@ -288,7 +323,12 @@ const PropertyHeader: React.FC<PropertyHeaderProps> = ({
             <Typography variant="h6" fontWeight="bold" component="span">
               {beds}
             </Typography>
-            <Typography variant="body2" color="text.secondary" component="span" sx={{ ml: 0.5 }}>
+            <Typography
+              variant="body2"
+              color="text.secondary"
+              component="span"
+              sx={{ ml: 0.5 }}
+            >
               Beds
             </Typography>
           </Box>
@@ -297,7 +337,12 @@ const PropertyHeader: React.FC<PropertyHeaderProps> = ({
             <Typography variant="h6" fontWeight="bold" component="span">
               {baths}
             </Typography>
-            <Typography variant="body2" color="text.secondary" component="span" sx={{ ml: 0.5 }}>
+            <Typography
+              variant="body2"
+              color="text.secondary"
+              component="span"
+              sx={{ ml: 0.5 }}
+            >
               Baths
             </Typography>
           </Box>
@@ -306,7 +351,12 @@ const PropertyHeader: React.FC<PropertyHeaderProps> = ({
             <Typography variant="h6" fontWeight="bold" component="span">
               {formatNumber(sqft)}
             </Typography>
-            <Typography variant="body2" color="text.secondary" component="span" sx={{ ml: 0.5 }}>
+            <Typography
+              variant="body2"
+              color="text.secondary"
+              component="span"
+              sx={{ ml: 0.5 }}
+            >
               Sq Ft
             </Typography>
           </Box>
@@ -316,7 +366,12 @@ const PropertyHeader: React.FC<PropertyHeaderProps> = ({
               <Typography variant="h6" fontWeight="bold" component="span">
                 {yearBuilt}
               </Typography>
-              <Typography variant="body2" color="text.secondary" component="span" sx={{ ml: 0.5 }}>
+              <Typography
+                variant="body2"
+                color="text.secondary"
+                component="span"
+                sx={{ ml: 0.5 }}
+              >
                 Built
               </Typography>
             </Box>
@@ -366,8 +421,8 @@ const PropertyHeader: React.FC<PropertyHeaderProps> = ({
                   borderColor: '#e65100',
                   '&:hover': {
                     borderColor: '#bf360c',
-                    bgcolor: 'rgba(230, 81, 0, 0.04)',
-                  },
+                    bgcolor: 'rgba(230, 81, 0, 0.04)'
+                  }
                 }}
               >
                 Start an Offer
@@ -378,24 +433,45 @@ const PropertyHeader: React.FC<PropertyHeaderProps> = ({
           <Stack direction="row" spacing={1}>
             <IconButton
               onClick={onSave}
-              aria-label={isSaved ? 'Remove from favorites' : 'Add to favorites'}
+              aria-label={
+                isSaved ? 'Remove from favorites' : 'Add to favorites'
+              }
               sx={{
                 border: '1px solid',
-                borderColor: 'divider',
+                borderColor: 'divider'
               }}
             >
-              {isSaved ? <FavoriteIcon color="error" /> : <FavoriteBorderIcon />}
+              {isSaved ? (
+                <FavoriteIcon color="error" />
+              ) : (
+                <FavoriteBorderIcon />
+              )}
             </IconButton>
             <IconButton
               onClick={onShare}
               aria-label="Share property"
               sx={{
                 border: '1px solid',
-                borderColor: 'divider',
+                borderColor: 'divider'
               }}
             >
               <ShareIcon />
             </IconButton>
+            {property?.mlsNumber && (
+              <IconButton
+                component="a"
+                href={`/property/${property.mlsNumber}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Shareable link"
+                sx={{
+                  border: '1px solid',
+                  borderColor: 'divider'
+                }}
+              >
+                <OpenInNewIcon />
+              </IconButton>
+            )}
           </Stack>
         </Stack>
       </Stack>

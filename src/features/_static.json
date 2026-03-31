@@ -29,5 +29,6 @@
   "saveSearch": true,
   "search": true,
   "searchPosition": "menu",
-  "searchProvider": "mapbox"
+  "searchProvider": "mapbox",
+  "hiddenPropertyDescription": true
 }
