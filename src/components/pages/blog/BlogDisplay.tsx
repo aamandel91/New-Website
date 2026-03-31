@@ -1,14 +1,59 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 import { Box, Container, Typography, Chip, Stack, CircularProgress, Alert } from '@mui/material'
 import ReactMarkdown from 'react-markdown'
 import type { Blog } from '@/types/blog'
 import APIBlogs from '@/services/API/APIBlogs'
+import YouTubeFacade from '@/components/shared/YouTubeFacade'
+import VideoSchema from '@/components/shared/VideoSchema'
+import { processYouTubeUrls, splitContentByYouTube } from '@/utils/markdownPlugins'
 
 interface BlogDisplayProps {
   slug: string
   onRelatedBlogs?: (blogs: Blog[]) => void
+}
+
+const markdownStyles = {
+  '& h1': { fontSize: '2rem', mt: 4, mb: 2, fontWeight: 600 },
+  '& h2': { fontSize: '1.5rem', mt: 3, mb: 1.5, fontWeight: 600 },
+  '& h3': { fontSize: '1.25rem', mt: 2.5, mb: 1, fontWeight: 600 },
+  '& p': { lineHeight: 1.8, mb: 2, color: 'text.primary' },
+  '& ul, & ol': { ml: 2, mb: 2 },
+  '& li': { mb: 1, color: 'text.primary' },
+  '& a': { color: 'primary.main', textDecoration: 'underline', '&:hover': { textDecoration: 'underline' } },
+  '& pre': { background: '#f5f5f5', p: 2, borderRadius: 1, overflow: 'auto', mb: 2 },
+  '& code': { fontFamily: 'monospace', fontSize: '0.9rem' },
+  '& blockquote': { borderLeft: '4px solid primary.main', pl: 2, py: 1, my: 2, fontStyle: 'italic', color: 'text.secondary' },
+  '& img': { maxWidth: '100%', height: 'auto', borderRadius: 1, my: 2 }
+}
+
+function BlogContent({ content, blogTitle, publishedAt }: { content: string; blogTitle: string; publishedAt: Date | null }) {
+  const { segments, videoIds } = useMemo(() => {
+    const { processedContent, videoIds } = processYouTubeUrls(content)
+    return { segments: splitContentByYouTube(processedContent), videoIds }
+  }, [content])
+
+  const uploadDate = publishedAt
+    ? new Date(publishedAt).toISOString().split('T')[0]
+    : undefined
+
+  return (
+    <>
+      {videoIds.map(id => (
+        <VideoSchema key={id} videoId={id} title={blogTitle} uploadDate={uploadDate} />
+      ))}
+      <Box sx={markdownStyles}>
+        {segments.map((segment, index) =>
+          segment.type === 'youtube' ? (
+            <YouTubeFacade key={`yt-${segment.videoId}-${index}`} videoId={segment.videoId} title={blogTitle} />
+          ) : (
+            <ReactMarkdown key={`md-${index}`}>{segment.content}</ReactMarkdown>
+          )
+        )}
+      </Box>
+    </>
+  )
 }
 
 const BlogDisplay = ({ slug, onRelatedBlogs }: BlogDisplayProps) => {
@@ -140,76 +185,8 @@ const BlogDisplay = ({ slug, onRelatedBlogs }: BlogDisplayProps) => {
           />
         )}
 
-        {/* Content */}
-        <Box
-          sx={{
-            '& h1': {
-              fontSize: '2rem',
-              mt: 4,
-              mb: 2,
-              fontWeight: 600
-            },
-            '& h2': {
-              fontSize: '1.5rem',
-              mt: 3,
-              mb: 1.5,
-              fontWeight: 600
-            },
-            '& h3': {
-              fontSize: '1.25rem',
-              mt: 2.5,
-              mb: 1,
-              fontWeight: 600
-            },
-            '& p': {
-              lineHeight: 1.8,
-              mb: 2,
-              color: 'text.primary'
-            },
-            '& ul, & ol': {
-              ml: 2,
-              mb: 2
-            },
-            '& li': {
-              mb: 1,
-              color: 'text.primary'
-            },
-            '& a': {
-              color: 'primary.main',
-              textDecoration: 'underline',
-              '&:hover': {
-                textDecoration: 'underline'
-              }
-            },
-            '& pre': {
-              background: '#f5f5f5',
-              p: 2,
-              borderRadius: 1,
-              overflow: 'auto',
-              mb: 2
-            },
-            '& code': {
-              fontFamily: 'monospace',
-              fontSize: '0.9rem'
-            },
-            '& blockquote': {
-              borderLeft: '4px solid primary.main',
-              pl: 2,
-              py: 1,
-              my: 2,
-              fontStyle: 'italic',
-              color: 'text.secondary'
-            },
-            '& img': {
-              maxWidth: '100%',
-              height: 'auto',
-              borderRadius: 1,
-              my: 2
-            }
-          }}
-        >
-          <ReactMarkdown>{blog.content}</ReactMarkdown>
-        </Box>
+        {/* Content with YouTube facade support */}
+        <BlogContent content={blog.content} blogTitle={blog.title} publishedAt={blog.published_at} />
 
         {/* Categories */}
         {blog.categories.length > 0 && (

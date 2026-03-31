@@ -25,6 +25,13 @@ import '@uiw/react-md-editor/markdown-editor.css'
 import '@uiw/react-markdown-preview/markdown.css'
 import type { Blog, AISuggestions } from '@/types/blog'
 import APIBlogs from '@/services/API/APIBlogs'
+import ImageUploader from '@/components/admin/ImageUploader'
+
+interface UploadedImage {
+  url: string
+  filename: string
+  size: number
+}
 
 interface BlogEditorProps {
   blogId?: number
@@ -73,6 +80,7 @@ const BlogEditor = ({ blogId, onSave }: BlogEditorProps) => {
     status: 'draft' as const
   })
 
+  const [uploadedImages, setUploadedImages] = useState<UploadedImage[]>([])
   const [showAISuggestions, setShowAISuggestions] = useState(false)
   const [aiSuggestions, setAiSuggestions] = useState<AISuggestions | null>(null)
   const [loadingAI, setLoadingAI] = useState(false)
@@ -145,6 +153,19 @@ const BlogEditor = ({ blogId, onSave }: BlogEditorProps) => {
       ...prev,
       tags: prev.tags.filter(t => t !== tag)
     }))
+  }
+
+  const handleInsertImage = (markdown: string) => {
+    setFormData(prev => ({
+      ...prev,
+      content: prev.content + '\n' + markdown + '\n'
+    }))
+  }
+
+  const handleFirstUpload = (url: string) => {
+    if (!formData.featured_image_url) {
+      setFormData(prev => ({ ...prev, featured_image_url: url }))
+    }
   }
 
   const handleGenerateAISuggestions = async () => {
@@ -285,14 +306,37 @@ const BlogEditor = ({ blogId, onSave }: BlogEditorProps) => {
             </Paper>
           </Box>
 
-          {/* Featured Image URL */}
-          <TextField
-            fullWidth
-            label="Featured Image URL (Cloudinary)"
-            value={formData.featured_image_url}
-            onChange={e => handleInputChange('featured_image_url', e.target.value)}
-            helperText="Paste Cloudinary image URL here"
-          />
+          {/* Featured Image */}
+          <Box>
+            <Typography variant="h6" sx={{ mb: 1 }}>
+              Featured Image
+            </Typography>
+            {formData.featured_image_url && (
+              <Box sx={{ mb: 2 }}>
+                <Box
+                  component="img"
+                  src={formData.featured_image_url}
+                  alt="Featured"
+                  sx={{
+                    width: '100%',
+                    maxHeight: 200,
+                    objectFit: 'cover',
+                    borderRadius: 1,
+                    mb: 1
+                  }}
+                />
+                <Typography variant="caption" color="text.secondary">
+                  {formData.featured_image_url}
+                </Typography>
+              </Box>
+            )}
+            <ImageUploader
+              images={uploadedImages}
+              onImagesChange={setUploadedImages}
+              onInsert={handleInsertImage}
+              onFirstUpload={handleFirstUpload}
+            />
+          </Box>
 
           {/* SEO Section */}
           <Box>
@@ -363,6 +407,7 @@ const BlogEditor = ({ blogId, onSave }: BlogEditorProps) => {
             <Tabs value={tabValue} onChange={(_, value) => setTabValue(value)}>
               <Tab label="Tags" id="tab-0" aria-controls="tabpanel-0" />
               <Tab label="Categories" id="tab-1" aria-controls="tabpanel-1" />
+              <Tab label="Media" id="tab-2" aria-controls="tabpanel-2" />
             </Tabs>
 
             <TabPanel value={tabValue} index={0}>
@@ -420,6 +465,18 @@ const BlogEditor = ({ blogId, onSave }: BlogEditorProps) => {
                   />
                 ))}
               </Stack>
+            </TabPanel>
+
+            <TabPanel value={tabValue} index={2}>
+              <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                All images uploaded for this post. Use copy or insert buttons to add to content.
+              </Typography>
+              <ImageUploader
+                images={uploadedImages}
+                onImagesChange={setUploadedImages}
+                onInsert={handleInsertImage}
+                onFirstUpload={handleFirstUpload}
+              />
             </TabPanel>
           </Box>
 
