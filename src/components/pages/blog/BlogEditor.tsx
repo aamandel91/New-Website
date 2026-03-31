@@ -77,7 +77,7 @@ const BlogEditor = ({ blogId, onSave }: BlogEditorProps) => {
     tags: [] as string[],
     categories: [] as string[],
     featured_image_url: '',
-    status: 'draft' as const
+    status: 'draft' as 'draft' | 'published'
   })
 
   const [uploadedImages, setUploadedImages] = useState<UploadedImage[]>([])
@@ -281,7 +281,7 @@ const BlogEditor = ({ blogId, onSave }: BlogEditorProps) => {
         const response = await APIBlogs.updateBlog(blogId, blogData)
         savedBlog = response.blog
       } else {
-        const response = await APIBlogs.createBlog(blogData)
+        const response = await APIBlogs.createBlog(blogData as any)
         savedBlog = response.blog
       }
 
