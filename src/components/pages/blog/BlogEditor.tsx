@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import {
   Box,
@@ -81,6 +81,12 @@ const BlogEditor = ({ blogId, onSave }: BlogEditorProps) => {
   })
 
   const [uploadedImages, setUploadedImages] = useState<UploadedImage[]>([])
+
+  const [autoSaveStatus, setAutoSaveStatus] = useState<'idle' | 'saving' | 'saved'>('idle')
+  const autoSaveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const lastSavedContentRef = useRef<string>('')
+  const savingBlogIdRef = useRef<number | undefined>(blogId)
+
   const [showAISuggestions, setShowAISuggestions] = useState(false)
   const [aiSuggestions, setAiSuggestions] = useState<AISuggestions | null>(null)
   const [loadingAI, setLoadingAI] = useState(false)
@@ -115,6 +121,53 @@ const BlogEditor = ({ blogId, onSave }: BlogEditorProps) => {
       loadBlog()
     }
   }, [blogId])
+
+  // Auto-save: debounced 30s after last change, only for existing blogs
+  const performAutoSave = useCallback(async (data: typeof formData, currentBlogId?: number) => {
+    if (!currentBlogId) return
+
+    const contentSnapshot = JSON.stringify(data)
+    if (contentSnapshot === lastSavedContentRef.current) return
+
+    try {
+      setAutoSaveStatus('saving')
+      await APIBlogs.updateBlog(currentBlogId, { ...data, status: data.status })
+      lastSavedContentRef.current = contentSnapshot
+      setAutoSaveStatus('saved')
+    } catch {
+      setAutoSaveStatus('idle')
+    }
+  }, [])
+
+  // Set initial snapshot when blog loads
+  useEffect(() => {
+    if (!loading && formData.title) {
+      lastSavedContentRef.current = JSON.stringify(formData)
+    }
+  }, [loading]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Trigger debounced auto-save on formData change
+  useEffect(() => {
+    if (loading) return
+
+    if (autoSaveTimerRef.current) {
+      clearTimeout(autoSaveTimerRef.current)
+    }
+
+    autoSaveTimerRef.current = setTimeout(() => {
+      performAutoSave(formData, savingBlogIdRef.current)
+    }, 30000)
+
+    return () => {
+      if (autoSaveTimerRef.current) {
+        clearTimeout(autoSaveTimerRef.current)
+      }
+    }
+  }, [formData, loading, performAutoSave])
+
+  // Word count and read time
+  const wordCount = formData.content.trim() ? formData.content.trim().split(/\s+/).length : 0
+  const readTime = Math.max(1, Math.ceil(wordCount / 200))
 
   const handleInputChange = (field: string, value: any) => {
     setFormData(prev => ({
@@ -304,6 +357,9 @@ const BlogEditor = ({ blogId, onSave }: BlogEditorProps) => {
                 className="mdeditor"
               />
             </Paper>
+            <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+              {wordCount} words &middot; {readTime} min read
+            </Typography>
           </Box>
 
           {/* Featured Image */}
@@ -481,7 +537,17 @@ const BlogEditor = ({ blogId, onSave }: BlogEditorProps) => {
           </Box>
 
           {/* Action Buttons */}
-          <Stack direction="row" spacing={2} sx={{ justifyContent: 'flex-end' }}>
+          <Stack direction="row" spacing={2} sx={{ justifyContent: 'flex-end', alignItems: 'center' }}>
+            {autoSaveStatus === 'saving' && (
+              <Typography variant="body2" color="text.secondary" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <CircularProgress size={14} /> Saving...
+              </Typography>
+            )}
+            {autoSaveStatus === 'saved' && (
+              <Typography variant="body2" color="success.main">
+                Auto-saved
+              </Typography>
+            )}
             <Button
               variant="outlined"
               onClick={handleSaveDraft}

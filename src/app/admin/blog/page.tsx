@@ -84,9 +84,14 @@ export default function AdminBlogPage() {
       <Box sx={{ py: 4 }}>
         <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 4 }}>
           <Typography variant="h3">Blog Management</Typography>
-          <Link href="/admin/blog/new" style={{ textDecoration: 'none' }}>
-            <Button variant="contained">Create New Blog</Button>
-          </Link>
+          <Stack direction="row" spacing={2}>
+            <Link href="/admin/blog/import" style={{ textDecoration: 'none' }}>
+              <Button variant="outlined">Import</Button>
+            </Link>
+            <Link href="/admin/blog/new" style={{ textDecoration: 'none' }}>
+              <Button variant="contained">Create New Blog</Button>
+            </Link>
+          </Stack>
         </Stack>
 
         {error && <Alert severity="error" sx={{ mb: 3 }}>{error}</Alert>}

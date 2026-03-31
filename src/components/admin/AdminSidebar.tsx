@@ -25,7 +25,8 @@ import {
   Navigation as NavigationIcon,
   AutoAwesome as AIIcon,
   LibraryAdd as BulkIcon,
-  DynamicFeed as PageGenIcon
+  DynamicFeed as PageGenIcon,
+  FileUpload as ImportIcon
 } from '@mui/icons-material'
 
 const drawerWidth = 260
@@ -90,6 +91,11 @@ const navItems: NavItem[] = [
     title: 'Blog',
     path: '/admin/blog',
     icon: <ArticleIcon />
+  },
+  {
+    title: 'Import Blog',
+    path: '/admin/blog/import',
+    icon: <ImportIcon />
   },
   {
     title: 'Settings',
