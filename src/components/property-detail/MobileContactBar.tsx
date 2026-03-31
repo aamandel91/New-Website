@@ -25,6 +25,8 @@ import CalendarTodayIcon from '@mui/icons-material/CalendarToday'
 import PhoneIcon from '@mui/icons-material/Phone'
 import dayjs from 'dayjs'
 import { trackFormSubmission } from '@/utils/analytics'
+import { isFormBlocked } from '@/utils/formFilter'
+import { defaultBlockedWords } from '@/configs/defaults/form-filtering'
 import type { ContactFormData } from './PropertyContactForm'
 
 interface Agent {
@@ -174,6 +176,13 @@ const MobileContactBar: React.FC<MobileContactBarProps> = ({
     setLoading(true)
     setError(null)
     setSuccess(false)
+
+    const filterResult = isFormBlocked(formData, defaultBlockedWords)
+    if (filterResult.blocked) {
+      setError('Unable to submit form. Please remove prohibited content.')
+      setLoading(false)
+      return
+    }
 
     try {
       if (onSubmit) {

@@ -20,6 +20,8 @@ import HomeIcon from '@mui/icons-material/Home'
 import VideocamIcon from '@mui/icons-material/Videocam'
 import dayjs from 'dayjs'
 import { trackFormSubmission } from '@/utils/analytics'
+import { isFormBlocked } from '@/utils/formFilter'
+import { defaultBlockedWords } from '@/configs/defaults/form-filtering'
 
 interface Agent {
   name?: string
@@ -137,6 +139,13 @@ const PropertyContactForm: React.FC<PropertyContactFormProps> = ({
     setLoading(true)
     setError(null)
     setSuccess(false)
+
+    const filterResult = isFormBlocked(formData, defaultBlockedWords)
+    if (filterResult.blocked) {
+      setError('Unable to submit form. Please remove prohibited content.')
+      setLoading(false)
+      return
+    }
 
     try {
       if (onSubmit) {

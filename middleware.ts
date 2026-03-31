@@ -1,11 +1,17 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
+import {
+  blockedCountries,
+  geoBlockingEnabled,
+} from '@/configs/defaults/geo-blocking'
 
 /**
- * Next.js Middleware for Agent Subdomain Routing
+ * Next.js Middleware for Agent Subdomain Routing & Geo-Blocking
  *
- * This middleware handles routing for agent subdomains (e.g., john-smith.yoursite.com)
- * and adds SEO meta tags (noindex, nofollow) to prevent indexing agent-specific pages.
+ * This middleware handles:
+ * 1. Geo-blocking — blocks requests from configured countries
+ * 2. Agent subdomain routing (e.g., john-smith.yoursite.com)
+ *    and adds SEO meta tags (noindex, nofollow) to prevent indexing agent-specific pages.
  */
 
 export function middleware(request: NextRequest) {
@@ -20,6 +26,27 @@ export function middleware(request: NextRequest) {
     url.pathname.match(/\.(ico|png|jpg|jpeg|svg|gif|woff|woff2|ttf|eot|css|js)$/)
   ) {
     return NextResponse.next()
+  }
+
+  // --- Geo-Blocking ---
+  if (geoBlockingEnabled) {
+    const isLocalhost =
+      hostname.includes('localhost') || hostname.includes('127.0.0.1')
+
+    if (!isLocalhost) {
+      const country =
+        request.headers.get('x-vercel-ip-country') ||
+        request.headers.get('cf-ipcountry') ||
+        (request as NextRequest & { geo?: { country?: string } }).geo?.country ||
+        ''
+
+      if (country && blockedCountries.includes(country)) {
+        console.log(
+          `[geo-block] Blocked request from country=${country} path=${url.pathname}`
+        )
+        return new NextResponse('Access Denied', { status: 403 })
+      }
+    }
   }
 
   // Extract subdomain from hostname
