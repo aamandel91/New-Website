@@ -24,7 +24,8 @@ import {
   Pages as PagesIcon,
   Navigation as NavigationIcon,
   AutoAwesome as AIIcon,
-  LibraryAdd as BulkIcon
+  LibraryAdd as BulkIcon,
+  DynamicFeed as PageGenIcon
 } from '@mui/icons-material'
 
 const drawerWidth = 260
@@ -66,7 +67,12 @@ const navItems: NavItem[] = [
   {
     title: 'Bulk Pages',
     path: '/admin/bulk-pages',
-    icon: <BulkIcon />,
+    icon: <BulkIcon />
+  },
+  {
+    title: 'Page Generator',
+    path: '/admin/page-generator',
+    icon: <PageGenIcon />,
     divider: true
   },
   {
