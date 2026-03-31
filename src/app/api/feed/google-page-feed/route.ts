@@ -8,23 +8,10 @@
 import type { NextRequest } from 'next/server'
 import { NextResponse } from 'next/server'
 
-import {
-  type RemarketingPropertyData,
-  toCSV,
-  toGooglePageFeed
-} from 'services/marketing'
+import { toCSV, toGooglePageFeed } from 'services/marketing'
+import { fetchFeedProperties } from 'services/marketing/fetchFeedProperties'
 
 const baseUrl = process.env.NEXT_PUBLIC_APP_DOMAIN || 'https://example.com'
-
-// Mock function - replace with actual property fetching logic
-// TODO: Add parameters when implementing: async function fetchProperties(limit: number, offset: number)
-async function fetchProperties(): Promise<RemarketingPropertyData[]> {
-  // TODO: Replace with actual API call to fetch properties
-  // Example: return await APISearch.getListings({ limit, offset })
-
-  // For now, return empty array - implement actual data fetching
-  return []
-}
 
 export async function GET(request: NextRequest) {
   try {
@@ -34,8 +21,7 @@ export async function GET(request: NextRequest) {
     const offset = parseInt(searchParams.get('offset') || '0', 10)
 
     // Fetch properties
-    // TODO: Pass limit and offset when implementing: await fetchProperties(limit, offset)
-    const properties = await fetchProperties()
+    const properties = await fetchFeedProperties({ limit, offset })
 
     // Convert to Google Page Feed format
     const feedItems = toGooglePageFeed(properties, baseUrl)

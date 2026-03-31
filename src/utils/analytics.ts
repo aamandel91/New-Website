@@ -71,3 +71,49 @@ export function trackSearch(searchParams: Record<string, unknown>) {
     search_params: searchParams,
   })
 }
+
+export function trackPropertyListView(properties: PropertyData[]) {
+  pushToDataLayer({
+    event: 'view_item_list',
+    ecommerce: {
+      items: properties.map((p, i) => {
+        const addr = p.address
+        const address = addr
+          ? `${addr.streetNumber || ''} ${addr.streetName || ''} ${addr.streetSuffix || ''}`.trim()
+          : ''
+
+        return {
+          item_id: p.mlsNumber,
+          item_name: address,
+          price: parseFloat(p.listPrice),
+          item_category: p.details?.propertyType,
+          item_category2: p.address?.city,
+          index: i,
+        }
+      }),
+    },
+  })
+}
+
+export function trackPropertyClick(property: PropertyData, index: number) {
+  const addr = property.address
+  const address = addr
+    ? `${addr.streetNumber || ''} ${addr.streetName || ''} ${addr.streetSuffix || ''}`.trim()
+    : ''
+
+  pushToDataLayer({
+    event: 'select_item',
+    ecommerce: {
+      items: [
+        {
+          item_id: property.mlsNumber,
+          item_name: address,
+          price: parseFloat(property.listPrice),
+          item_category: property.details?.propertyType,
+          item_category2: property.address?.city,
+          index,
+        },
+      ],
+    },
+  })
+}

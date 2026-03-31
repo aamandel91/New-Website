@@ -9,6 +9,7 @@ import globalStyles from '@configs/theme/global'
 import TrackingInline from '@templates/TrackingInline'
 import GoogleTagManager, { GoogleTagManagerNoscript } from '@/components/analytics/GoogleTagManager'
 import GTMPageView from '@/components/analytics/GTMPageView'
+import RemarketingPixels from '@/components/analytics/RemarketingPixels'
 
 import { APISearch } from 'services/API'
 import { fetchFeatureOptions } from 'utils/features'
@@ -57,6 +58,7 @@ const Layout = async ({ children }: { children: React.ReactNode }) => {
         <GoogleTagManagerNoscript />
         <GTMPageView />
         <TrackingInline />
+        <RemarketingPixels />
         <GlobalStyles styles={globalStyles} />
         <Providers
           locale={locale}

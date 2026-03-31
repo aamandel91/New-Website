@@ -3,6 +3,7 @@ import React from 'react'
 import { Box, Container, Stack } from '@mui/material'
 
 import gridConfig from '@configs/cards-grids'
+import TrackListView from '@/components/analytics/TrackListView'
 // TODO: fix constants import from @pages alias
 import { gridColumnsMediaQueries } from '@pages/search/components/MapRoot/constants'
 import { EmptyCatalogListings } from '@shared/EmptyStates'
@@ -94,11 +95,14 @@ const CatalogPageContent = ({
           }}
         >
           {listings?.length > 0 ? (
-            <Stack spacing={4} direction="row" flexWrap="wrap">
-              {listings.map((property, index) => (
-                <PropertyCard key={index} property={property} />
-              ))}
-            </Stack>
+            <>
+              <TrackListView listings={listings} />
+              <Stack spacing={4} direction="row" flexWrap="wrap">
+                {listings.map((property, index) => (
+                  <PropertyCard key={index} property={property} />
+                ))}
+              </Stack>
+            </>
           ) : (
             <EmptyCatalogListings />
           )}

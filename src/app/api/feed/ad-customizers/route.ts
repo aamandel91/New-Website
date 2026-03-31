@@ -8,20 +8,9 @@
 import type { NextRequest } from 'next/server'
 import { NextResponse } from 'next/server'
 
-import {
-  type RemarketingPropertyData,
-  toAdCustomizerFeed,
-  toCSV
-} from 'services/marketing'
-
-// Mock function - replace with actual property fetching logic
-async function fetchProperties(): Promise<RemarketingPropertyData[]> {
-  // TODO: Replace with actual API call to fetch properties
-  // Example: return await APISearch.getListings({ limit: 10000 })
-
-  // For now, return empty array - implement actual data fetching
-  return []
-}
+import type { RemarketingPropertyData } from 'services/marketing'
+import { toAdCustomizerFeed, toCSV } from 'services/marketing'
+import { fetchFeedProperties } from 'services/marketing/fetchFeedProperties'
 
 // Aggregate properties by city and property type
 function aggregateProperties(properties: RemarketingPropertyData[]) {
@@ -68,7 +57,7 @@ export async function GET(request: NextRequest) {
     const adGroup = searchParams.get('adgroup') || ''
 
     // Fetch all properties
-    const properties = await fetchProperties()
+    const properties = await fetchFeedProperties({ limit: 10000 })
 
     // Aggregate by city and property type
     const aggregatedData = aggregateProperties(properties)
