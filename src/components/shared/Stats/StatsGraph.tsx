@@ -1,7 +1,9 @@
 'use client'
 
 import React, { useEffect, useState } from 'react'
+import dynamic from 'next/dynamic'
 import { useTranslations } from 'next-intl'
+import { Skeleton } from '@mui/material'
 
 import { chartColors } from '@configs/colors'
 import { type PropertyClass } from '@configs/filters'
@@ -25,7 +27,14 @@ import {
   GraphContainer,
   NotEnoughData
 } from './components'
-import { StatsChart } from './StatsChart'
+
+const StatsChart = dynamic(
+  () => import('./StatsChart').then((mod) => mod.StatsChart),
+  {
+    ssr: false,
+    loading: () => <Skeleton variant="rectangular" height={300} sx={{ borderRadius: 1 }} />,
+  }
+)
 
 export const StatsGraph = ({
   city = '',

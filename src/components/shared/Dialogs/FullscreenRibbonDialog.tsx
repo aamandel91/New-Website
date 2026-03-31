@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
+import Image from 'next/image'
 
-import { DialogContent, DialogTitle } from '@mui/material'
+import { Box, DialogContent, DialogTitle } from '@mui/material'
 
 import { type GalleryDialogProps, useDialog } from 'providers/DialogProvider'
 import { getCDNPath } from 'utils/urls'
@@ -27,14 +28,17 @@ const FullscreenRibbonDialog = () => {
       <DialogTitle>{images.length} Images</DialogTitle>
       <DialogContent>
         {images.map((image, index) => (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            key={index}
-            id={`img-${index}`}
-            alt={index.toString()}
-            src={getCDNPath(image, 'medium')}
-            style={{ width: '100%', marginBottom: 16 }}
-          />
+          <Box key={index} id={`img-${index}`} sx={{ position: 'relative', width: '100%', mb: 2 }}>
+            <Image
+              src={getCDNPath(image, 'medium')}
+              alt={`Property image ${index + 1}`}
+              width={1200}
+              height={800}
+              style={{ width: '100%', height: 'auto' }}
+              sizes="100vw"
+              quality={75}
+            />
+          </Box>
         ))}
       </DialogContent>
     </BaseFullscreenDialog>

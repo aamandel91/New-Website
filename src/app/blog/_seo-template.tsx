@@ -12,6 +12,7 @@
  */
 
 import type { Metadata } from 'next'
+import Image from 'next/image'
 import StructuredData from '@shared/StructuredData'
 import { articleSchema, breadcrumbSchema } from 'utils/structuredData'
 
@@ -172,7 +173,16 @@ export default function BlogPostPage(props: { params: { slug: string } }) {
         </header>
 
         {post.featured_image_url && (
-          <img src={post.featured_image_url} alt={post.title} className="featured-image" />
+          <Image
+            src={post.featured_image_url}
+            alt={post.title}
+            width={1200}
+            height={630}
+            className="featured-image"
+            style={{ width: '100%', height: 'auto' }}
+            sizes="(max-width: 768px) 100vw, 800px"
+            priority
+          />
         )}
 
         <div className="content">{post.content}</div>

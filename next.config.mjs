@@ -23,16 +23,24 @@ const nextConfig = {
   pageExtensions: ['tsx', 'ts', 'jsx', 'js', 'mdx', 'md'],
   trailingSlash: false,
   reactStrictMode: true,
+  swcMinify: true,
+  compress: true,
   images: {
     minimumCacheTTL: 3600,
     path: '/_next/image',
     contentDispositionType: 'attachment',
     disableStaticImages: false,
     formats: ['image/avif', 'image/webp'],
+    deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048],
+    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
     remotePatterns: [
       {
         protocol: 'https',
         hostname: 'cdn.repliers.io'
+      },
+      {
+        protocol: 'https',
+        hostname: '*.repliers.io'
       }
     ]
   },

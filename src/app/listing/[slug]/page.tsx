@@ -3,6 +3,7 @@ import type React from 'react'
 
 import content from '@configs/content'
 import searchConfig from '@configs/search'
+import StructuredData from '@shared/StructuredData'
 import { Property404Template, PropertyPageTemplate } from '@templates'
 
 import { formatMetadata } from 'utils/properties'
@@ -69,16 +70,8 @@ const PropertyDetailPage = async (props: PropertyDetailPageProps) => {
 
     return (
       <>
-        {/* JSON-LD Structured Data for Property */}
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(propertyJsonLd) }}
-        />
-        {/* JSON-LD Structured Data for Breadcrumbs */}
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
-        />
+        <StructuredData data={propertyJsonLd} />
+        <StructuredData data={breadcrumbJsonLd} />
         <PropertyPageTemplate
           property={property}
           similarProperties={similarProperties}

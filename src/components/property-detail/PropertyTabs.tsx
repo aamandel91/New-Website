@@ -1,7 +1,8 @@
 'use client'
 
 import React, { useState } from 'react'
-import { Box, Tabs, Tab, Paper } from '@mui/material'
+import dynamic from 'next/dynamic'
+import { Box, Tabs, Tab, Paper, Skeleton } from '@mui/material'
 import type { Property } from 'services/API'
 
 import PropertyDescription from './PropertyDescription'
@@ -13,13 +14,21 @@ import PropertyHistory from './PropertyHistory'
 import PropertyTaxHistory from './PropertyTaxHistory'
 import PropertyLocation from './PropertyLocation'
 import PropertyNeighborhood from './PropertyNeighborhood'
-import PropertyComparables from './PropertyComparables'
-import PropertyMortgageCalculator from './PropertyMortgageCalculator'
 import SimilarProperties from './SimilarProperties'
 import RelatedPages from './RelatedPages'
 import MoreProperties from './MoreProperties'
 import RelatedBlogs from './RelatedBlogs'
 import PropertyPublicRecords from './PropertyPublicRecords'
+
+const PropertyComparables = dynamic(() => import('./PropertyComparables'), {
+  ssr: false,
+  loading: () => <Skeleton variant="rectangular" height={400} sx={{ borderRadius: 1 }} />,
+})
+
+const PropertyMortgageCalculator = dynamic(() => import('./PropertyMortgageCalculator'), {
+  ssr: false,
+  loading: () => <Skeleton variant="rectangular" height={500} sx={{ borderRadius: 1 }} />,
+})
 
 interface PropertyTabsProps {
   property: Property

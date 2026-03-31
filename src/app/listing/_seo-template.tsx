@@ -12,6 +12,7 @@
  */
 
 import type { Metadata } from 'next'
+import Image from 'next/image'
 import StructuredData from '@shared/StructuredData'
 import { propertySchema, breadcrumbSchema } from 'utils/structuredData'
 
@@ -187,7 +188,15 @@ export default function ListingPage(props: {
           <span>{property.bathrooms} Baths</span>
           <span>{property.squareFeet.toLocaleString()} Sq Ft</span>
         </div>
-        <img src={property.featured_image_url} alt={property.title} />
+        <Image
+          src={property.featured_image_url}
+          alt={property.title}
+          width={1200}
+          height={630}
+          style={{ width: '100%', height: 'auto' }}
+          sizes="(max-width: 768px) 100vw, 800px"
+          priority
+        />
         <p>{property.description}</p>
         <div className="agent-info">
           <p>Listed by: {property.agent_name}</p>
