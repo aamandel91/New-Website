@@ -14,6 +14,7 @@ import PropertyContactForm from './PropertyContactForm'
 import PropertyTabs from './PropertyTabs'
 import Property3DTour from './Property3DTour'
 import HomeWorthCheckCTA from './HomeWorthCheckCTA'
+import MobileContactBar from './MobileContactBar'
 
 interface PropertyDetailLayoutProps {
   property: Property
@@ -123,7 +124,7 @@ const PropertyDetailLayout: React.FC<PropertyDetailLayoutProps> = ({
       {/* Full-width Photo Gallery */}
       <PropertyPhotoGallery photos={photos} propertyAddress={propertyAddress} />
 
-      <Container maxWidth="xl" sx={{ py: 4 }}>
+      <Container maxWidth="xl" sx={{ py: 4, pb: { xs: 10, lg: 4 } }}>
         {/* Breadcrumbs */}
         <PropertyBreadcrumbs
           state={address.state}
@@ -182,8 +183,8 @@ const PropertyDetailLayout: React.FC<PropertyDetailLayoutProps> = ({
             </Box>
           </Grid>
 
-          {/* Right Column - 1/3 width, Sticky */}
-          <Grid item xs={12} lg={4}>
+          {/* Right Column - 1/3 width, Sticky (desktop only) */}
+          <Grid item xs={12} lg={4} sx={{ display: { xs: 'none', lg: 'block' } }}>
             <Box
               id="contact-form"
               sx={{
@@ -201,6 +202,13 @@ const PropertyDetailLayout: React.FC<PropertyDetailLayoutProps> = ({
           </Grid>
         </Grid>
       </Container>
+
+      {/* Mobile Sticky Contact Bar + Modal */}
+      <MobileContactBar
+        propertyAddress={propertyAddress}
+        agent={agent}
+        onSubmit={handleContactSubmit}
+      />
     </Box>
   )
 }
