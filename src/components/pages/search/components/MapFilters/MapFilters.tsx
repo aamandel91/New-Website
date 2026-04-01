@@ -66,8 +66,27 @@ const MapFilters = () => {
   const handleTypeChange = (value: ListingType) =>
     setFilter('listingType', value)
 
+  const secondaryActions = (
+    <>
+      <AdvancedFiltersButton size={size} />
+      <FilterToggleChips size={size} />
+      {features.saveSearch && <SaveSearchButton size={size} />}
+      {features.aiSearch && <AiSearchButton size={size} />}
+      {features.aiSpaces && (
+        <DesktopOnly>
+          <AiSpacesSelect size={size} />
+        </DesktopOnly>
+      )}
+      {features.aiChat && (
+        <DesktopOnly>
+          <AiChat />
+        </DesktopOnly>
+      )}
+    </>
+  )
+
   return (
-    <MapFiltersBar rightSlot={<LayoutSelect />}>
+    <MapFiltersBar rightSlot={<LayoutSelect />} secondarySlot={secondaryActions}>
       {features.search && features.searchPosition === 'filters' && (
         <AutosuggestionField />
       )}
@@ -92,31 +111,6 @@ const MapFilters = () => {
         }
       />
 
-      <AdvancedFiltersButton size={size} />
-
-      <FilterToggleChips size={size} />
-
-      {features.saveSearch && <SaveSearchButton size={size} />}
-
-      {features.aiSearch && <AiSearchButton size={size} />}
-
-      {/* {features.aiQuality && (
-            <DesktopOnly>
-              <AiQualityButton size={size} />
-            </DesktopOnly>
-          )} */}
-
-      {features.aiSpaces && (
-        <DesktopOnly>
-          <AiSpacesSelect size={size} />
-        </DesktopOnly>
-      )}
-
-      {features.aiChat && (
-        <DesktopOnly>
-          <AiChat />
-        </DesktopOnly>
-      )}
       <Suspense>
         {features.aiSearch && <AiSearchDialog />}
         <AdvancedFiltersDialog />

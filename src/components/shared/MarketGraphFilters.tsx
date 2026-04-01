@@ -30,9 +30,10 @@ const BATHS_OPTIONS = ['Any', '1+', '2+', '3+', '4+']
 const PROPERTY_TYPES = [
   { value: '', label: 'All Types' },
   { value: 'Detached', label: 'Single Family' },
-  { value: 'Semi-Detached', label: 'Semi-Detached' },
-  { value: 'Townhouse', label: 'Townhouse' },
   { value: 'Condo Apt', label: 'Condo' },
+  { value: 'Townhouse', label: 'Townhouse' },
+  { value: 'Villa', label: 'Villa' },
+  { value: 'Multi-Family', label: 'Multi-Family' },
 ]
 
 const MarketGraphFilters: React.FC<MarketGraphFiltersProps> = ({
