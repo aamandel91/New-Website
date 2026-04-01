@@ -1,12 +1,17 @@
+import crypto from 'node:crypto'
+import { promisify } from 'node:util'
 import Router from "@koa/router";
 import { container } from "tsyringe";
-import { Middleware } from "koa-jwt";
+import type { Middleware } from "koa-jwt";
+import type { Knex } from 'knex';
 import { ApiError } from "../lib/errors.js";
-import { RoleMiddlewareCreator } from "../providers/middleware/role.js";
+import type { RoleMiddlewareCreator } from "../providers/middleware/role.js";
 import { UserRole } from "../constants.js";
 import AdminService from "../services/admin.js";
 import AdminSettingsService from "../services/adminSettings.js";
 import { adminCreateAgentBatchSchema, adminUpdateAgentSchema, adminGetAgentsSchema } from "../validate/admin.js";
+
+const scryptAsync = promisify(crypto.scrypt);
 const router = new Router({
    prefix: "/admin"
 });
@@ -116,6 +121,91 @@ router.patch('/settings/organic/registration', async ctx => {
    }
    const userEmail = ctx.state.user?.email;
    ctx.body = await adminSettingsService.updateOrganicRegistrationSettings({ enabled, viewThreshold }, userEmail);
+});
+
+// Admin Users Management
+router.get('/users', async ctx => {
+   const db = ctx.state.container.resolve<Knex>('db');
+   const users = await db('admin_users')
+      .select('id', 'email', 'first_name', 'last_name', 'role', 'created_at', 'updated_at')
+      .orderBy('created_at', 'desc');
+   ctx.body = users;
+});
+
+router.post('/users', async ctx => {
+   const { email, password, first_name, last_name, role } = ctx.request.body as {
+      email?: string;
+      password?: string;
+      first_name?: string;
+      last_name?: string;
+      role?: string;
+   };
+   if (!email || !password) {
+      ctx.throw(new ApiError('Email and password are required', 400));
+      return;
+   }
+   const db = ctx.state.container.resolve<Knex>('db');
+   const existing = await db('admin_users').where({ email: email.toLowerCase() }).first();
+   if (existing) {
+      ctx.throw(new ApiError('User with this email already exists', 409));
+      return;
+   }
+   const salt = crypto.randomBytes(16).toString('hex');
+   const derived = (await scryptAsync(password, salt, 64)) as Buffer;
+   const passwordHash = `${salt}:${derived.toString('hex')}`;
+   const [user] = await db('admin_users')
+      .insert({
+         email: email.toLowerCase(),
+         password_hash: passwordHash,
+         first_name: first_name || null,
+         last_name: last_name || null,
+         role: role || 'admin'
+      })
+      .returning(['id', 'email', 'first_name', 'last_name', 'role', 'created_at']);
+   ctx.status = 201;
+   ctx.body = user;
+});
+
+router.patch('/users/:id', async ctx => {
+   const { id } = ctx.params;
+   const { email, password, first_name, last_name, role } = ctx.request.body as {
+      email?: string;
+      password?: string;
+      first_name?: string;
+      last_name?: string;
+      role?: string;
+   };
+   const db = ctx.state.container.resolve<Knex>('db');
+   const updates: Record<string, unknown> = { updated_at: db.fn.now() };
+   if (email) updates['email'] = email.toLowerCase();
+   if (first_name !== undefined) updates['first_name'] = first_name;
+   if (last_name !== undefined) updates['last_name'] = last_name;
+   if (role) updates['role'] = role;
+   if (password) {
+      const salt = crypto.randomBytes(16).toString('hex');
+      const derived = (await scryptAsync(password, salt, 64)) as Buffer;
+      updates['password_hash'] = `${salt}:${derived.toString('hex')}`;
+   }
+   const [user] = await db('admin_users')
+      .where({ id })
+      .update(updates)
+      .returning(['id', 'email', 'first_name', 'last_name', 'role', 'created_at', 'updated_at']);
+   if (!user) {
+      ctx.throw(new ApiError('User not found', 404));
+      return;
+   }
+   ctx.body = user;
+});
+
+router.delete('/users/:id', async ctx => {
+   const { id } = ctx.params;
+   const db = ctx.state.container.resolve<Knex>('db');
+   const deleted = await db('admin_users').where({ id }).del();
+   if (!deleted) {
+      ctx.throw(new ApiError('User not found', 404));
+      return;
+   }
+   ctx.body = { result: true };
 });
 
 export default router;

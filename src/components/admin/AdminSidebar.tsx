@@ -31,6 +31,7 @@ import {
   Security as SecurityIcon,
   DynamicFeed as PageGenIcon,
   Navigation as NavigationIcon,
+  AdminPanelSettings as AdminUsersIcon,
   ExpandLess,
   ExpandMore
 } from '@mui/icons-material'
@@ -65,6 +66,7 @@ const navItems: NavItem[] = [
       { title: 'AI Content', path: '/admin/ai-content', icon: <AutoAwesomeIcon /> }
     ]
   },
+  { title: 'Users', path: '/admin/users', icon: <AdminUsersIcon /> },
   { title: 'Settings', path: '/admin/settings', icon: <SettingsIcon /> },
   { title: 'Analytics', path: '/admin/analytics', icon: <BarChartIcon /> }
 ]

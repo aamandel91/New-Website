@@ -52,7 +52,7 @@ export const getFiltersFromSavedSearch = (data: ApiSavedSearch): Filters => {
 }
 
 export const getFiltersFromParams = (searchParams: SearchParams): Filters => {
-  const filters = Object.fromEntries(
+  const filters: Record<string, any> = Object.fromEntries(
     Object.keys(defaultFilters).map((key) => [
       key,
       searchParams[key as keyof SearchParams] ||
@@ -68,5 +68,16 @@ export const getFiltersFromParams = (searchParams: SearchParams): Filters => {
     }
   })
 
-  return filters
+  // Map hero search params to API-compatible filter fields
+  if (searchParams.location) {
+    filters['area'] = searchParams.location
+  }
+  if (searchParams.minPrice) {
+    filters['minPrice'] = Number(searchParams.minPrice)
+  }
+  if (searchParams.maxPrice) {
+    filters['maxPrice'] = Number(searchParams.maxPrice)
+  }
+
+  return filters as Filters
 }

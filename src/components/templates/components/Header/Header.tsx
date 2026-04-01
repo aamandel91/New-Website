@@ -86,7 +86,7 @@ const Header = () => {
                   <Autosuggestion />
                 </AutosuggestionContainer>
               )}
-              <NavLink label="Search" href={routes.search} />
+              <NavLink label="Search" href="/search/advanced" />
               <NavDropdown label="Cities" items={cityItems} />
               <NavDropdown label="Counties" items={countyItems} />
               <NavDropdown label="Property Type" items={propertyTypeItems} />

@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { Box, IconButton, useMediaQuery, useTheme } from '@mui/material'
 import { Menu as MenuIcon } from '@mui/icons-material'
 import { useUser } from '@/providers/UserProvider'
@@ -11,17 +11,25 @@ import AdminHeader from '@/components/admin/AdminHeader'
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const { logged, adminRole, loading } = useUser()
   const router = useRouter()
+  const pathname = usePathname()
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down('md'))
   const [mobileOpen, setMobileOpen] = useState(false)
 
+  const isLoginPage = pathname === '/admin/login'
+
   useEffect(() => {
+    if (isLoginPage) return
     if (!loading && !logged) {
-      router.push('/login')
+      router.push('/admin/login')
     } else if (!loading && logged && !adminRole) {
       router.push('/403')
     }
-  }, [logged, adminRole, loading, router])
+  }, [logged, adminRole, loading, router, isLoginPage])
+
+  if (isLoginPage) {
+    return <>{children}</>
+  }
 
   if (loading) {
     return (

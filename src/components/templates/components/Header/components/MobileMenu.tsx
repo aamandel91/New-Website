@@ -105,7 +105,7 @@ const MobileMenu = () => {
           </Box>
 
           <Stack spacing={0.5}>
-            <Link href={routes.search} onClick={handleClose} sx={MOBILE_LINK_SX}>
+            <Link href="/search/advanced" onClick={handleClose} sx={MOBILE_LINK_SX}>
               Search
             </Link>
 

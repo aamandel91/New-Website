@@ -1,6 +1,9 @@
+import crypto from 'node:crypto'
+import { promisify } from 'node:util'
 import Router from '@koa/router'
 import { container } from 'tsyringe'
 import type { Middleware } from 'koa-jwt'
+import type { Knex } from 'knex'
 import AuthService from '../services/auth.js'
 import { ApiError } from '../lib/errors.js'
 import {
@@ -12,6 +15,9 @@ import {
 } from '../validate/auth.js'
 import OAuthService from '../services/oauth.js'
 import { oauthUrlSchema } from '../validate/oauth.js'
+import { UserRole } from '../constants.js'
+
+const scryptAsync = promisify(crypto.scrypt)
 const authMiddleware = container.resolve<Middleware>('middleware.jwt')
 const router = new Router({
   prefix: '/auth'
@@ -410,4 +416,48 @@ router.post('/embed', async (ctx) => {
     result
   }
 })
+
+router.post('/admin-login', async (ctx) => {
+  const { email, password } = ctx.request.body as { email?: string; password?: string }
+  if (!email || !password) {
+    ctx.throw(new ApiError('Email and password are required', 400))
+    return
+  }
+
+  const db = ctx.state.container.resolve<Knex>('db')
+  const user = await db('admin_users').where({ email: email.toLowerCase() }).first()
+
+  if (!user) {
+    ctx.throw(new ApiError('Invalid credentials', 401))
+    return
+  }
+
+  const parts = (user.password_hash as string).split(':')
+  const salt = parts[0] as string
+  const storedHash = parts[1] as string
+  const derived = (await scryptAsync(password, salt, 64)) as Buffer
+  if (derived.toString('hex') !== storedHash) {
+    ctx.throw(new ApiError('Invalid credentials', 401))
+    return
+  }
+
+  const authService = ctx.state.container.resolve(AuthService)
+  const token = await authService.generateToken({
+    email: user.email,
+    sub: user.id.toString(),
+    role: UserRole.Admin
+  })
+
+  ctx.body = {
+    token,
+    profile: {
+      id: user.id,
+      email: user.email,
+      fname: user.first_name,
+      lname: user.last_name,
+      role: user.role
+    }
+  }
+})
+
 export default router
