@@ -1,8 +1,9 @@
 import Router from '@koa/router'
-import { Context } from 'koa'
+import { container } from 'tsyringe'
+import type { Middleware } from 'koa-jwt'
 import { NavigationService } from '../services/navigation.js'
-import { requireAuth } from '../providers/middleware/auth.js'
-import { requireAdmin } from '../providers/middleware/adminRole.js'
+import { RoleMiddlewareCreator } from '../providers/middleware/role.js'
+import { UserRole } from '../constants.js'
 import type {
   CreateNavigationItemInput,
   UpdateNavigationItemInput,
@@ -12,12 +13,14 @@ import type {
 const router = new Router({
   prefix: '/navigation'
 })
+const authMiddleware = container.resolve<Middleware>("middleware.jwt")
+const roleMiddleware = container.resolve<RoleMiddlewareCreator>("middleware.role")
 
 /**
  * GET /api/navigation
  * Get all navigation items with optional filters
  */
-router.get('/', async (ctx: Context) => {
+router.get('/', async (ctx) => {
   const service = ctx.state.container.resolve(NavigationService)
   const orgId = ctx.state.orgId
 
@@ -39,7 +42,7 @@ router.get('/', async (ctx: Context) => {
  * GET /api/navigation/:id
  * Get navigation item by ID
  */
-router.get('/:id', requireAuth, requireAdmin, async (ctx: Context) => {
+router.get('/:id', authMiddleware, roleMiddleware([UserRole.Admin, UserRole.Root]), async (ctx) => {
   const service = ctx.state.container.resolve(NavigationService)
   const orgId = ctx.state.orgId
   const id = BigInt(ctx.params.id)
@@ -59,7 +62,7 @@ router.get('/:id', requireAuth, requireAdmin, async (ctx: Context) => {
  * POST /api/navigation
  * Create a new navigation item
  */
-router.post('/', requireAuth, requireAdmin, async (ctx: Context) => {
+router.post('/', authMiddleware, roleMiddleware([UserRole.Admin, UserRole.Root]), async (ctx) => {
   const service = ctx.state.container.resolve(NavigationService)
   const orgId = ctx.state.orgId
   const input = ctx.request.body as CreateNavigationItemInput
@@ -73,7 +76,7 @@ router.post('/', requireAuth, requireAdmin, async (ctx: Context) => {
  * PATCH /api/navigation/:id
  * Update a navigation item
  */
-router.patch('/:id', requireAuth, requireAdmin, async (ctx: Context) => {
+router.patch('/:id', authMiddleware, roleMiddleware([UserRole.Admin, UserRole.Root]), async (ctx) => {
   const service = ctx.state.container.resolve(NavigationService)
   const orgId = ctx.state.orgId
   const id = BigInt(ctx.params.id)
@@ -87,7 +90,7 @@ router.patch('/:id', requireAuth, requireAdmin, async (ctx: Context) => {
  * DELETE /api/navigation/:id
  * Delete a navigation item
  */
-router.delete('/:id', requireAuth, requireAdmin, async (ctx: Context) => {
+router.delete('/:id', authMiddleware, roleMiddleware([UserRole.Admin, UserRole.Root]), async (ctx) => {
   const service = ctx.state.container.resolve(NavigationService)
   const orgId = ctx.state.orgId
   const id = BigInt(ctx.params.id)
@@ -100,7 +103,7 @@ router.delete('/:id', requireAuth, requireAdmin, async (ctx: Context) => {
  * POST /api/navigation/reorder
  * Reorder navigation items
  */
-router.post('/reorder', requireAuth, requireAdmin, async (ctx: Context) => {
+router.post('/reorder', authMiddleware, roleMiddleware([UserRole.Admin, UserRole.Root]), async (ctx) => {
   const service = ctx.state.container.resolve(NavigationService)
   const orgId = ctx.state.orgId
   const { position, itemIds } = ctx.request.body as {
@@ -126,7 +129,7 @@ router.post('/reorder', requireAuth, requireAdmin, async (ctx: Context) => {
  * POST /api/navigation/:id/duplicate
  * Duplicate a navigation item
  */
-router.post('/:id/duplicate', requireAuth, requireAdmin, async (ctx: Context) => {
+router.post('/:id/duplicate', authMiddleware, roleMiddleware([UserRole.Admin, UserRole.Root]), async (ctx) => {
   const service = ctx.state.container.resolve(NavigationService)
   const orgId = ctx.state.orgId
   const id = BigInt(ctx.params.id)
@@ -140,7 +143,7 @@ router.post('/:id/duplicate', requireAuth, requireAdmin, async (ctx: Context) =>
  * POST /api/navigation/:id/toggle-visibility
  * Toggle visibility of a navigation item
  */
-router.post('/:id/toggle-visibility', requireAuth, requireAdmin, async (ctx: Context) => {
+router.post('/:id/toggle-visibility', authMiddleware, roleMiddleware([UserRole.Admin, UserRole.Root]), async (ctx) => {
   const service = ctx.state.container.resolve(NavigationService)
   const orgId = ctx.state.orgId
   const id = BigInt(ctx.params.id)

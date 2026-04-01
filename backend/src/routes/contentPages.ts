@@ -1,8 +1,9 @@
 import Router from '@koa/router'
-import { Context } from 'koa'
+import { container } from 'tsyringe'
+import type { Middleware } from 'koa-jwt'
 import { ContentPagesService } from '../services/contentPages.js'
-import { requireAuth } from '../providers/middleware/auth.js'
-import { requireAdmin } from '../providers/middleware/adminRole.js'
+import { RoleMiddlewareCreator } from '../providers/middleware/role.js'
+import { UserRole } from '../constants.js'
 import type {
   CreateContentPageInput,
   UpdateContentPageInput,
@@ -12,12 +13,14 @@ import type {
 const router = new Router({
   prefix: '/content-pages'
 })
+const authMiddleware = container.resolve<Middleware>("middleware.jwt")
+const roleMiddleware = container.resolve<RoleMiddlewareCreator>("middleware.role")
 
 /**
  * GET /api/content-pages
  * Get all content pages with optional filters
  */
-router.get('/', requireAuth, async (ctx: Context) => {
+router.get('/', authMiddleware, async (ctx) => {
   const service = ctx.state.container.resolve(ContentPagesService)
   const orgId = ctx.state.orgId
 
@@ -34,7 +37,7 @@ router.get('/', requireAuth, async (ctx: Context) => {
  * GET /api/content-pages/templates
  * Get all page templates
  */
-router.get('/templates', requireAuth, async (ctx: Context) => {
+router.get('/templates', authMiddleware, async (ctx) => {
   const service = ctx.state.container.resolve(ContentPagesService)
   const orgId = ctx.state.orgId
 
@@ -46,7 +49,7 @@ router.get('/templates', requireAuth, async (ctx: Context) => {
  * GET /api/content-pages/slug/:slug
  * Get page by slug
  */
-router.get('/slug/:slug', async (ctx: Context) => {
+router.get('/slug/:slug', async (ctx) => {
   const service = ctx.state.container.resolve(ContentPagesService)
   const orgId = ctx.state.orgId
   const { slug } = ctx.params
@@ -66,7 +69,7 @@ router.get('/slug/:slug', async (ctx: Context) => {
  * GET /api/content-pages/:id
  * Get page by ID
  */
-router.get('/:id', requireAuth, async (ctx: Context) => {
+router.get('/:id', authMiddleware, async (ctx) => {
   const service = ctx.state.container.resolve(ContentPagesService)
   const orgId = ctx.state.orgId
   const id = BigInt(ctx.params.id)
@@ -86,7 +89,7 @@ router.get('/:id', requireAuth, async (ctx: Context) => {
  * POST /api/content-pages
  * Create a new page
  */
-router.post('/', requireAuth, requireAdmin, async (ctx: Context) => {
+router.post('/', authMiddleware, roleMiddleware([UserRole.Admin, UserRole.Root]), async (ctx) => {
   const service = ctx.state.container.resolve(ContentPagesService)
   const orgId = ctx.state.orgId
   const input = ctx.request.body as CreateContentPageInput
@@ -100,7 +103,7 @@ router.post('/', requireAuth, requireAdmin, async (ctx: Context) => {
  * PATCH /api/content-pages/:id
  * Update a page
  */
-router.patch('/:id', requireAuth, requireAdmin, async (ctx: Context) => {
+router.patch('/:id', authMiddleware, roleMiddleware([UserRole.Admin, UserRole.Root]), async (ctx) => {
   const service = ctx.state.container.resolve(ContentPagesService)
   const orgId = ctx.state.orgId
   const id = BigInt(ctx.params.id)
@@ -114,7 +117,7 @@ router.patch('/:id', requireAuth, requireAdmin, async (ctx: Context) => {
  * DELETE /api/content-pages/:id
  * Delete a page
  */
-router.delete('/:id', requireAuth, requireAdmin, async (ctx: Context) => {
+router.delete('/:id', authMiddleware, roleMiddleware([UserRole.Admin, UserRole.Root]), async (ctx) => {
   const service = ctx.state.container.resolve(ContentPagesService)
   const orgId = ctx.state.orgId
   const id = BigInt(ctx.params.id)
@@ -127,7 +130,7 @@ router.delete('/:id', requireAuth, requireAdmin, async (ctx: Context) => {
  * POST /api/content-pages/:id/publish
  * Publish a page
  */
-router.post('/:id/publish', requireAuth, requireAdmin, async (ctx: Context) => {
+router.post('/:id/publish', authMiddleware, roleMiddleware([UserRole.Admin, UserRole.Root]), async (ctx) => {
   const service = ctx.state.container.resolve(ContentPagesService)
   const orgId = ctx.state.orgId
   const id = BigInt(ctx.params.id)
@@ -140,7 +143,7 @@ router.post('/:id/publish', requireAuth, requireAdmin, async (ctx: Context) => {
  * POST /api/content-pages/:id/duplicate
  * Duplicate a page from template
  */
-router.post('/:id/duplicate', requireAuth, requireAdmin, async (ctx: Context) => {
+router.post('/:id/duplicate', authMiddleware, roleMiddleware([UserRole.Admin, UserRole.Root]), async (ctx) => {
   const service = ctx.state.container.resolve(ContentPagesService)
   const orgId = ctx.state.orgId
   const templateId = BigInt(ctx.params.id)

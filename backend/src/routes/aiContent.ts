@@ -1,9 +1,10 @@
 import Router from '@koa/router'
-import { Context } from 'koa'
+import { container } from 'tsyringe'
+import type { Middleware } from 'koa-jwt'
 import { AIContentService } from '../services/aiContent.js'
 import { BulkPageGenerationService } from '../services/bulkPageGeneration.js'
-import { requireAuth } from '../providers/middleware/auth.js'
-import { requireAdmin } from '../providers/middleware/adminRole.js'
+import { RoleMiddlewareCreator } from '../providers/middleware/role.js'
+import { UserRole } from '../constants.js'
 import type {
   AIBlogPostRequest,
   AIPageContentRequest,
@@ -13,12 +14,14 @@ import type {
 const router = new Router({
   prefix: '/ai-content'
 })
+const authMiddleware = container.resolve<Middleware>("middleware.jwt")
+const roleMiddleware = container.resolve<RoleMiddlewareCreator>("middleware.role")
 
 /**
  * POST /api/ai-content/blog
  * Generate a blog post with AI
  */
-router.post('/blog', requireAuth, requireAdmin, async (ctx: Context) => {
+router.post('/blog', authMiddleware, roleMiddleware([UserRole.Admin, UserRole.Root]), async (ctx) => {
   const service = ctx.state.container.resolve(AIContentService)
   const request = ctx.request.body as AIBlogPostRequest
 
@@ -36,7 +39,7 @@ router.post('/blog', requireAuth, requireAdmin, async (ctx: Context) => {
  * POST /api/ai-content/keywords
  * Suggest keywords for a topic
  */
-router.post('/keywords', requireAuth, requireAdmin, async (ctx: Context) => {
+router.post('/keywords', authMiddleware, roleMiddleware([UserRole.Admin, UserRole.Root]), async (ctx) => {
   const service = ctx.state.container.resolve(AIContentService)
   const { topic, city } = ctx.request.body as { topic: string; city?: string }
 
@@ -54,7 +57,7 @@ router.post('/keywords', requireAuth, requireAdmin, async (ctx: Context) => {
  * POST /api/ai-content/page
  * Generate page content with AI
  */
-router.post('/page', requireAuth, requireAdmin, async (ctx: Context) => {
+router.post('/page', authMiddleware, roleMiddleware([UserRole.Admin, UserRole.Root]), async (ctx) => {
   const service = ctx.state.container.resolve(AIContentService)
   const request = ctx.request.body as AIPageContentRequest
 
@@ -72,7 +75,7 @@ router.post('/page', requireAuth, requireAdmin, async (ctx: Context) => {
  * POST /api/ai-content/batch
  * Generate multiple pages with AI
  */
-router.post('/batch', requireAuth, requireAdmin, async (ctx: Context) => {
+router.post('/batch', authMiddleware, roleMiddleware([UserRole.Admin, UserRole.Root]), async (ctx) => {
   const service = ctx.state.container.resolve(AIContentService)
   const { requests } = ctx.request.body as { requests: AIPageContentRequest[] }
 
@@ -96,7 +99,7 @@ router.post('/batch', requireAuth, requireAdmin, async (ctx: Context) => {
  * POST /api/ai-content/bulk-pages/preview
  * Preview bulk page generation
  */
-router.post('/bulk-pages/preview', requireAuth, requireAdmin, async (ctx: Context) => {
+router.post('/bulk-pages/preview', authMiddleware, roleMiddleware([UserRole.Admin, UserRole.Root]), async (ctx) => {
   const service = ctx.state.container.resolve(BulkPageGenerationService)
   const request = ctx.request.body as BulkPageGenerationRequest
 
@@ -114,7 +117,7 @@ router.post('/bulk-pages/preview', requireAuth, requireAdmin, async (ctx: Contex
  * POST /api/ai-content/bulk-pages/generate
  * Generate pages in bulk
  */
-router.post('/bulk-pages/generate', requireAuth, requireAdmin, async (ctx: Context) => {
+router.post('/bulk-pages/generate', authMiddleware, roleMiddleware([UserRole.Admin, UserRole.Root]), async (ctx) => {
   const service = ctx.state.container.resolve(BulkPageGenerationService)
   const orgId = ctx.state.orgId
   const request = ctx.request.body as BulkPageGenerationRequest

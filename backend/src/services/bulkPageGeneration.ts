@@ -1,4 +1,5 @@
 import { injectable, inject } from 'tsyringe'
+import type { Knex } from 'knex'
 import { ContentPagesRepository } from '../repository/contentPages.js'
 import { AIContentService } from './aiContent.js'
 import type {
@@ -10,7 +11,6 @@ import type {
   BulkPageGenerationResult
 } from '../types/aiContent.js'
 import { ApiError } from '../lib/errors.js'
-import knex from '../db/knex.js'
 
 interface LocationData {
   id: number
@@ -29,6 +29,7 @@ interface PropertyTypeData {
 @injectable()
 export class BulkPageGenerationService {
   constructor(
+    @inject('db') private db: Knex,
     @inject(ContentPagesRepository) private pagesRepo: ContentPagesRepository,
     @inject(AIContentService) private aiService: AIContentService
   ) {}
@@ -98,9 +99,9 @@ export class BulkPageGenerationService {
    */
   private async getCitiesData(ids: number[]): Promise<LocationData[]> {
     // This assumes you have a cities table or can query from listings
-    const cities = await knex('listings')
+    const cities = await this.db('listings')
       .select('city as name')
-      .select(knex.raw('ROW_NUMBER() OVER (ORDER BY city) as id'))
+      .select(this.db.raw('ROW_NUMBER() OVER (ORDER BY city) as id'))
       .whereIn('city', ids.map((id) => id.toString()))
       .groupBy('city')
       .limit(100)
@@ -116,10 +117,10 @@ export class BulkPageGenerationService {
    * Get zip codes data
    */
   private async getZipCodesData(ids: number[]): Promise<LocationData[]> {
-    const zipCodes = await knex('listings')
+    const zipCodes = await this.db('listings')
       .select('postal_code as name')
       .select('city')
-      .select(knex.raw('ROW_NUMBER() OVER (ORDER BY postal_code) as id'))
+      .select(this.db.raw('ROW_NUMBER() OVER (ORDER BY postal_code) as id'))
       .whereIn('postal_code', ids.map((id) => id.toString()))
       .groupBy('postal_code', 'city')
       .limit(100)
@@ -137,10 +138,10 @@ export class BulkPageGenerationService {
    */
   private async getNeighborhoodsData(ids: number[]): Promise<LocationData[]> {
     // Assuming you have neighborhood data in listings or a separate table
-    const neighborhoods = await knex('listings')
+    const neighborhoods = await this.db('listings')
       .select('area as name')
       .select('city')
-      .select(knex.raw('ROW_NUMBER() OVER (ORDER BY area) as id'))
+      .select(this.db.raw('ROW_NUMBER() OVER (ORDER BY area) as id'))
       .whereIn('area', ids.map((id) => id.toString()))
       .whereNotNull('area')
       .groupBy('area', 'city')

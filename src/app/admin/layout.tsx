@@ -1,15 +1,19 @@
 'use client'
 
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Box } from '@mui/material'
+import { Box, IconButton, useMediaQuery, useTheme } from '@mui/material'
+import { Menu as MenuIcon } from '@mui/icons-material'
 import { useUser } from '@/providers/UserProvider'
-import AdminSidebar from '@/components/admin/AdminSidebar'
+import AdminSidebar, { DRAWER_WIDTH } from '@/components/admin/AdminSidebar'
 import AdminHeader from '@/components/admin/AdminHeader'
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const { logged, adminRole, loading } = useUser()
   const router = useRouter()
+  const theme = useTheme()
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'))
+  const [mobileOpen, setMobileOpen] = useState(false)
 
   useEffect(() => {
     if (!loading && !logged) {
@@ -40,9 +44,29 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   return (
     <Box sx={{ display: 'flex', minHeight: '100vh' }}>
-      <AdminSidebar />
-      <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
-        <AdminHeader />
+      <AdminSidebar mobileOpen={mobileOpen} onMobileClose={() => setMobileOpen(false)} />
+      <Box
+        sx={{
+          flexGrow: 1,
+          display: 'flex',
+          flexDirection: 'column',
+          width: { md: `calc(100% - ${DRAWER_WIDTH}px)` }
+        }}
+      >
+        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+          {isMobile && (
+            <IconButton
+              onClick={() => setMobileOpen(true)}
+              sx={{ ml: 1 }}
+              aria-label="open navigation"
+            >
+              <MenuIcon />
+            </IconButton>
+          )}
+          <Box sx={{ flexGrow: 1 }}>
+            <AdminHeader />
+          </Box>
+        </Box>
         <Box
           component="main"
           sx={{

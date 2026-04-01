@@ -15,10 +15,9 @@ import webookRouter from './webhooks/index.js';
 import blogsRouter from './blogs.js';
 import organizationRouter from './organization.js';
 import leadsRouter from './leads.js';
-// TODO: These routes need refactoring to use tsyringe DI pattern
-// import contentPagesRouter from './contentPages.js';
-// import navigationRouter from './navigation.js';
-// import aiContentRouter from './aiContent.js';
+import contentPagesRouter from './contentPages.js';
+import navigationRouter from './navigation.js';
+import aiContentRouter from './aiContent.js';
 const router = new Router({
    prefix: "/api"
 });
@@ -38,7 +37,7 @@ router.use(webookRouter.routes(), webookRouter.allowedMethods());
 router.use(blogsRouter.routes(), blogsRouter.allowedMethods());
 router.use(organizationRouter.routes(), organizationRouter.allowedMethods());
 router.use(leadsRouter.routes(), leadsRouter.allowedMethods());
-// router.use(contentPagesRouter.routes(), contentPagesRouter.allowedMethods());
-// router.use(navigationRouter.routes(), navigationRouter.allowedMethods());
-// router.use(aiContentRouter.routes(), aiContentRouter.allowedMethods());
+router.use(contentPagesRouter.routes(), contentPagesRouter.allowedMethods());
+router.use(navigationRouter.routes(), navigationRouter.allowedMethods());
+router.use(aiContentRouter.routes(), aiContentRouter.allowedMethods());
 export default router;
