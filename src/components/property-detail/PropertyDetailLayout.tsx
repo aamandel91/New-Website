@@ -21,6 +21,7 @@ import PropertyBreadcrumbs from './PropertyBreadcrumbs'
 import PropertyContactForm from './PropertyContactForm'
 import PropertyHeader from './PropertyHeader'
 import PropertyPhotoGallery from './PropertyPhotoGallery'
+import { getCDNPath } from 'utils/urls'
 import PropertyTabs from './PropertyTabs'
 
 interface PropertyDetailLayoutProps {
@@ -52,7 +53,7 @@ const PropertyDetailLayout: React.FC<PropertyDetailLayoutProps> = ({
   // Map property photos - images is an array of strings
   const photos =
     property.images?.map((imgUrl, index) => ({
-      url: imgUrl || '',
+      url: imgUrl ? (imgUrl.startsWith('http') ? imgUrl : getCDNPath(imgUrl, 'large')) : '',
       caption: undefined,
       order: index
     })) || []
