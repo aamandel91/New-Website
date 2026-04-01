@@ -1,8 +1,15 @@
 import React, { type ComponentType } from 'react'
 import { type Metadata, type Viewport } from 'next'
+import { Montserrat } from 'next/font/google'
 import { getLocale, getMessages } from 'next-intl/server'
 
 import { GlobalStyles } from '@mui/material'
+
+const montserrat = Montserrat({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-montserrat',
+})
 
 import content from '@configs/content'
 import globalStyles from '@configs/theme/global'
@@ -46,7 +53,7 @@ const Layout = async ({ children }: { children: React.ReactNode }) => {
   const messages = await getMessages()
 
   return (
-    <html lang={locale}>
+    <html lang={locale} className={montserrat.variable}>
       <head>
         <GoogleTagManager />
         <meta

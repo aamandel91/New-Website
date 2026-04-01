@@ -5,7 +5,7 @@ import { type TypographyOptions } from '@mui/material/styles/createTypography'
 const typography: TypographyOptions = {
   htmlFontSize: 16, // HTML base font size in pixels
   fontSize: 14, // 14px to match floridahomefinder.com
-  fontFamily: ['Arial', 'Helvetica', 'sans-serif'].join(','),
+  fontFamily: ['var(--font-montserrat)', 'Montserrat', 'Arial', 'Helvetica', 'sans-serif'].join(','),
 
   h1: {
     fontWeight: 400,
