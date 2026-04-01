@@ -106,107 +106,208 @@ const CatalogFilters = ({
   }
 
   return (
-    <Stack
-      py={{ xs: 1, sm: 1.5 }}
-      width="100%"
-      spacing={1}
-      direction="row"
-      alignItems="center"
-      justifyContent="space-between"
-    >
+    <Box py={{ xs: 1, sm: 1.5 }} width="100%">
       {count > 0 && (
         <>
-          <Box sx={{ minWidth: { md: 218 } }}>
-            <ListingsCounter count={count} />
-          </Box>
+          {/* Desktop layout */}
+          <Stack
+            spacing={1}
+            direction="row"
+            alignItems="center"
+            justifyContent="space-between"
+            sx={{ display: { xs: 'none', md: 'flex' } }}
+          >
+            <Box sx={{ minWidth: 218 }}>
+              <ListingsCounter count={count} />
+            </Box>
 
-          <Stack spacing={1} direction="row">
-            {clientSide ? (
-              <ListingTypeSelect
-                size={size}
-                value={listingType!}
-                onChange={handleTypeChange}
-              />
-            ) : (
-              <Skeleton variant="rounded" sx={{ width: 148, height: 48 }} />
-            )}
+            <Stack spacing={1} direction="row">
+              {clientSide ? (
+                <ListingTypeSelect
+                  size={size}
+                  value={listingType!}
+                  onChange={handleTypeChange}
+                />
+              ) : (
+                <Skeleton variant="rounded" sx={{ width: 148, height: 48 }} />
+              )}
 
-            {clientSide ? (
-              <Tabs
-                value={listingStatus || 'active'}
-                onChange={(_e, value) => handleStatusChange(value as ListingStatus)}
-                variant="scrollable"
-                scrollButtons="auto"
-                sx={{
-                  minHeight: 36,
-                  '& .MuiTab-root': {
+              {clientSide ? (
+                <Tabs
+                  value={listingStatus || 'active'}
+                  onChange={(_e, value) => handleStatusChange(value as ListingStatus)}
+                  variant="scrollable"
+                  scrollButtons="auto"
+                  sx={{
                     minHeight: 36,
-                    textTransform: 'none',
-                    fontWeight: 600,
-                    fontSize: '0.875rem',
-                    px: 2,
-                  },
-                }}
-              >
-                {statusItems.map(([value, label]) => (
-                  <Tab key={value} value={value} label={label} />
-                ))}
-              </Tabs>
-            ) : (
-              <Skeleton variant="rounded" sx={{ width: 257, height: 48 }} />
-            )}
+                    '& .MuiTab-root': {
+                      minHeight: 36,
+                      textTransform: 'none',
+                      fontWeight: 600,
+                      fontSize: '0.875rem',
+                      px: 2,
+                    },
+                  }}
+                >
+                  {statusItems.map(([value, label]) => (
+                    <Tab key={value} value={value} label={label} />
+                  ))}
+                </Tabs>
+              ) : (
+                <Skeleton variant="rounded" sx={{ width: 257, height: 48 }} />
+              )}
 
-            {clientSide && (
-              <Stack direction="row" spacing={0.5}>
-                <Button
-                  size={size}
-                  variant={priceReduced ? 'contained' : 'outlined'}
-                  onClick={handlePriceReducedToggle}
-                  sx={{
-                    whiteSpace: 'nowrap',
-                    textTransform: 'none',
-                    fontWeight: 600,
-                    fontSize: '0.8125rem',
-                    minWidth: 'auto',
-                    px: 1.5
-                  }}
-                >
-                  Price Reduced
-                </Button>
-                <Button
-                  size={size}
-                  variant={openHouses ? 'contained' : 'outlined'}
-                  onClick={handleOpenHousesToggle}
-                  sx={{
-                    whiteSpace: 'nowrap',
-                    textTransform: 'none',
-                    fontWeight: 600,
-                    fontSize: '0.8125rem',
-                    minWidth: 'auto',
-                    px: 1.5
-                  }}
-                >
-                  Open Houses
-                </Button>
-              </Stack>
-            )}
+              {clientSide && (
+                <Stack direction="row" spacing={0.5}>
+                  <Button
+                    size={size}
+                    variant={priceReduced ? 'contained' : 'outlined'}
+                    onClick={handlePriceReducedToggle}
+                    sx={{
+                      whiteSpace: 'nowrap',
+                      textTransform: 'none',
+                      fontWeight: 600,
+                      fontSize: '0.8125rem',
+                      minWidth: 'auto',
+                      px: 1.5
+                    }}
+                  >
+                    Price Reduced
+                  </Button>
+                  <Button
+                    size={size}
+                    variant={openHouses ? 'contained' : 'outlined'}
+                    onClick={handleOpenHousesToggle}
+                    sx={{
+                      whiteSpace: 'nowrap',
+                      textTransform: 'none',
+                      fontWeight: 600,
+                      fontSize: '0.8125rem',
+                      minWidth: 'auto',
+                      px: 1.5
+                    }}
+                  >
+                    Open Houses
+                  </Button>
+                </Stack>
+              )}
+            </Stack>
+
+            <Box
+              sx={{
+                minWidth: 218,
+                display: 'flex',
+                justifyContent: 'flex-end'
+              }}
+            >
+              <SortModesSelect
+                filters={searchFilters}
+                onChange={handleSortChange}
+              />
+            </Box>
           </Stack>
 
-          <Box
-            sx={{
-              minWidth: { md: 218 },
-              display: 'flex',
-              justifyContent: 'flex-end'
-            }}
-          >
-            <SortModesSelect
-              filters={searchFilters}
-              onChange={handleSortChange}
-            />
+          {/* Mobile layout */}
+          <Box sx={{ display: { xs: 'block', md: 'none' } }}>
+            {/* Top row: essential filters that wrap naturally */}
+            <Stack
+              direction="row"
+              spacing={1}
+              alignItems="center"
+              sx={{ flexWrap: 'wrap', gap: 1, mb: 1 }}
+            >
+              <ListingsCounter count={count} />
+              {clientSide ? (
+                <ListingTypeSelect
+                  size="small"
+                  value={listingType!}
+                  onChange={handleTypeChange}
+                />
+              ) : (
+                <Skeleton variant="rounded" sx={{ width: 120, height: 36 }} />
+              )}
+              <SortModesSelect
+                filters={searchFilters}
+                onChange={handleSortChange}
+              />
+            </Stack>
+
+            {/* Scrollable row: status tabs + toggle buttons */}
+            <Box
+              sx={{
+                display: 'flex',
+                overflowX: 'auto',
+                flexWrap: 'nowrap',
+                gap: 1,
+                pb: 1,
+                scrollbarWidth: 'none',
+                '&::-webkit-scrollbar': { display: 'none' },
+                '& > *': { flexShrink: 0 },
+              }}
+            >
+              {clientSide ? (
+                <Tabs
+                  value={listingStatus || 'active'}
+                  onChange={(_e, value) => handleStatusChange(value as ListingStatus)}
+                  variant="scrollable"
+                  scrollButtons={false}
+                  sx={{
+                    minHeight: 36,
+                    '& .MuiTab-root': {
+                      minHeight: 36,
+                      textTransform: 'none',
+                      fontWeight: 600,
+                      fontSize: '0.8125rem',
+                      px: 1.5,
+                    },
+                  }}
+                >
+                  {statusItems.map(([value, label]) => (
+                    <Tab key={value} value={value} label={label} />
+                  ))}
+                </Tabs>
+              ) : (
+                <Skeleton variant="rounded" sx={{ width: 200, height: 36 }} />
+              )}
+              {clientSide && (
+                <>
+                  <Button
+                    size="small"
+                    variant={priceReduced ? 'contained' : 'outlined'}
+                    onClick={handlePriceReducedToggle}
+                    sx={{
+                      whiteSpace: 'nowrap',
+                      textTransform: 'none',
+                      fontWeight: 600,
+                      fontSize: '0.8125rem',
+                      minWidth: 'auto',
+                      px: 1.5
+                    }}
+                  >
+                    Price Reduced
+                  </Button>
+                  <Button
+                    size="small"
+                    variant={openHouses ? 'contained' : 'outlined'}
+                    onClick={handleOpenHousesToggle}
+                    sx={{
+                      whiteSpace: 'nowrap',
+                      textTransform: 'none',
+                      fontWeight: 600,
+                      fontSize: '0.8125rem',
+                      minWidth: 'auto',
+                      px: 1.5
+                    }}
+                  >
+                    Open Houses
+                  </Button>
+                </>
+              )}
+            </Box>
           </Box>
         </>
       )}
-    </Stack>
+    </Box>
   )
 }
 

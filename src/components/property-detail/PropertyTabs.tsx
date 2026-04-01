@@ -204,7 +204,7 @@ const PropertyTabs: React.FC<PropertyTabsProps> = ({
 
           {/* Description */}
           {property.details?.description && (
-            <PropertyDescription description={property.details.description} />
+            <PropertyDescription description={property.details.description} address={propertyAddress} />
           )}
 
           {/* Key Facts */}
@@ -218,6 +218,7 @@ const PropertyTabs: React.FC<PropertyTabsProps> = ({
             hoa={hoa}
             annualTaxes={taxes}
             daysOnMarket={property.daysOnMarket ? parseInt(property.daysOnMarket) : undefined}
+            address={propertyAddress}
           />
 
           {/* Value Estimate */}
@@ -240,6 +241,7 @@ const PropertyTabs: React.FC<PropertyTabsProps> = ({
               : price}
             listDate={property.listDate}
             sqft={sqft}
+            address={propertyAddress}
           />
 
           {/* Tax History */}

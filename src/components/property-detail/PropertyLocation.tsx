@@ -1,6 +1,8 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
+import mapboxgl from 'mapbox-gl'
+import 'mapbox-gl/dist/mapbox-gl.css'
 import {
   Box,
   Typography,
@@ -24,6 +26,8 @@ import {
   Park as ParkIcon,
   Place as PlaceIcon,
 } from '@mui/icons-material'
+
+import mapConfig from '@configs/map'
 
 interface Coordinates {
   latitude: number
@@ -66,21 +70,45 @@ const PropertyLocation: React.FC<PropertyLocationProps> = ({
   bikescore,
 }) => {
   const [activeTab, setActiveTab] = useState(0)
+  const mapContainerRef = useRef<HTMLDivElement>(null)
+  const mapRef = useRef<mapboxgl.Map | null>(null)
 
   const fullAddress = [address.street, address.city, address.state, address.zip]
     .filter(Boolean)
     .join(', ')
 
-  // Google Maps embed URL
-  const mapEmbedUrl = `https://www.google.com/maps/embed/v1/place?key=${
-    process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || ''
-  }&q=${coordinates.latitude},${coordinates.longitude}&zoom=15`
+  // Mapbox directions link
+  const mapLinkUrl = `https://www.mapbox.com/directions?route=,${coordinates.longitude},${coordinates.latitude}`
 
-  // Google Maps link
-  const mapLinkUrl = `https://www.google.com/maps/search/?api=1&query=${coordinates.latitude},${coordinates.longitude}`
+  // Initialize Mapbox map
+  useEffect(() => {
+    if (!mapContainerRef.current || mapRef.current) return
+    if (!coordinates.latitude || !coordinates.longitude) return
 
-  // Street View URL
-  const streetViewUrl = `https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${coordinates.latitude},${coordinates.longitude}`
+    mapboxgl.accessToken = mapConfig.mapboxDefaults.accessToken || ''
+
+    const map = new mapboxgl.Map({
+      container: mapContainerRef.current,
+      style: `mapbox://styles/mapbox/${mapConfig.mapStyles.map}`,
+      center: [coordinates.longitude, coordinates.latitude],
+      zoom: mapConfig.propertyPageAddressZoom,
+      interactive: true,
+      attributionControl: false,
+    })
+
+    map.addControl(new mapboxgl.NavigationControl(), 'top-right')
+
+    new mapboxgl.Marker({ color: '#ff0000' })
+      .setLngLat([coordinates.longitude, coordinates.latitude])
+      .addTo(map)
+
+    mapRef.current = map
+
+    return () => {
+      map.remove()
+      mapRef.current = null
+    }
+  }, [coordinates.latitude, coordinates.longitude])
 
   const getPlaceIcon = (type: string) => {
     switch (type) {
@@ -152,8 +180,8 @@ const PropertyLocation: React.FC<PropertyLocationProps> = ({
 
   return (
     <Paper elevation={2} sx={{ p: 3, mb: 3 }}>
-      <Typography variant="h6" gutterBottom>
-        Location
+      <Typography variant="h5" component="h2" gutterBottom fontWeight="bold">
+        {fullAddress ? `Location of ${fullAddress}` : 'Location'}
       </Typography>
 
       {/* Address & Neighborhood Info */}
@@ -172,30 +200,19 @@ const PropertyLocation: React.FC<PropertyLocationProps> = ({
         </Box>
       </Box>
 
-      {/* Map Embed */}
+      {/* Mapbox Map */}
       <Box
+        ref={mapContainerRef}
         sx={{
-          position: 'relative',
           width: '100%',
           height: 400,
-          mb: 3,
+          mb: 2,
           borderRadius: 1,
           overflow: 'hidden',
         }}
-      >
-        <iframe
-          src={mapEmbedUrl}
-          width="100%"
-          height="100%"
-          style={{ border: 0 }}
-          allowFullScreen
-          loading="lazy"
-          referrerPolicy="no-referrer-when-downgrade"
-          title="Property location map"
-        />
-      </Box>
+      />
 
-      {/* Map Links */}
+      {/* Map Link */}
       <Box sx={{ display: 'flex', gap: 2, mb: 3 }}>
         <Link
           href={mapLinkUrl}
@@ -205,15 +222,7 @@ const PropertyLocation: React.FC<PropertyLocationProps> = ({
           sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}
         >
           <PlaceIcon fontSize="small" />
-          View on Google Maps
-        </Link>
-        <Link
-          href={streetViewUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          underline="hover"
-        >
-          Street View
+          Get Directions
         </Link>
       </Box>
 
@@ -271,8 +280,8 @@ const PropertyLocation: React.FC<PropertyLocationProps> = ({
       {/* Nearby Places */}
       {nearbyPlaces.length > 0 && (
         <>
-          <Typography variant="h6" gutterBottom sx={{ mt: 3 }}>
-            What's Nearby
+          <Typography variant="h6" component="h3" gutterBottom fontWeight="bold" sx={{ mt: 3 }}>
+            {fullAddress ? `Schools Near ${fullAddress}` : "What's Nearby"}
           </Typography>
 
           <Tabs

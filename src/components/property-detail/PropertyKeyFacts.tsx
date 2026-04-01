@@ -18,6 +18,7 @@ interface PropertyKeyFactsProps {
   hoa?: number
   annualTaxes?: number
   daysOnMarket?: number
+  address?: string
 }
 
 const PropertyKeyFacts: React.FC<PropertyKeyFactsProps> = ({
@@ -30,6 +31,7 @@ const PropertyKeyFacts: React.FC<PropertyKeyFactsProps> = ({
   hoa,
   annualTaxes,
   daysOnMarket,
+  address,
 }) => {
   const formatCurrency = (value: number): string => {
     return new Intl.NumberFormat('en-US', {
@@ -117,8 +119,8 @@ const PropertyKeyFacts: React.FC<PropertyKeyFactsProps> = ({
 
   return (
     <Paper elevation={0} sx={{ p: 3, border: '1px solid', borderColor: 'divider' }}>
-      <Typography variant="h5" gutterBottom fontWeight="bold" sx={{ mb: 2 }}>
-        Property Details
+      <Typography variant="h5" component="h2" gutterBottom fontWeight="bold" sx={{ mb: 2 }}>
+        {address ? `Property Details for ${address}` : 'Property Details'}
       </Typography>
 
       <Box>

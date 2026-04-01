@@ -20,6 +20,7 @@ interface PropertyHistoryProps {
   originalPrice?: number
   listDate?: string
   sqft?: number
+  address?: string
 }
 
 const PropertyHistory: React.FC<PropertyHistoryProps> = ({
@@ -28,6 +29,7 @@ const PropertyHistory: React.FC<PropertyHistoryProps> = ({
   originalPrice,
   listDate,
   sqft,
+  address,
 }) => {
   const formatPrice = (price: number | string | null | undefined): string => {
     if (price == null) return '—'
@@ -76,8 +78,8 @@ const PropertyHistory: React.FC<PropertyHistoryProps> = ({
   if (!history || history.length === 0) {
     return (
       <Box sx={{ py: 2 }}>
-        <Typography variant="h6" gutterBottom>
-          Price History
+        <Typography variant="h5" component="h2" gutterBottom fontWeight="bold">
+          {address ? `Price History for ${address}` : 'Price History'}
         </Typography>
         <Typography variant="body2" color="text.secondary">
           No price history available
@@ -117,8 +119,8 @@ const PropertyHistory: React.FC<PropertyHistoryProps> = ({
 
   return (
     <Box>
-      <Typography variant="h6" gutterBottom>
-        Price History
+      <Typography variant="h5" component="h2" gutterBottom fontWeight="bold">
+        {address ? `Price History for ${address}` : 'Price History'}
       </Typography>
       <TableContainer>
         <Table size="small">

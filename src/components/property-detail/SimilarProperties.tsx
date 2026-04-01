@@ -42,11 +42,13 @@ const SimilarProperties: React.FC<SimilarPropertiesProps> = ({
   const buildTitle = () => {
     if (title) return title
 
+    if (address) {
+      return `Homes Similar to ${address}`
+    }
+
     const parts = ['Similar Properties']
 
-    if (address) {
-      parts.push(`to ${address}`)
-    } else if (zipCode) {
+    if (zipCode) {
       parts.push(`in ${zipCode}`)
     } else if (city && state) {
       parts.push(`in ${city}, ${state}`)
@@ -100,7 +102,7 @@ const SimilarProperties: React.FC<SimilarPropertiesProps> = ({
           mb: 2,
         }}
       >
-        <Typography variant="h6" component="h3">{headingTitle}</Typography>
+        <Typography variant="h5" component="h2" fontWeight="bold">{headingTitle}</Typography>
         <Box sx={{ display: 'flex', gap: 1 }}>
           <IconButton
             onClick={() => scroll('left')}

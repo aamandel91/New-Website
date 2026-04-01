@@ -178,8 +178,8 @@ const PropertyContactForm: React.FC<PropertyContactFormProps> = ({
     >
       <Stack spacing={2.5}>
         {/* Header */}
-        <Typography variant="h6" fontWeight="bold">
-          Schedule a Tour
+        <Typography variant="h6" component="h3" fontWeight="bold">
+          {propertyAddress ? `Interested in ${propertyAddress}?` : 'Schedule a Tour'}
         </Typography>
 
         {/* Tour Type Toggle */}

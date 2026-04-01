@@ -214,14 +214,7 @@ const PropertyHeader: React.FC<PropertyHeaderProps> = ({
               fontSize: { xs: '1.5rem', md: '2rem' }
             }}
           >
-            {address.street}
-          </Typography>
-          <Typography
-            variant="body1"
-            color="text.secondary"
-            sx={{ fontSize: { xs: '0.875rem', md: '1rem' } }}
-          >
-            {address.city}, {address.state} {address.zip}
+            {address.street}, {address.city}, {address.state} {address.zip}
           </Typography>
         </Box>
 

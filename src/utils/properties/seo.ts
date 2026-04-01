@@ -2,25 +2,15 @@ import routes from '@configs/routes'
 import searchConfig from '@configs/search'
 
 import { type Property } from 'services/API'
-import { formatEnglishPrice } from 'utils/formatters'
 import {
   capitalize,
   joinNonEmpty,
-  pluralize,
-  removeDuplicates
 } from 'utils/strings'
 
 import { formatShortAddress } from './formatters'
 import { sanitizeAddress } from './sanitizers'
 import {
-  getBathrooms,
-  getBedrooms,
-  getLotSize,
-  getSqft,
-  land,
-  premium,
   rent,
-  scrubbed,
   sold
 } from '.'
 
@@ -64,69 +54,25 @@ export const getSeoStatus = (property: Property): string =>
   sold(property) ? 'Sold' : rent(property) ? 'For Rent' : 'For Sale'
 
 export const getSeoTitle = (property: Property): string => {
-  const { address, listPrice, soldPrice, details } = property
-  const { propertyType } = details
-  const { neighborhood, city, area, state } = address
-
-  const beds = getBedrooms(details)
-  const baths = getBathrooms(details)
-  const lotSize = getLotSize(property)
-
-  const sqft = getSqft(property)
-  const sqftString = sqft.number ? sqft.label : ''
-  const lotSizeString = land(property) && lotSize.number ? lotSize.label : ''
-
-  // NOTE: we check for the _total_ number/count of beds and baths
-  // but insert _string_ values of them (labels), which could have the formulae
-  // of regular and small-size amenities, ex: `0+1` or `3+1`
-  const bedsString = pluralize(beds.count, {
-    one: `${beds.label} bed`,
-    many: `${beds.label} beds`,
-    zero: ''
-  })
-
-  const bathsString = pluralize(baths.count, {
-    one: `${baths.label} bath`,
-    many: `${baths.label} baths`,
-    zero: ''
-  })
+  const { address, mlsNumber } = property
 
   const localAddress = formatShortAddress(address, true)
-  const stateAddress = joinNonEmpty(
-    removeDuplicates([neighborhood, city, area, state]),
-    ', '
-  )
+  const { city, state, zip } = address
 
-  const luxury = premium(property) ? 'Luxury' : ''
-
-  const typeString = getSeoType(propertyType)
-  const statusString = getSeoStatus(property)
-
-  const welcomeMessage = joinNonEmpty(
-    [luxury, typeString, statusString, 'in', stateAddress],
-    ' '
-  )
-
-  const result = joinNonEmpty(
+  const fullAddress = joinNonEmpty(
     [
-      welcomeMessage,
-      sold(property)
-        ? !scrubbed(soldPrice) && soldPrice
-          ? formatEnglishPrice(soldPrice)
-          : ''
-        : !scrubbed(listPrice) && listPrice
-          ? formatEnglishPrice(listPrice)
-          : '',
-      bedsString,
-      bathsString,
-      sqftString,
-      lotSizeString,
-      localAddress
+      localAddress,
+      capitalize(city?.toLowerCase()),
+      joinNonEmpty([capitalize(state), zip ? String(zip).toUpperCase() : ''], ' ')
     ],
     ', '
   )
 
-  return result
+  const parts = [fullAddress]
+  if (mlsNumber) parts.push(`MLS# ${mlsNumber}`)
+  parts.push('Florida Home Finder')
+
+  return parts.join(' | ')
 }
 
 const { defaultBoardId } = searchConfig

@@ -8,11 +8,13 @@ import ExpandLessIcon from '@mui/icons-material/ExpandLess'
 interface PropertyDescriptionProps {
   description: string
   expandThreshold?: number
+  address?: string
 }
 
 const PropertyDescription: React.FC<PropertyDescriptionProps> = ({
   description,
   expandThreshold = 500,
+  address,
 }) => {
   const [isExpanded, setIsExpanded] = useState(false)
   const shouldShowReadMore = description.length > expandThreshold
@@ -23,8 +25,8 @@ const PropertyDescription: React.FC<PropertyDescriptionProps> = ({
 
   return (
     <Paper elevation={0} sx={{ p: 3, bgcolor: 'background.paper' }}>
-      <Typography variant="h5" gutterBottom fontWeight="bold">
-        About This Home
+      <Typography variant="h5" component="h2" gutterBottom fontWeight="bold">
+        {address ? `Description of ${address}` : 'About This Home'}
       </Typography>
 
       <Typography
