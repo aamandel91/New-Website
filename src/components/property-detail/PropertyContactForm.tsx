@@ -20,6 +20,7 @@ import HomeIcon from '@mui/icons-material/Home'
 import VideocamIcon from '@mui/icons-material/Videocam'
 import dayjs from 'dayjs'
 import { trackFormSubmission } from '@/utils/analytics'
+import { ssIdentify } from '@/utils/suresendTracking'
 import { isFormBlocked } from '@/utils/formFilter'
 import { defaultBlockedWords } from '@/configs/defaults/form-filtering'
 
@@ -152,6 +153,7 @@ const PropertyContactForm: React.FC<PropertyContactFormProps> = ({
         await onSubmit(formData)
       }
       trackFormSubmission(formData, 'tour_request')
+      ssIdentify({ email: formData.email, name: formData.name, phone: formData.phone })
       setSuccess(true)
       setFormData({
         name: '',

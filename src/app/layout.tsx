@@ -17,6 +17,7 @@ import TrackingInline from '@templates/TrackingInline'
 import GoogleTagManager, { GoogleTagManagerNoscript } from '@/components/analytics/GoogleTagManager'
 import GTMPageView from '@/components/analytics/GTMPageView'
 import RemarketingPixels from '@/components/analytics/RemarketingPixels'
+import SureSendPixel from '@/components/analytics/SureSendPixel'
 
 import { APISearch } from 'services/API'
 import { fetchFeatureOptions } from 'utils/features'
@@ -66,6 +67,7 @@ const Layout = async ({ children }: { children: React.ReactNode }) => {
         <GTMPageView />
         <TrackingInline />
         <RemarketingPixels />
+        <SureSendPixel />
         <GlobalStyles styles={globalStyles} />
         <Providers
           locale={locale}

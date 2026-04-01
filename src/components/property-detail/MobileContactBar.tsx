@@ -25,6 +25,7 @@ import CalendarTodayIcon from '@mui/icons-material/CalendarToday'
 import PhoneIcon from '@mui/icons-material/Phone'
 import dayjs from 'dayjs'
 import { trackFormSubmission } from '@/utils/analytics'
+import { ssIdentify } from '@/utils/suresendTracking'
 import { isFormBlocked } from '@/utils/formFilter'
 import { defaultBlockedWords } from '@/configs/defaults/form-filtering'
 import type { ContactFormData } from './PropertyContactForm'
@@ -189,6 +190,7 @@ const MobileContactBar: React.FC<MobileContactBarProps> = ({
         await onSubmit(formData)
       }
       trackFormSubmission(formData, modalMode === 'tour' ? 'tour_request' : 'contact')
+      ssIdentify({ email: formData.email, name: formData.name, phone: formData.phone })
       setSuccess(true)
       setFormData({ name: '', email: '', phone: '', message: '' })
       setSelectedTimeSlot(null)

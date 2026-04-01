@@ -20,6 +20,7 @@ import { useSearch } from 'providers/SearchProvider'
 import { getMapUrl } from 'utils/map'
 import { updateWindowHistory } from 'utils/urls'
 import { trackSearch } from '@/utils/analytics'
+import { ssTrackEvent } from '@/utils/suresendTracking'
 
 import MapFilters from './components/MapFilters'
 import MapRoot from './components/MapRoot'
@@ -60,6 +61,13 @@ const MapPageContent = () => {
 
     MapService.update(list, clusters, count)
     trackSearch({ ...filters, resultCount: count })
+    ssTrackEvent('search', {
+      location: query || '',
+      minPrice: filters.minPrice,
+      maxPrice: filters.maxPrice,
+      beds: filters.minBeds,
+      propertyType: filters.propertyType,
+    })
   }
 
   const handleMapLoad = (

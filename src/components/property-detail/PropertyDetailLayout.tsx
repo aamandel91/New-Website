@@ -6,6 +6,7 @@ import { Box, Container, Grid } from '@mui/material'
 
 import { useRecentlyViewed } from '@/hooks/useRecentlyViewed'
 import { trackPropertyView } from '@/utils/analytics'
+import { ssTrackPropertyView, ssTrackSavedProperty } from '@/utils/suresendTracking'
 
 import type { Property } from 'services/API'
 import { useFavorites } from 'providers/FavoritesProvider'
@@ -48,6 +49,21 @@ const PropertyDetailLayout: React.FC<PropertyDetailLayoutProps> = ({
   useEffect(() => {
     addToRecentlyViewed(property)
     trackPropertyView(property)
+
+    const street = `${property.address?.streetNumber || ''} ${property.address?.streetName || ''} ${property.address?.streetSuffix || ''}`.trim()
+    ssTrackPropertyView({
+      mlsNumber: property.mlsNumber,
+      street,
+      city: property.address?.city || '',
+      state: property.address?.state || '',
+      zipcode: property.address?.zip || '',
+      price: property.listPrice ? parseFloat(property.listPrice) : 0,
+      bedrooms: property.details?.numBedrooms ? parseInt(property.details.numBedrooms) : 0,
+      bathrooms: property.details?.numBathrooms ? parseInt(property.details.numBathrooms) : 0,
+      area: property.details?.sqft ? parseFloat(property.details.sqft) : 0,
+      propertyType: property.details?.propertyType || '',
+      url: window.location.href,
+    })
   }, [property.mlsNumber])
 
   // Map property photos - images is an array of strings
@@ -108,6 +124,15 @@ const PropertyDetailLayout: React.FC<PropertyDetailLayoutProps> = ({
 
   // Handle action buttons
   const handleSave = () => {
+    const favoriteId = findFavorite(property)
+    if (!favoriteId) {
+      const street = `${property.address?.streetNumber || ''} ${property.address?.streetName || ''} ${property.address?.streetSuffix || ''}`.trim()
+      ssTrackSavedProperty({
+        mls_number: property.mlsNumber,
+        address: `${street}, ${property.address?.city || ''}, ${property.address?.state || ''} ${property.address?.zip || ''}`,
+        price: property.listPrice ? parseFloat(property.listPrice) : 0,
+      })
+    }
     toggleFavorite(property)
   }
 
