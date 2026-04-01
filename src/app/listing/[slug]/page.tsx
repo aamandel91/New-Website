@@ -64,14 +64,20 @@ const PropertyDetailPage = async (props: PropertyDetailPageProps) => {
         : Promise.resolve(null)
     ])
 
-    // Generate JSON-LD structured data for SEO
-    const propertyJsonLd = generatePropertyJsonLd(property, propertyUrl)
-    const breadcrumbJsonLd = generatePropertyBreadcrumbJsonLd(property, host)
+    // Generate JSON-LD structured data for SEO (graceful fallback if property shape differs)
+    let propertyJsonLd = null
+    let breadcrumbJsonLd = null
+    try {
+      propertyJsonLd = generatePropertyJsonLd(property, propertyUrl)
+      breadcrumbJsonLd = generatePropertyBreadcrumbJsonLd(property, host)
+    } catch (e) {
+      console.error('Error generating structured data:', e)
+    }
 
     return (
       <>
-        <StructuredData data={propertyJsonLd} />
-        <StructuredData data={breadcrumbJsonLd} />
+        {propertyJsonLd && <StructuredData data={propertyJsonLd} />}
+        {breadcrumbJsonLd && <StructuredData data={breadcrumbJsonLd} />}
         <PropertyPageTemplate
           property={property}
           similarProperties={similarProperties}
