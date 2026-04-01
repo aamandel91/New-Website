@@ -58,9 +58,9 @@ const PropertyDetailPage = async (props: PropertyDetailPageProps) => {
 
     // Fetch similar properties and market stats in parallel
     const [similarProperties, marketStats] = await Promise.all([
-      fetchSimilarProperties(property, 6),
+      fetchSimilarProperties(property, 6).catch(() => []),
       property.address?.city && property.address?.state
-        ? fetchMarketStats(property.address.city, property.address.state, boardId)
+        ? fetchMarketStats(property.address.city, property.address.state, boardId).catch(() => null)
         : Promise.resolve(null)
     ])
 
