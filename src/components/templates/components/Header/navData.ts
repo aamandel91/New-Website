@@ -36,15 +36,15 @@ function cityToSlug(city: string) {
 
 export const cityItems = cities.map((city) => ({
   label: city,
-  href: `/florida/broward-county/${cityToSlug(city)}`,
+  href: `/${cityToSlug(city)}`,
 }))
 
 export const countyItems = counties.map((c) => ({
   label: c.name,
-  href: `/florida/${c.slug}`,
+  href: `/search?county=${encodeURIComponent(c.name)}`,
 }))
 
 export const propertyTypeItems = subTypes.map((st) => ({
   label: st.label,
-  href: `/florida/broward-county/coral-springs/${st.slug}`,
+  href: `/coral-springs/${st.slug}`,
 }))

@@ -113,9 +113,9 @@ const Footer = () => {
           <Grid size={{ xs: 12, sm: 6, md: 3 }}>
             <Typography sx={COLUMN_HEADING_SX}>Navigation</Typography>
             <Link href="/search" sx={FOOTER_LINK_SX}>Search</Link>
-            <Link href="/florida/broward-county" sx={FOOTER_LINK_SX}>Cities</Link>
-            <Link href="/florida" sx={FOOTER_LINK_SX}>Counties</Link>
-            <Link href="/florida/broward-county/coral-springs/single-family-homes" sx={FOOTER_LINK_SX}>Property Type</Link>
+            <Link href="/coral-springs" sx={FOOTER_LINK_SX}>Cities</Link>
+            <Link href="/search?state=FL" sx={FOOTER_LINK_SX}>Counties</Link>
+            <Link href="/coral-springs/single-family-homes" sx={FOOTER_LINK_SX}>Property Type</Link>
             <Link href="/sell" sx={FOOTER_LINK_SX}>Sell</Link>
             <Link href="/blog" sx={FOOTER_LINK_SX}>Blog</Link>
           </Grid>
@@ -124,10 +124,10 @@ const Footer = () => {
           <Grid size={{ xs: 12, sm: 6, md: 3 }}>
             <Typography sx={COLUMN_HEADING_SX}>Popular Searches</Typography>
             <Link href="/search?sort=createdOnHigh" sx={FOOTER_LINK_SX}>Newest Listings</Link>
-            <Link href="/florida/broward-county/coral-springs/single-family-homes" sx={FOOTER_LINK_SX}>Single Family Homes</Link>
-            <Link href="/florida/broward-county/coral-springs/condos" sx={FOOTER_LINK_SX}>Condos</Link>
-            <Link href="/florida/broward-county/coral-springs/luxury" sx={FOOTER_LINK_SX}>Luxury Homes</Link>
-            <Link href="/florida/broward-county/coral-springs/waterfront" sx={FOOTER_LINK_SX}>Waterfront Homes</Link>
+            <Link href="/coral-springs/single-family-homes" sx={FOOTER_LINK_SX}>Single Family Homes</Link>
+            <Link href="/coral-springs/condos" sx={FOOTER_LINK_SX}>Condos</Link>
+            <Link href="/coral-springs/luxury" sx={FOOTER_LINK_SX}>Luxury Homes</Link>
+            <Link href="/coral-springs/waterfront" sx={FOOTER_LINK_SX}>Waterfront Homes</Link>
           </Grid>
         </Grid>
       </Container>

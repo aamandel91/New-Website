@@ -46,34 +46,36 @@ const RelatedPages: React.FC<RelatedPagesProps> = ({
   const relatedPages: RelatedPage[] = []
 
   // Build dynamic links based on available property data
+  const citySlug = city ? city.toLowerCase().replace(/\s+/g, '-') : ''
+
   if (city && state) {
     relatedPages.push({
       title: `Homes for Sale in ${city}, ${state}`,
-      url: `/search?city=${encodeURIComponent(city)}&state=${encodeURIComponent(state)}`,
+      url: `/${citySlug}`,
       type: 'city',
       icon: <CityIcon />,
     })
 
-    // Add city guide page link (if you have CMS pages for cities)
     relatedPages.push({
       title: `${city} Real Estate Guide`,
-      url: `/cities/${city.toLowerCase().replace(/\s+/g, '-')}`,
+      url: `/${citySlug}`,
       type: 'city',
       icon: <CityIcon />,
     })
   }
 
   if (neighborhood && city && state) {
+    const neighborhoodSlug = neighborhood.toLowerCase().replace(/\s+/g, '-')
     relatedPages.push({
       title: `${neighborhood} Neighborhood - ${city}, ${state}`,
-      url: `/neighborhood/${neighborhood.toLowerCase().replace(/\s+/g, '-')}`,
+      url: `/${citySlug}/${neighborhoodSlug}`,
       type: 'neighborhood',
       icon: <NeighborhoodIcon />,
     })
 
     relatedPages.push({
       title: `Homes for Sale in ${neighborhood}`,
-      url: `/search?neighborhood=${encodeURIComponent(neighborhood)}&city=${encodeURIComponent(city)}`,
+      url: `/${citySlug}/${neighborhoodSlug}`,
       type: 'neighborhood',
       icon: <NeighborhoodIcon />,
     })
@@ -88,19 +90,25 @@ const RelatedPages: React.FC<RelatedPagesProps> = ({
       icon: <PropertyTypeIcon />,
     })
 
-    // Property type guide page
     relatedPages.push({
       title: `${city} ${propertyType} Buyers Guide`,
-      url: `/property-type/${formattedType}?city=${encodeURIComponent(city)}`,
+      url: `/search?propertyType=${encodeURIComponent(formattedType)}&city=${encodeURIComponent(city)}`,
       type: 'propertyType',
       icon: <PropertyTypeIcon />,
     })
   }
 
-  if (zipCode) {
+  if (zipCode && city) {
     relatedPages.push({
       title: `${zipCode} Real Estate & Homes for Sale`,
-      url: `/zip/${zipCode}`,
+      url: `/${citySlug}/${zipCode}`,
+      type: 'zipcode',
+      icon: <AreaIcon />,
+    })
+  } else if (zipCode) {
+    relatedPages.push({
+      title: `${zipCode} Real Estate & Homes for Sale`,
+      url: `/search?zip=${zipCode}`,
       type: 'zipcode',
       icon: <AreaIcon />,
     })
@@ -109,7 +117,7 @@ const RelatedPages: React.FC<RelatedPagesProps> = ({
   if (schoolDistrict && city && state) {
     relatedPages.push({
       title: `Homes in ${schoolDistrict} School District`,
-      url: `/search?schoolDistrict=${encodeURIComponent(schoolDistrict)}&city=${encodeURIComponent(city)}`,
+      url: `/${citySlug}/schools`,
       type: 'school',
       icon: <SchoolIcon />,
     })

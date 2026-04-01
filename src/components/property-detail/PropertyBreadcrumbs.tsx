@@ -54,51 +54,63 @@ const PropertyBreadcrumbs: React.FC<PropertyBreadcrumbsProps> = ({
     </Link>
   )
 
-  // State (hardcoded Florida)
+  // State (breadcrumb TEXT shows Florida, link goes to search)
   if (state) {
     items.push(
-      <Link key="state" underline="hover" sx={linkSx} href="/state/florida">
+      <Link key="state" underline="hover" sx={linkSx} href="/search?state=FL">
         Florida
       </Link>
     )
   }
 
-  // County
+  // County (breadcrumb TEXT shows county, link goes to search)
   if (county) {
     items.push(
-      <Link key="county" underline="hover" sx={linkSx} href={`/county/${slugify(county)}`}>
+      <Link key="county" underline="hover" sx={linkSx} href={`/search?county=${encodeURIComponent(county)}`}>
         {county}
       </Link>
     )
   }
 
-  // City
+  // City (clean URL)
   if (city) {
     items.push(
       <Link
         key="city"
         underline="hover"
         sx={linkSx}
-        href={`/city/${slugify(city)}-${slugify(state || 'fl')}`}
+        href={`/${slugify(city)}`}
       >
         {city}
       </Link>
     )
   }
 
-  // Zip
-  if (zip) {
+  // Zip (clean URL: /city/zip)
+  if (zip && city) {
     items.push(
-      <Link key="zip" underline="hover" sx={linkSx} href={`/zip/${zip}`}>
+      <Link key="zip" underline="hover" sx={linkSx} href={`/${slugify(city)}/${zip}`}>
+        {zip}
+      </Link>
+    )
+  } else if (zip) {
+    items.push(
+      <Link key="zip" underline="hover" sx={linkSx} href={`/search?zip=${zip}`}>
         {zip}
       </Link>
     )
   }
 
-  // Neighborhood
-  if (neighborhood) {
+  // Neighborhood (clean URL: /city/neighborhood)
+  if (neighborhood && city) {
     items.push(
-      <Link key="neighborhood" underline="hover" sx={linkSx} href={`/area/${slugify(neighborhood)}`}>
+      <Link key="neighborhood" underline="hover" sx={linkSx} href={`/${slugify(city)}/${slugify(neighborhood)}`}>
+        {neighborhood}
+      </Link>
+    )
+  } else if (neighborhood) {
+    items.push(
+      <Link key="neighborhood" underline="hover" sx={linkSx} href={`/search?neighborhood=${encodeURIComponent(neighborhood)}`}>
         {neighborhood}
       </Link>
     )

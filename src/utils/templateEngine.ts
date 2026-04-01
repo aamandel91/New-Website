@@ -1,4 +1,5 @@
 import type { TemplateVariables } from '@configs/page-generation'
+import { getSubTypeBySlug } from '@configs/page-generation'
 
 /**
  * Template processing engine for page generation.
@@ -49,6 +50,7 @@ export function generateMetaDescription(
 
 /**
  * Build a URL slug from an array of parts.
+ * Produces clean format: [city] or [city, subType] — no florida/county prefix.
  * Lowercases, trims, replaces spaces with hyphens, and joins with '/'.
  */
 export function generateSlug(parts: string[]): string {
@@ -163,6 +165,88 @@ export interface HeadingVariations {
   h2: string
   h3: string
   h4: string
+}
+
+// ---------------------------------------------------------------------------
+// Clean URL helpers (no /florida/ or county prefix)
+// ---------------------------------------------------------------------------
+
+/** Page type for clean URL routing */
+export type CleanPageType =
+  | 'city'
+  | 'city-subtype'
+  | 'city-schools'
+  | 'city-zip'
+  | 'city-neighborhood'
+
+export interface ParsedCleanSlug {
+  pageType: CleanPageType
+  city: string
+  subType?: string
+  zip?: string
+  neighborhood?: string
+}
+
+/**
+ * Parse a clean URL slug array into structured params.
+ *
+ * Detection logic for 2-segment slugs:
+ *   - 5 digits → zip code
+ *   - matches subTypes slug → sub-type
+ *   - literal "schools" → schools page
+ *   - otherwise → neighborhood
+ *
+ * Supported patterns:
+ *   [fort-lauderdale]                → city page
+ *   [fort-lauderdale, condos]        → city + subtype
+ *   [fort-lauderdale, 33301]         → city + zip
+ *   [fort-lauderdale, schools]       → city + schools
+ *   [fort-lauderdale, country-isles] → city + neighborhood
+ */
+export function parseCleanSlug(slugs: string[]): ParsedCleanSlug | null {
+  if (!slugs || slugs.length === 0 || slugs.length > 2) return null
+
+  const city = slugs[0]
+  if (!city) return null
+
+  // City-only page
+  if (slugs.length === 1) {
+    return { pageType: 'city', city }
+  }
+
+  const slug2 = slugs[1]
+
+  // Zip code: 5 digits
+  if (/^\d{5}$/.test(slug2)) {
+    return { pageType: 'city-zip', city, zip: slug2 }
+  }
+
+  // Sub-type: matches known sub-type slug
+  if (getSubTypeBySlug(slug2)) {
+    return { pageType: 'city-subtype', city, subType: slug2 }
+  }
+
+  // Schools page
+  if (slug2 === 'schools') {
+    return { pageType: 'city-schools', city }
+  }
+
+  // Neighborhood (default)
+  return { pageType: 'city-neighborhood', city, neighborhood: slug2 }
+}
+
+/**
+ * Generate a clean URL path from city and optional sub-type/segment.
+ * Examples:
+ *   generateCleanUrl('Fort Lauderdale') → '/fort-lauderdale'
+ *   generateCleanUrl('Fort Lauderdale', 'condos') → '/fort-lauderdale/condos'
+ */
+export function generateCleanUrl(city: string, segment?: string): string {
+  const citySlug = displayNameToSlug(city)
+  if (segment) {
+    return `/${citySlug}/${segment}`
+  }
+  return `/${citySlug}`
 }
 
 /**

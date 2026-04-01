@@ -15,10 +15,9 @@ const CommunityLink: React.FC<CommunityLinkProps> = ({ city, state, county }) =>
   if (!city || !state) return null
 
   const citySlug = displayNameToSlug(city)
-  const countySlug = county ? `${displayNameToSlug(county)}-county` : ''
 
-  const cityHref = countySlug ? `/florida/${countySlug}/${citySlug}` : '#'
-  const countyHref = countySlug ? `/florida/${countySlug}` : '#'
+  const cityHref = `/${citySlug}`
+  const countyHref = county ? `/search?county=${encodeURIComponent(county)}` : '#'
 
   return (
     <Box component="section" sx={{ py: 3 }}>

@@ -9,18 +9,18 @@ import {
 import { type Position } from 'geojson'
 import { type LngLat, type LngLatBounds, Map as MapboxMap } from 'mapbox-gl'
 import { useLocale, useMessages } from 'next-intl'
+import { useRouter } from 'next/navigation'
 
 import { Stack } from '@mui/material'
 
 import gridConfig from '@configs/cards-grids'
 import mapConfig from '@configs/map'
-import { PropertyDialog, SaveSearchDialog } from '@shared/Dialogs'
+import { SaveSearchDialog } from '@shared/Dialogs'
 import { MapNavigation, MapStyleSwitch } from '@shared/Map'
 
 import { type Property } from 'services/API'
 import MapService from 'services/Map'
 import SearchService from 'services/Search'
-import { useDialog } from 'providers/DialogProvider'
 import { useFeatures } from 'providers/FeaturesProvider'
 import { useMapOptions } from 'providers/MapOptionsProvider'
 import { useSearch } from 'providers/SearchProvider'
@@ -43,7 +43,6 @@ import {
   MapTransitionContainer,
   MobileCircularProgress,
   OpenDrawerButton,
-  PropertyDrawer,
   SaveSearchCanvas,
   TableContent
 } from './components'
@@ -62,10 +61,9 @@ const MapRoot = ({ zoom, center, polygon, onMove, onLoad }: MapRootProps) => {
   const locale = useLocale()
   const messages = useMessages()
   const features = useFeatures()
+  const router = useRouter()
   const [mapVisible, mapContainerRef] = useIntersectionObserver(0)
-  const { showDialog: showPropertyDialog } = useDialog('property')
 
-  const [drawerProperty, setDrawerProperty] = useState<Property | null>(null)
   const [showDrawer, setShowDrawer] = useState(false)
 
   const {
@@ -77,21 +75,13 @@ const MapRoot = ({ zoom, center, polygon, onMove, onLoad }: MapRootProps) => {
     clearMultiUnits
   } = useSearch()
 
-  const { mobile, tablet, wideScreen } = useBreakpoints()
+  const { mobile, tablet } = useBreakpoints()
   const { layout, style, setMapRef } = useMapOptions()
   const multiUnitsRef = useRef(multiUnits)
   const { logged } = useUser()
 
-  // WARN: `propertyDialogItems` changes when you click on multiUnit _CARD_ in the grid
-  // to represent only multiUnits in the navigation list,
-  // and reverts back to `sortedProperties` when you click on a regular marker on the map
-  // see logic inside `handleCardClick`
-  const [propertyDialogItems, setPropertyDialogItems] = useState(list)
-  const [propertyDialogIndex, setPropertyDialogIndex] = useState(-1)
-
   const onUserInteractionStart = useCallback(() => {
     SearchService.disableRequests()
-    setDrawerProperty(null)
   }, [])
 
   const onUserInteractionEnd = useCallback(() => {
@@ -187,42 +177,22 @@ const MapRoot = ({ zoom, center, polygon, onMove, onLoad }: MapRootProps) => {
 
   const handleCardClick = useCallback(
     (e: MouseEvent, property: Property, multiUnit?: boolean) => {
-      // this click handler is only suitable for WIDE desktops (1280+px)
-      if (!wideScreen) return
+      const url = getSeoUrl(property)
 
-      const { mlsNumber, boardId } = property
-
-      if (!multiUnit && (e.button === 1 || e.ctrlKey || e.metaKey)) {
+      // Middle-click or ctrl/meta-click: open in new tab
+      if (e.button === 1 || e.ctrlKey || e.metaKey) {
         e.preventDefault()
-        window.open(getSeoUrl(property), '_blank')
+        window.open(url, '_blank')
         return
       }
 
       if (multiUnit) updateMultiUnits(property)
 
-      // getting actual state of multiUnits thru the ref,
-      // since markers are rendered in isolated react context
-      // (see the weirdo `createMarkerElement` function)
-      // and don't have access to the global state
-      const multiUnits = multiUnitsRef.current
-
-      const dialogProps = multiUnits.find(
-        (p) => p.mlsNumber === mlsNumber && p.boardId === boardId
-      )
-        ? multiUnits
-        : list
-
-      const dialogIndex = dialogProps.findIndex(
-        (p) => p.mlsNumber === mlsNumber && p.boardId === boardId
-      )
-
-      setPropertyDialogItems(dialogProps)
-      setPropertyDialogIndex(dialogIndex)
-
-      if (!multiUnit) showPropertyDialog()
+      // Navigate to full listing page
       e.preventDefault()
+      router.push(url)
     },
-    [wideScreen, list, updateMultiUnits, showPropertyDialog]
+    [updateMultiUnits, router]
   )
 
   const handleMarkerTap = useCallback(
@@ -233,16 +203,15 @@ const MapRoot = ({ zoom, center, polygon, onMove, onLoad }: MapRootProps) => {
         clearMultiUnits()
       }
 
-      setDrawerProperty(property)
-      setShowDrawer(false)
+      // Navigate to full listing page
+      router.push(getSeoUrl(property))
     },
-    [updateMultiUnits, clearMultiUnits]
+    [updateMultiUnits, clearMultiUnits, router]
   )
 
   const handleOpenDrawerClick = useCallback(() => {
     setShowDrawer(!showDrawer)
-    if (drawerProperty) setDrawerProperty(null)
-  }, [showDrawer, drawerProperty])
+  }, [showDrawer])
 
   // NOTE: memoized object connecting property markers with their event handlers
   // to use in the next effect below
@@ -320,11 +289,7 @@ const MapRoot = ({ zoom, center, polygon, onMove, onLoad }: MapRootProps) => {
             {loading && <MobileCircularProgress />}
           </>
         )}
-        <PropertyDrawer
-          map={MapService.map}
-          property={drawerProperty}
-          multiUnits={multiUnits}
-        />
+        {/* PropertyDrawer disabled — all clicks navigate to /listing/[slug] */}
       </MapTransitionContainer>
 
       {mobile || tablet ? (
@@ -341,11 +306,6 @@ const MapRoot = ({ zoom, center, polygon, onMove, onLoad }: MapRootProps) => {
         </GridDesktopContainer>
       )}
 
-      <PropertyDialog
-        mapType="static"
-        active={propertyDialogIndex}
-        properties={propertyDialogItems}
-      />
       {features.saveSearch && <SaveSearchDialog />}
     </Stack>
   )

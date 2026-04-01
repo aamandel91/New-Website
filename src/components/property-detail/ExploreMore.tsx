@@ -82,7 +82,6 @@ function MiniPropertyCard({ property }: { property: Property }) {
 
 const ExploreMore: React.FC<ExploreMoreProps> = ({ property, similarProperties = [] }) => {
   const city = property.address?.city
-  const county = property.address?.district
   const neighborhood = property.address?.neighborhood
   const propertyType = property.details?.propertyType
   const price = property.listPrice ? parseFloat(property.listPrice) : 0
@@ -90,7 +89,6 @@ const ExploreMore: React.FC<ExploreMoreProps> = ({ property, similarProperties =
   if (!city) return null
 
   const citySlug = displayNameToSlug(city)
-  const countySlug = county ? `${displayNameToSlug(county)}-county` : ''
   const typeSlug = getPropertyTypeSlug(propertyType)
   const typeLabel = getPropertyTypeLabel(propertyType)
   const nextTier = getNextPriceTier(price)
@@ -105,13 +103,13 @@ const ExploreMore: React.FC<ExploreMoreProps> = ({ property, similarProperties =
 
       <Stack spacing={3}>
         {/* Neighborhood suggestion */}
-        {neighborhood && countySlug && (
+        {neighborhood && (
           <Box>
             <Typography variant="h6" component="h3" gutterBottom>
               More homes in {neighborhood}
             </Typography>
             <Link
-              href={`/florida/${countySlug}/${citySlug}/neighborhoods/${displayNameToSlug(neighborhood)}`}
+              href={`/${citySlug}/${displayNameToSlug(neighborhood)}`}
               passHref
               legacyBehavior
             >
@@ -133,13 +131,13 @@ const ExploreMore: React.FC<ExploreMoreProps> = ({ property, similarProperties =
         )}
 
         {/* Property type in city */}
-        {typeSlug && typeLabel && countySlug && (
+        {typeSlug && typeLabel && (
           <Box>
             <Typography variant="h6" component="h3" gutterBottom>
               {typeLabel} in {city}
             </Typography>
             <Link
-              href={`/florida/${countySlug}/${citySlug}/${typeSlug}`}
+              href={`/${citySlug}/${typeSlug}`}
               passHref
               legacyBehavior
             >
@@ -158,7 +156,7 @@ const ExploreMore: React.FC<ExploreMoreProps> = ({ property, similarProperties =
         )}
 
         {/* Price tier suggestion */}
-        {nextTier && countySlug && (
+        {nextTier && (
           <Box>
             <Typography variant="h6" component="h3" gutterBottom>
               Homes under ${formatCompactPrice(nextTier)} in {city}

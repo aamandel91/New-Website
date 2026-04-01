@@ -55,7 +55,7 @@ const PropertyNarrative: React.FC<PropertyNarrativeProps> = ({ property }) => {
       <React.Fragment key="opening">
         {opening}
         <Link
-          href={`/city/${slugify(city)}-${slugify(state)}`}
+          href={`/${slugify(city)}`}
           style={{ color: '#1976d2', textDecoration: 'none' }}
         >
           {city}
@@ -87,7 +87,7 @@ const PropertyNarrative: React.FC<PropertyNarrativeProps> = ({ property }) => {
       <React.Fragment key="neighborhood">
         {yearBuilt ? ' and located in the ' : 'Located in the '}
         <Link
-          href={`/area/${slugify(neighborhood)}`}
+          href={`/${slugify(city)}/${slugify(neighborhood)}`}
           style={{ color: '#1976d2', textDecoration: 'none' }}
         >
           {neighborhood}

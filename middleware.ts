@@ -6,6 +6,11 @@ import {
 } from '@/configs/defaults/geo-blocking'
 
 /**
+ * County slug pattern — matches slugs like "broward-county", "palm-beach-county"
+ */
+const COUNTY_SLUG_RE = /^[a-z-]+-county$/
+
+/**
  * Next.js Middleware for Agent Subdomain Routing & Geo-Blocking
  *
  * This middleware handles:
@@ -47,6 +52,55 @@ export function middleware(request: NextRequest) {
         return new NextResponse('Access Denied', { status: 403 })
       }
     }
+  }
+
+  // --- /florida/* redirect to clean URLs ---
+  if (url.pathname.startsWith('/florida/') || url.pathname === '/florida') {
+    // Strip /florida and any county prefix, redirect to clean URL
+    const segments = url.pathname.replace(/^\/florida\/?/, '').split('/').filter(Boolean)
+
+    if (segments.length === 0) {
+      // /florida → redirect to search
+      url.pathname = '/search'
+      return NextResponse.redirect(url, 301)
+    }
+
+    // Check if first segment is a county slug (e.g., "broward-county")
+    if (COUNTY_SLUG_RE.test(segments[0])) {
+      // Strip the county slug, keep the rest
+      const remaining = segments.slice(1)
+
+      if (remaining.length === 0) {
+        // /florida/broward-county → redirect to search with county filter
+        url.pathname = '/search'
+        return NextResponse.redirect(url, 301)
+      }
+
+      const citySlug = remaining[0]
+      const rest = remaining.slice(1)
+
+      // Handle old nested patterns: /florida/county/city/neighborhoods/x → /city/x
+      if (rest.length >= 2 && rest[0] === 'neighborhoods') {
+        url.pathname = `/${citySlug}/${rest[1]}`
+        return NextResponse.redirect(url, 301)
+      }
+
+      // Handle old zip pattern: /florida/county/city/zip/33071 → /city/33071
+      if (rest.length >= 2 && rest[0] === 'zip') {
+        url.pathname = `/${citySlug}/${rest[1]}`
+        return NextResponse.redirect(url, 301)
+      }
+
+      // /florida/county/city → /city
+      // /florida/county/city/condos → /city/condos
+      // /florida/county/city/schools → /city/schools
+      url.pathname = `/${citySlug}${rest.length > 0 ? '/' + rest.join('/') : ''}`
+      return NextResponse.redirect(url, 301)
+    }
+
+    // No county prefix: /florida/fort-lauderdale/condos → /fort-lauderdale/condos
+    url.pathname = `/${segments.join('/')}`
+    return NextResponse.redirect(url, 301)
   }
 
   // Extract subdomain from hostname

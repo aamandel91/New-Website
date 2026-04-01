@@ -237,7 +237,7 @@ function GenerateSection() {
           city,
           county,
           subType: st,
-          slug: generateSlug(['florida', county, city, st.slug]),
+          slug: generateSlug([city, st.slug]),
           title: `${st.label} in ${city}, FL`,
           status: 'pending'
         })
@@ -807,7 +807,7 @@ function CopySection() {
           contentStr = contentStr.replace(regex, replace)
         }
 
-        const slug = generateSlug(['florida', county, city])
+        const slug = generateSlug([city])
 
         const page = await APIContentPages.createPage({
           title,
