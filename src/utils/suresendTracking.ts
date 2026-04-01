@@ -1,37 +1,55 @@
 declare global {
   interface Window {
-    ssPixel?: (action: string, data?: Record<string, any>) => void
+    ssPixel?: (...args: any[]) => void
   }
 }
 
-export function ssIdentify(data: { email?: string; name?: string; phone?: string }) {
+/**
+ * Identify a known user — call after login or form submission
+ * Links all anonymous activity to the identified user
+ */
+export function ssIdentify(data: { email: string; name?: string; phone?: string }) {
   window.ssPixel?.('identify', data)
 }
 
+/**
+ * Track a property view with full listing data
+ * Call on property detail pages
+ */
 export function ssTrackPropertyView(property: {
   mlsNumber: string
   street: string
   city: string
   state: string
-  zipcode: string
+  zipCode: string
   price: number
-  bedrooms: number
-  bathrooms: number
-  area: number
   propertyType: string
-  url: string
+  bedrooms: string | number
+  bathrooms: string | number
+  squareFeet: string | number
+  lotSize?: string | number
+  forRent?: boolean
 }) {
-  window.ssPixel?.('property_view', property)
+  window.ssPixel?.('track', 'property_view', property)
 }
 
+/**
+ * Track a saved/favorited property
+ */
 export function ssTrackSavedProperty(data: {
-  mls_number: string
-  address: string
+  mlsNumber: string
+  street: string
+  city: string
+  state: string
+  zipCode: string
   price: number
 }) {
-  window.ssPixel?.('saved_property', data)
+  window.ssPixel?.('track', 'saved_property', data)
 }
 
+/**
+ * Track a custom event
+ */
 export function ssTrackEvent(eventType: string, eventData: Record<string, any>) {
-  window.ssPixel?.('event', { event_type: eventType, event_data: eventData })
+  window.ssPixel?.('track', eventType, eventData)
 }

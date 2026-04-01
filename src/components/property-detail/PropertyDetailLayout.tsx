@@ -56,13 +56,14 @@ const PropertyDetailLayout: React.FC<PropertyDetailLayoutProps> = ({
       street,
       city: property.address?.city || '',
       state: property.address?.state || '',
-      zipcode: property.address?.zip || '',
+      zipCode: property.address?.zip || '',
       price: property.listPrice ? parseFloat(property.listPrice) : 0,
-      bedrooms: property.details?.numBedrooms ? parseInt(property.details.numBedrooms) : 0,
-      bathrooms: property.details?.numBathrooms ? parseInt(property.details.numBathrooms) : 0,
-      area: property.details?.sqft ? parseFloat(property.details.sqft) : 0,
+      bedrooms: property.details?.numBedrooms || '0',
+      bathrooms: property.details?.numBathrooms || '0',
+      squareFeet: property.details?.sqft || '0',
+      lotSize: property.lot?.acres?.toString() || '',
       propertyType: property.details?.propertyType || '',
-      url: window.location.href,
+      forRent: false,
     })
   }, [property.mlsNumber])
 
@@ -128,8 +129,11 @@ const PropertyDetailLayout: React.FC<PropertyDetailLayoutProps> = ({
     if (!favoriteId) {
       const street = `${property.address?.streetNumber || ''} ${property.address?.streetName || ''} ${property.address?.streetSuffix || ''}`.trim()
       ssTrackSavedProperty({
-        mls_number: property.mlsNumber,
-        address: `${street}, ${property.address?.city || ''}, ${property.address?.state || ''} ${property.address?.zip || ''}`,
+        mlsNumber: property.mlsNumber,
+        street,
+        city: property.address?.city || '',
+        state: property.address?.state || '',
+        zipCode: property.address?.zip || '',
         price: property.listPrice ? parseFloat(property.listPrice) : 0,
       })
     }
