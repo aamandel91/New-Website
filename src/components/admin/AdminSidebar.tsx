@@ -32,6 +32,7 @@ import {
   DynamicFeed as PageGenIcon,
   Navigation as NavigationIcon,
   AdminPanelSettings as AdminUsersIcon,
+  ContactPhone as CrmIcon,
   ExpandLess,
   ExpandMore
 } from '@mui/icons-material'
@@ -56,6 +57,7 @@ const navItems: NavItem[] = [
   { title: 'Blog Import', path: '/admin/blog/import', icon: <ImportExportIcon /> },
   { title: 'Leads', path: '/admin/leads', icon: <PeopleIcon /> },
   { title: 'Open House', path: '/admin/open-house', icon: <HouseIcon /> },
+  { title: 'CRM', path: '/admin/crm', icon: <CrmIcon /> },
   { title: 'Navigation', path: '/admin/navigation', icon: <NavigationIcon /> },
   {
     title: 'SEO Tools',

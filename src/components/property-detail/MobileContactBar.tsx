@@ -40,6 +40,7 @@ interface Agent {
 
 interface MobileContactBarProps {
   propertyAddress: string
+  mlsNumber?: string
   agent?: Agent
   onSubmit?: (data: ContactFormData) => Promise<void>
 }
@@ -61,8 +62,28 @@ function getDateLabel(date: dayjs.Dayjs, index: number): string {
   return date.format('ddd, MMM D')
 }
 
+function sendToSureSend(
+  data: ContactFormData,
+  formType: string,
+  propertyAddress?: string,
+  mlsNumber?: string
+) {
+  fetch('/api/suresend/lead', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      ...data,
+      formType,
+      propertyAddress,
+      mlsNumber,
+      source: 'mobile_contact_bar',
+    }),
+  }).catch((err) => console.error('[SureSend] Lead sync failed:', err))
+}
+
 const MobileContactBar: React.FC<MobileContactBarProps> = ({
   propertyAddress,
+  mlsNumber,
   agent,
   onSubmit,
 }) => {
@@ -189,8 +210,11 @@ const MobileContactBar: React.FC<MobileContactBarProps> = ({
       if (onSubmit) {
         await onSubmit(formData)
       }
-      trackFormSubmission(formData, modalMode === 'tour' ? 'tour_request' : 'contact')
+      const formType = modalMode === 'tour' ? 'tour_request' : 'contact'
+      trackFormSubmission(formData, formType)
       ssIdentify({ email: formData.email, name: formData.name, phone: formData.phone })
+      // Fire-and-forget: sync lead to SureSend CRM in parallel
+      sendToSureSend(formData, formType, propertyAddress, mlsNumber)
       setSuccess(true)
       setFormData({ name: '', email: '', phone: '', message: '' })
       setSelectedTimeSlot(null)

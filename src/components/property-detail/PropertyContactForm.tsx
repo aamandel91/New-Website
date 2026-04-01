@@ -34,6 +34,7 @@ interface Agent {
 
 interface PropertyContactFormProps {
   propertyAddress: string
+  mlsNumber?: string
   agent?: Agent
   onSubmit?: (data: ContactFormData) => Promise<void>
 }
@@ -62,8 +63,28 @@ function getDateLabel(date: dayjs.Dayjs, index: number): string {
   return date.format('ddd, MMM D')
 }
 
+function sendToSureSend(
+  data: ContactFormData,
+  formType: string,
+  propertyAddress?: string,
+  mlsNumber?: string
+) {
+  fetch('/api/suresend/lead', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      ...data,
+      formType,
+      propertyAddress,
+      mlsNumber,
+      source: 'property_detail_page',
+    }),
+  }).catch((err) => console.error('[SureSend] Lead sync failed:', err))
+}
+
 const PropertyContactForm: React.FC<PropertyContactFormProps> = ({
   propertyAddress,
+  mlsNumber,
   agent,
   onSubmit,
 }) => {
@@ -154,6 +175,8 @@ const PropertyContactForm: React.FC<PropertyContactFormProps> = ({
       }
       trackFormSubmission(formData, 'tour_request')
       ssIdentify({ email: formData.email, name: formData.name, phone: formData.phone })
+      // Fire-and-forget: sync lead to SureSend CRM in parallel
+      sendToSureSend(formData, 'tour_request', propertyAddress, mlsNumber)
       setSuccess(true)
       setFormData({
         name: '',
