@@ -1,2 +1,8 @@
+export { default as BlogSection } from './BlogSection'
+export { default as CTACards } from './CTACards'
+export { default as ExploreLifestyles } from './ExploreLifestyles'
+export { default as ExploreListings } from './ExploreListings'
 export { default as FeaturedProperties } from './FeaturedProperties'
+export { default as HeroSection } from './HeroSection'
 export { default as HomePageBanner } from './HomePageBanner'
+export { default as SEOContentBlock } from './SEOContentBlock'
