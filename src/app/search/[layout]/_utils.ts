@@ -79,5 +79,58 @@ export const getFiltersFromParams = (searchParams: SearchParams): Filters => {
     filters['maxPrice'] = Number(searchParams.maxPrice)
   }
 
+  // Map advanced search params
+  if (searchParams.city) {
+    filters['city'] = searchParams.city
+  }
+  if (searchParams.area) {
+    filters['area'] = searchParams.area
+  }
+  if (searchParams.neighborhood) {
+    filters['neighborhood'] = searchParams.neighborhood
+  }
+  if (searchParams.propertyType) {
+    filters['propertyType'] = searchParams.propertyType
+  }
+  if (searchParams.minBeds) {
+    filters['minBeds'] = Number(searchParams.minBeds)
+  }
+  if (searchParams.maxBeds) {
+    filters['maxBeds'] = Number(searchParams.maxBeds)
+  }
+  if (searchParams.minBaths) {
+    filters['minBaths'] = Number(searchParams.minBaths)
+  }
+  if (searchParams.maxBaths) {
+    filters['maxBaths'] = Number(searchParams.maxBaths)
+  }
+  if (searchParams.minSqft) {
+    filters['minSqft'] = Number(searchParams.minSqft)
+  }
+  if (searchParams.maxSqft) {
+    filters['maxSqft'] = Number(searchParams.maxSqft)
+  }
+  if (searchParams.minYearBuilt) {
+    filters['minYearBuilt'] = Number(searchParams.minYearBuilt)
+  }
+  if (searchParams.maxYearBuilt) {
+    filters['maxYearBuilt'] = Number(searchParams.maxYearBuilt)
+  }
+  if (searchParams.minLotSize) {
+    filters['minLotSize'] = Number(searchParams.minLotSize)
+  }
+  if (searchParams.maxLotSize) {
+    filters['maxLotSize'] = Number(searchParams.maxLotSize)
+  }
+  if (searchParams.amenities) {
+    filters['amenities'] = searchParams.amenities
+  }
+  if (searchParams.keywords) {
+    filters['keywords'] = searchParams.keywords
+  }
+  if (searchParams.sortBy) {
+    filters['sortBy'] = searchParams.sortBy
+  }
+
   return filters as Filters
 }
