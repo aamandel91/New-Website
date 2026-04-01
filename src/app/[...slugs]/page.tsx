@@ -343,4 +343,166 @@ async function renderSubTypePage(
   return (
     <PageTemplate>
       <StructuredData data={breadcrumbSchema(breadcrumbItems)} />
-      <Container maxWidth="lg" sx={{ p
+      <Container maxWidth="lg" sx={{ py: 4 }}>
+        <Typography variant="h3" component="h1" fontWeight="bold" gutterBottom>
+          {headings.h1 || `${stConfig.label} in ${cityName}, FL`}
+        </Typography>
+        <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
+          Browse {count} {stConfig.label.toLowerCase()} currently available in {cityName}, Florida.
+        </Typography>
+
+        {/* Market Timeline */}
+        <Box sx={{ mb: 4 }}>
+          <MarketTimelineGraph city={cityName} propertyType={stConfig.label} />
+        </Box>
+
+        {/* Other Sub-Types */}
+        <Box sx={{ mt: 4, p: 3, bgcolor: 'grey.100', borderRadius: 2 }}>
+          <Typography variant="h6" gutterBottom>
+            More in {cityName}
+          </Typography>
+          <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+            {otherSubTypes.slice(0, 10).map((st) => (
+              <Chip
+                key={st.slug}
+                label={st.label}
+                component={Link}
+                href={generateCleanUrl(cityName, st.slug)}
+                clickable
+                variant="outlined"
+              />
+            ))}
+          </Box>
+        </Box>
+      </Container>
+    </PageTemplate>
+  )
+}
+
+// ---------------------------------------------------------------------------
+// Neighborhood Page
+// ---------------------------------------------------------------------------
+
+async function renderNeighborhoodPage(
+  parsed: ParsedCleanSlug,
+  cityName: string,
+  baseUrl: string
+) {
+  const neighborhoodName = slugToDisplayName(parsed.subType || '')
+  const breadcrumbItems = buildBreadcrumbs(parsed, cityName, baseUrl)
+  const count = await fetchListingCount(cityName)
+
+  return (
+    <PageTemplate>
+      <StructuredData data={breadcrumbSchema(breadcrumbItems)} />
+      <Container maxWidth="lg" sx={{ py: 4 }}>
+        <Typography variant="h3" component="h1" fontWeight="bold" gutterBottom>
+          {neighborhoodName} in {cityName}, FL
+        </Typography>
+        <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
+          Explore homes for sale in the {neighborhoodName} neighborhood of {cityName}, Florida.
+        </Typography>
+
+        <Box sx={{ mb: 4 }}>
+          <MarketTimelineGraph city={cityName} />
+        </Box>
+
+        <Box sx={{ mt: 4, p: 3, bgcolor: 'grey.100', borderRadius: 2 }}>
+          <Typography variant="h6" gutterBottom>
+            Explore {cityName}
+          </Typography>
+          <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
+            <Link href={generateCleanUrl(cityName)}>
+              <Typography variant="body2" color="primary" fontWeight="bold">
+                All Homes in {cityName} →
+              </Typography>
+            </Link>
+          </Box>
+        </Box>
+      </Container>
+    </PageTemplate>
+  )
+}
+
+// ---------------------------------------------------------------------------
+// Zip Code Page
+// ---------------------------------------------------------------------------
+
+async function renderZipPage(
+  parsed: ParsedCleanSlug,
+  cityName: string,
+  baseUrl: string
+) {
+  const zip = parsed.subType || ''
+  const breadcrumbItems = buildBreadcrumbs(parsed, cityName, baseUrl)
+
+  return (
+    <PageTemplate>
+      <StructuredData data={breadcrumbSchema(breadcrumbItems)} />
+      <Container maxWidth="lg" sx={{ py: 4 }}>
+        <Typography variant="h3" component="h1" fontWeight="bold" gutterBottom>
+          Homes for Sale in {cityName}, FL {zip}
+        </Typography>
+        <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
+          Browse homes and real estate in the {zip} zip code area of {cityName}, Florida.
+        </Typography>
+
+        <Box sx={{ mb: 4 }}>
+          <MarketTimelineGraph city={cityName} />
+        </Box>
+
+        <Box sx={{ mt: 4, p: 3, bgcolor: 'grey.100', borderRadius: 2 }}>
+          <Typography variant="h6" gutterBottom>
+            Explore {cityName}
+          </Typography>
+          <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
+            <Link href={generateCleanUrl(cityName)}>
+              <Typography variant="body2" color="primary" fontWeight="bold">
+                All Homes in {cityName} →
+              </Typography>
+            </Link>
+          </Box>
+        </Box>
+      </Container>
+    </PageTemplate>
+  )
+}
+
+// ---------------------------------------------------------------------------
+// Schools Page
+// ---------------------------------------------------------------------------
+
+async function renderSchoolsPage(
+  parsed: ParsedCleanSlug,
+  cityName: string,
+  baseUrl: string
+) {
+  const breadcrumbItems = buildBreadcrumbs(parsed, cityName, baseUrl)
+
+  return (
+    <PageTemplate>
+      <StructuredData data={breadcrumbSchema(breadcrumbItems)} />
+      <Container maxWidth="lg" sx={{ py: 4 }}>
+        <Typography variant="h3" component="h1" fontWeight="bold" gutterBottom>
+          Schools in {cityName}, FL
+        </Typography>
+        <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
+          Find schools and school district information for {cityName}, Florida. School data coming soon.
+        </Typography>
+
+        <Box sx={{ mt: 4, p: 3, bgcolor: 'grey.100', borderRadius: 2 }}>
+          <Typography variant="h6" gutterBottom>
+            Explore {cityName}
+          </Typography>
+          <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
+            <Link href={generateCleanUrl(cityName)}>
+              <Typography variant="body2" color="primary" fontWeight="bold">
+                All Homes in {cityName} →
+              </Typography>
+            </Link>
+          </Box>
+        </Box>
+      </Container>
+    </PageTemplate>
+  )
+}
