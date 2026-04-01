@@ -28,6 +28,35 @@ import {
 export const dynamic = 'force-dynamic'
 export const revalidate = 3600
 
+// Build breadcrumb items for structured data
+function buildBreadcrumbs(
+  parsed: ParsedCleanSlug,
+  cityName: string,
+  baseUrl: string
+): Array<{ name: string; url: string }> {
+  const items: Array<{ name: string; url: string }> = [
+    { name: 'Home', url: baseUrl },
+    { name: 'Florida', url: `${baseUrl}/search/gallery` },
+  ]
+
+  if (cityName) {
+    items.push({ name: cityName, url: `${baseUrl}/${parsed.city}` })
+  }
+
+  if (parsed.pageType === 'subType' && parsed.subType) {
+    const stConfig = getSubTypeBySlug(parsed.subType)
+    items.push({ name: stConfig?.label || slugToDisplayName(parsed.subType), url: `${baseUrl}/${parsed.city}/${parsed.subType}` })
+  } else if (parsed.pageType === 'neighborhood' && parsed.subType) {
+    items.push({ name: slugToDisplayName(parsed.subType), url: `${baseUrl}/${parsed.city}/${parsed.subType}` })
+  } else if (parsed.pageType === 'zip' && parsed.subType) {
+    items.push({ name: parsed.subType, url: `${baseUrl}/${parsed.city}/${parsed.subType}` })
+  } else if (parsed.pageType === 'schools') {
+    items.push({ name: 'Schools', url: `${baseUrl}/${parsed.city}/schools` })
+  }
+
+  return items
+}
+
 interface CleanPageProps {
   params: Promise<{ slugs: string[] }>
 }
