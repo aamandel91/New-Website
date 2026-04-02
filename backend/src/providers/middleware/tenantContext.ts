@@ -44,6 +44,12 @@ export default {
           orgId = org?.id || null
         }
 
+        // Priority 4: orgId from JWT token
+        if (!org && ctx.state['user']?.orgId) {
+          orgId = BigInt(ctx.state['user'].orgId)
+          org = await orgService.getOrganization(orgId)
+        }
+
         // If still no org found, try to get default organization
         if (!org) {
           org = await orgService.getOrganizationBySlug('default')

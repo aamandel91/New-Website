@@ -1,6 +1,6 @@
 'use client'
 
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import {
   Box,
   Card,
@@ -25,12 +25,13 @@ import {
 } from '@mui/icons-material'
 import { useRouter } from 'next/navigation'
 import { useOrganization } from '@/providers/OrganizationProvider'
+import { getTokenSync } from 'utils/tokens'
 
 const GOLD = '#C4A96E'
 
 interface StatCardProps {
   title: string
-  value: string | number
+  value: React.ReactNode
   icon: React.ReactNode
   color: string
 }
@@ -111,8 +112,69 @@ const recentActivity = [
   { text: 'Open house listing added for 123 Main St', time: '3 days ago', icon: <HouseIcon fontSize="small" /> }
 ]
 
+const API_URL = `${process.env.NEXT_PUBLIC_API_URL}/api`
+
+async function fetchWithAuth(path: string) {
+  const token = getTokenSync()
+  const headers: Record<string, string> = { 'Content-Type': 'application/json' }
+  if (token) headers['Authorization'] = `Bearer ${token}`
+  const res = await fetch(`${API_URL}${path}`, { headers })
+  if (!res.ok) throw new Error(`${res.status}`)
+  return res.json()
+}
+
+interface DashboardStats {
+  pages: number | null
+  blogs: number | null
+  leads: number | null
+  users: number | null
+}
+
 export default function AdminDashboard() {
   const { organization } = useOrganization()
+  const [stats, setStats] = useState<DashboardStats>({ pages: null, blogs: null, leads: null, users: null })
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    async function loadStats() {
+      const results: DashboardStats = { pages: null, blogs: null, leads: null, users: null }
+
+      const [pagesRes, blogsRes, leadsRes, usersRes] = await Promise.allSettled([
+        fetchWithAuth('/content-pages'),
+        fetchWithAuth('/blogs/admin/all'),
+        fetchWithAuth('/leads'),
+        fetchWithAuth('/admin/users')
+      ])
+
+      if (pagesRes.status === 'fulfilled') {
+        const data = pagesRes.value
+        results.pages = Array.isArray(data) ? data.length : (data?.pages?.length ?? data?.total ?? 0)
+      }
+      if (blogsRes.status === 'fulfilled') {
+        const data = blogsRes.value
+        results.blogs = Array.isArray(data) ? data.length : (data?.blogs?.length ?? data?.total ?? 0)
+      }
+      if (leadsRes.status === 'fulfilled') {
+        const data = leadsRes.value
+        results.leads = Array.isArray(data) ? data.length : (data?.leads?.length ?? data?.total ?? 0)
+      }
+      if (usersRes.status === 'fulfilled') {
+        const data = usersRes.value
+        results.users = Array.isArray(data) ? data.length : 0
+      }
+
+      setStats(results)
+      setLoading(false)
+    }
+
+    loadStats()
+  }, [])
+
+  const formatStat = (value: number | null): string | React.ReactNode => {
+    if (loading) return '...'
+    if (value === null) return '\u2013'
+    return value.toString()
+  }
 
   return (
     <Box>
@@ -126,16 +188,16 @@ export default function AdminDashboard() {
       {/* Stats Row */}
       <Grid container spacing={3} sx={{ mb: 4 }}>
         <Grid item xs={12} sm={6} md={3}>
-          <StatCard title="Total Pages" value={24} icon={<DescriptionIcon />} color={GOLD} />
+          <StatCard title="Total Pages" value={formatStat(stats.pages)} icon={<DescriptionIcon />} color={GOLD} />
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
-          <StatCard title="Total Blog Posts" value={18} icon={<ArticleIcon />} color={GOLD} />
+          <StatCard title="Total Blog Posts" value={formatStat(stats.blogs)} icon={<ArticleIcon />} color={GOLD} />
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
-          <StatCard title="Total Leads" value={156} icon={<PeopleIcon />} color={GOLD} />
+          <StatCard title="Total Leads" value={formatStat(stats.leads)} icon={<PeopleIcon />} color={GOLD} />
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
-          <StatCard title="Active Open Houses" value={5} icon={<HouseIcon />} color={GOLD} />
+          <StatCard title="Admin Users" value={formatStat(stats.users)} icon={<HouseIcon />} color={GOLD} />
         </Grid>
       </Grid>
 

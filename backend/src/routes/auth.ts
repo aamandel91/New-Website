@@ -441,6 +441,10 @@ router.post('/admin-login', async (ctx) => {
     return
   }
 
+  // Resolve the default organization for admin JWT
+  const org = await db('organizations').where('slug', 'default').first()
+  const orgId = org?.id || 1
+
   // Sign JWT directly for admin login (bypasses ACL lookup)
   const keys = ctx.state.container.resolve<{ private: Buffer }>('middleware.jwt.config.keys')
   const jwt = await import('jsonwebtoken')
@@ -449,6 +453,7 @@ router.post('/admin-login', async (ctx) => {
       email: user.email,
       sub: user.id.toString(),
       role: UserRole.Admin,
+      orgId,
     },
     keys.private,
     {
