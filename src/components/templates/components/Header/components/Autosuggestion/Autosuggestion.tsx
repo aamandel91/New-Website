@@ -196,6 +196,17 @@ const Autosuggestion = ({
       variant="filled"
       placeholder={t('Search.autosuggestPlaceholder')}
       autoComplete="off"
+      sx={{
+        '& .MuiFilledInput-root': {
+          color: '#fff',
+          '&:hover': { color: '#fff' },
+          '&.Mui-focused': { color: '#fff' }
+        },
+        '& .MuiFilledInput-input': {
+          color: '#fff',
+          '&::placeholder': { color: 'rgba(255,255,255,0.7)', opacity: 1 }
+        }
+      }}
       slotProps={{
         input: {
           ...params.InputProps,
@@ -214,7 +225,8 @@ const Autosuggestion = ({
 
         htmlInput: {
           ...params.inputProps,
-          autoComplete: 'off'
+          autoComplete: 'off',
+          style: { color: '#fff' }
         }
       }}
     />

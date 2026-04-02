@@ -2,27 +2,22 @@
 
 import React, { Suspense } from 'react'
 
-import { Box } from '@mui/material'
+import { Box, Container } from '@mui/material'
 
-import { type ListingStatus, type ListingType } from '@configs/filters'
 import { AdvancedFiltersDialog, AiSearchDialog } from '@shared/Dialogs'
-import { ListingStatusSelect, ListingTypeSelect } from '@shared/Filters'
+import { ZillowFilterBar } from '@shared/Filters'
 
-import KeywordSearchInput from 'components/search/KeywordSearchInput'
+import type { Filters } from 'services/Search'
 import { useFeatures } from 'providers/FeaturesProvider'
 import { useSearch } from 'providers/SearchProvider'
 import useBreakpoints from 'hooks/useBreakpoints'
 
 import {
-  AdvancedFiltersButton,
   AiChat,
-  // AiQualityButton,
   AiSearchButton,
   AiSpacesSelect,
   AutosuggestionField,
-  FilterToggleChips,
   LayoutSelect,
-  MapFiltersBar,
   SaveSearchButton
 } from './components'
 
@@ -35,87 +30,74 @@ const MapFilters = () => {
   const { mobile } = useBreakpoints()
   const size = mobile ? 'small' : 'medium'
 
-  const { filters, setFilter, addFilters, setKeywordFilter } = useSearch()
+  const { filters, count, setFilters, addFilters } = useSearch()
 
-  const typeValue = filters.listingType || 'allListings'
-  const statusValue = filters.listingStatus || 'all'
-
-  const featureFlags = [
-    features.saveSearch,
-    features.aiSearch,
-    features.aiSpaces,
-    features.aiChat
-  ]
-
-  const activeFeaturesCount = featureFlags.filter(Boolean).length
-  const statusSelectVariant = activeFeaturesCount < 2 ? 'group' : 'select'
-
-  const handleStatusChange = (value: ListingStatus) => {
-    if (value === 'rent') {
+  const handleFilterChange = (newFilters: Partial<Filters>) => {
+    // When switching to rent, reset prices
+    if (newFilters.listingStatus === 'rent' && filters.listingStatus !== 'rent') {
       addFilters({
+        ...newFilters,
         minPrice: 0,
-        maxPrice: 0,
-        listingStatus: value
-        // listingType: 'allListings'
+        maxPrice: 0
       })
     } else {
-      setFilter('listingStatus', value)
+      setFilters({ ...filters, ...newFilters })
     }
   }
 
-  const handleTypeChange = (value: ListingType) =>
-    setFilter('listingType', value)
-
-  const secondaryActions = (
-    <>
-      <AdvancedFiltersButton size={size} />
-      <FilterToggleChips size={size} />
-      {features.saveSearch && <SaveSearchButton size={size} />}
-      {features.aiSearch && <AiSearchButton size={size} />}
-      {features.aiSpaces && (
-        <DesktopOnly>
-          <AiSpacesSelect size={size} />
-        </DesktopOnly>
-      )}
-      {features.aiChat && (
-        <DesktopOnly>
-          <AiChat />
-        </DesktopOnly>
-      )}
-    </>
-  )
-
   return (
-    <MapFiltersBar rightSlot={<LayoutSelect />} secondarySlot={secondaryActions}>
-      {features.search && features.searchPosition === 'filters' && (
-        <AutosuggestionField />
-      )}
-
-      <ListingTypeSelect
-        size={size}
-        value={typeValue}
-        onChange={handleTypeChange}
-      />
-
-      <ListingStatusSelect
-        size={size}
-        value={statusValue}
-        variant={statusSelectVariant}
-        onChange={handleStatusChange}
-      />
-
-      <KeywordSearchInput
-        size={size}
-        onSearch={(result) =>
-          setKeywordFilter(result.regex ? result : null)
-        }
-      />
+    <Box
+      sx={{
+        width: '100%',
+        zIndex: 'appBar',
+        py: { xs: 1, sm: 1.5 },
+        position: 'relative'
+      }}
+    >
+      <Container sx={{ position: 'relative' }}>
+        <ZillowFilterBar
+          filters={filters}
+          count={count}
+          onFilterChange={handleFilterChange}
+          autosuggestion={
+            features.search && features.searchPosition === 'filters' ? (
+              <AutosuggestionField />
+            ) : undefined
+          }
+          saveSearchButton={
+            <>
+              {features.saveSearch && <SaveSearchButton size={size} />}
+              {features.aiSearch && <AiSearchButton size={size} />}
+              {features.aiSpaces && (
+                <DesktopOnly>
+                  <AiSpacesSelect size={size} />
+                </DesktopOnly>
+              )}
+              {features.aiChat && (
+                <DesktopOnly>
+                  <AiChat />
+                </DesktopOnly>
+              )}
+            </>
+          }
+        />
+      </Container>
+      <Box
+        sx={{
+          position: 'absolute',
+          top: 16,
+          right: { sm: 24, lg: 32 },
+          display: { xs: 'none', md: 'flex' }
+        }}
+      >
+        <LayoutSelect />
+      </Box>
 
       <Suspense>
         {features.aiSearch && <AiSearchDialog />}
         <AdvancedFiltersDialog />
       </Suspense>
-    </MapFiltersBar>
+    </Box>
   )
 }
 
