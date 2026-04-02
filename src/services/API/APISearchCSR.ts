@@ -16,8 +16,10 @@ export interface CSRSearchParams {
   lastStatus?: string | string[]
   minPrice?: number
   maxPrice?: number
-  minBeds?: number
-  maxBeds?: number
+  minBedrooms?: number
+  maxBedrooms?: number
+  minBeds?: number   // alias — mapped to minBedrooms
+  maxBeds?: number   // alias — mapped to maxBedrooms
   minBaths?: number
   maxBaths?: number
   minSqft?: number
@@ -59,12 +61,17 @@ export interface CSRSearchParams {
 
 class APISearchCSR extends APIClientSide {
   async searchListings(params: CSRSearchParams): Promise<ApiQueryResponse | null> {
-    const { boardId = DEFAULT_BOARD_ID, resultsPerPage = 20, ...rest } = params
-    return this.fetch('/listings', {
+    const { boardId = DEFAULT_BOARD_ID, resultsPerPage = 20, minBeds, maxBeds, ...rest } = params
+    // Map aliases to correct API parameter names
+    const mapped: Record<string, unknown> = {
       boardId,
       resultsPerPage,
       ...rest,
-    })
+    }
+    // The Repliers API uses minBedrooms/maxBedrooms (not minBeds/maxBeds)
+    if (minBeds !== undefined && mapped.minBedrooms === undefined) mapped.minBedrooms = minBeds
+    if (maxBeds !== undefined && mapped.maxBedrooms === undefined) mapped.maxBedrooms = maxBeds
+    return this.fetch('/listings', mapped)
   }
 
   async getListing(mlsNumber: string, boardId: number = DEFAULT_BOARD_ID): Promise<Property | null> {
