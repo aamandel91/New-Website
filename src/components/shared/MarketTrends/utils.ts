@@ -1,6 +1,6 @@
 import { cache } from 'react'
-import { APISearch } from 'services/API'
-import searchConfig from '@configs/search'
+
+import APISearchCSR from 'services/API/APISearchCSR'
 
 export interface MarketTrendsData {
   date: string
@@ -26,30 +26,28 @@ export interface MarketTrendsSummary {
 export const fetchMarketTrends = cache(
   async (
     city: string,
-    state: string,
-    boardId: number = searchConfig.defaultBoardId,
+    _state: string,
+    boardId: number = 110,
     monthsBack: number = 12
   ): Promise<{
     chartData: MarketTrendsData[]
     summary: MarketTrendsSummary | null
   }> => {
     try {
-      const searchParams = {
-        get: {
-          boardId,
-          page: 1,
-          pageSize: 100,
-        },
-        post: {
-          filters: {
-            'address.city': city,
-            'address.state': state,
-            status: 'active',
-          },
-        },
+      const response = await APISearchCSR.searchListings({
+        boardId,
+        city,
+        status: 'U',
+        lastStatus: 'Sld',
+        listings: false,
+        statistics: 'avg-soldPrice,med-soldPrice,avg-daysOnMarket,grp-mth',
+        resultsPerPage: 1,
+      })
+
+      if (!response) {
+        return { chartData: [], summary: null }
       }
 
-      const response = await APISearch.fetch(searchParams)
       const { count, statistics } = response
 
       if (!statistics) {

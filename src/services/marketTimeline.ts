@@ -1,5 +1,5 @@
 import type { ApiStatisticRecord } from 'services/API'
-import APISearch from 'services/API/APISearch'
+import APISearchCSR from 'services/API/APISearchCSR'
 
 export interface MonthlyDataPoint {
   date: string
@@ -69,38 +69,22 @@ export async function fetchMarketTimeline(
   maxDate.setDate(0) // last day of current month
   const maxSoldDate = maxDate.toISOString().split('T')[0]
 
-  // Build query params
-  const getParams: Record<string, unknown> = {
-    status: 'U',
-    lastStatus: 'Sld',
-    city: params.city,
-    statistics: 'avg-soldPrice,med-soldPrice,avg-daysOnMarket,grp-mth',
-    minSoldDate,
-    maxSoldDate,
-    listings: false,
-    pageSize: 1,
-  }
-
-  if (params.propertyType) {
-    getParams.propertyType = params.propertyType
-  }
-  if (params.beds) {
-    getParams.minBeds = params.beds
-  }
-  if (params.baths) {
-    getParams.minBaths = params.baths
-  }
-  if (params.minPrice) {
-    getParams.minPrice = params.minPrice
-  }
-  if (params.maxPrice) {
-    getParams.maxPrice = params.maxPrice
-  }
-
   try {
-    const response = await APISearch.fetch({
-      get: getParams,
-      post: {},
+    const response = await APISearchCSR.searchListings({
+      boardId: 110,
+      status: 'U',
+      lastStatus: 'Sld',
+      city: params.city,
+      statistics: 'avg-soldPrice,med-soldPrice,avg-daysOnMarket,grp-mth',
+      minSoldDate,
+      maxSoldDate,
+      listings: false,
+      resultsPerPage: 1,
+      ...(params.propertyType && { propertyType: params.propertyType }),
+      ...(params.beds && { minBeds: parseInt(params.beds) }),
+      ...(params.baths && { minBaths: parseInt(params.baths) }),
+      ...(params.minPrice && { minPrice: parseInt(params.minPrice) }),
+      ...(params.maxPrice && { maxPrice: parseInt(params.maxPrice) }),
     })
 
     const soldPriceMth = response?.statistics?.soldPrice?.mth

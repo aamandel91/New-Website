@@ -1,5 +1,3 @@
-import queryString from 'query-string'
-
 import searchConfig from '@configs/search'
 
 import type { SubTypeConfig } from '@configs/page-generation'
@@ -10,6 +8,10 @@ import type {
   ApiQueryResponse,
 } from 'services/API'
 import { APISearch } from 'services/API'
+import APISearchCSR from 'services/API/APISearchCSR'
+
+const useCSR = !!process.env.NEXT_PUBLIC_REPLIERS_CSR_KEY
+const defaultBoardId = useCSR ? 110 : searchConfig.defaultBoardId
 
 /**
  * Data fetching service for the page generation engine.
@@ -105,7 +107,6 @@ function buildSubTypeFilters(subType: SubTypeConfig): Record<string, unknown> {
     params.lastStatus = subType.lastStatus
   }
   if (subType.minLotSize) {
-    // lot.size is in sq ft in the API
     params.minLotSize = subType.minLotSize
   }
   if (subType.stories) {
@@ -123,22 +124,30 @@ export async function fetchListingCount(
   filters?: Record<string, unknown>
 ): Promise<number> {
   try {
-    const getParams: Record<string, unknown> = {
-      city,
-      status: 'A',
-      boardId: searchConfig.defaultBoardId,
-      resultsPerPage: 1,
-      listings: false,
-      ...filters,
+    if (useCSR) {
+      const result = await APISearchCSR.searchListings({
+        city,
+        status: 'A',
+        boardId: defaultBoardId,
+        resultsPerPage: 1,
+        listings: false,
+        ...filters,
+      } as any)
+      return result?.count ?? 0
     }
 
-    const getParamsString = queryString.stringify(
-      getParams as Record<string, string>,
-      { arrayFormat: 'none', skipEmptyString: true, skipNull: true }
-    )
-
     const response = await APISearch.fetch(
-      { get: getParams, post: {} },
+      {
+        get: {
+          city,
+          status: 'A',
+          boardId: defaultBoardId,
+          resultsPerPage: 1,
+          listings: false,
+          ...filters,
+        },
+        post: {},
+      },
       undefined
     )
     return response?.count ?? 0
@@ -155,28 +164,42 @@ export async function fetchZipCodesForCity(
   city: string
 ): Promise<string[]> {
   try {
-    const getParams: Record<string, unknown> = {
-      city,
-      status: 'A',
-      boardId: searchConfig.defaultBoardId,
-      resultsPerPage: 1,
-      listings: false,
-      aggregates: 'address.zip',
+    if (useCSR) {
+      const result = await APISearchCSR.searchListings({
+        city,
+        status: 'A',
+        boardId: defaultBoardId,
+        resultsPerPage: 1,
+        listings: false,
+        aggregates: 'address.zip',
+      })
+
+      const zipAggregates = result?.aggregates as Record<string, unknown> | undefined
+      if (!zipAggregates) return []
+      const zipData = (zipAggregates as any)?.['address.zip'] ?? (zipAggregates as any)?.address?.zip
+      if (!zipData || typeof zipData !== 'object') return []
+      return Object.keys(zipData).filter(Boolean).sort()
     }
 
     const response = await APISearch.fetch(
-      { get: getParams, post: {} },
+      {
+        get: {
+          city,
+          status: 'A',
+          boardId: defaultBoardId,
+          resultsPerPage: 1,
+          listings: false,
+          aggregates: 'address.zip',
+        },
+        post: {},
+      },
       undefined
     )
 
-    // The aggregates response for address.zip returns an object keyed by zip code
     const zipAggregates = (response?.aggregates as Record<string, unknown> | undefined)
     if (!zipAggregates) return []
-
-    // Handle the nested structure: aggregates.address.zip or aggregates['address.zip']
     const zipData = (zipAggregates as any)?.['address.zip'] ?? (zipAggregates as any)?.address?.zip
     if (!zipData || typeof zipData !== 'object') return []
-
     return Object.keys(zipData).filter(Boolean).sort()
   } catch (error) {
     console.error(`[pageGeneration] fetchZipCodesForCity error for "${city}"`, error)
@@ -205,18 +228,31 @@ export async function fetchListingsPreview(
   subTypeFilters?: Record<string, unknown>
 ): Promise<ApiQueryResponse | null> {
   try {
-    const getParams: Record<string, unknown> = {
-      city,
-      status: 'A',
-      boardId: searchConfig.defaultBoardId,
-      resultsPerPage: limit,
-      sortBy: 'createdOnDesc',
-      listings: true,
-      ...subTypeFilters,
+    if (useCSR) {
+      return await APISearchCSR.searchListings({
+        city,
+        status: 'A',
+        boardId: defaultBoardId,
+        resultsPerPage: limit,
+        sortBy: 'createdOnDesc',
+        listings: true,
+        ...subTypeFilters,
+      } as any)
     }
 
     return await APISearch.fetch(
-      { get: getParams, post: {} },
+      {
+        get: {
+          city,
+          status: 'A',
+          boardId: defaultBoardId,
+          resultsPerPage: limit,
+          sortBy: 'createdOnDesc',
+          listings: true,
+          ...subTypeFilters,
+        },
+        post: {},
+      },
       undefined
     )
   } catch (error) {

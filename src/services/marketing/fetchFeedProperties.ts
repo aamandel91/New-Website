@@ -1,16 +1,18 @@
 /**
  * Shared property fetcher for marketing feed generation
- * Fetches listings from the Repliers search API and maps Property → RemarketingPropertyData
+ * Fetches listings from the Repliers CSR API and maps Property → RemarketingPropertyData
  */
 
 import type { Property } from 'services/API'
 import { APISearch } from 'services/API'
+import APISearchCSR from 'services/API/APISearchCSR'
 import { generatePropertyUrl } from 'utils/propertyUrls'
 
 import type { RemarketingPropertyData } from './types'
 
 const baseUrl = process.env.NEXT_PUBLIC_APP_DOMAIN || 'https://example.com'
-const defaultBoardId = 2
+const useCSR = !!process.env.NEXT_PUBLIC_REPLIERS_CSR_KEY
+const defaultBoardId = useCSR ? 110 : 2
 
 function mapAvailability(
   status: string,
@@ -91,24 +93,40 @@ export async function fetchFeedProperties(
 
   const page = Math.floor(offset / limit) + 1
 
-  const getParams: Record<string, string | number> = {
-    boardId: defaultBoardId,
-    pageNum: page,
-    resultsPerPage: limit,
-    status,
-    type: 'sale',
-  }
-
-  if (city) getParams['address.city'] = city
-  if (propertyType) getParams['details.propertyType'] = propertyType
-  if (minPrice) getParams.minPrice = minPrice
-  if (maxPrice) getParams.maxPrice = maxPrice
-
   try {
-    const response = await APISearch.fetch(
-      { get: getParams },
-      { next: { revalidate: 3600 } }
-    )
+    let response
+
+    if (useCSR) {
+      response = await APISearchCSR.searchListings({
+        boardId: defaultBoardId,
+        pageNum: page,
+        resultsPerPage: limit,
+        status,
+        type: 'sale',
+        ...(city && { city }),
+        ...(propertyType && { propertyType }),
+        ...(minPrice && { minPrice }),
+        ...(maxPrice && { maxPrice }),
+      })
+    } else {
+      const getParams: Record<string, string | number> = {
+        boardId: defaultBoardId,
+        pageNum: page,
+        resultsPerPage: limit,
+        status,
+        type: 'sale',
+      }
+
+      if (city) getParams.city = city
+      if (propertyType) getParams.propertyType = propertyType
+      if (minPrice) getParams.minPrice = minPrice
+      if (maxPrice) getParams.maxPrice = maxPrice
+
+      response = await APISearch.fetch(
+        { get: getParams },
+        { next: { revalidate: 3600 } } as any
+      )
+    }
 
     if (!response?.listings) return []
 
