@@ -442,7 +442,7 @@ router.post('/admin-login', async (ctx) => {
   }
 
   // Sign JWT directly for admin login (bypasses ACL lookup)
-  const keys = ctx.state.container.resolve<{ private: string }>('keys')
+  const keys = ctx.state.container.resolve<{ private: Buffer }>('middleware.jwt.config.keys')
   const jwt = await import('jsonwebtoken')
   const token = jwt.default.sign(
     {
