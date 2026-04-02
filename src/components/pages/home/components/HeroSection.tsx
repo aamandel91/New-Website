@@ -11,10 +11,12 @@ import {
   Select,
   Tab,
   Tabs,
-  TextField,
   Typography
 } from '@mui/material'
 import type { SelectChangeEvent } from '@mui/material'
+
+import LocationAutocomplete from '@shared/LocationAutocomplete'
+import type { LocationResult } from '@shared/LocationAutocomplete'
 
 const PRICE_OPTIONS = [
   { label: 'Any', value: '' },
@@ -32,13 +34,19 @@ const PRICE_OPTIONS = [
 const HeroSection = () => {
   const router = useRouter()
   const [activeTab, setActiveTab] = useState(0)
-  const [location, setLocation] = useState('')
+  const [selectedLocation, setSelectedLocation] = useState<LocationResult | null>(null)
   const [minPrice, setMinPrice] = useState('')
   const [maxPrice, setMaxPrice] = useState('')
 
+  const handleLocationSelect = (location: LocationResult) => {
+    setSelectedLocation(location)
+  }
+
   const handleSearch = () => {
     const params = new URLSearchParams()
-    if (location) params.set('location', location)
+    if (selectedLocation?.name) {
+      params.set('city', selectedLocation.name)
+    }
     if (minPrice) params.set('minPrice', minPrice)
     if (maxPrice) params.set('maxPrice', maxPrice)
     const query = params.toString()
@@ -131,23 +139,23 @@ const HeroSection = () => {
           p: { xs: 2, md: 0 }
         }}
       >
-        <TextField
-          placeholder="Location, Zip, Address or MLS #"
-          value={location}
-          onChange={(e) => setLocation(e.target.value)}
-          variant="outlined"
-          size="small"
-          onKeyDown={(e) => {
-            if (e.key === 'Enter') handleSearch()
-          }}
-          sx={{
-            flex: 2,
-            '& .MuiOutlinedInput-root': {
-              borderRadius: { xs: '4px', md: 0 },
-              '& fieldset': { border: 'none', borderRight: { md: '1px solid #ddd' } }
-            }
-          }}
-        />
+        <Box sx={{ flex: 2, minWidth: 0 }}>
+          <LocationAutocomplete
+            placeholder="Location, Zip, Address or MLS #"
+            variant="light"
+            navigate={false}
+            onSelect={handleLocationSelect}
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                borderRadius: { xs: '4px', md: 0 },
+                '& fieldset': {
+                  border: 'none',
+                  borderRight: { md: '1px solid #ddd' }
+                }
+              }
+            }}
+          />
+        </Box>
         <Select
           value={minPrice}
           onChange={(e: SelectChangeEvent) => setMinPrice(e.target.value)}

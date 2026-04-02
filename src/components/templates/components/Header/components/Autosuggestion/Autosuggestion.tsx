@@ -288,13 +288,35 @@ const Autosuggestion = ({
       autoComplete="off"
       sx={{
         '& .MuiFilledInput-root': {
-          color: '#fff',
-          '&:hover': { color: '#fff' },
-          '&.Mui-focused': { color: '#fff' }
+          color: '#fff !important',
+          '&:hover': { color: '#fff !important' },
+          '&.Mui-focused': {
+            color: '#fff !important',
+            backgroundColor: 'rgba(255,255,255,0.05)'
+          }
         },
         '& .MuiFilledInput-input': {
-          color: '#fff',
-          '&::placeholder': { color: 'rgba(255,255,255,0.7)', opacity: 1 }
+          color: '#fff !important',
+          caretColor: '#fff',
+          '&::placeholder': {
+            color: 'rgba(255,255,255,0.6) !important',
+            opacity: '1 !important'
+          }
+        },
+        '& .MuiInputBase-input': {
+          color: '#fff !important'
+        },
+        '& .MuiInputBase-input:focus': {
+          color: '#fff !important'
+        },
+        '& .MuiOutlinedInput-input': {
+          color: '#fff !important'
+        },
+        '& .MuiOutlinedInput-root': {
+          color: '#fff !important',
+          '&.Mui-focused .MuiInputBase-input': {
+            color: '#fff !important'
+          }
         }
       }}
       slotProps={{
@@ -305,7 +327,8 @@ const Autosuggestion = ({
               size={18}
               sx={{
                 position: 'absolute',
-                right: 18
+                right: 18,
+                color: 'rgba(255,255,255,0.7)'
               }}
             />
           ) : (

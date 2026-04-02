@@ -25,6 +25,9 @@ import {
 import type { SelectChangeEvent } from '@mui/material'
 import { Search as SearchIcon } from '@mui/icons-material'
 
+import LocationAutocomplete from '@shared/LocationAutocomplete'
+import type { LocationResult } from '@shared/LocationAutocomplete'
+
 const CITIES = [
   'Boca Raton',
   'Boynton Beach',
@@ -110,6 +113,7 @@ export default function AdvancedSearchPage() {
   const [cities, setCities] = useState<string[]>([])
   const [county, setCounty] = useState('')
   const [neighborhood, setNeighborhood] = useState('')
+  const [selectedLocation, setSelectedLocation] = useState<LocationResult | null>(null)
   const [zip, setZip] = useState('')
 
   const [propertyTypes, setPropertyTypes] = useState<string[]>([])
@@ -157,7 +161,18 @@ export default function AdvancedSearchPage() {
 
     if (cities.length) params.set('city', cities.join(','))
     if (county) params.set('area', county)
-    if (neighborhood) params.set('neighborhood', neighborhood)
+    if (selectedLocation) {
+      const locType = selectedLocation.type?.toLowerCase()
+      if (locType === 'neighborhood') {
+        params.set('neighborhood', selectedLocation.name)
+      } else if (locType === 'city') {
+        params.set('city', selectedLocation.name)
+      } else if (locType === 'area') {
+        params.set('area', selectedLocation.name)
+      }
+    } else if (neighborhood) {
+      params.set('neighborhood', neighborhood)
+    }
     if (zip) params.set('location', zip)
 
     if (propertyTypes.length) params.set('propertyType', propertyTypes.join(','))
@@ -264,12 +279,14 @@ export default function AdvancedSearchPage() {
                 ))}
               </Select>
             </FormControl>
-            <TextField
-              label="Neighborhood"
-              size="small"
-              value={neighborhood}
-              onChange={(e) => setNeighborhood(e.target.value)}
-              fullWidth
+            <LocationAutocomplete
+              placeholder="Search neighborhood, city, or area..."
+              variant="light"
+              navigate={false}
+              onSelect={(loc) => {
+                setSelectedLocation(loc)
+                setNeighborhood(loc.name || '')
+              }}
             />
             <TextField
               label="Zip Code"
