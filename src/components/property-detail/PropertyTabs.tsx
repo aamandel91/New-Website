@@ -33,6 +33,16 @@ const PropertyMortgageCalculator = dynamic(() => import('./PropertyMortgageCalcu
   loading: () => <Skeleton variant="rectangular" height={500} sx={{ borderRadius: 1 }} />,
 })
 
+const CashFlowCalculator = dynamic(() => import('./CashFlowCalculator'), {
+  ssr: false,
+  loading: () => <Skeleton variant="rectangular" height={400} sx={{ borderRadius: 1 }} />,
+})
+
+const CommuteCalculator = dynamic(() => import('./CommuteCalculator'), {
+  ssr: false,
+  loading: () => <Skeleton variant="rectangular" height={300} sx={{ borderRadius: 1 }} />,
+})
+
 interface PropertyTabsProps {
   property: Property
   similarProperties?: Property[]
@@ -289,6 +299,11 @@ const PropertyTabs: React.FC<PropertyTabsProps> = ({
           county={property.address?.district}
           schoolDistrict={undefined}
         />
+        <CommuteCalculator
+          originAddress={propertyAddress}
+          originLat={property.map?.latitude || 0}
+          originLng={property.map?.longitude || 0}
+        />
         <PropertyNeighborhood
           neighborhood={property.address?.neighborhood}
           city={property.address?.city}
@@ -313,6 +328,11 @@ const PropertyTabs: React.FC<PropertyTabsProps> = ({
           price={price}
           defaultInterestRate={defaultInterestRate}
           propertyTaxes={taxes}
+          hoaMonthly={hoa}
+        />
+        <CashFlowCalculator
+          listPrice={price}
+          propertyTaxAnnual={taxes}
           hoaMonthly={hoa}
         />
       </TabPanel>

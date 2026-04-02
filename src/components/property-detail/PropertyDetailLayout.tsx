@@ -23,6 +23,7 @@ import PropertyContactForm from './PropertyContactForm'
 import PropertyHeader from './PropertyHeader'
 import PropertyNotifications from './PropertyNotifications'
 import PropertyPhotoGallery from './PropertyPhotoGallery'
+import ViewOtherUnits from './ViewOtherUnits'
 import { getCDNPath } from 'utils/urls'
 import PropertyTabs from './PropertyTabs'
 
@@ -208,6 +209,13 @@ const PropertyDetailLayout: React.FC<PropertyDetailLayoutProps> = ({
             onShare={handleShare}
             onRequestInfo={handleRequestInfo}
             onScheduleTour={handleScheduleTour}
+          />
+          <ViewOtherUnits
+            streetName={property.address?.streetName || ''}
+            streetNumber={property.address?.streetNumber || ''}
+            city={property.address?.city || ''}
+            currentMls={property.mlsNumber}
+            propertyType={property.details?.propertyType}
           />
         </Box>
 
