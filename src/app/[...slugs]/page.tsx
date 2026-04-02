@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation'
 import { Box, Container, Typography, Breadcrumbs, Link, Grid, Chip, Card, CardContent } from '@mui/material'
 
 import { PageTemplate } from '@templates'
+import ListingsGrid from '@shared/ListingsGrid'
 import MarketTimelineGraph from '@shared/MarketTimelineGraph'
 import StructuredData from '@shared/StructuredData'
 
@@ -251,6 +252,9 @@ async function renderCityPage(
           </Typography>
         </Box>
 
+        {/* Property Listings */}
+        <ListingsGrid city={cityName} limit={12} />
+
         {/* Market Timeline Graph */}
         <Typography variant="h5" component="h2" gutterBottom sx={{ mt: 4 }}>
           {cityName} Housing Market
@@ -380,6 +384,9 @@ async function renderSubTypePage(
           Browse {count} {stConfig.label.toLowerCase()} currently available in {cityName}, Florida.
         </Typography>
 
+        {/* Property Listings */}
+        <ListingsGrid city={cityName} propertyType={stConfig.propertyType || stConfig.label} limit={12} />
+
         {/* Market Timeline */}
         <Box sx={{ mb: 4 }}>
           <MarketTimelineGraph city={cityName} propertyType={stConfig.label} />
@@ -432,6 +439,9 @@ async function renderNeighborhoodPage(
           Explore homes for sale in the {neighborhoodName} neighborhood of {cityName}, Florida.
         </Typography>
 
+        {/* Property Listings */}
+        <ListingsGrid city={cityName} neighborhood={neighborhoodName} limit={12} />
+
         <Box sx={{ mb: 4 }}>
           <MarketTimelineGraph city={cityName} />
         </Box>
@@ -475,6 +485,9 @@ async function renderZipPage(
         <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
           Browse homes and real estate in the {zip} zip code area of {cityName}, Florida.
         </Typography>
+
+        {/* Property Listings */}
+        <ListingsGrid city={cityName} zip={zip} limit={12} />
 
         <Box sx={{ mb: 4 }}>
           <MarketTimelineGraph city={cityName} />
