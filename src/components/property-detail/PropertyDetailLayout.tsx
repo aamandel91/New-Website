@@ -21,6 +21,7 @@ import Property3DTour from './Property3DTour'
 import PropertyBreadcrumbs from './PropertyBreadcrumbs'
 import PropertyContactForm from './PropertyContactForm'
 import PropertyHeader from './PropertyHeader'
+import PropertyNotifications from './PropertyNotifications'
 import PropertyPhotoGallery from './PropertyPhotoGallery'
 import { getCDNPath } from 'utils/urls'
 import PropertyTabs from './PropertyTabs'
@@ -264,7 +265,10 @@ const PropertyDetailLayout: React.FC<PropertyDetailLayoutProps> = ({
               sx={{
                 position: { lg: 'sticky' },
                 top: { lg: 80 },
-                alignSelf: 'flex-start'
+                alignSelf: 'flex-start',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 2,
               }}
             >
               <PropertyContactForm
@@ -272,9 +276,25 @@ const PropertyDetailLayout: React.FC<PropertyDetailLayoutProps> = ({
                 agent={agent}
                 onSubmit={handleContactSubmit}
               />
+              <PropertyNotifications
+                propertyAddress={propertyAddress}
+                mlsNumber={property.mlsNumber}
+                city={address.city}
+                neighborhood={property.address?.neighborhood}
+              />
             </Box>
           </Grid>
         </Grid>
+      </Container>
+
+      {/* Mobile Property Notifications */}
+      <Container maxWidth="xl" sx={{ display: { xs: 'block', lg: 'none' }, pb: 2 }}>
+        <PropertyNotifications
+          propertyAddress={propertyAddress}
+          mlsNumber={property.mlsNumber}
+          city={address.city}
+          neighborhood={property.address?.neighborhood}
+        />
       </Container>
 
       {/* Mobile Sticky Contact Bar + Modal */}

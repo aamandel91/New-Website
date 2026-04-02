@@ -8,6 +8,8 @@ import type { Property } from 'services/API'
 import PropertyDescription from './PropertyDescription'
 import PropertyKeyFacts from './PropertyKeyFacts'
 import PropertyValueEstimate from './PropertyValueEstimate'
+import EstimateHistoryTable from './EstimateHistoryTable'
+import SoldPriceDistribution from './SoldPriceDistribution'
 import PropertyFeatures from './PropertyFeatures'
 import CompareToMyHome from './CompareToMyHome'
 import PropertyNarrative from './PropertyNarrative'
@@ -228,12 +230,25 @@ const PropertyTabs: React.FC<PropertyTabsProps> = ({
             listPrice={parseFloat(property.listPrice)}
           />
 
+          {/* Estimate History Table & Chart */}
+          <EstimateHistoryTable
+            history={property.estimate?.history}
+            currentEstimate={property.estimate?.value}
+          />
+
           {/* Compare to My Home */}
           <CompareToMyHome
             listPrice={price}
             beds={property.details?.numBedrooms ? parseInt(property.details.numBedrooms) : 0}
             baths={property.details?.numBathrooms ? parseInt(property.details.numBathrooms) : 0}
             sqft={sqft}
+            propertyType={property.details?.propertyType}
+          />
+
+          {/* Sold Price Distribution */}
+          <SoldPriceDistribution
+            city={address.city}
+            neighborhood={property.address?.neighborhood}
             propertyType={property.details?.propertyType}
           />
 
