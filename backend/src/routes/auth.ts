@@ -459,7 +459,7 @@ router.post('/admin-login', async (ctx) => {
     {
       algorithm: 'RS256',
       expiresIn: '7d',
-      issuer: 'portal-backend',
+      issuer: process.env['JWT_ISSUER'] || 'http://repliers-proxy',
       jwtid: crypto.randomUUID(),
     }
   )
