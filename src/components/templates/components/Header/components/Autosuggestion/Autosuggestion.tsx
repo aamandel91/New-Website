@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useMemo, useState } from 'react'
+import React, { useMemo, useRef, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 
@@ -58,6 +58,43 @@ import {
 const { minCharsToSuggest } = searchConfig
 const { defaultAddressZoom, defaultAreaZoom } = mapConfig
 
+const CSR_API_URL = 'https://csr-api.repliers.io'
+const CSR_API_KEY = process.env.NEXT_PUBLIC_REPLIERS_CSR_KEY || ''
+
+interface LocationResult {
+  name: string
+  type: string
+  locationId?: string
+  address?: {
+    city?: string
+    area?: string
+    neighborhood?: string
+  }
+}
+
+function slugify(text: string): string {
+  return text
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '')
+}
+
+function locationToCleanUrl(result: LocationResult): string {
+  const type = result.type?.toLowerCase()
+  const name = result.name || ''
+
+  if (type === 'city') {
+    return `/${slugify(name)}`
+  }
+  if (type === 'neighborhood' && result.address?.city) {
+    return `/${slugify(result.address.city)}/${slugify(name)}`
+  }
+  if (type === 'area' && result.address?.city) {
+    return `/${slugify(result.address.city)}/${slugify(name)}`
+  }
+  return `/${slugify(name)}`
+}
+
 const Autosuggestion = ({
   showButton = false,
   buttonTitle = ''
@@ -91,6 +128,8 @@ const Autosuggestion = ({
   const [address, setAddress] = useState<MapboxAddress[]>([])
   const [locations, setLocations] = useState<AutosuggestionOption[]>([])
 
+  const abortRef = useRef<AbortController | null>(null)
+
   const { map } = MapService
 
   const handleButtonClick = () => {
@@ -108,23 +147,78 @@ const Autosuggestion = ({
       const query = searchString.toLowerCase().trim()
 
       const fetchData = async () => {
+        // Cancel previous request
+        if (abortRef.current) abortRef.current.abort()
+        const controller = new AbortController()
+        abortRef.current = controller
+
         setLoading(true)
         try {
-          // use the first part of the query and drop the second (if any),
-          // because it is (probably) the parent region of the neighborhood or city.
-          // TRIE doesn't have them in the index
-          const trieQuery = query.split(',').at(0) || ''
-          setLocations(await searchLocations(trieQuery))
+          // Fetch from Repliers Locations Autocomplete API (CSR)
+          const locationResults: AutosuggestionOption[] = []
+
+          if (CSR_API_KEY) {
+            try {
+              const locParams = new URLSearchParams({
+                search: query,
+                type: 'area,city,neighborhood',
+                resultsPerPage: '8',
+                state: 'FL',
+              })
+              const locRes = await fetch(
+                `${CSR_API_URL}/locations/autocomplete?${locParams}`,
+                {
+                  headers: {
+                    'REPLIERS-API-KEY': CSR_API_KEY,
+                    'Content-Type': 'application/json',
+                  },
+                  signal: controller.signal,
+                }
+              )
+              if (locRes.ok) {
+                const locData = await locRes.json()
+                const results: LocationResult[] = Array.isArray(locData)
+                  ? locData
+                  : locData?.results || locData?.suggestions || []
+                for (const result of results) {
+                  const type = result.type?.toLowerCase()
+                  locationResults.push({
+                    type: type === 'neighborhood' ? 'neighborhood' : 'city',
+                    source: { name: result.name || '' },
+                    parent: result.address?.city ? { name: result.address.city } : undefined,
+                    _locationResult: result,
+                  } as AutosuggestionOption & { _locationResult: LocationResult })
+                }
+              }
+            } catch (err: any) {
+              if (err?.name !== 'AbortError') {
+                // Fallback to trie search
+                const trieQuery = query.split(',').at(0) || ''
+                const trieResults = await searchLocations(trieQuery)
+                locationResults.push(...trieResults)
+              }
+            }
+          } else {
+            // No CSR key, use trie search
+            const trieQuery = query.split(',').at(0) || ''
+            const trieResults = await searchLocations(trieQuery)
+            locationResults.push(...trieResults)
+          }
+
+          if (controller.signal.aborted) return
+          setLocations(locationResults)
+
+          // Also fetch address + listing suggestions
           const { address, listings } =
             await APISearch.fetchAutosuggestions(query)
+          if (controller.signal.aborted) return
           setAddress(address)
           setListings(listings)
         } catch (error: any) {
-          // Suppress 401 errors (expected when user not authenticated)
+          if (error?.name === 'AbortError') return
           if (error?.status !== 401) {
             console.error('Failed to fetch autosuggestions:', error)
           }
-          // Handle error state here, e.g., show a message to the user
         } finally {
           setLoading(false)
         }
@@ -134,21 +228,20 @@ const Autosuggestion = ({
         fetchData()
       }
     },
-    200,
+    250,
     [searchString]
   )
 
   // Options for <Autocomplete />
   const options = []
 
-  // TODO: useEffect
   if (loading) {
     options.push({ type: 'loader' })
   } else {
     locations.forEach((location) => {
       const { source, parent } = location
       options.push({
-        type: 'city', // combining both existing types into one, `location.type` not needed,
+        type: 'city',
         source,
         parent
       })
@@ -167,10 +260,8 @@ const Autosuggestion = ({
     })
   }
 
-  // TODO: useCallback
   const renderOptionElement = (
     props: React.HTMLAttributes<HTMLLIElement> & { key?: React.Key },
-    // TODO: add type for option
     option: any
   ) => {
     const { key, ...otherProps } = props
@@ -189,7 +280,6 @@ const Autosuggestion = ({
     }
   }
 
-  // TODO: useCallback
   const renderInputElement = (params: AutocompleteRenderInputParams) => (
     <TextField
       {...params}
@@ -232,7 +322,6 @@ const Autosuggestion = ({
     />
   )
 
-  // TODO: useCallback
   const getOptionLabel = (option: any) => {
     switch (option.type) {
       case 'city':
@@ -263,8 +352,8 @@ const Autosuggestion = ({
   const handleAddressClick = async (option: any) => {
     setOpen(false)
     setAreaLoading(true)
-    const address = option.source as MapboxAddress
-    const point = await MapSearch.fetchMapboxAddressPoint(address)
+    const addr = option.source as MapboxAddress
+    const point = await MapSearch.fetchMapboxAddressPoint(addr)
     if (!point) {
       setAreaLoading(false)
       return
@@ -279,7 +368,7 @@ const Autosuggestion = ({
       const mapboxBounds = toMapboxBounds(apiBounds)
 
       setSearchString(query)
-      setPosition({ zoom, center }) // save last focused result
+      setPosition({ zoom, center })
       map.fitBounds(mapboxBounds)
       const updatedUrl = updateQueryParam(query)
       router.replace(updatedUrl)
@@ -297,6 +386,15 @@ const Autosuggestion = ({
     setOpen(false)
     setAreaLoading(true)
 
+    // If this came from Locations Autocomplete, navigate to clean URL
+    const locResult = (option as any)?._locationResult as LocationResult | undefined
+    if (locResult) {
+      const cleanUrl = locationToCleanUrl(locResult)
+      router.push(cleanUrl)
+      setAreaLoading(false)
+      return
+    }
+
     const query = getAreaLabel(option)
     const bounds = await SearchService.fetchBoundsForArea(query)
     if (!bounds) {
@@ -307,21 +405,15 @@ const Autosuggestion = ({
     const center = getCenter(bounds)
 
     if (map) {
-      // calculate zoom level based on bounds and current map size
       const zoom = calcZoomLevel(map, bounds)
       const mapboxBounds = toMapboxBounds(bounds)
 
       setSearchString(query)
-      setPosition({ zoom, center }) // save last focused result
-      map.fitBounds(mapboxBounds, {
-        // NOTE: How did it happen NOBODY (!) read the Mapbox documentation
-        // and figure out the native way to add bounds paddings ???
-        // padding: { top: 50, bottom: 50, left: 50, right: 50 },
-      })
+      setPosition({ zoom, center })
+      map.fitBounds(mapboxBounds)
       const updatedUrl = updateQueryParam(query)
       router.replace(updatedUrl)
     } else {
-      // no map available, use default area zoom level
       const zoom = defaultAreaZoom
       const coordsUrl = getMapUrl({ zoom, center, query })
       router.push(coordsUrl)
@@ -333,7 +425,6 @@ const Autosuggestion = ({
   }
 
   const handleListingClick = (option: any) => {
-    // TODO: show PropertyDrawer instead of redirecting
     router.push(getSeoUrl(option.source as Property))
   }
 
@@ -380,7 +471,6 @@ const Autosuggestion = ({
         onChange={(e, v) => handleChange(v)}
         inputValue={searchString}
         onInputChange={(_, newValue, reason) => {
-          // only update when user types
           if (reason === 'input') {
             setSearchString(newValue)
             setOpen(newValue.length >= minCharsToSuggest)

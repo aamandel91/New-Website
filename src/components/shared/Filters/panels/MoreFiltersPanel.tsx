@@ -1,9 +1,12 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import {
+  Autocomplete,
   Button,
+  Chip,
+  CircularProgress,
   Grid2 as Grid,
   MenuItem,
   Stack,
@@ -12,6 +15,8 @@ import {
 } from '@mui/material'
 
 import Select from 'components/atoms/PatchedSelect'
+import { APIAggregates } from 'services/API'
+import type { AggregateItem } from 'services/API'
 
 export interface MoreFiltersValues {
   minSqft: number
@@ -34,6 +39,8 @@ export interface MoreFiltersValues {
   openHouses: string
   priceReduced: string
   keyword: string
+  cities: string[]
+  neighborhoods: string[]
 }
 
 const defaultMore: MoreFiltersValues = {
@@ -56,7 +63,9 @@ const defaultMore: MoreFiltersValues = {
   firstFloorMaster: 'NA',
   openHouses: 'NA',
   priceReduced: 'NA',
-  keyword: ''
+  keyword: '',
+  cities: [],
+  neighborhoods: []
 }
 
 const yesNoItems = [
@@ -97,6 +106,8 @@ const daysOnSiteItems = [
   { value: '180', label: '6 months' },
   { value: '365', label: '1 year' }
 ]
+
+let cachedCities: AggregateItem[] | null = null
 
 const NumberRange = ({
   label,
@@ -179,6 +190,43 @@ const MoreFiltersPanel = ({
     ...initialValues
   })
 
+  const [cityOptions, setCityOptions] = useState<AggregateItem[]>(cachedCities || [])
+  const [neighborhoodOptions, setNeighborhoodOptions] = useState<AggregateItem[]>([])
+  const [loadingCities, setLoadingCities] = useState(!cachedCities)
+  const [loadingNeighborhoods, setLoadingNeighborhoods] = useState(false)
+
+  useEffect(() => {
+    if (cachedCities) return
+    let cancelled = false
+    APIAggregates.getCities().then((items) => {
+      if (cancelled) return
+      cachedCities = items
+      setCityOptions(items)
+      setLoadingCities(false)
+    }).catch(() => {
+      if (!cancelled) setLoadingCities(false)
+    })
+    return () => { cancelled = true }
+  }, [])
+
+  useEffect(() => {
+    if (state.cities.length === 0) {
+      setNeighborhoodOptions([])
+      return
+    }
+    let cancelled = false
+    setLoadingNeighborhoods(true)
+    // Fetch neighborhoods for the first selected city
+    APIAggregates.getNeighborhoods(state.cities[0]).then((items) => {
+      if (cancelled) return
+      setNeighborhoodOptions(items)
+      setLoadingNeighborhoods(false)
+    }).catch(() => {
+      if (!cancelled) setLoadingNeighborhoods(false)
+    })
+    return () => { cancelled = true }
+  }, [state.cities])
+
   const set = <K extends keyof MoreFiltersValues>(
     key: K,
     value: MoreFiltersValues[K]
@@ -187,13 +235,112 @@ const MoreFiltersPanel = ({
   return (
     <Stack
       spacing={2}
-      sx={{ p: 2, minWidth: 480, maxWidth: 560, maxHeight: 480, overflow: 'auto' }}
+      sx={{ p: 2, minWidth: 480, maxWidth: 560, maxHeight: 540, overflow: 'auto' }}
     >
       <Typography variant="subtitle1" fontWeight={700}>
         More Filters
       </Typography>
 
       <Grid container spacing={2}>
+        {/* City Multi-Select */}
+        <Grid size={{ xs: 12, sm: 6 }}>
+          <Stack spacing={0.5}>
+            <Typography variant="body2" fontWeight={600}>
+              City
+            </Typography>
+            <Autocomplete
+              multiple
+              size="small"
+              loading={loadingCities}
+              options={cityOptions.map((c) => c.name)}
+              value={state.cities}
+              onChange={(_, val) => set('cities', val)}
+              renderTags={(val, getTagProps) =>
+                val.map((option, index) => {
+                  const { key, ...tagProps } = getTagProps({ index })
+                  return <Chip key={key} label={option} size="small" {...tagProps} />
+                })
+              }
+              renderOption={(props, option) => {
+                const { key, ...rest } = props as any
+                const item = cityOptions.find((c) => c.name === option)
+                return (
+                  <li key={key} {...rest}>
+                    {option} {item ? `(${item.count.toLocaleString()})` : ''}
+                  </li>
+                )
+              }}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  placeholder="Select cities"
+                  slotProps={{
+                    input: {
+                      ...params.InputProps,
+                      endAdornment: (
+                        <>
+                          {loadingCities && <CircularProgress size={16} />}
+                          {params.InputProps.endAdornment}
+                        </>
+                      )
+                    }
+                  }}
+                />
+              )}
+            />
+          </Stack>
+        </Grid>
+
+        {/* Neighborhood Multi-Select */}
+        <Grid size={{ xs: 12, sm: 6 }}>
+          <Stack spacing={0.5}>
+            <Typography variant="body2" fontWeight={600}>
+              Neighborhood
+            </Typography>
+            <Autocomplete
+              multiple
+              size="small"
+              loading={loadingNeighborhoods}
+              options={neighborhoodOptions.map((n) => n.name)}
+              value={state.neighborhoods}
+              onChange={(_, val) => set('neighborhoods', val)}
+              disabled={state.cities.length === 0}
+              renderTags={(val, getTagProps) =>
+                val.map((option, index) => {
+                  const { key, ...tagProps } = getTagProps({ index })
+                  return <Chip key={key} label={option} size="small" {...tagProps} />
+                })
+              }
+              renderOption={(props, option) => {
+                const { key, ...rest } = props as any
+                const item = neighborhoodOptions.find((n) => n.name === option)
+                return (
+                  <li key={key} {...rest}>
+                    {option} {item ? `(${item.count.toLocaleString()})` : ''}
+                  </li>
+                )
+              }}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  placeholder={state.cities.length === 0 ? 'Select a city first' : 'Select neighborhoods'}
+                  slotProps={{
+                    input: {
+                      ...params.InputProps,
+                      endAdornment: (
+                        <>
+                          {loadingNeighborhoods && <CircularProgress size={16} />}
+                          {params.InputProps.endAdornment}
+                        </>
+                      )
+                    }
+                  }}
+                />
+              )}
+            />
+          </Stack>
+        </Grid>
+
         {/* Row 1 */}
         <Grid size={{ xs: 12, sm: 6 }}>
           <NumberRange

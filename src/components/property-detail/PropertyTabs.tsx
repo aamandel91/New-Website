@@ -43,6 +43,16 @@ const CommuteCalculator = dynamic(() => import('./CommuteCalculator'), {
   loading: () => <Skeleton variant="rectangular" height={300} sx={{ borderRadius: 1 }} />,
 })
 
+const NearbyPlaces = dynamic(() => import('./NearbyPlaces'), {
+  ssr: false,
+  loading: () => <Skeleton variant="rectangular" height={300} sx={{ borderRadius: 1 }} />,
+})
+
+const WalkScore = dynamic(() => import('./WalkScore'), {
+  ssr: false,
+  loading: () => <Skeleton variant="rectangular" height={200} sx={{ borderRadius: 1 }} />,
+})
+
 interface PropertyTabsProps {
   property: Property
   similarProperties?: Property[]
@@ -298,6 +308,16 @@ const PropertyTabs: React.FC<PropertyTabsProps> = ({
           neighborhood={property.address?.neighborhood}
           county={property.address?.district}
           schoolDistrict={undefined}
+        />
+        <NearbyPlaces
+          lat={property.map?.latitude || 0}
+          lng={property.map?.longitude || 0}
+          address={propertyAddress}
+        />
+        <WalkScore
+          lat={property.map?.latitude || 0}
+          lng={property.map?.longitude || 0}
+          address={propertyAddress}
         />
         <CommuteCalculator
           originAddress={propertyAddress}
