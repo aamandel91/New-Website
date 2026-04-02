@@ -5,11 +5,39 @@ import { usePathname, useRouter } from 'next/navigation'
 import { Box, IconButton, useMediaQuery, useTheme } from '@mui/material'
 import { Menu as MenuIcon } from '@mui/icons-material'
 import { useUser } from '@/providers/UserProvider'
+import { getTokenSync, expired } from 'utils/tokens'
 import AdminSidebar, { DRAWER_WIDTH } from '@/components/admin/AdminSidebar'
 import AdminHeader from '@/components/admin/AdminHeader'
 
-export default function AdminLayout({ children }: { children: React.ReactNode }) {
+function useAdminAuth() {
   const { logged, adminRole, loading } = useUser()
+  const [hasAdminToken, setHasAdminToken] = useState(false)
+  const [checking, setChecking] = useState(true)
+
+  useEffect(() => {
+    const token = getTokenSync()
+    if (token && !expired(token)) {
+      try {
+        const payload = JSON.parse(atob(token.split('.')[1]))
+        if (payload.role === 3) { // UserRole.Admin = 3
+          setHasAdminToken(true)
+        }
+      } catch {
+        // invalid token
+      }
+    }
+    setChecking(false)
+  }, [])
+
+  return {
+    isAuthenticated: logged || hasAdminToken,
+    isAdmin: adminRole || hasAdminToken,
+    loading: loading || checking,
+  }
+}
+
+export default function AdminLayout({ children }: { children: React.ReactNode }) {
+  const { isAuthenticated, isAdmin, loading } = useAdminAuth()
   const router = useRouter()
   const pathname = usePathname()
   const theme = useTheme()
@@ -20,12 +48,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   useEffect(() => {
     if (isLoginPage) return
-    if (!loading && !logged) {
+    if (!loading && !isAuthenticated) {
       router.push('/admin/login')
-    } else if (!loading && logged && !adminRole) {
-      router.push('/403')
     }
-  }, [logged, adminRole, loading, router, isLoginPage])
+  }, [isAuthenticated, loading, router, isLoginPage])
 
   if (isLoginPage) {
     return <>{children}</>
@@ -46,7 +72,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     )
   }
 
-  if (!logged || !adminRole) {
+  if (!isAuthenticated) {
     return null
   }
 
