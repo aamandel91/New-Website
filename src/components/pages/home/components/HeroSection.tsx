@@ -9,14 +9,30 @@ import {
   Button,
   MenuItem,
   Select,
-  Tab,
-  Tabs,
   Typography
 } from '@mui/material'
 import type { SelectChangeEvent } from '@mui/material'
 
 import LocationAutocomplete from '@shared/LocationAutocomplete'
 import type { LocationResult } from '@shared/LocationAutocomplete'
+
+type HeroTab = 'buying' | 'selling' | 'estimate'
+
+const TABS = [
+  { key: 'buying' as const, label: 'Buying' },
+  { key: 'selling' as const, label: 'Selling' },
+  { key: 'estimate' as const, label: 'Home Estimate' },
+  {
+    key: 'preapproved' as const,
+    label: 'Get Pre-Approved',
+    href: 'https://app.crosscountrymortgage.com/#/choose-loan-type'
+  },
+  {
+    key: 'instantoffer' as const,
+    label: 'Instant Offer',
+    href: 'https://mandelteam.hifello.com/lp/64233cdf7d0caf0019a96a13'
+  }
+] as const
 
 const PRICE_OPTIONS = [
   { label: 'Any', value: '' },
@@ -31,18 +47,49 @@ const PRICE_OPTIONS = [
   { label: '$2M', value: '2000000' }
 ]
 
+const TAB_CONTENT: Record<HeroTab, { headline: string; subheadline: string }> = {
+  buying: {
+    headline: 'Find Your Dream Home',
+    subheadline: 'Enter Your Price Range & Location Below'
+  },
+  selling: {
+    headline: 'Get the Strongest Cash Offer on Your Home',
+    subheadline: 'Your terms and schedule, without the hassle.'
+  },
+  estimate: {
+    headline: 'Find Out What Your Home is Really Worth',
+    subheadline: 'Get a free, instant AI-powered estimate of your home\u2019s value.'
+  }
+}
+
 const HeroSection = () => {
   const router = useRouter()
-  const [activeTab, setActiveTab] = useState(0)
+  const [activeTab, setActiveTab] = useState<HeroTab>('buying')
   const [selectedLocation, setSelectedLocation] = useState<LocationResult | null>(null)
   const [minPrice, setMinPrice] = useState('')
   const [maxPrice, setMaxPrice] = useState('')
+  const [addressInput, setAddressInput] = useState('')
+
+  const handleTabClick = (tab: (typeof TABS)[number]) => {
+    if ('href' in tab && tab.href) {
+      window.open(tab.href, '_blank', 'noopener,noreferrer')
+      return
+    }
+    const key = tab.key as HeroTab
+    if (key === 'buying' || key === 'selling' || key === 'estimate') {
+      setActiveTab(key)
+    }
+  }
 
   const handleLocationSelect = (location: LocationResult) => {
     setSelectedLocation(location)
   }
 
-  const handleSearch = () => {
+  const handleAddressSelect = (location: LocationResult) => {
+    setAddressInput(location.name ?? '')
+  }
+
+  const handleBuyingSearch = () => {
     const params = new URLSearchParams()
     if (selectedLocation?.name) {
       params.set('city', selectedLocation.name)
@@ -52,6 +99,16 @@ const HeroSection = () => {
     const query = params.toString()
     router.push(`/search/gallery${query ? `?${query}` : ''}`)
   }
+
+  const handleSellingSubmit = () => {
+    router.push('/sell')
+  }
+
+  const handleEstimateSubmit = () => {
+    router.push('/home-value')
+  }
+
+  const { headline, subheadline } = TAB_CONTENT[activeTab]
 
   return (
     <Box
@@ -68,36 +125,53 @@ const HeroSection = () => {
       }}
     >
       {/* Tab Row */}
-      <Tabs
-        value={activeTab}
-        onChange={(_, newVal: number) => setActiveTab(newVal)}
+      <Box
         sx={{
+          display: 'flex',
+          gap: 1,
           mb: 4,
-          '& .MuiTabs-indicator': { display: 'none' },
-          '& .MuiTab-root': {
-            color: '#fff',
-            fontSize: '13px',
-            letterSpacing: '1px',
-            textTransform: 'uppercase',
-            minHeight: '40px',
-            px: 3,
-            py: 1,
-            borderRadius: '4px',
-            mx: 0.5,
-            bgcolor: 'rgba(255,255,255,0.1)',
-            '&.Mui-selected': {
-              bgcolor: '#C4A96E',
-              color: '#0F1621',
-              fontWeight: 700
-            }
-          }
+          flexWrap: 'wrap',
+          justifyContent: 'center',
+          overflowX: { xs: 'auto', md: 'visible' },
+          maxWidth: '100%',
+          px: 1
         }}
       >
-        <Tab label="Buying" />
-        <Tab label="Selling" />
-        <Tab label="Home Estimate" />
-        <Tab label="Get Pre-Approved" />
-      </Tabs>
+        {TABS.map((tab) => {
+          const isActive =
+            tab.key === activeTab && !('href' in tab && tab.href)
+
+          return (
+            <Box
+              key={tab.key}
+              component="button"
+              onClick={() => handleTabClick(tab)}
+              sx={{
+                bgcolor: isActive ? '#C4A96E' : 'rgba(255,255,255,0.1)',
+                color: isActive ? '#0F1621' : '#fff',
+                fontWeight: isActive ? 700 : 400,
+                fontSize: '13px',
+                letterSpacing: '1px',
+                textTransform: 'uppercase',
+                border: 'none',
+                borderRadius: '4px',
+                px: 3,
+                py: 1,
+                minHeight: '40px',
+                cursor: 'pointer',
+                whiteSpace: 'nowrap',
+                fontFamily: 'inherit',
+                transition: 'all 0.2s ease',
+                '&:hover': {
+                  bgcolor: isActive ? '#C4A96E' : 'rgba(255,255,255,0.2)'
+                }
+              }}
+            >
+              {tab.label}
+            </Box>
+          )
+        })}
+      </Box>
 
       {/* Headline */}
       <Typography
@@ -110,7 +184,7 @@ const HeroSection = () => {
           mb: 1
         }}
       >
-        Find Your Dream Home
+        {headline}
       </Typography>
 
       {/* Subheadline */}
@@ -122,102 +196,204 @@ const HeroSection = () => {
           mb: 4
         }}
       >
-        Enter Your Price Range & Location Below
+        {subheadline}
       </Typography>
 
-      {/* Search Bar */}
-      <Box
-        sx={{
-          display: 'flex',
-          flexDirection: { xs: 'column', md: 'row' },
-          gap: { xs: 2, md: 0 },
-          maxWidth: '800px',
-          width: '100%',
-          bgcolor: '#fff',
-          borderRadius: '6px',
-          overflow: 'hidden',
-          p: { xs: 2, md: 0 }
-        }}
-      >
-        <Box sx={{ flex: 2, minWidth: 0 }}>
-          <LocationAutocomplete
-            placeholder="Location, Zip, Address or MLS #"
-            variant="light"
-            navigate={false}
-            onSelect={handleLocationSelect}
-            sx={{
-              '& .MuiOutlinedInput-root': {
-                borderRadius: { xs: '4px', md: 0 },
-                '& fieldset': {
-                  border: 'none',
-                  borderRight: { md: '1px solid #ddd' }
+      {/* Buying Tab — Search Bar */}
+      {activeTab === 'buying' && (
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: { xs: 'column', md: 'row' },
+            gap: { xs: 2, md: 0 },
+            maxWidth: '800px',
+            width: '100%',
+            bgcolor: '#fff',
+            borderRadius: '6px',
+            overflow: 'hidden',
+            p: { xs: 2, md: 0 }
+          }}
+        >
+          <Box sx={{ flex: 2, minWidth: 0 }}>
+            <LocationAutocomplete
+              placeholder="Location, Zip, Address or MLS #"
+              variant="light"
+              navigate={false}
+              onSelect={handleLocationSelect}
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: { xs: '4px', md: 0 },
+                  '& fieldset': {
+                    border: 'none',
+                    borderRight: { md: '1px solid #ddd' }
+                  }
                 }
-              }
+              }}
+            />
+          </Box>
+          <Select
+            value={minPrice}
+            onChange={(e: SelectChangeEvent) => setMinPrice(e.target.value)}
+            displayEmpty
+            size="small"
+            sx={{
+              flex: 1,
+              '& .MuiOutlinedInput-notchedOutline': {
+                border: 'none',
+                borderRight: { md: '1px solid #ddd' }
+              },
+              borderRadius: { xs: '4px', md: 0 }
             }}
-          />
+            renderValue={(val) =>
+              val ? PRICE_OPTIONS.find((o) => o.value === val)?.label : 'Min Price'
+            }
+          >
+            {PRICE_OPTIONS.map((opt) => (
+              <MenuItem key={`min-${opt.value}`} value={opt.value}>
+                {opt.label}
+              </MenuItem>
+            ))}
+          </Select>
+          <Select
+            value={maxPrice}
+            onChange={(e: SelectChangeEvent) => setMaxPrice(e.target.value)}
+            displayEmpty
+            size="small"
+            sx={{
+              flex: 1,
+              '& .MuiOutlinedInput-notchedOutline': { border: 'none' },
+              borderRadius: { xs: '4px', md: 0 }
+            }}
+            renderValue={(val) =>
+              val ? PRICE_OPTIONS.find((o) => o.value === val)?.label : 'Max Price'
+            }
+          >
+            {PRICE_OPTIONS.map((opt) => (
+              <MenuItem key={`max-${opt.value}`} value={opt.value}>
+                {opt.label}
+              </MenuItem>
+            ))}
+          </Select>
+          <Button
+            onClick={handleBuyingSearch}
+            sx={{
+              bgcolor: '#C4A96E',
+              color: '#0F1621',
+              fontWeight: 700,
+              fontSize: '14px',
+              letterSpacing: '1px',
+              textTransform: 'uppercase',
+              borderRadius: { xs: '4px', md: '0 6px 6px 0' },
+              px: 4,
+              minWidth: '160px',
+              whiteSpace: 'nowrap',
+              '&:hover': { bgcolor: '#b89a5e' }
+            }}
+          >
+            Search Homes
+          </Button>
         </Box>
-        <Select
-          value={minPrice}
-          onChange={(e: SelectChangeEvent) => setMinPrice(e.target.value)}
-          displayEmpty
-          size="small"
+      )}
+
+      {/* Selling Tab — Address Input */}
+      {activeTab === 'selling' && (
+        <Box
           sx={{
-            flex: 1,
-            '& .MuiOutlinedInput-notchedOutline': {
-              border: 'none',
-              borderRight: { md: '1px solid #ddd' }
-            },
-            borderRadius: { xs: '4px', md: 0 }
-          }}
-          renderValue={(val) =>
-            val ? PRICE_OPTIONS.find((o) => o.value === val)?.label : 'Min Price'
-          }
-        >
-          {PRICE_OPTIONS.map((opt) => (
-            <MenuItem key={`min-${opt.value}`} value={opt.value}>
-              {opt.label}
-            </MenuItem>
-          ))}
-        </Select>
-        <Select
-          value={maxPrice}
-          onChange={(e: SelectChangeEvent) => setMaxPrice(e.target.value)}
-          displayEmpty
-          size="small"
-          sx={{
-            flex: 1,
-            '& .MuiOutlinedInput-notchedOutline': { border: 'none' },
-            borderRadius: { xs: '4px', md: 0 }
-          }}
-          renderValue={(val) =>
-            val ? PRICE_OPTIONS.find((o) => o.value === val)?.label : 'Max Price'
-          }
-        >
-          {PRICE_OPTIONS.map((opt) => (
-            <MenuItem key={`max-${opt.value}`} value={opt.value}>
-              {opt.label}
-            </MenuItem>
-          ))}
-        </Select>
-        <Button
-          onClick={handleSearch}
-          sx={{
-            bgcolor: '#C4A96E',
-            color: '#0F1621',
-            fontWeight: 700,
-            fontSize: '14px',
-            letterSpacing: '1px',
-            textTransform: 'uppercase',
-            borderRadius: { xs: '4px', md: '0 6px 6px 0' },
-            px: 4,
-            minWidth: '160px',
-            whiteSpace: 'nowrap',
-            '&:hover': { bgcolor: '#b89a5e' }
+            display: 'flex',
+            flexDirection: { xs: 'column', md: 'row' },
+            gap: { xs: 2, md: 0 },
+            maxWidth: '600px',
+            width: '100%',
+            bgcolor: 'rgba(255,255,255,0.1)',
+            borderRadius: '6px',
+            overflow: 'hidden',
+            p: { xs: 2, md: 0 }
           }}
         >
-          Search Homes
-        </Button>
-      </Box>
+          <Box sx={{ flex: 1, minWidth: 0 }}>
+            <LocationAutocomplete
+              placeholder="Enter your address"
+              variant="dark"
+              navigate={false}
+              onSelect={handleAddressSelect}
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: { xs: '4px', md: '6px 0 0 6px' },
+                  '& fieldset': { border: 'none' }
+                }
+              }}
+            />
+          </Box>
+          <Button
+            onClick={handleSellingSubmit}
+            sx={{
+              bgcolor: '#C4A96E',
+              color: '#0F1621',
+              fontWeight: 700,
+              fontSize: '14px',
+              letterSpacing: '1px',
+              textTransform: 'uppercase',
+              borderRadius: { xs: '4px', md: '0 6px 6px 0' },
+              px: 4,
+              minWidth: '140px',
+              whiteSpace: 'nowrap',
+              '&:hover': { bgcolor: '#b89a5e' }
+            }}
+          >
+            Get Started
+          </Button>
+        </Box>
+      )}
+
+      {/* Estimate Tab — Address Input */}
+      {activeTab === 'estimate' && (
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: { xs: 'column', md: 'row' },
+            gap: { xs: 2, md: 0 },
+            maxWidth: '600px',
+            width: '100%',
+            bgcolor: 'rgba(255,255,255,0.1)',
+            borderRadius: '6px',
+            overflow: 'hidden',
+            p: { xs: 2, md: 0 }
+          }}
+        >
+          <Box sx={{ flex: 1, minWidth: 0 }}>
+            <LocationAutocomplete
+              placeholder="Enter your address"
+              variant="dark"
+              navigate={false}
+              onSelect={handleAddressSelect}
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: { xs: '4px', md: '6px 0 0 6px' },
+                  '& fieldset': { border: 'none' }
+                }
+              }}
+            />
+          </Box>
+          <Button
+            onClick={handleEstimateSubmit}
+            sx={{
+              bgcolor: '#C4A96E',
+              color: '#0F1621',
+              fontWeight: 700,
+              fontSize: '14px',
+              letterSpacing: '1px',
+              textTransform: 'uppercase',
+              borderRadius: { xs: '4px', md: '0 6px 6px 0' },
+              px: 4,
+              minWidth: '140px',
+              whiteSpace: 'nowrap',
+              '&:hover': { bgcolor: '#b89a5e' }
+            }}
+          >
+            Find Out
+          </Button>
+        </Box>
+      )}
     </Box>
   )
 }
