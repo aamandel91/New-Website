@@ -441,12 +441,23 @@ router.post('/admin-login', async (ctx) => {
     return
   }
 
-  const authService = ctx.state.container.resolve(AuthService)
-  const token = await authService.generateToken({
-    email: user.email,
-    sub: user.id.toString(),
-    role: UserRole.Admin
-  })
+  // Sign JWT directly for admin login (bypasses ACL lookup)
+  const keys = ctx.state.container.resolve<{ private: string }>('keys')
+  const jwt = await import('jsonwebtoken')
+  const token = jwt.default.sign(
+    {
+      email: user.email,
+      sub: user.id.toString(),
+      role: UserRole.Admin,
+    },
+    keys.private,
+    {
+      algorithm: 'RS256',
+      expiresIn: '7d',
+      issuer: 'portal-backend',
+      jwtid: crypto.randomUUID(),
+    }
+  )
 
   ctx.body = {
     token,
