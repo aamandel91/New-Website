@@ -5,6 +5,7 @@ import { Box, Container, Typography, Breadcrumbs, Link, Grid, Chip, Card, CardCo
 import { PageTemplate } from '@templates'
 import ListingsGrid from '@shared/ListingsGrid'
 import MarketTimelineGraph from '@shared/MarketTimelineGraph'
+import AreaValueTrends from '@shared/AreaValueTrends'
 import StructuredData from '@shared/StructuredData'
 
 import { subTypes, getSubTypeBySlug } from '@configs/page-generation'
@@ -260,6 +261,7 @@ async function renderCityPage(
           {cityName} Housing Market
         </Typography>
         <MarketTimelineGraph city={cityName} />
+        <AreaValueTrends city={cityName} />
 
         {/* Sub-types */}
         <Typography variant="h5" component="h3" gutterBottom sx={{ mt: 4 }}>
@@ -445,6 +447,7 @@ async function renderNeighborhoodPage(
         <Box sx={{ mb: 4 }}>
           <MarketTimelineGraph city={cityName} />
         </Box>
+        <AreaValueTrends city={cityName} neighborhood={neighborhoodName} />
 
         <Box sx={{ mt: 4, p: 3, bgcolor: 'grey.100', borderRadius: 2 }}>
           <Typography variant="h6" gutterBottom>

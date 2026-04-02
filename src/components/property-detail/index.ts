@@ -19,3 +19,4 @@ export { default as PropertyMortgageCalculator } from './PropertyMortgageCalcula
 export { default as Property3DTour } from './Property3DTour'
 export { default as HomeWorthCheckCTA } from './HomeWorthCheckCTA'
 export { default as HiddenPropertyDescription } from './HiddenPropertyDescription'
+export { default as CompareToMyHome } from './CompareToMyHome'

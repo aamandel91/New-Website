@@ -9,6 +9,7 @@ import PropertyDescription from './PropertyDescription'
 import PropertyKeyFacts from './PropertyKeyFacts'
 import PropertyValueEstimate from './PropertyValueEstimate'
 import PropertyFeatures from './PropertyFeatures'
+import CompareToMyHome from './CompareToMyHome'
 import PropertyNarrative from './PropertyNarrative'
 import PropertyHistory from './PropertyHistory'
 import PropertyTaxHistory from './PropertyTaxHistory'
@@ -225,6 +226,15 @@ const PropertyTabs: React.FC<PropertyTabsProps> = ({
           <PropertyValueEstimate
             estimate={property.estimate}
             listPrice={parseFloat(property.listPrice)}
+          />
+
+          {/* Compare to My Home */}
+          <CompareToMyHome
+            listPrice={price}
+            beds={property.details?.numBedrooms ? parseInt(property.details.numBedrooms) : 0}
+            baths={property.details?.numBathrooms ? parseInt(property.details.numBathrooms) : 0}
+            sqft={sqft}
+            propertyType={property.details?.propertyType}
           />
 
           {/* Features */}
