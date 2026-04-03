@@ -1,12 +1,17 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
-import { Box, Container, Typography, Breadcrumbs, Link, Grid, Chip, Card, CardContent } from '@mui/material'
+import dynamic from 'next/dynamic'
+import { Box, Container, Typography, Breadcrumbs, Link, Grid, Chip, Card, CardContent, Skeleton } from '@mui/material'
 
 import { PageTemplate } from '@templates'
 import ListingsGrid from '@shared/ListingsGrid'
-import MarketTimelineGraph from '@shared/MarketTimelineGraph'
 import AreaValueTrends from '@shared/AreaValueTrends'
 import StructuredData from '@shared/StructuredData'
+
+const MarketTimelineGraph = dynamic(() => import('@shared/MarketTimelineGraph'), {
+  ssr: false,
+  loading: () => <Skeleton variant="rectangular" height={300} sx={{ borderRadius: 1 }} />,
+})
 
 import { subTypes, getSubTypeBySlug } from '@configs/page-generation'
 import { breadcrumbSchema, localBusinessSchema } from 'utils/structuredData'
@@ -33,8 +38,7 @@ const nearbyCities: Record<string, string[]> = {
   'Palm Beach': ['West Palm Beach', 'Boca Raton', 'Delray Beach', 'Boynton Beach', 'Palm Beach Gardens', 'Jupiter', 'Wellington', 'Lake Worth'],
 }
 
-export const dynamic = 'force-dynamic'
-export const revalidate = 3600
+export const revalidate = 300
 
 // Build breadcrumb items for structured data
 function buildBreadcrumbs(

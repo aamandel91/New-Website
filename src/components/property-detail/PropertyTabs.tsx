@@ -8,14 +8,10 @@ import type { Property } from 'services/API'
 import PropertyDescription from './PropertyDescription'
 import PropertyKeyFacts from './PropertyKeyFacts'
 import PropertyValueEstimate from './PropertyValueEstimate'
-import EstimateHistoryTable from './EstimateHistoryTable'
-import SoldPriceDistribution from './SoldPriceDistribution'
 import PropertyFeatures from './PropertyFeatures'
-import CompareToMyHome from './CompareToMyHome'
 import PropertyNarrative from './PropertyNarrative'
 import PropertyHistory from './PropertyHistory'
 import PropertyTaxHistory from './PropertyTaxHistory'
-import PropertyLocation from './PropertyLocation'
 import PropertyNeighborhood from './PropertyNeighborhood'
 import SimilarProperties from './SimilarProperties'
 import RelatedPages from './RelatedPages'
@@ -23,6 +19,26 @@ import MoreProperties from './MoreProperties'
 import RelatedBlogs from './RelatedBlogs'
 import PropertyPublicRecords from './PropertyPublicRecords'
 import PreferredLender from './PreferredLender'
+
+const EstimateHistoryTable = dynamic(() => import('./EstimateHistoryTable'), {
+  ssr: false,
+  loading: () => <Skeleton variant="rectangular" height={300} sx={{ borderRadius: 1 }} />,
+})
+
+const SoldPriceDistribution = dynamic(() => import('./SoldPriceDistribution'), {
+  ssr: false,
+  loading: () => <Skeleton variant="rectangular" height={300} sx={{ borderRadius: 1 }} />,
+})
+
+const CompareToMyHome = dynamic(() => import('./CompareToMyHome'), {
+  ssr: false,
+  loading: () => <Skeleton variant="rectangular" height={300} sx={{ borderRadius: 1 }} />,
+})
+
+const PropertyLocation = dynamic(() => import('./PropertyLocation'), {
+  ssr: false,
+  loading: () => <Skeleton variant="rectangular" height={400} sx={{ borderRadius: 1 }} />,
+})
 
 const PropertyComparables = dynamic(() => import('./PropertyComparables'), {
   ssr: false,

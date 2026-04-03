@@ -1,15 +1,20 @@
 'use client'
 
 import React from 'react'
+import dynamic from 'next/dynamic'
 
-import { Box, Paper, Stack } from '@mui/material'
+import { Box, Paper, Skeleton, Stack } from '@mui/material'
 
 import { inventoryColors } from '@configs/colors'
 import { EstimateDetailsContainer } from '@pages/estimate/ResultPageContent/components'
 import { ChartBulletList } from '@shared/Stats'
 
 import { labels } from './constants'
-import InventoryChart from './InventoryChart'
+
+const InventoryChart = dynamic(() => import('./InventoryChart'), {
+  ssr: false,
+  loading: () => <Skeleton variant="rectangular" height={170} sx={{ borderRadius: 1 }} />,
+})
 
 const InventoryGraph = ({ value }: { value: number }) => {
   return (

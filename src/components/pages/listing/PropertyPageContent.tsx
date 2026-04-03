@@ -1,8 +1,9 @@
 'use client'
 
 import React, { useEffect } from 'react'
+import dynamic from 'next/dynamic'
 
-import { Box, Container, Stack } from '@mui/material'
+import { Box, Container, Skeleton, Stack } from '@mui/material'
 
 import { DetailsContainer } from '@shared/Containers'
 import {
@@ -25,7 +26,6 @@ import {
   HistoryDetails,
   HomeDescription,
   HomeHeaderInfo,
-  HomeMap,
   NavigationBar,
   NeighborhoodDetails,
   PropertyGallery,
@@ -34,6 +34,11 @@ import {
   SimilarPropertyCarousel,
   SummaryDetails
 } from './components'
+
+const HomeMap = dynamic(() => import('./components/HomeMap'), {
+  ssr: false,
+  loading: () => <Skeleton variant="rectangular" height={400} sx={{ borderRadius: 1 }} />,
+})
 
 const PropertyPageContent = ({
   embedded = false,

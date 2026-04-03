@@ -8,17 +8,19 @@ import {
 } from 'react'
 import { type Position } from 'geojson'
 import { type LngLat, type LngLatBounds, Map as MapboxMap } from 'mapbox-gl'
+import 'mapbox-gl/dist/mapbox-gl.css'
+import dynamic from 'next/dynamic'
 import { useLocale, useMessages } from 'next-intl'
 import { useRouter } from 'next/navigation'
 
-import { Stack } from '@mui/material'
+import { Skeleton, Stack } from '@mui/material'
 
 import gridConfig from '@configs/cards-grids'
 import mapConfig from '@configs/map'
 import { SaveSearchDialog } from '@shared/Dialogs'
 import { MapNavigation, MapStyleSwitch } from '@shared/Map'
 
-import { type Property } from 'services/API'
+import type { Property } from 'services/API'
 import MapService from 'services/Map'
 import SearchService from 'services/Search'
 import { useFeatures } from 'providers/FeaturesProvider'
@@ -36,9 +38,7 @@ import {
   GridDesktopContainer,
   GridFilters,
   GridMobileDrawer,
-  // TODO: consider moving those components to the `shared/Map` folder
   MapContainer,
-  MapDrawButton,
   MapTitle,
   MapTransitionContainer,
   MobileCircularProgress,
@@ -46,6 +46,11 @@ import {
   SaveSearchCanvas,
   TableContent
 } from './components'
+
+const MapDrawButton = dynamic(() => import('./components/MapDrawButton'), {
+  ssr: false,
+  loading: () => <Skeleton variant="rectangular" width={40} height={40} sx={{ borderRadius: 1 }} />,
+})
 
 type MapRootProps = {
   zoom: number

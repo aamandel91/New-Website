@@ -2,8 +2,11 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
+import dynamic from 'next/dynamic'
 import type { Position } from 'geojson'
-import { type LngLat, type LngLatBounds } from 'mapbox-gl'
+import type { LngLat, LngLatBounds } from 'mapbox-gl'
+
+import { Skeleton } from '@mui/material'
 
 import MapService from 'services/Map'
 import {
@@ -23,7 +26,11 @@ import { trackSearch } from '@/utils/analytics'
 import { ssTrackEvent } from '@/utils/suresendTracking'
 
 import MapFilters from './components/MapFilters'
-import MapRoot from './components/MapRoot'
+
+const MapRoot = dynamic(() => import('./components/MapRoot'), {
+  ssr: false,
+  loading: () => <Skeleton variant="rectangular" width="100%" height="100%" sx={{ borderRadius: 1 }} />,
+})
 
 const MapPageContent = () => {
   const searchParams = useSearchParams()

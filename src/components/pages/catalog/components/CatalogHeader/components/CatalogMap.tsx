@@ -3,6 +3,7 @@
 import React, { useEffect, useRef } from 'react'
 import { type Position } from 'geojson'
 import { type LngLatLike, Map as MapboxMap } from 'mapbox-gl'
+import 'mapbox-gl/dist/mapbox-gl.css'
 
 import { Box } from '@mui/material'
 

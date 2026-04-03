@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState } from 'react'
+import dynamic from 'next/dynamic'
 import {
   Box,
   Typography,
@@ -11,6 +12,7 @@ import {
   Divider,
   Collapse,
   Button,
+  Skeleton,
 } from '@mui/material'
 import {
   TrendingUp as TrendingUpIcon,
@@ -23,7 +25,10 @@ import {
   BarChart as BarChartIcon,
 } from '@mui/icons-material'
 
-import MarketTimelineGraph from '@shared/MarketTimelineGraph'
+const MarketTimelineGraph = dynamic(() => import('@shared/MarketTimelineGraph'), {
+  ssr: false,
+  loading: () => <Skeleton variant="rectangular" height={300} sx={{ borderRadius: 1 }} />,
+})
 
 interface MarketStats {
   averagePrice?: number

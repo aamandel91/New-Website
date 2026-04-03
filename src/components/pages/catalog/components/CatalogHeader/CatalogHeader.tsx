@@ -1,26 +1,32 @@
 'use client'
 
 import { useState } from 'react'
+import dynamic from 'next/dynamic'
 import { type Feature, type MultiLineString, type Position } from 'geojson'
 import { type LngLatLike } from 'mapbox-gl'
 
 import ExploreIcon from '@mui/icons-material/Explore'
-import { Box, Button, Stack, Typography } from '@mui/material'
+import { Box, Button, Skeleton, Stack, Typography } from '@mui/material'
 
 import defaultLocation from '@configs/location'
 import { simplify } from '@turf/turf'
 
-import {
-  type ApiBoardArea,
-  type ApiBoardCity,
-  type ApiNeighborhood
+import type {
+  ApiBoardArea,
+  ApiBoardCity,
+  ApiNeighborhood
 } from 'services/API'
 import { useMapOptions } from 'providers/MapOptionsProvider'
 import { getDefaultBounds, getLngLatCenter, getMapUrl } from 'utils/map'
 
 import { Breadcrumbs } from '..'
 
-import { CatalogMap, SeoDescription } from './components'
+import { SeoDescription } from './components'
+
+const CatalogMap = dynamic(() => import('./components/CatalogMap'), {
+  ssr: false,
+  loading: () => <Skeleton variant="rectangular" height={300} sx={{ borderRadius: 1 }} />,
+})
 
 const CatalogHeader = ({
   count,

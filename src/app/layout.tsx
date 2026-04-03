@@ -23,7 +23,6 @@ import { APISearch } from 'services/API'
 import { fetchFeatureOptions } from 'utils/features'
 
 import 'styles/globals.css'
-import 'mapbox-gl/dist/mapbox-gl.css'
 
 import Providers from './_providers'
 import AgentSubdomainSEO from '@/components/shared/AgentSubdomainSEO'
@@ -66,6 +65,11 @@ const Layout = async ({ children }: { children: React.ReactNode }) => {
         {/* <link rel="alternate" hreflang="es" href="https://floridahomefinder.com/es{path}" /> */}
       </head>
       <body suppressHydrationWarning>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('/sw.js')})}`
+          }}
+        />
         <GoogleTagManagerNoscript />
         <GTMPageView />
         <TrackingInline />

@@ -14,6 +14,8 @@ import { generatePropertyJsonLd, generatePropertyBreadcrumbJsonLd } from 'utils/
 import { fetchNearbies, fetchProperty } from './utils'
 import { fetchSimilarProperties, fetchMarketStats } from './similarProperties'
 
+export const revalidate = 300
+
 type PropertyDetailPageProps = {
   params: Promise<{
     slug: string
