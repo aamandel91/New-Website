@@ -8,7 +8,7 @@ import { Property404Template, PropertyPageTemplate } from '@templates'
 
 import { formatMetadata } from 'utils/properties'
 import { getProtocolHost } from 'utils/urls'
-import { extractMlsFromSlug, generatePropertyUrl } from 'utils/propertyUrls'
+import { extractMlsFromSlug, generatePropertyUrl, generateStaticPropertyUrl } from 'utils/propertyUrls'
 import { generatePropertyJsonLd, generatePropertyBreadcrumbJsonLd } from 'utils/propertySchema'
 
 import { fetchNearbies, fetchProperty } from './utils'
@@ -36,7 +36,14 @@ export const generateMetadata = async (props: PropertyDetailPageProps) => {
 
   try {
     const property = await fetchProperty(mlsNumber, boardId)
-    return formatMetadata(property, host)
+    const meta = formatMetadata(property, host)
+    const canonical = property.address
+      ? generateStaticPropertyUrl(property.address)
+      : undefined
+    return {
+      ...meta,
+      ...(canonical && { alternates: { canonical } }),
+    }
   } catch (error: any) {
     return content.missingPropertyMetadata
   }

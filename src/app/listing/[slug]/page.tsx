@@ -8,7 +8,7 @@ import { Property404Template, PropertyPageTemplate } from '@templates'
 
 import { formatMetadata } from 'utils/properties'
 import { getProtocolHost } from 'utils/urls'
-import { extractMlsFromSlug, generatePropertyUrl } from 'utils/propertyUrls'
+import { extractMlsFromSlug, generatePropertyUrl, generateStaticPropertyUrl } from 'utils/propertyUrls'
 import { generatePropertyJsonLd, generatePropertyBreadcrumbJsonLd } from 'utils/propertySchema'
 
 import { fetchNearbies, fetchProperty } from './utils'
@@ -38,7 +38,15 @@ export const generateMetadata = async (props: PropertyDetailPageProps) => {
 
   try {
     const property = await fetchProperty(mlsNumber, boardId)
-    return formatMetadata(property, host)
+    const meta = formatMetadata(property, host)
+    // Canonical points to the permanent /homes/ URL
+    const canonical = property.address
+      ? generateStaticPropertyUrl(property.address)
+      : undefined
+    return {
+      ...meta,
+      ...(canonical && { alternates: { canonical } }),
+    }
   } catch (error: any) {
     return content.missingPropertyMetadata
   }
@@ -76,6 +84,10 @@ const PropertyDetailPage = async (props: PropertyDetailPageProps) => {
       console.error('Error generating structured data:', e)
     }
 
+    const permanentUrl = property.address
+      ? generateStaticPropertyUrl(property.address)
+      : null
+
     return (
       <>
         {propertyJsonLd && <StructuredData data={propertyJsonLd} />}
@@ -85,6 +97,16 @@ const PropertyDetailPage = async (props: PropertyDetailPageProps) => {
           similarProperties={similarProperties}
           marketStats={marketStats}
         />
+        {permanentUrl && (
+          <div style={{ maxWidth: 1536, margin: '0 auto', padding: '0 24px 24px' }}>
+            <p style={{ fontSize: 13, color: '#666' }}>
+              Permanent link:{' '}
+              <a href={permanentUrl} style={{ color: '#1976d2' }}>
+                {permanentUrl}
+              </a>
+            </p>
+          </div>
+        )}
       </>
     )
   } catch (error: any) {

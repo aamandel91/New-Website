@@ -85,6 +85,23 @@ class APISearchCSR extends APIClientSide {
       aggregates: 'address.city',
     })
   }
+
+  async getAddressHistory(
+    streetNumber: string,
+    streetName: string,
+    city: string,
+    boardId: number = DEFAULT_BOARD_ID
+  ): Promise<ApiQueryResponse | null> {
+    return this.fetch('/listings', {
+      boardId,
+      'address.streetNumber': streetNumber,
+      'address.streetName': streetName,
+      'address.city': city,
+      status: 'A,U',
+      sortBy: 'updatedOnDesc',
+      resultsPerPage: 50,
+    })
+  }
 }
 
 const apiSearchCSRInstance = new APISearchCSR()
