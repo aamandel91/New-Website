@@ -34,6 +34,7 @@ import {
   AdminPanelSettings as AdminUsersIcon,
   ContactPhone as CrmIcon,
   Inventory as InventoryIcon,
+  Campaign as CampaignIcon,
   ExpandLess,
   ExpandMore
 } from '@mui/icons-material'
@@ -60,6 +61,7 @@ const navItems: NavItem[] = [
   { title: 'Open House', path: '/admin/open-house', icon: <HouseIcon /> },
   { title: 'CRM', path: '/admin/crm', icon: <CrmIcon /> },
   { title: 'Navigation', path: '/admin/navigation', icon: <NavigationIcon /> },
+  { title: 'PPC Feeds', path: '/admin/ppc-feeds', icon: <CampaignIcon /> },
   {
     title: 'SEO Tools',
     path: '/admin/seo',
