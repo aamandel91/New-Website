@@ -4,6 +4,8 @@ import { type Position } from 'geojson'
 
 import { Page404Template, PageTemplate } from '@templates'
 import MapPageContent from '@pages/search'
+import StructuredData from '@shared/StructuredData'
+import { breadcrumbSchema } from 'utils/structuredData'
 
 import { APISaveSearch } from 'services/API'
 import { type Filters } from 'services/Search'
@@ -18,9 +20,23 @@ import {
   getPositionFromPolygon
 } from './_utils'
 
-const title = 'Search Results'
-
-export const metadata: Metadata = { title }
+export const metadata: Metadata = {
+  title: 'Search Homes for Sale in South Florida',
+  description:
+    'Browse homes for sale in South Florida. Filter by city, price, beds, baths, and more.',
+  openGraph: {
+    title: 'Search Homes for Sale in South Florida',
+    description:
+      'Browse homes for sale in South Florida. Filter by city, price, beds, baths, and more.',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Search Homes for Sale in South Florida',
+    description:
+      'Browse homes for sale in South Florida. Filter by city, price, beds, baths, and more.',
+  },
+}
 
 const MapPage = async (props: {
   params: Promise<Params>
@@ -52,6 +68,12 @@ const MapPage = async (props: {
 
   return (
     <PageTemplate noFooter>
+      <StructuredData
+        data={breadcrumbSchema([
+          { name: 'Home', url: 'https://floridahomefinder.com' },
+          { name: 'Search', url: 'https://floridahomefinder.com/search/gallery' },
+        ])}
+      />
       <MapOptionsProvider
         title={title}
         position={position}

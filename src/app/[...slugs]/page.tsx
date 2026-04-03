@@ -27,6 +27,12 @@ import {
   fetchZipCodesForCity,
 } from 'services/pageGeneration'
 
+// Nearby cities for internal linking, grouped by county
+const nearbyCities: Record<string, string[]> = {
+  'Broward': ['Fort Lauderdale', 'Coral Springs', 'Pompano Beach', 'Deerfield Beach', 'Boca Raton', 'Hollywood', 'Plantation', 'Davie', 'Weston', 'Coconut Creek', 'Parkland', 'Sunrise', 'Tamarac', 'Lighthouse Point'],
+  'Palm Beach': ['West Palm Beach', 'Boca Raton', 'Delray Beach', 'Boynton Beach', 'Palm Beach Gardens', 'Jupiter', 'Wellington', 'Lake Worth'],
+}
+
 export const dynamic = 'force-dynamic'
 export const revalidate = 3600
 
@@ -78,40 +84,60 @@ export async function generateMetadata(props: CleanPageProps): Promise<Metadata>
   switch (parsed.pageType) {
     case 'city': {
       const count = await fetchListingCount(cityName)
+      const title = `${count} Homes for Sale in ${cityName}, FL (${new Date().getFullYear()})`
+      const description = `Browse ${count} homes for sale in ${cityName}, FL. View photos, prices, and property details. Updated daily on Florida Home Finder.`
       return {
-        title: `${count} Homes for Sale in ${cityName}, FL (${new Date().getFullYear()})`,
-        description: `Browse ${count} homes for sale in ${cityName}, FL. View photos, prices, and property details. Updated daily on Florida Home Finder.`,
+        title,
+        description,
         alternates: { canonical: `${baseUrl}/${parsed.city}` },
+        openGraph: { title, description, type: 'website' },
+        twitter: { card: 'summary_large_image', title, description },
       }
     }
     case 'city-subtype': {
       const stConfig = getSubTypeBySlug(parsed.subType!)
       if (!stConfig) return {}
       const count = await fetchSubTypeCount(cityName, stConfig)
+      const title = generateMetaTitle(cityName, stConfig.label, count)
+      const description = `Browse ${count} ${stConfig.label} for sale in ${cityName}, FL. View photos, prices, and property details. Updated daily on Florida Home Finder.`
       return {
-        title: generateMetaTitle(cityName, stConfig.label, count),
-        description: `Browse ${count} ${stConfig.label} for sale in ${cityName}, FL. View photos, prices, and property details. Updated daily on Florida Home Finder.`,
+        title,
+        description,
         alternates: { canonical: `${baseUrl}/${parsed.city}/${parsed.subType}` },
+        openGraph: { title, description, type: 'website' },
+        twitter: { card: 'summary_large_image', title, description },
       }
     }
     case 'city-schools': {
+      const title = `Schools in ${cityName}, FL`
+      const description = `Explore schools in ${cityName}, Florida. Find top-rated public and private schools near your new home.`
       return {
-        title: `Schools in ${cityName}, FL`,
-        description: `Explore schools in ${cityName}, Florida. Find top-rated public and private schools near your new home.`,
+        title,
+        description,
+        openGraph: { title, description, type: 'website' },
+        twitter: { card: 'summary_large_image', title, description },
       }
     }
     case 'city-zip': {
       const count = await fetchListingCount(cityName, { zip: parsed.zip })
+      const title = `${count} Homes for Sale in ${cityName}, FL ${parsed.zip} (${new Date().getFullYear()})`
+      const description = `Browse ${count} homes for sale in ${cityName} zip code ${parsed.zip}, FL. Updated daily.`
       return {
-        title: `${count} Homes for Sale in ${cityName}, FL ${parsed.zip} (${new Date().getFullYear()})`,
-        description: `Browse ${count} homes for sale in ${cityName} zip code ${parsed.zip}, FL. Updated daily.`,
+        title,
+        description,
+        openGraph: { title, description, type: 'website' },
+        twitter: { card: 'summary_large_image', title, description },
       }
     }
     case 'city-neighborhood': {
       const neighborhoodName = slugToDisplayName(parsed.neighborhood!)
+      const title = `Homes for Sale in ${neighborhoodName}, ${cityName}, FL`
+      const description = `Browse homes for sale in ${neighborhoodName}, ${cityName}, FL. View photos, prices, and property details.`
       return {
-        title: `Homes for Sale in ${neighborhoodName}, ${cityName}, FL`,
-        description: `Browse homes for sale in ${neighborhoodName}, ${cityName}, FL. View photos, prices, and property details.`,
+        title,
+        description,
+        openGraph: { title, description, type: 'website' },
+        twitter: { card: 'summary_large_image', title, description },
       }
     }
   }
@@ -333,6 +359,35 @@ async function renderCityPage(
             </Box>
           </>
         )}
+
+        {/* Nearby Cities */}
+        {(() => {
+          const nearby = Object.entries(nearbyCities)
+            .filter(([, cities]) => cities.some((c) => c.toLowerCase() === cityName.toLowerCase()))
+            .flatMap(([, cities]) => cities)
+            .filter((c) => c.toLowerCase() !== cityName.toLowerCase())
+          if (nearby.length === 0) return null
+          const unique = [...new Set(nearby)]
+          return (
+            <Box sx={{ mt: 4 }}>
+              <Typography variant="h5" gutterBottom>
+                Explore Nearby Cities
+              </Typography>
+              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                {unique.map((city) => (
+                  <Chip
+                    key={city}
+                    label={city}
+                    component="a"
+                    href={generateCleanUrl(city)}
+                    clickable
+                    variant="outlined"
+                  />
+                ))}
+              </Box>
+            </Box>
+          )
+        })()}
 
         {/* Links */}
         <Box sx={{ mt: 4, p: 3, bgcolor: 'grey.100', borderRadius: 2 }}>

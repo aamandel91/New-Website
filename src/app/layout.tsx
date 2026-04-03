@@ -61,6 +61,9 @@ const Layout = async ({ children }: { children: React.ReactNode }) => {
           name="format-detection"
           content="telephone=no, date=no, email=no, address=no"
         />
+        {/* TODO: Add hreflang tags when Spanish content is available */}
+        {/* <link rel="alternate" hreflang="en" href="https://floridahomefinder.com{path}" /> */}
+        {/* <link rel="alternate" hreflang="es" href="https://floridahomefinder.com/es{path}" /> */}
       </head>
       <body suppressHydrationWarning>
         <GoogleTagManagerNoscript />

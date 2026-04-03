@@ -61,17 +61,30 @@ export const formatMetadata = (property: Property, host?: string | null) => {
     images
   } = property
 
-  const openGraph = {
-    images: getCDNPath(images[0], 'small'),
-    url: host + getSeoUrl(property)
-  }
+  const metaTitle = getSeoTitle(property)
+  const metaDescription = scrubbed(description)
+    ? propsConfig.scrubbedDescriptionLabel
+    : description
+  const ogImage = images?.[0] ? getCDNPath(images[0], 'large') : undefined
 
   return {
-    title: getSeoTitle(property),
-    description: scrubbed(description)
-      ? propsConfig.scrubbedDescriptionLabel
-      : description,
-    openGraph
+    title: metaTitle,
+    description: metaDescription,
+    openGraph: {
+      title: metaTitle,
+      description: metaDescription,
+      url: host + getSeoUrl(property),
+      type: 'website' as const,
+      ...(ogImage && {
+        images: [{ url: ogImage, width: 1200, height: 630 }],
+      }),
+    },
+    twitter: {
+      card: 'summary_large_image' as const,
+      title: metaTitle,
+      description: metaDescription,
+      ...(ogImage && { images: [ogImage] }),
+    },
   }
 }
 
