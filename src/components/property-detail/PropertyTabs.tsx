@@ -1,8 +1,8 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useEffect, useRef, useCallback } from 'react'
 import dynamic from 'next/dynamic'
-import { Box, Tabs, Tab, Paper, Skeleton } from '@mui/material'
+import { Box, Tabs, Tab, Skeleton } from '@mui/material'
 import type { Property } from 'services/API'
 
 import PropertyDescription from './PropertyDescription'
@@ -22,6 +22,7 @@ import RelatedPages from './RelatedPages'
 import MoreProperties from './MoreProperties'
 import RelatedBlogs from './RelatedBlogs'
 import PropertyPublicRecords from './PropertyPublicRecords'
+import PreferredLender from './PreferredLender'
 
 const PropertyComparables = dynamic(() => import('./PropertyComparables'), {
   ssr: false,
@@ -60,34 +61,12 @@ interface PropertyTabsProps {
   defaultInterestRate?: number
 }
 
-interface TabPanelProps {
-  children?: React.ReactNode
-  index: number
-  value: number
-}
-
-function TabPanel(props: TabPanelProps) {
-  const { children, value, index, ...other } = props
-
-  return (
-    <div
-      role="tabpanel"
-      hidden={value !== index}
-      id={`property-tabpanel-${index}`}
-      aria-labelledby={`property-tab-${index}`}
-      {...other}
-    >
-      {value === index && <Box sx={{ py: 3 }}>{children}</Box>}
-    </div>
-  )
-}
-
-function a11yProps(index: number) {
-  return {
-    id: `property-tab-${index}`,
-    'aria-controls': `property-tabpanel-${index}`,
-  }
-}
+const SECTIONS = [
+  { id: 'overview', label: 'Overview' },
+  { id: 'location', label: 'Location' },
+  { id: 'mortgage', label: 'Mortgage' },
+  { id: 'similar', label: 'Similar Homes' },
+] as const
 
 const PropertyTabs: React.FC<PropertyTabsProps> = ({
   property,
@@ -95,10 +74,64 @@ const PropertyTabs: React.FC<PropertyTabsProps> = ({
   marketStats,
   defaultInterestRate = 7.0
 }) => {
-  const [value, setValue] = useState(0)
+  const [activeTab, setActiveTab] = useState(0)
+  const isScrollingRef = useRef(false)
+  const sectionRefs = useRef<Map<string, HTMLDivElement>>(new Map())
 
-  const handleChange = (event: React.SyntheticEvent, newValue: number) => {
-    setValue(newValue)
+  const setSectionRef = useCallback((id: string) => (el: HTMLDivElement | null) => {
+    if (el) {
+      sectionRefs.current.set(id, el)
+    } else {
+      sectionRefs.current.delete(id)
+    }
+  }, [])
+
+  // IntersectionObserver to highlight active tab based on scroll position
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (isScrollingRef.current) return
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            const idx = SECTIONS.findIndex((s) => s.id === entry.target.id)
+            if (idx !== -1) {
+              setActiveTab(idx)
+            }
+          }
+        }
+      },
+      {
+        rootMargin: '-120px 0px -60% 0px',
+        threshold: 0,
+      }
+    )
+
+    // Small delay to let sections mount
+    const timer = setTimeout(() => {
+      SECTIONS.forEach(({ id }) => {
+        const el = document.getElementById(id)
+        if (el) observer.observe(el)
+      })
+    }, 300)
+
+    return () => {
+      clearTimeout(timer)
+      observer.disconnect()
+    }
+  }, [])
+
+  const handleTabClick = (_: React.SyntheticEvent, newValue: number) => {
+    setActiveTab(newValue)
+    const section = SECTIONS[newValue]
+    const el = document.getElementById(section.id)
+    if (el) {
+      isScrollingRef.current = true
+      el.scrollIntoView({ behavior: 'smooth' })
+      // Re-enable observer after scroll settles
+      setTimeout(() => {
+        isScrollingRef.current = false
+      }, 800)
+    }
   }
 
   // Parse price and sqft from API data
@@ -110,7 +143,6 @@ const PropertyTabs: React.FC<PropertyTabsProps> = ({
   const features: Record<string, string[]> = {}
 
   if (property.details) {
-    // Interior features
     const interior: string[] = []
     if (property.details.airConditioning) interior.push(`Air Conditioning: ${property.details.airConditioning}`)
     if (property.details.heating) interior.push(`Heating: ${property.details.heating}`)
@@ -119,7 +151,6 @@ const PropertyTabs: React.FC<PropertyTabsProps> = ({
     if (property.details.flooringType) interior.push(`Flooring: ${property.details.flooringType}`)
     if (interior.length > 0) features['Interior'] = interior
 
-    // Exterior features
     const exterior: string[] = []
     if (property.details.exteriorConstruction1) exterior.push(`Construction: ${property.details.exteriorConstruction1}`)
     if (property.details.driveway) exterior.push(`Driveway: ${property.details.driveway}`)
@@ -128,19 +159,16 @@ const PropertyTabs: React.FC<PropertyTabsProps> = ({
     if (property.details.swimmingPool) exterior.push(`Pool: ${property.details.swimmingPool}`)
     if (exterior.length > 0) features['Exterior'] = exterior
 
-    // Parking
     const parking: string[] = []
     if (property.details.numGarageSpaces) parking.push(`Garage Spaces: ${property.details.numGarageSpaces}`)
     if (property.details.numParkingSpaces) parking.push(`Parking Spaces: ${property.details.numParkingSpaces}`)
     if (parking.length > 0) features['Parking'] = parking
 
-    // Utilities
     const utilities: string[] = []
     if (property.details.waterSource) utilities.push(`Water: ${property.details.waterSource}`)
     if (property.details.sewer) utilities.push(`Sewer: ${property.details.sewer}`)
     if (utilities.length > 0) features['Utilities'] = utilities
 
-    // Additional features
     if (property.details.extras) {
       features['Additional Features'] = property.details.extras.split(',').map(s => s.trim())
     }
@@ -174,23 +202,24 @@ const PropertyTabs: React.FC<PropertyTabsProps> = ({
       ? parseFloat(String(property.condominium.maintenance))
       : 0
 
-  // Tab indices - adjust based on whether comparables exist
   const hasComparables = property.comparables && property.comparables.length > 0
-  const tabIndices = {
-    overview: 0,
-    location: 1,
-    comparables: hasComparables ? 2 : -1,
-    mortgage: hasComparables ? 3 : 2,
-    similarHomes: hasComparables ? 4 : 3,
-    related: hasComparables ? 5 : 4
-  }
 
   return (
     <Box sx={{ width: '100%' }}>
-      <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+      {/* Sticky Tab Bar */}
+      <Box
+        sx={{
+          position: 'sticky',
+          top: 70,
+          zIndex: 10,
+          bgcolor: 'background.paper',
+          borderBottom: 1,
+          borderColor: 'divider',
+        }}
+      >
         <Tabs
-          value={value}
-          onChange={handleChange}
+          value={activeTab}
+          onChange={handleTabClick}
           aria-label="property details tabs"
           variant="scrollable"
           scrollButtons="auto"
@@ -200,214 +229,193 @@ const PropertyTabs: React.FC<PropertyTabsProps> = ({
               fontSize: '1rem',
               fontWeight: 500,
               minWidth: { xs: 100, sm: 120 },
-              px: { xs: 2, sm: 3 }
+              px: { xs: 2, sm: 3 },
             },
             '& .Mui-selected': {
               color: 'primary.main',
-              fontWeight: 600
-            }
+              fontWeight: 600,
+            },
           }}
         >
-          <Tab label="Overview" {...a11yProps(tabIndices.overview)} />
-          <Tab label="Location" {...a11yProps(tabIndices.location)} />
-          {hasComparables && (
-            <Tab label="Comparables" {...a11yProps(tabIndices.comparables)} />
-          )}
-          <Tab label="Mortgage" {...a11yProps(tabIndices.mortgage)} />
-          <Tab label="Similar Homes" {...a11yProps(tabIndices.similarHomes)} />
-          <Tab label="Related" {...a11yProps(tabIndices.related)} />
+          {SECTIONS.map((section) => (
+            <Tab key={section.id} label={section.label} />
+          ))}
         </Tabs>
       </Box>
 
-      {/* Overview Tab */}
-      <TabPanel value={value} index={tabIndices.overview}>
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-          {/* SEO Narrative */}
-          <PropertyNarrative property={property} />
+      {/* All sections stacked vertically */}
+      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, pt: 3 }}>
+        {/* ── Overview ── */}
+        <Box id="overview" ref={setSectionRef('overview')}>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+            <PropertyNarrative property={property} />
 
-          {/* Description */}
-          {property.details?.description && (
-            <PropertyDescription description={property.details.description} address={propertyAddress} />
-          )}
+            {property.details?.description && (
+              <PropertyDescription description={property.details.description} address={propertyAddress} />
+            )}
 
-          {/* Key Facts */}
-          <PropertyKeyFacts
-            mlsNumber={property.mlsNumber || ''}
-            propertyType={property.details?.propertyType}
-            status={property.status}
-            yearBuilt={property.details?.yearBuilt ? parseInt(property.details.yearBuilt) : undefined}
-            lotSize={property.lot?.acres ?? undefined}
-            pricePerSqft={pricePerSqft}
-            hoa={hoa}
-            annualTaxes={taxes}
-            daysOnMarket={property.daysOnMarket ? parseInt(property.daysOnMarket) : undefined}
-            address={propertyAddress}
-          />
+            <PropertyKeyFacts
+              mlsNumber={property.mlsNumber || ''}
+              propertyType={property.details?.propertyType}
+              status={property.status}
+              yearBuilt={property.details?.yearBuilt ? parseInt(property.details.yearBuilt) : undefined}
+              lotSize={property.lot?.acres ?? undefined}
+              pricePerSqft={pricePerSqft}
+              hoa={hoa}
+              annualTaxes={taxes}
+              daysOnMarket={property.daysOnMarket ? parseInt(property.daysOnMarket) : undefined}
+              address={propertyAddress}
+            />
 
-          {/* Value Estimate */}
-          <PropertyValueEstimate
-            estimate={property.estimate}
-            listPrice={parseFloat(property.listPrice)}
-          />
+            <PropertyValueEstimate
+              estimate={property.estimate}
+              listPrice={parseFloat(property.listPrice)}
+            />
 
-          {/* Estimate History Table & Chart */}
-          <EstimateHistoryTable
-            history={property.estimate?.history}
-            currentEstimate={property.estimate?.value}
-          />
+            <EstimateHistoryTable
+              history={property.estimate?.history}
+              currentEstimate={property.estimate?.value}
+            />
 
-          {/* Compare to My Home */}
-          <CompareToMyHome
-            listPrice={price}
-            beds={property.details?.numBedrooms ? parseInt(property.details.numBedrooms) : 0}
-            baths={property.details?.numBathrooms ? parseInt(property.details.numBathrooms) : 0}
-            sqft={sqft}
-            propertyType={property.details?.propertyType}
-          />
+            <CompareToMyHome
+              listPrice={price}
+              beds={property.details?.numBedrooms ? parseInt(property.details.numBedrooms) : 0}
+              baths={property.details?.numBathrooms ? parseInt(property.details.numBathrooms) : 0}
+              sqft={sqft}
+              propertyType={property.details?.propertyType}
+            />
 
-          {/* Sold Price Distribution */}
-          <SoldPriceDistribution
-            city={address.city}
-            neighborhood={property.address?.neighborhood}
-            propertyType={property.details?.propertyType}
-          />
+            <SoldPriceDistribution
+              city={address.city}
+              neighborhood={property.address?.neighborhood}
+              propertyType={property.details?.propertyType}
+            />
 
-          {/* Features */}
-          {Object.keys(features).length > 0 && (
-            <PropertyFeatures features={features} />
-          )}
+            {Object.keys(features).length > 0 && (
+              <PropertyFeatures features={features} />
+            )}
 
-          {/* Property History */}
-          <PropertyHistory
-            history={property.history}
-            currentPrice={price}
-            originalPrice={property.originalPrice
-              ? (typeof property.originalPrice === 'number' ? property.originalPrice : parseFloat(property.originalPrice as string))
-              : price}
-            listDate={property.listDate}
-            sqft={sqft}
-            address={propertyAddress}
-          />
+            <PropertyHistory
+              history={property.history}
+              currentPrice={price}
+              originalPrice={property.originalPrice
+                ? (typeof property.originalPrice === 'number' ? property.originalPrice : parseFloat(property.originalPrice as string))
+                : price}
+              listDate={property.listDate}
+              sqft={sqft}
+              address={propertyAddress}
+            />
 
-          {/* Tax History */}
-          <PropertyTaxHistory taxes={property.taxes} />
+            <PropertyTaxHistory taxes={property.taxes} />
 
-          {/* Public Records */}
-          <PropertyPublicRecords property={property} />
-        </Box>
-      </TabPanel>
+            <PropertyPublicRecords property={property} />
 
-      {/* Location Tab */}
-      <TabPanel value={value} index={tabIndices.location}>
-        <PropertyLocation
-          address={address}
-          coordinates={{
-            latitude: property.map?.latitude || 0,
-            longitude: property.map?.longitude || 0,
-          }}
-          neighborhood={property.address?.neighborhood}
-          county={property.address?.district}
-          schoolDistrict={undefined}
-        />
-        <NearbyPlaces
-          lat={property.map?.latitude || 0}
-          lng={property.map?.longitude || 0}
-          address={propertyAddress}
-        />
-        <WalkScore
-          lat={property.map?.latitude || 0}
-          lng={property.map?.longitude || 0}
-          address={propertyAddress}
-        />
-        <CommuteCalculator
-          originAddress={propertyAddress}
-          originLat={property.map?.latitude || 0}
-          originLng={property.map?.longitude || 0}
-        />
-        <PropertyNeighborhood
-          neighborhood={property.address?.neighborhood}
-          city={property.address?.city}
-          state={property.address?.state}
-          zip={property.address?.zip}
-        />
-      </TabPanel>
-
-      {/* Comparables Tab */}
-      {hasComparables && (
-        <TabPanel value={value} index={tabIndices.comparables}>
-          <PropertyComparables
-            comparables={property.comparables || []}
-            currentProperty={property}
-          />
-        </TabPanel>
-      )}
-
-      {/* Mortgage Tab */}
-      <TabPanel value={value} index={tabIndices.mortgage}>
-        <PropertyMortgageCalculator
-          price={price}
-          defaultInterestRate={defaultInterestRate}
-          propertyTaxes={taxes}
-          hoaMonthly={hoa}
-        />
-        <CashFlowCalculator
-          listPrice={price}
-          propertyTaxAnnual={taxes}
-          hoaMonthly={hoa}
-        />
-      </TabPanel>
-
-      {/* Similar Homes Tab */}
-      <TabPanel value={value} index={tabIndices.similarHomes}>
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-          {similarProperties.length > 0 ? (
-            <>
-              <SimilarProperties
-                properties={similarProperties}
-                currentPropertyMls={property.mlsNumber}
-                city={property.address?.city}
-                state={property.address?.state}
-                address={propertyAddress}
-                zipCode={property.address?.zip}
-                propertyType={property.details?.propertyType}
+            {hasComparables && (
+              <PropertyComparables
+                comparables={property.comparables || []}
+                currentProperty={property}
               />
-
-              <MoreProperties
-                properties={similarProperties}
-                currentPropertyMls={property.mlsNumber}
-                city={property.address?.city}
-                state={property.address?.state}
-                neighborhood={property.address?.neighborhood}
-                priceRange={formatPrice(price)}
-              />
-            </>
-          ) : (
-            <Box sx={{ py: 4, textAlign: 'center', color: 'text.secondary' }}>
-              No similar properties found at this time.
-            </Box>
-          )}
+            )}
+          </Box>
         </Box>
-      </TabPanel>
 
-      {/* Related Tab */}
-      <TabPanel value={value} index={tabIndices.related}>
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-          <RelatedPages
-            city={property.address?.city}
-            state={property.address?.state}
+        {/* ── Location ── */}
+        <Box id="location" ref={setSectionRef('location')}>
+          <PropertyLocation
+            address={address}
+            coordinates={{
+              latitude: property.map?.latitude || 0,
+              longitude: property.map?.longitude || 0,
+            }}
             neighborhood={property.address?.neighborhood}
-            propertyType={property.details?.propertyType}
-            zipCode={property.address?.zip}
+            county={property.address?.district}
             schoolDistrict={undefined}
           />
-          <RelatedBlogs
-            posts={[]}
+          <NearbyPlaces
+            lat={property.map?.latitude || 0}
+            lng={property.map?.longitude || 0}
+            address={propertyAddress}
+          />
+          <WalkScore
+            lat={property.map?.latitude || 0}
+            lng={property.map?.longitude || 0}
+            address={propertyAddress}
+          />
+          <CommuteCalculator
+            originAddress={propertyAddress}
+            originLat={property.map?.latitude || 0}
+            originLng={property.map?.longitude || 0}
+          />
+          <PropertyNeighborhood
+            neighborhood={property.address?.neighborhood}
             city={property.address?.city}
             state={property.address?.state}
-            propertyType={property.details?.propertyType}
+            zip={property.address?.zip}
           />
         </Box>
-      </TabPanel>
+
+        {/* ── Mortgage ── */}
+        <Box id="mortgage" ref={setSectionRef('mortgage')}>
+          <PropertyMortgageCalculator
+            price={price}
+            defaultInterestRate={defaultInterestRate}
+            propertyTaxes={taxes}
+            hoaMonthly={hoa}
+          />
+          <CashFlowCalculator
+            listPrice={price}
+            propertyTaxAnnual={taxes}
+            hoaMonthly={hoa}
+          />
+          <PreferredLender />
+        </Box>
+
+        {/* ── Similar Homes ── */}
+        <Box id="similar" ref={setSectionRef('similar')}>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+            {similarProperties.length > 0 ? (
+              <>
+                <SimilarProperties
+                  properties={similarProperties}
+                  currentPropertyMls={property.mlsNumber}
+                  city={property.address?.city}
+                  state={property.address?.state}
+                  address={propertyAddress}
+                  zipCode={property.address?.zip}
+                  propertyType={property.details?.propertyType}
+                />
+                <MoreProperties
+                  properties={similarProperties}
+                  currentPropertyMls={property.mlsNumber}
+                  city={property.address?.city}
+                  state={property.address?.state}
+                  neighborhood={property.address?.neighborhood}
+                  priceRange={formatPrice(price)}
+                />
+              </>
+            ) : (
+              <Box sx={{ py: 4, textAlign: 'center', color: 'text.secondary' }}>
+                No similar properties found at this time.
+              </Box>
+            )}
+
+            <RelatedPages
+              city={property.address?.city}
+              state={property.address?.state}
+              neighborhood={property.address?.neighborhood}
+              propertyType={property.details?.propertyType}
+              zipCode={property.address?.zip}
+              schoolDistrict={undefined}
+            />
+            <RelatedBlogs
+              posts={[]}
+              city={property.address?.city}
+              state={property.address?.state}
+              propertyType={property.details?.propertyType}
+            />
+          </Box>
+        </Box>
+      </Box>
     </Box>
   )
 }
