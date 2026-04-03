@@ -33,6 +33,7 @@ import {
   Navigation as NavigationIcon,
   AdminPanelSettings as AdminUsersIcon,
   ContactPhone as CrmIcon,
+  Inventory as InventoryIcon,
   ExpandLess,
   ExpandMore
 } from '@mui/icons-material'
@@ -65,7 +66,8 @@ const navItems: NavItem[] = [
     icon: <SearchIcon />,
     children: [
       { title: 'Robots.txt', path: '/admin/robots', icon: <SecurityIcon /> },
-      { title: 'AI Content', path: '/admin/ai-content', icon: <AutoAwesomeIcon /> }
+      { title: 'AI Content', path: '/admin/ai-content', icon: <AutoAwesomeIcon /> },
+      { title: 'Property Index', path: '/admin/property-index', icon: <InventoryIcon /> }
     ]
   },
   { title: 'Users', path: '/admin/users', icon: <AdminUsersIcon /> },
@@ -89,7 +91,7 @@ export default function AdminSidebar({ mobileOpen = false, onMobileClose }: Admi
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down('md'))
   const [seoOpen, setSeoOpen] = useState(
-    pathname.startsWith('/admin/robots') || pathname.startsWith('/admin/ai-content')
+    pathname.startsWith('/admin/robots') || pathname.startsWith('/admin/ai-content') || pathname.startsWith('/admin/property-index')
   )
 
   const handleNavigation = (path: string) => {

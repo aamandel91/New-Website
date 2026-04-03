@@ -24,6 +24,7 @@ import APISearchCSR from 'services/API/APISearchCSR'
 import { getProtocolHost } from 'utils/urls'
 import { parseAddressSlug, generateStaticPropertyUrl } from 'utils/propertyUrls'
 import { generatePropertyJsonLd, generatePropertyBreadcrumbJsonLd } from 'utils/propertySchema'
+import { scorePropertyPage } from '@/utils/propertyPageScoring'
 
 import { PropertyTransactionHistory, NotifyWhenListed } from '@/components/property-detail'
 
@@ -134,9 +135,34 @@ export async function generateMetadata(props: HomesPageProps): Promise<Metadata>
   const title = `${titleStreet}, ${titleCity}, ${state.toUpperCase()} ${zip}`
   const description = `View property details, price history, and market data for ${title}. Get notified when this home is listed for sale.`
 
+  // Fetch property data for scoring
+  const { listings } = await fetchAddressListings(params.slug)
+  const { active, pending, mostRecentSold } = categorizeListings(listings)
+  const primaryProperty = active || pending || mostRecentSold || listings[0]
+  const history = buildHistory(listings)
+
+  const pageScore = primaryProperty
+    ? scorePropertyPage({
+        status: primaryProperty.status,
+        lastStatus: primaryProperty.lastStatus,
+        soldDate: primaryProperty.soldDate ?? undefined,
+        soldPrice: primaryProperty.soldPrice,
+        images: primaryProperty.images,
+        history,
+        estimate: primaryProperty.estimate,
+        details: primaryProperty.details
+          ? { description: primaryProperty.details.description }
+          : null,
+        address: primaryProperty.address
+          ? { city: primaryProperty.address.city, area: primaryProperty.address.area }
+          : null,
+      })
+    : null
+
   return {
     title,
     description,
+    ...(pageScore && { robots: pageScore.indexDirective }),
     openGraph: {
       title,
       description,
@@ -183,6 +209,25 @@ export default async function HomesPage(props: HomesPageProps) {
   // Primary property: active > pending > most recent sold > first listing found
   const primaryProperty = active || pending || mostRecentSold || listings[0]
 
+  // Score the property for indexing decisions
+  const pageScore = primaryProperty
+    ? scorePropertyPage({
+        status: primaryProperty.status,
+        lastStatus: primaryProperty.lastStatus,
+        soldDate: primaryProperty.soldDate ?? undefined,
+        soldPrice: primaryProperty.soldPrice,
+        images: primaryProperty.images,
+        history,
+        estimate: primaryProperty.estimate,
+        details: primaryProperty.details
+          ? { description: primaryProperty.details.description }
+          : null,
+        address: primaryProperty.address
+          ? { city: primaryProperty.address.city, area: primaryProperty.address.area }
+          : null,
+      })
+    : null
+
   const host = getProtocolHost(await headers())
   const canonicalUrl = `${host}/homes/${slug}`
 
@@ -214,6 +259,11 @@ export default async function HomesPage(props: HomesPageProps) {
         <Container maxWidth="xl" sx={{ pb: 4 }}>
           <PropertyTransactionHistory history={history} />
         </Container>
+        {process.env.NODE_ENV === 'development' && pageScore && (
+          <Box sx={{ position: 'fixed', bottom: 80, right: 10, bgcolor: 'rgba(0,0,0,0.7)', color: '#fff', p: 1, borderRadius: 1, fontSize: 11, zIndex: 9999 }}>
+            Score: {pageScore.score} | {pageScore.indexDirective}
+          </Box>
+        )}
       </>
     )
   }
@@ -259,6 +309,11 @@ export default async function HomesPage(props: HomesPageProps) {
           <NotifyWhenListed propertyAddress={fullAddress} />
           <PropertyTransactionHistory history={history} />
         </Container>
+        {process.env.NODE_ENV === 'development' && pageScore && (
+          <Box sx={{ position: 'fixed', bottom: 80, right: 10, bgcolor: 'rgba(0,0,0,0.7)', color: '#fff', p: 1, borderRadius: 1, fontSize: 11, zIndex: 9999 }}>
+            Score: {pageScore.score} | {pageScore.indexDirective}
+          </Box>
+        )}
       </>
     )
   }
@@ -403,6 +458,11 @@ export default async function HomesPage(props: HomesPageProps) {
             </Grid>
           </Grid>
         </Container>
+        {process.env.NODE_ENV === 'development' && pageScore && (
+          <Box sx={{ position: 'fixed', bottom: 80, right: 10, bgcolor: 'rgba(0,0,0,0.7)', color: '#fff', p: 1, borderRadius: 1, fontSize: 11, zIndex: 9999 }}>
+            Score: {pageScore.score} | {pageScore.indexDirective}
+          </Box>
+        )}
       </>
     )
   }
@@ -516,6 +576,11 @@ export default async function HomesPage(props: HomesPageProps) {
           </Grid>
         </Grid>
       </Container>
+      {process.env.NODE_ENV === 'development' && pageScore && (
+        <Box sx={{ position: 'fixed', bottom: 80, right: 10, bgcolor: 'rgba(0,0,0,0.7)', color: '#fff', p: 1, borderRadius: 1, fontSize: 11, zIndex: 9999 }}>
+          Score: {pageScore.score} | {pageScore.indexDirective}
+        </Box>
+      )}
     </>
   )
 }

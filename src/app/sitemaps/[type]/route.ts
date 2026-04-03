@@ -59,27 +59,68 @@ async function generateActive(): Promise<SitemapEntry[]> {
 
 async function generateSold(): Promise<SitemapEntry[]> {
   try {
+    // Try loading from property index first (pre-scored)
+    const { loadPropertyIndex } = await import('services/propertyIndex')
+    const index = await loadPropertyIndex()
+
+    if (index.length > 0) {
+      return index
+        .filter((entry) => entry.score >= 1)
+        .map((entry) => ({
+          url: `${BASE_URL}/homes/${entry.slug}`,
+          lastmod: entry.lastUpdated
+            ? new Date(entry.lastUpdated).toISOString()
+            : new Date().toISOString(),
+          changefreq: entry.score >= 3 ? 'monthly' : 'yearly',
+          priority: entry.score >= 3 ? 0.6 : 0.3,
+        }))
+    }
+
+    // Fallback: fetch from API and score
     const APISearchCSR = (await import('services/API/APISearchCSR')).default
     const { generateStaticPropertyUrl } = await import('utils/propertyUrls')
+    const { scorePropertyPage } = await import('utils/propertyPageScoring')
 
     const result = await APISearchCSR.searchListings({
       status: 'U',
       lastStatus: 'Sld',
       resultsPerPage: 500,
       sortBy: 'updatedOnDesc',
-      fields: 'mlsNumber,address,updatedOn' as any,
     })
 
     if (!result?.listings) return []
 
-    return result.listings.map((listing: any) => ({
-      url: `${BASE_URL}${generateStaticPropertyUrl(listing.address || {})}`,
-      lastmod: listing.updatedOn
-        ? new Date(listing.updatedOn).toISOString()
-        : new Date().toISOString(),
-      changefreq: 'monthly',
-      priority: 0.5,
-    }))
+    const entries: SitemapEntry[] = []
+    for (const listing of result.listings) {
+      const pageScore = scorePropertyPage({
+        status: listing.status,
+        lastStatus: listing.lastStatus,
+        soldDate: listing.soldDate ?? undefined,
+        soldPrice: listing.soldPrice,
+        images: listing.images,
+        history: listing.history,
+        estimate: listing.estimate,
+        details: listing.details
+          ? { description: listing.details.description }
+          : null,
+        address: listing.address
+          ? { city: listing.address.city, area: listing.address.area }
+          : null,
+      })
+
+      if (pageScore.score >= 1) {
+        entries.push({
+          url: `${BASE_URL}${generateStaticPropertyUrl(listing.address || {})}`,
+          lastmod: listing.updatedOn
+            ? new Date(listing.updatedOn).toISOString()
+            : new Date().toISOString(),
+          changefreq: pageScore.score >= 3 ? 'monthly' : 'yearly',
+          priority: pageScore.score >= 3 ? 0.6 : 0.3,
+        })
+      }
+    }
+
+    return entries
   } catch {
     return []
   }
