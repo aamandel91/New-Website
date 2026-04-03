@@ -25,6 +25,7 @@ import {
 import type { ParsedCleanSlug } from 'utils/templateEngine'
 import APIContentPages from 'services/API/APIContentPages'
 import type { ContentPage } from 'services/API/APIContentPages'
+import { scoreAreaPage } from 'utils/areaPageScoring'
 import {
   fetchCityNeighborhoods,
   fetchListingCount,
@@ -85,14 +86,26 @@ export async function generateMetadata(props: CleanPageProps): Promise<Metadata>
   const baseUrl = 'https://floridahomefinder.com'
   const cityName = slugToDisplayName(parsed.city)
 
+  // Check CMS content for scoring
+  const fullSlug = slugs.join('/')
+  let hasCmsContent = false
+  try {
+    const cmsPage = await APIContentPages.getPageBySlug(fullSlug)
+    hasCmsContent = !!(cmsPage && cmsPage.status === 'published')
+  } catch {
+    // No CMS page
+  }
+
   switch (parsed.pageType) {
     case 'city': {
       const count = await fetchListingCount(cityName)
+      const pageScore = scoreAreaPage({ pageType: 'city', listingCount: count, hasCmsContent })
       const title = `${count} Homes for Sale in ${cityName}, FL (${new Date().getFullYear()})`
       const description = `Browse ${count} homes for sale in ${cityName}, FL. View photos, prices, and property details. Updated daily on Florida Home Finder.`
       return {
         title,
         description,
+        robots: pageScore.indexDirective,
         alternates: { canonical: `${baseUrl}/${parsed.city}` },
         openGraph: { title, description, type: 'website' },
         twitter: { card: 'summary_large_image', title, description },
@@ -102,44 +115,53 @@ export async function generateMetadata(props: CleanPageProps): Promise<Metadata>
       const stConfig = getSubTypeBySlug(parsed.subType!)
       if (!stConfig) return {}
       const count = await fetchSubTypeCount(cityName, stConfig)
+      const pageScore = scoreAreaPage({ pageType: 'subType', listingCount: count, subTypeSlug: stConfig.slug, hasCmsContent })
       const title = generateMetaTitle(cityName, stConfig.label, count)
       const description = `Browse ${count} ${stConfig.label} for sale in ${cityName}, FL. View photos, prices, and property details. Updated daily on Florida Home Finder.`
       return {
         title,
         description,
+        robots: pageScore.indexDirective,
         alternates: { canonical: `${baseUrl}/${parsed.city}/${parsed.subType}` },
         openGraph: { title, description, type: 'website' },
         twitter: { card: 'summary_large_image', title, description },
       }
     }
     case 'city-schools': {
+      const pageScore = scoreAreaPage({ pageType: 'schools', listingCount: 0, hasCmsContent })
       const title = `Schools in ${cityName}, FL`
       const description = `Explore schools in ${cityName}, Florida. Find top-rated public and private schools near your new home.`
       return {
         title,
         description,
+        robots: pageScore.indexDirective,
         openGraph: { title, description, type: 'website' },
         twitter: { card: 'summary_large_image', title, description },
       }
     }
     case 'city-zip': {
       const count = await fetchListingCount(cityName, { zip: parsed.zip })
+      const pageScore = scoreAreaPage({ pageType: 'zip', listingCount: count, hasCmsContent })
       const title = `${count} Homes for Sale in ${cityName}, FL ${parsed.zip} (${new Date().getFullYear()})`
       const description = `Browse ${count} homes for sale in ${cityName} zip code ${parsed.zip}, FL. Updated daily.`
       return {
         title,
         description,
+        robots: pageScore.indexDirective,
         openGraph: { title, description, type: 'website' },
         twitter: { card: 'summary_large_image', title, description },
       }
     }
     case 'city-neighborhood': {
+      const count = await fetchListingCount(cityName)
+      const pageScore = scoreAreaPage({ pageType: 'neighborhood', listingCount: count, hasCmsContent })
       const neighborhoodName = slugToDisplayName(parsed.neighborhood!)
       const title = `Homes for Sale in ${neighborhoodName}, ${cityName}, FL`
       const description = `Browse homes for sale in ${neighborhoodName}, ${cityName}, FL. View photos, prices, and property details.`
       return {
         title,
         description,
+        robots: pageScore.indexDirective,
         openGraph: { title, description, type: 'website' },
         twitter: { card: 'summary_large_image', title, description },
       }
@@ -168,22 +190,23 @@ export default async function CleanCatchAllPage(props: CleanPageProps) {
   }
 
   const baseUrl = 'https://floridahomefinder.com'
+  const hasCmsContent = !!(cmsPage && cmsPage.status === 'published')
 
-  if (cmsPage && cmsPage.status === 'published') {
+  if (hasCmsContent && cmsPage) {
     return renderCmsPage(cmsPage, parsed, cityName, baseUrl)
   }
 
   switch (parsed.pageType) {
     case 'city':
-      return renderCityPage(parsed, cityName, baseUrl)
+      return renderCityPage(parsed, cityName, baseUrl, hasCmsContent)
     case 'city-subtype':
-      return renderSubTypePage(parsed, cityName, baseUrl)
+      return renderSubTypePage(parsed, cityName, baseUrl, hasCmsContent)
     case 'city-schools':
-      return renderSchoolsPage(parsed, cityName, baseUrl)
+      return renderSchoolsPage(parsed, cityName, baseUrl, hasCmsContent)
     case 'city-zip':
-      return renderZipPage(parsed, cityName, baseUrl)
+      return renderZipPage(parsed, cityName, baseUrl, hasCmsContent)
     case 'city-neighborhood':
-      return renderNeighborhoodPage(parsed, cityName, baseUrl)
+      return renderNeighborhoodPage(parsed, cityName, baseUrl, hasCmsContent)
     default:
       notFound()
   }
@@ -244,7 +267,8 @@ function renderCmsPage(
 async function renderCityPage(
   parsed: ParsedCleanSlug,
   cityName: string,
-  baseUrl: string
+  baseUrl: string,
+  hasCmsContent: boolean
 ) {
   const [count, neighborhoods, zipCodes] = await Promise.all([
     fetchListingCount(cityName),
@@ -252,6 +276,7 @@ async function renderCityPage(
     fetchZipCodesForCity(cityName),
   ])
   const breadcrumbItems = buildBreadcrumbs(parsed, cityName, baseUrl)
+  const pageScore = scoreAreaPage({ pageType: 'city', listingCount: count, hasCmsContent })
 
   return (
     <PageTemplate>
@@ -412,6 +437,11 @@ async function renderCityPage(
           </Box>
         </Box>
       </Container>
+      {process.env.NODE_ENV === 'development' && (
+        <Box sx={{ position: 'fixed', bottom: 80, right: 10, bgcolor: 'rgba(0,0,0,0.7)', color: '#fff', p: 1, borderRadius: 1, fontSize: 11, zIndex: 9999 }}>
+          Area Score: {pageScore.score} | {pageScore.indexDirective}
+        </Box>
+      )}
     </PageTemplate>
   )
 }
@@ -423,7 +453,8 @@ async function renderCityPage(
 async function renderSubTypePage(
   parsed: ParsedCleanSlug,
   cityName: string,
-  baseUrl: string
+  baseUrl: string,
+  hasCmsContent: boolean
 ) {
   const stConfig = getSubTypeBySlug(parsed.subType!)
   if (!stConfig) notFound()
@@ -431,6 +462,7 @@ async function renderSubTypePage(
   const count = await fetchSubTypeCount(cityName, stConfig)
   const breadcrumbItems = buildBreadcrumbs(parsed, cityName, baseUrl)
   const headings = generateHeadingVariations(cityName, '', 'Florida', stConfig.label, count)
+  const pageScore = scoreAreaPage({ pageType: 'subType', listingCount: count, subTypeSlug: stConfig.slug, hasCmsContent })
 
   const otherSubTypes = subTypes.filter((st) => st.slug !== parsed.subType)
 
@@ -472,6 +504,11 @@ async function renderSubTypePage(
           </Box>
         </Box>
       </Container>
+      {process.env.NODE_ENV === 'development' && (
+        <Box sx={{ position: 'fixed', bottom: 80, right: 10, bgcolor: 'rgba(0,0,0,0.7)', color: '#fff', p: 1, borderRadius: 1, fontSize: 11, zIndex: 9999 }}>
+          Area Score: {pageScore.score} | {pageScore.indexDirective}
+        </Box>
+      )}
     </PageTemplate>
   )
 }
@@ -483,11 +520,13 @@ async function renderSubTypePage(
 async function renderNeighborhoodPage(
   parsed: ParsedCleanSlug,
   cityName: string,
-  baseUrl: string
+  baseUrl: string,
+  hasCmsContent: boolean
 ) {
   const neighborhoodName = slugToDisplayName(parsed.subType || '')
   const breadcrumbItems = buildBreadcrumbs(parsed, cityName, baseUrl)
   const count = await fetchListingCount(cityName)
+  const pageScore = scoreAreaPage({ pageType: 'neighborhood', listingCount: count, hasCmsContent })
 
   return (
     <PageTemplate>
@@ -521,6 +560,11 @@ async function renderNeighborhoodPage(
           </Box>
         </Box>
       </Container>
+      {process.env.NODE_ENV === 'development' && (
+        <Box sx={{ position: 'fixed', bottom: 80, right: 10, bgcolor: 'rgba(0,0,0,0.7)', color: '#fff', p: 1, borderRadius: 1, fontSize: 11, zIndex: 9999 }}>
+          Area Score: {pageScore.score} | {pageScore.indexDirective}
+        </Box>
+      )}
     </PageTemplate>
   )
 }
@@ -532,10 +576,13 @@ async function renderNeighborhoodPage(
 async function renderZipPage(
   parsed: ParsedCleanSlug,
   cityName: string,
-  baseUrl: string
+  baseUrl: string,
+  hasCmsContent: boolean
 ) {
   const zip = parsed.subType || ''
   const breadcrumbItems = buildBreadcrumbs(parsed, cityName, baseUrl)
+  const count = await fetchListingCount(cityName, { zip })
+  const pageScore = scoreAreaPage({ pageType: 'zip', listingCount: count, hasCmsContent })
 
   return (
     <PageTemplate>
@@ -568,6 +615,11 @@ async function renderZipPage(
           </Box>
         </Box>
       </Container>
+      {process.env.NODE_ENV === 'development' && (
+        <Box sx={{ position: 'fixed', bottom: 80, right: 10, bgcolor: 'rgba(0,0,0,0.7)', color: '#fff', p: 1, borderRadius: 1, fontSize: 11, zIndex: 9999 }}>
+          Area Score: {pageScore.score} | {pageScore.indexDirective}
+        </Box>
+      )}
     </PageTemplate>
   )
 }
@@ -579,9 +631,11 @@ async function renderZipPage(
 async function renderSchoolsPage(
   parsed: ParsedCleanSlug,
   cityName: string,
-  baseUrl: string
+  baseUrl: string,
+  hasCmsContent: boolean
 ) {
   const breadcrumbItems = buildBreadcrumbs(parsed, cityName, baseUrl)
+  const pageScore = scoreAreaPage({ pageType: 'schools', listingCount: 0, hasCmsContent })
 
   return (
     <PageTemplate>
@@ -607,6 +661,11 @@ async function renderSchoolsPage(
           </Box>
         </Box>
       </Container>
+      {process.env.NODE_ENV === 'development' && (
+        <Box sx={{ position: 'fixed', bottom: 80, right: 10, bgcolor: 'rgba(0,0,0,0.7)', color: '#fff', p: 1, borderRadius: 1, fontSize: 11, zIndex: 9999 }}>
+          Area Score: {pageScore.score} | {pageScore.indexDirective}
+        </Box>
+      )}
     </PageTemplate>
   )
 }

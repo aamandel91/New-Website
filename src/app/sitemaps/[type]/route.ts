@@ -8,7 +8,8 @@
 import { NextResponse } from 'next/server'
 
 import { targetCounties, subTypes } from '@configs/page-generation'
-import { fetchCountyCities } from 'services/pageGeneration'
+import { fetchCountyCities, fetchSubTypeCount } from 'services/pageGeneration'
+import { scoreAreaPage } from 'utils/areaPageScoring'
 
 const BASE_URL = 'https://floridahomefinder.com'
 
@@ -133,19 +134,31 @@ async function generatePages(): Promise<SitemapEntry[]> {
       const cities = await fetchCountyCities(county)
       for (const city of cities) {
         const citySlug = city.name.toLowerCase().replace(/\s+/g, '-')
-        entries.push({
-          url: `${BASE_URL}/${citySlug}`,
-          lastmod: new Date().toISOString(),
-          changefreq: 'daily',
-          priority: 0.8,
-        })
-        for (const st of subTypes) {
+
+        // Score city page
+        const cityCount = city.activeCount ?? 0
+        const cityScore = scoreAreaPage({ pageType: 'city', listingCount: cityCount })
+        if (cityScore.score >= 1) {
           entries.push({
-            url: `${BASE_URL}/${citySlug}/${st.slug}`,
+            url: `${BASE_URL}/${citySlug}`,
             lastmod: new Date().toISOString(),
-            changefreq: 'weekly',
-            priority: 0.6,
+            changefreq: cityScore.score >= 3 ? 'weekly' : 'monthly',
+            priority: cityScore.score >= 3 ? 0.7 : 0.3,
           })
+        }
+
+        // Score each sub-type page
+        for (const st of subTypes) {
+          const stCount = await fetchSubTypeCount(city.name, st)
+          const stScore = scoreAreaPage({ pageType: 'subType', listingCount: stCount, subTypeSlug: st.slug })
+          if (stScore.score >= 1) {
+            entries.push({
+              url: `${BASE_URL}/${citySlug}/${st.slug}`,
+              lastmod: new Date().toISOString(),
+              changefreq: stScore.score >= 3 ? 'weekly' : 'monthly',
+              priority: stScore.score >= 3 ? 0.7 : 0.3,
+            })
+          }
         }
       }
     }
