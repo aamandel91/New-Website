@@ -21,20 +21,20 @@ import {
 } from './_utils'
 
 export const metadata: Metadata = {
-  title: 'Search Homes for Sale in South Florida',
+  title: 'Homes for Sale in South Florida | Florida Home Finder',
   description:
-    'Browse homes for sale in South Florida. Filter by city, price, beds, baths, and more.',
+    'Search homes for sale in South Florida. Filter by city, neighborhood, price, beds, baths, property type, and more on Florida Home Finder.',
   openGraph: {
-    title: 'Search Homes for Sale in South Florida',
+    title: 'Homes for Sale in South Florida | Florida Home Finder',
     description:
-      'Browse homes for sale in South Florida. Filter by city, price, beds, baths, and more.',
+      'Search homes for sale in South Florida. Filter by city, neighborhood, price, beds, baths, property type, and more on Florida Home Finder.',
     type: 'website',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Search Homes for Sale in South Florida',
+    title: 'Homes for Sale in South Florida | Florida Home Finder',
     description:
-      'Browse homes for sale in South Florida. Filter by city, price, beds, baths, and more.',
+      'Search homes for sale in South Florida. Filter by city, neighborhood, price, beds, baths, property type, and more on Florida Home Finder.',
   },
 }
 

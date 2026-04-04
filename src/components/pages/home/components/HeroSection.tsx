@@ -203,18 +203,19 @@ const HeroSection = () => {
       {activeTab === 'buying' && (
         <Box
           sx={{
-            display: 'flex',
-            flexDirection: { xs: 'column', md: 'row' },
-            gap: { xs: 2, md: 0 },
             maxWidth: '800px',
             width: '100%',
             bgcolor: '#fff',
             borderRadius: '6px',
             overflow: 'hidden',
-            p: { xs: 2, md: 0 }
+            p: { xs: 2, md: 0 },
+            display: 'flex',
+            flexDirection: 'column',
+            gap: { xs: 1.5, md: 0 }
           }}
         >
-          <Box sx={{ flex: 2, minWidth: 0 }}>
+          {/* Location — full width on mobile */}
+          <Box sx={{ width: '100%', display: { md: 'none' } }}>
             <LocationAutocomplete
               placeholder="Location, Zip, Address or MLS #"
               variant="light"
@@ -222,76 +223,159 @@ const HeroSection = () => {
               onSelect={handleLocationSelect}
               sx={{
                 '& .MuiOutlinedInput-root': {
-                  borderRadius: { xs: '4px', md: 0 },
-                  '& fieldset': {
-                    border: 'none',
-                    borderRight: { md: '1px solid #ddd' }
-                  }
+                  borderRadius: '4px',
+                  '& fieldset': { border: '1px solid #ddd' }
                 }
               }}
             />
           </Box>
-          <Select
-            value={minPrice}
-            onChange={(e: SelectChangeEvent) => setMinPrice(e.target.value)}
-            displayEmpty
-            size="small"
-            sx={{
-              flex: 1,
-              '& .MuiOutlinedInput-notchedOutline': {
-                border: 'none',
-                borderRight: { md: '1px solid #ddd' }
-              },
-              borderRadius: { xs: '4px', md: 0 }
-            }}
-            renderValue={(val) =>
-              val ? PRICE_OPTIONS.find((o) => o.value === val)?.label : 'Min Price'
-            }
-          >
-            {PRICE_OPTIONS.map((opt) => (
-              <MenuItem key={`min-${opt.value}`} value={opt.value}>
-                {opt.label}
-              </MenuItem>
-            ))}
-          </Select>
-          <Select
-            value={maxPrice}
-            onChange={(e: SelectChangeEvent) => setMaxPrice(e.target.value)}
-            displayEmpty
-            size="small"
-            sx={{
-              flex: 1,
-              '& .MuiOutlinedInput-notchedOutline': { border: 'none' },
-              borderRadius: { xs: '4px', md: 0 }
-            }}
-            renderValue={(val) =>
-              val ? PRICE_OPTIONS.find((o) => o.value === val)?.label : 'Max Price'
-            }
-          >
-            {PRICE_OPTIONS.map((opt) => (
-              <MenuItem key={`max-${opt.value}`} value={opt.value}>
-                {opt.label}
-              </MenuItem>
-            ))}
-          </Select>
+
+          {/* Price selects — side by side on mobile */}
+          <Box sx={{ display: { xs: 'flex', md: 'none' }, gap: 1 }}>
+            <Select
+              value={minPrice}
+              onChange={(e: SelectChangeEvent) => setMinPrice(e.target.value)}
+              displayEmpty
+              size="small"
+              sx={{
+                flex: 1,
+                '& .MuiOutlinedInput-notchedOutline': { borderColor: '#ddd' },
+                borderRadius: '4px'
+              }}
+              renderValue={(val) =>
+                val ? PRICE_OPTIONS.find((o) => o.value === val)?.label : 'Min Price'
+              }
+            >
+              {PRICE_OPTIONS.map((opt) => (
+                <MenuItem key={`min-m-${opt.value}`} value={opt.value}>
+                  {opt.label}
+                </MenuItem>
+              ))}
+            </Select>
+            <Select
+              value={maxPrice}
+              onChange={(e: SelectChangeEvent) => setMaxPrice(e.target.value)}
+              displayEmpty
+              size="small"
+              sx={{
+                flex: 1,
+                '& .MuiOutlinedInput-notchedOutline': { borderColor: '#ddd' },
+                borderRadius: '4px'
+              }}
+              renderValue={(val) =>
+                val ? PRICE_OPTIONS.find((o) => o.value === val)?.label : 'Max Price'
+              }
+            >
+              {PRICE_OPTIONS.map((opt) => (
+                <MenuItem key={`max-m-${opt.value}`} value={opt.value}>
+                  {opt.label}
+                </MenuItem>
+              ))}
+            </Select>
+          </Box>
+
+          {/* Button — full width on mobile */}
           <Button
             onClick={handleBuyingSearch}
             sx={{
+              display: { xs: 'flex', md: 'none' },
               bgcolor: '#C4A96E',
               color: '#0F1621',
               fontWeight: 700,
               fontSize: '14px',
               letterSpacing: '1px',
               textTransform: 'uppercase',
-              borderRadius: { xs: '4px', md: '0 6px 6px 0' },
+              borderRadius: '4px',
               px: 4,
-              minWidth: '160px',
-              whiteSpace: 'nowrap',
+              py: 1.5,
+              width: '100%',
               '&:hover': { bgcolor: '#b89a5e' }
             }}
           >
             Search Homes
           </Button>
+
+          {/* Desktop: single-row layout (unchanged) */}
+          <Box sx={{ display: { xs: 'none', md: 'flex' }, flexDirection: 'row' }}>
+            <Box sx={{ flex: 2, minWidth: 0 }}>
+              <LocationAutocomplete
+                placeholder="Location, Zip, Address or MLS #"
+                variant="light"
+                navigate={false}
+                onSelect={handleLocationSelect}
+                sx={{
+                  '& .MuiOutlinedInput-root': {
+                    borderRadius: 0,
+                    '& fieldset': {
+                      border: 'none',
+                      borderRight: '1px solid #ddd'
+                    }
+                  }
+                }}
+              />
+            </Box>
+            <Select
+              value={minPrice}
+              onChange={(e: SelectChangeEvent) => setMinPrice(e.target.value)}
+              displayEmpty
+              size="small"
+              sx={{
+                flex: 1,
+                '& .MuiOutlinedInput-notchedOutline': {
+                  border: 'none',
+                  borderRight: '1px solid #ddd'
+                },
+                borderRadius: 0
+              }}
+              renderValue={(val) =>
+                val ? PRICE_OPTIONS.find((o) => o.value === val)?.label : 'Min Price'
+              }
+            >
+              {PRICE_OPTIONS.map((opt) => (
+                <MenuItem key={`min-d-${opt.value}`} value={opt.value}>
+                  {opt.label}
+                </MenuItem>
+              ))}
+            </Select>
+            <Select
+              value={maxPrice}
+              onChange={(e: SelectChangeEvent) => setMaxPrice(e.target.value)}
+              displayEmpty
+              size="small"
+              sx={{
+                flex: 1,
+                '& .MuiOutlinedInput-notchedOutline': { border: 'none' },
+                borderRadius: 0
+              }}
+              renderValue={(val) =>
+                val ? PRICE_OPTIONS.find((o) => o.value === val)?.label : 'Max Price'
+              }
+            >
+              {PRICE_OPTIONS.map((opt) => (
+                <MenuItem key={`max-d-${opt.value}`} value={opt.value}>
+                  {opt.label}
+                </MenuItem>
+              ))}
+            </Select>
+            <Button
+              onClick={handleBuyingSearch}
+              sx={{
+                bgcolor: '#C4A96E',
+                color: '#0F1621',
+                fontWeight: 700,
+                fontSize: '14px',
+                letterSpacing: '1px',
+                textTransform: 'uppercase',
+                borderRadius: '0 6px 6px 0',
+                px: 4,
+                minWidth: '160px',
+                whiteSpace: 'nowrap',
+                '&:hover': { bgcolor: '#b89a5e' }
+              }}
+            >
+              Search Homes
+            </Button>
+          </Box>
         </Box>
       )}
 

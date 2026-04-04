@@ -1,8 +1,8 @@
 'use client'
 
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 
-import { Box, Container, Grid } from '@mui/material'
+import { Box, Container, Grid, Snackbar } from '@mui/material'
 
 import { useRecentlyViewed } from '@/hooks/useRecentlyViewed'
 import { trackPropertyView } from '@/utils/analytics'
@@ -43,6 +43,7 @@ const PropertyDetailLayout: React.FC<PropertyDetailLayoutProps> = ({
   const { toggle: toggleFavorite, find: findFavorite } = useFavorites()
   const { addProperty: addToRecentlyViewed } = useRecentlyViewed()
   const features = useFeatures()
+  const [snackbarOpen, setSnackbarOpen] = useState(false)
 
   // Check if property is favorited
   const isFavorited = Boolean(findFavorite(property))
@@ -142,15 +143,25 @@ const PropertyDetailLayout: React.FC<PropertyDetailLayoutProps> = ({
     toggleFavorite(property)
   }
 
-  const handleShare = () => {
-    console.log('Share property:', property.mlsNumber)
-    // TODO: Implement share functionality
+  const handleShare = async () => {
+    const url = window.location.href
     if (navigator.share) {
-      navigator.share({
-        title: propertyAddress,
-        text: `Check out this property: ${propertyAddress}`,
-        url: window.location.href
-      })
+      try {
+        await navigator.share({
+          title: propertyAddress,
+          text: `Check out this property: ${propertyAddress}`,
+          url
+        })
+        return
+      } catch {
+        // User cancelled or share failed — fall through to clipboard
+      }
+    }
+    try {
+      await navigator.clipboard.writeText(url)
+      setSnackbarOpen(true)
+    } catch {
+      // Clipboard API unavailable
     }
   }
 
@@ -310,6 +321,14 @@ const PropertyDetailLayout: React.FC<PropertyDetailLayoutProps> = ({
         propertyAddress={propertyAddress}
         agent={agent}
         onSubmit={handleContactSubmit}
+      />
+
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={3000}
+        onClose={() => setSnackbarOpen(false)}
+        message="Link copied!"
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
       />
     </Box>
   )

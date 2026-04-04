@@ -160,7 +160,7 @@ const Footer = () => {
               {[
                 { label: 'Privacy Policy', href: '/privacy-policy' },
                 { label: 'Terms of Use', href: '/terms-of-use' },
-                { label: 'DMCA', href: '/dmca' },
+                { label: 'DMCA', href: '/dmca-notice' },
                 { label: 'Accessibility', href: '/accessibility' },
               ].map((item, i) => (
                 <React.Fragment key={item.href}>
