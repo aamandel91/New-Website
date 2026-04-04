@@ -417,6 +417,418 @@ router.post('/embed', async (ctx) => {
   }
 })
 
+// ─── Site User Registration ──────────────────────────────────────────────────
+router.post('/register', async (ctx) => {
+  const { email, password, name, phone } = ctx.request.body as {
+    email?: string
+    password?: string
+    name?: string
+    phone?: string
+  }
+  if (!email || !password) {
+    ctx.throw(new ApiError('Email and password are required', 400))
+    return
+  }
+
+  const db = ctx.state.container.resolve<Knex>('db')
+
+  // Check if user already exists
+  const existing = await db('site_users').where({ email: email.toLowerCase() }).first()
+  if (existing) {
+    ctx.throw(new ApiError('Email already registered', 409))
+    return
+  }
+
+  // Hash password
+  const salt = crypto.randomBytes(16).toString('hex')
+  const derived = (await scryptAsync(password, salt, 64)) as Buffer
+  const passwordHash = `${salt}:${derived.toString('hex')}`
+
+  const [user] = await db('site_users')
+    .insert({
+      email: email.toLowerCase(),
+      name: name || null,
+      phone: phone || null,
+      password_hash: passwordHash
+    })
+    .returning(['id', 'email', 'name', 'phone'])
+
+  // Sign JWT for site user (role: 'site_user')
+  const keys = ctx.state.container.resolve<{ private: Buffer }>('middleware.jwt.config.keys')
+  const jwt = await import('jsonwebtoken')
+  const token = jwt.default.sign(
+    {
+      email: user.email,
+      sub: user.id.toString(),
+      role: 'site_user',
+      userId: user.id,
+    },
+    keys.private,
+    {
+      algorithm: 'RS256',
+      expiresIn: '30d',
+      issuer: process.env['JWT_ISSUER'] || 'http://repliers-proxy',
+      jwtid: crypto.randomUUID(),
+    }
+  )
+
+  ctx.body = {
+    token,
+    user: {
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      phone: user.phone,
+    }
+  }
+})
+
+// ─── Site User Login ─────────────────────────────────────────────────────────
+router.post('/site-login', async (ctx) => {
+  const { email, password } = ctx.request.body as { email?: string; password?: string }
+  if (!email || !password) {
+    ctx.throw(new ApiError('Email and password are required', 400))
+    return
+  }
+
+  const db = ctx.state.container.resolve<Knex>('db')
+  const user = await db('site_users').where({ email: email.toLowerCase() }).first()
+
+  if (!user || !user.password_hash) {
+    ctx.throw(new ApiError('Invalid credentials', 401))
+    return
+  }
+
+  const parts = (user.password_hash as string).split(':')
+  const salt = parts[0] as string
+  const storedHash = parts[1] as string
+  const derived = (await scryptAsync(password, salt, 64)) as Buffer
+  if (derived.toString('hex') !== storedHash) {
+    ctx.throw(new ApiError('Invalid credentials', 401))
+    return
+  }
+
+  const keys = ctx.state.container.resolve<{ private: Buffer }>('middleware.jwt.config.keys')
+  const jwt = await import('jsonwebtoken')
+  const token = jwt.default.sign(
+    {
+      email: user.email,
+      sub: user.id.toString(),
+      role: 'site_user',
+      userId: user.id,
+    },
+    keys.private,
+    {
+      algorithm: 'RS256',
+      expiresIn: '30d',
+      issuer: process.env['JWT_ISSUER'] || 'http://repliers-proxy',
+      jwtid: crypto.randomUUID(),
+    }
+  )
+
+  ctx.body = {
+    token,
+    user: {
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      phone: user.phone,
+    }
+  }
+})
+
+// ─── Site User Profile ───────────────────────────────────────────────────────
+router.get('/site-user/me', authMiddleware, async (ctx) => {
+  const payload = ctx.state['user']
+  if (payload.role !== 'site_user') {
+    ctx.throw(new ApiError('Not a site user', 403))
+    return
+  }
+
+  const db = ctx.state.container.resolve<Knex>('db')
+  const user = await db('site_users').where({ id: payload.userId }).first()
+  if (!user) {
+    ctx.throw(new ApiError('User not found', 404))
+    return
+  }
+
+  ctx.body = {
+    id: user.id,
+    email: user.email,
+    name: user.name,
+    phone: user.phone,
+    favorites: user.favorites || [],
+    search_history: user.search_history || [],
+    created_at: user.created_at,
+  }
+})
+
+// ─── Site User Profile Update ────────────────────────────────────────────────
+router.patch('/site-user/me', authMiddleware, async (ctx) => {
+  const payload = ctx.state['user']
+  if (payload.role !== 'site_user') {
+    ctx.throw(new ApiError('Not a site user', 403))
+    return
+  }
+
+  const { name, email, phone, password } = ctx.request.body as {
+    name?: string
+    email?: string
+    phone?: string
+    password?: string
+  }
+
+  const db = ctx.state.container.resolve<Knex>('db')
+  const updates: Record<string, any> = { updated_at: db.fn.now() }
+
+  if (name !== undefined) updates.name = name
+  if (email !== undefined) updates.email = email.toLowerCase()
+  if (phone !== undefined) updates.phone = phone
+  if (password) {
+    const salt = crypto.randomBytes(16).toString('hex')
+    const derived = (await scryptAsync(password, salt, 64)) as Buffer
+    updates.password_hash = `${salt}:${derived.toString('hex')}`
+  }
+
+  await db('site_users').where({ id: payload.userId }).update(updates)
+  const user = await db('site_users').where({ id: payload.userId }).first()
+
+  ctx.body = {
+    id: user.id,
+    email: user.email,
+    name: user.name,
+    phone: user.phone,
+  }
+})
+
+// ─── Site User Delete Account ────────────────────────────────────────────────
+router.delete('/site-user/me', authMiddleware, async (ctx) => {
+  const payload = ctx.state['user']
+  if (payload.role !== 'site_user') {
+    ctx.throw(new ApiError('Not a site user', 403))
+    return
+  }
+
+  const db = ctx.state.container.resolve<Knex>('db')
+  await db('site_users').where({ id: payload.userId }).delete()
+
+  ctx.body = { result: true }
+})
+
+// ─── Site User Saved Searches ────────────────────────────────────────────────
+router.get('/site-saved-searches', authMiddleware, async (ctx) => {
+  const payload = ctx.state['user']
+  if (payload.role !== 'site_user') {
+    ctx.throw(new ApiError('Not a site user', 403))
+    return
+  }
+
+  const db = ctx.state.container.resolve<Knex>('db')
+  const searches = await db('saved_searches')
+    .where({ user_id: payload.userId })
+    .orderBy('created_at', 'desc')
+
+  ctx.body = { searches }
+})
+
+router.post('/site-saved-searches', authMiddleware, async (ctx) => {
+  const payload = ctx.state['user']
+  if (payload.role !== 'site_user') {
+    ctx.throw(new ApiError('Not a site user', 403))
+    return
+  }
+
+  const { name, filters, alertFrequency } = ctx.request.body as {
+    name?: string
+    filters?: object
+    alertFrequency?: string
+  }
+
+  if (!name || !filters) {
+    ctx.throw(new ApiError('Name and filters are required', 400))
+    return
+  }
+
+  const db = ctx.state.container.resolve<Knex>('db')
+  const [search] = await db('saved_searches')
+    .insert({
+      user_id: payload.userId,
+      name,
+      filters: JSON.stringify(filters),
+      alert_frequency: alertFrequency || 'daily',
+    })
+    .returning('*')
+
+  ctx.body = { search }
+})
+
+router.patch('/site-saved-searches/:id', authMiddleware, async (ctx) => {
+  const payload = ctx.state['user']
+  if (payload.role !== 'site_user') {
+    ctx.throw(new ApiError('Not a site user', 403))
+    return
+  }
+
+  const searchId = parseInt(ctx.params['id'], 10)
+  const { name, filters, alertFrequency } = ctx.request.body as {
+    name?: string
+    filters?: object
+    alertFrequency?: string
+  }
+
+  const db = ctx.state.container.resolve<Knex>('db')
+
+  // Verify ownership
+  const existing = await db('saved_searches').where({ id: searchId, user_id: payload.userId }).first()
+  if (!existing) {
+    ctx.throw(new ApiError('Search not found', 404))
+    return
+  }
+
+  const updates: Record<string, any> = { updated_at: db.fn.now() }
+  if (name !== undefined) updates.name = name
+  if (filters !== undefined) updates.filters = JSON.stringify(filters)
+  if (alertFrequency !== undefined) updates.alert_frequency = alertFrequency
+
+  await db('saved_searches').where({ id: searchId }).update(updates)
+  const search = await db('saved_searches').where({ id: searchId }).first()
+
+  ctx.body = { search }
+})
+
+router.delete('/site-saved-searches/:id', authMiddleware, async (ctx) => {
+  const payload = ctx.state['user']
+  if (payload.role !== 'site_user') {
+    ctx.throw(new ApiError('Not a site user', 403))
+    return
+  }
+
+  const searchId = parseInt(ctx.params['id'], 10)
+  const db = ctx.state.container.resolve<Knex>('db')
+
+  const existing = await db('saved_searches').where({ id: searchId, user_id: payload.userId }).first()
+  if (!existing) {
+    ctx.throw(new ApiError('Search not found', 404))
+    return
+  }
+
+  await db('saved_searches').where({ id: searchId }).delete()
+  ctx.body = { result: true }
+})
+
+// ─── Site User Favorites ─────────────────────────────────────────────────────
+router.get('/site-favorites', authMiddleware, async (ctx) => {
+  const payload = ctx.state['user']
+  if (payload.role !== 'site_user') {
+    ctx.throw(new ApiError('Not a site user', 403))
+    return
+  }
+
+  const db = ctx.state.container.resolve<Knex>('db')
+  const user = await db('site_users').where({ id: payload.userId }).first()
+
+  ctx.body = { favorites: user?.favorites || [] }
+})
+
+router.post('/site-favorites', authMiddleware, async (ctx) => {
+  const payload = ctx.state['user']
+  if (payload.role !== 'site_user') {
+    ctx.throw(new ApiError('Not a site user', 403))
+    return
+  }
+
+  const { mlsNumber, address, price, boardId } = ctx.request.body as {
+    mlsNumber?: string
+    address?: string
+    price?: number
+    boardId?: number
+  }
+
+  if (!mlsNumber) {
+    ctx.throw(new ApiError('mlsNumber is required', 400))
+    return
+  }
+
+  const db = ctx.state.container.resolve<Knex>('db')
+  const user = await db('site_users').where({ id: payload.userId }).first()
+  const favorites = user?.favorites || []
+
+  // Prevent duplicates
+  if (favorites.some((f: any) => f.mlsNumber === mlsNumber)) {
+    ctx.body = { favorites }
+    return
+  }
+
+  favorites.push({ mlsNumber, address, price, boardId, savedAt: new Date().toISOString() })
+  await db('site_users')
+    .where({ id: payload.userId })
+    .update({ favorites: JSON.stringify(favorites), updated_at: db.fn.now() })
+
+  ctx.body = { favorites }
+})
+
+router.delete('/site-favorites/:mlsNumber', authMiddleware, async (ctx) => {
+  const payload = ctx.state['user']
+  if (payload.role !== 'site_user') {
+    ctx.throw(new ApiError('Not a site user', 403))
+    return
+  }
+
+  const { mlsNumber } = ctx.params
+  const db = ctx.state.container.resolve<Knex>('db')
+  const user = await db('site_users').where({ id: payload.userId }).first()
+  const favorites = (user?.favorites || []).filter((f: any) => f.mlsNumber !== mlsNumber)
+
+  await db('site_users')
+    .where({ id: payload.userId })
+    .update({ favorites: JSON.stringify(favorites), updated_at: db.fn.now() })
+
+  ctx.body = { favorites }
+})
+
+// ─── Site User Search History ────────────────────────────────────────────────
+router.post('/site-search-history', authMiddleware, async (ctx) => {
+  const payload = ctx.state['user']
+  if (payload.role !== 'site_user') {
+    ctx.throw(new ApiError('Not a site user', 403))
+    return
+  }
+
+  const { filters, label } = ctx.request.body as { filters?: object; label?: string }
+  if (!filters) {
+    ctx.throw(new ApiError('Filters are required', 400))
+    return
+  }
+
+  const db = ctx.state.container.resolve<Knex>('db')
+  const user = await db('site_users').where({ id: payload.userId }).first()
+  const history = user?.search_history || []
+
+  // Keep last 50 entries
+  history.unshift({ filters, label, timestamp: new Date().toISOString() })
+  if (history.length > 50) history.length = 50
+
+  await db('site_users')
+    .where({ id: payload.userId })
+    .update({ search_history: JSON.stringify(history), updated_at: db.fn.now() })
+
+  ctx.body = { search_history: history }
+})
+
+router.get('/site-search-history', authMiddleware, async (ctx) => {
+  const payload = ctx.state['user']
+  if (payload.role !== 'site_user') {
+    ctx.throw(new ApiError('Not a site user', 403))
+    return
+  }
+
+  const db = ctx.state.container.resolve<Knex>('db')
+  const user = await db('site_users').where({ id: payload.userId }).first()
+
+  ctx.body = { search_history: user?.search_history || [] }
+})
+
+// ─── Admin Login ─────────────────────────────────────────────────────────────
 router.post('/admin-login', async (ctx) => {
   const { email, password } = ctx.request.body as { email?: string; password?: string }
   if (!email || !password) {

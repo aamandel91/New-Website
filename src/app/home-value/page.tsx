@@ -1,6 +1,7 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
+import { useSearchParams } from 'next/navigation'
 
 import {
   Box,
@@ -304,6 +305,7 @@ function ConfidenceBadge({ confidence }: { confidence: number }) {
 // ---------------------------------------------------------------------------
 
 export default function HomeValuePage() {
+  const searchParams = useSearchParams()
   const [activeStep, setActiveStep] = useState(0)
   const [address, setAddress] = useState<AddressForm>(INITIAL_ADDRESS)
   const [details, setDetails] = useState<DetailsForm>(INITIAL_DETAILS)
@@ -312,6 +314,28 @@ export default function HomeValuePage() {
   const [error, setError] = useState<string | null>(null)
   const [result, setResult] = useState<EstimateResult | null>(null)
   const [monthlyUpdates, setMonthlyUpdates] = useState(false)
+
+  // Pre-fill from query params (?address=...&city=...&zip=...)
+  useEffect(() => {
+    const qAddress = searchParams.get('address')
+    const qCity = searchParams.get('city')
+    const qZip = searchParams.get('zip')
+    const qState = searchParams.get('state')
+
+    if (qAddress || qCity || qZip) {
+      setAddress((prev) => ({
+        ...prev,
+        ...(qAddress && { streetAddress: qAddress }),
+        ...(qCity && { city: qCity }),
+        ...(qZip && { zipCode: qZip }),
+        ...(qState && { state: qState }),
+      }))
+      // If address is provided, skip to Step 2
+      if (qAddress) {
+        setActiveStep(1)
+      }
+    }
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   // Validation
   const isStep1Valid =

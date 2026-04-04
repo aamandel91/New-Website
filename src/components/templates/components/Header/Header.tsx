@@ -4,11 +4,7 @@ import React from 'react'
 
 import { AppBar, Box, Button, Container, Stack } from '@mui/material'
 
-import routes from '@configs/routes'
-
-import { useDialogContext } from 'providers/DialogProvider'
 import { useFeatures } from 'providers/FeaturesProvider'
-import { useUser } from 'providers/UserProvider'
 import useClientSide from 'hooks/useClientSide'
 
 import {
@@ -19,6 +15,7 @@ import {
 } from './components'
 import { NavDropdown, NavLink } from './components/NavMenu'
 import { cityItems, countyItems, propertyTypeItems } from './navData'
+import UserMenu from 'components/auth/UserMenu'
 
 const NAV_TEXT_SX = {
   color: 'white',
@@ -38,8 +35,6 @@ const NAV_TEXT_SX = {
 const Header = () => {
   const features = useFeatures()
   const clientSide = useClientSide()
-  const { logged } = useUser()
-  const { showDialog } = useDialogContext()
 
   return (
     <Box sx={{ height: 70 }}>
@@ -100,17 +95,7 @@ const Header = () => {
               spacing={1}
               sx={{ display: { xs: 'none', md: 'flex' } }}
             >
-              {clientSide && (
-                logged ? (
-                  <Button href={routes.profile} sx={NAV_TEXT_SX}>
-                    Account
-                  </Button>
-                ) : (
-                  <Button onClick={() => showDialog('auth')} sx={NAV_TEXT_SX}>
-                    Login / Register
-                  </Button>
-                )
-              )}
+              {clientSide && <UserMenu />}
               <Button href="/blog" sx={NAV_TEXT_SX}>
                 Blog
               </Button>

@@ -7,6 +7,7 @@ import CTACards from './components/CTACards'
 import ExploreLifestyles from './components/ExploreLifestyles'
 import ExploreListings from './components/ExploreListings'
 import HeroSection from './components/HeroSection'
+import HomeValueWidget from './components/HomeValueWidget'
 import SEOContentBlock from './components/SEOContentBlock'
 
 const HomePageContent = () => (
@@ -15,6 +16,7 @@ const HomePageContent = () => (
     <ExploreListings />
     <CTACards />
     <ExploreLifestyles />
+    <HomeValueWidget />
     <BlogSection />
     <SEOContentBlock />
   </Box>

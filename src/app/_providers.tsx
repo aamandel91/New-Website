@@ -17,6 +17,7 @@ import LocationsProvider from 'providers/LocationsProvider'
 import SaveSearchProvider from 'providers/SaveSearchProvider'
 import SnackbarProvider from 'providers/SnackbarProvider'
 import UserProvider from 'providers/UserProvider'
+import SiteUserProvider from 'providers/SiteUserProvider'
 import { OrganizationProvider } from 'providers/OrganizationProvider'
 import ComparisonBar from '@/components/shared/ComparisonBar'
 import { createGrowthBook, getFeatureValues } from 'utils/features'
@@ -76,6 +77,7 @@ const Providers = ({
       [AppRouterCacheProvider],
       [ThemeProvider, { theme }],
       [UserProvider],
+      [SiteUserProvider],
       [OrganizationProvider],
       [DialogProvider],
       [SnackbarProvider],
