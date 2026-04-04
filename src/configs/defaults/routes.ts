@@ -20,6 +20,7 @@ const routes = {
   saveSearch: '/saved-searches',
   imageFavorites: '/image-favorites',
   recentlyViewed: '/recently-viewed',
+  messages: '/messages',
   profile: '/profile',
 
   // estimates management

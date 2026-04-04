@@ -1,5 +1,6 @@
 export { default as FavoritesMenuItem } from './FavoritesMenuItem'
 export { default as ImageFavoritesMenuItem } from './ImageFavoritesMenuItem'
+export { default as MessagesMenuItem } from './MessagesMenuItem'
 export { default as SaveSearchMenuItem } from './SaveSearchMenuItem'
 export { default, type ToolbarConfig } from './ToolbarMenu'
 export { default as ToolbarMenuItem } from './ToolbarMenuItem'

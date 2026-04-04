@@ -14,6 +14,7 @@ import FavoritesProvider from 'providers/FavoritesProvider'
 import FeaturesProvider from 'providers/FeaturesProvider'
 import ImageFavoritesProvider from 'providers/ImageFavoritesProvider'
 import LocationsProvider from 'providers/LocationsProvider'
+import MessagesProvider from 'providers/MessagesProvider'
 import SaveSearchProvider from 'providers/SaveSearchProvider'
 import SnackbarProvider from 'providers/SnackbarProvider'
 import UserProvider from 'providers/UserProvider'
@@ -85,7 +86,8 @@ const Providers = ({
       features.search ? [LocationsProvider, { locations }] : false,
       features.favorites ? [FavoritesProvider] : false,
       features.saveSearch ? [SaveSearchProvider] : false,
-      features.imageFavorites ? [ImageFavoritesProvider] : false
+      features.imageFavorites ? [ImageFavoritesProvider] : false,
+      features.messaging ? [MessagesProvider] : false
     ].filter(Boolean) as ProviderComponent[]
   }, [locations, featureOptions, features, locale, messages])
 

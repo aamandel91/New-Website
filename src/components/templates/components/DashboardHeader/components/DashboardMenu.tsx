@@ -9,6 +9,7 @@ import { useFeatures } from 'providers/FeaturesProvider'
 import {
   FavoritesMenuItem,
   ImageFavoritesMenuItem,
+  MessagesMenuItem,
   SaveSearchMenuItem,
   ToolbarMenuItem
 } from '../../Header/components/ToolbarMenu'
@@ -24,6 +25,9 @@ const DashboardMenu = () => {
         features.saveSearch ? [SaveSearchMenuItem, routes.saveSearch] : null,
         features.imageFavorites
           ? [ImageFavoritesMenuItem, routes.imageFavorites]
+          : null,
+        features.messaging
+          ? [MessagesMenuItem, routes.messages]
           : null,
         ['Recently Viewed', null]
       ].filter(Boolean) as [DashboardItemType, string | null][],
