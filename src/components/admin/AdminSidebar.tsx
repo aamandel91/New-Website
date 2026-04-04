@@ -74,6 +74,7 @@ const navItems: NavItem[] = [
   },
   { title: 'Users', path: '/admin/users', icon: <AdminUsersIcon /> },
   { title: 'Settings', path: '/admin/settings', icon: <SettingsIcon /> },
+  { title: 'Site Settings', path: '/admin/site-settings', icon: <SettingsIcon /> },
   { title: 'Analytics', path: '/admin/analytics', icon: <BarChartIcon /> }
 ]
 

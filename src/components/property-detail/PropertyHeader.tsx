@@ -1,6 +1,7 @@
 'use client'
 
 import React from 'react'
+import { usePathname } from 'next/navigation'
 
 import BathtubIcon from '@mui/icons-material/Bathtub'
 import BedIcon from '@mui/icons-material/Bed'
@@ -195,10 +196,13 @@ const PropertyHeader: React.FC<PropertyHeaderProps> = ({
 
   // Feature #4: Only show "Start an Offer" for active listings
   const isActiveListing = ['a', 'active'].includes(status.toLowerCase())
+  const pathname = usePathname()
 
   const handleStartOffer = () => {
-    const contactForm = document.getElementById('contact-form')
-    contactForm?.scrollIntoView({ behavior: 'smooth' })
+    const slug = pathname.split('/listing/')[1]
+    if (slug) {
+      window.location.href = `/listing/${slug}/offer`
+    }
   }
 
   return (

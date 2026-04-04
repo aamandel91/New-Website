@@ -11,6 +11,7 @@ import EstimatePage, {
 
 import { fetchFeatures } from 'utils/features'
 import { organizationSchema, breadcrumbSchema, websiteSearchSchema } from 'utils/structuredData'
+import { loadSiteSettings } from '@/utils/siteSettings'
 
 // NOTE: Dynamically generate metadata for the Estimate Landing Page based on feature flags.
 // When manually setting rootPage with feature flags for the estimate page,
@@ -24,9 +25,12 @@ export const generateMetadata = async (props: any): Promise<Metadata> => {
     return await generateEstimateMetadata(props)
   }
 
+  const settings = await loadSiteSettings()
+
   return {
-    title: 'Florida Home Finder - Find Your Dream Home in Florida',
-    description: 'Discover thousands of properties and connect with experienced real estate agents across Florida.',
+    title: settings.metaTitle || 'Florida Home Finder - Find Your Dream Home in Florida',
+    description: settings.metaDescription || 'Discover thousands of properties and connect with experienced real estate agents across Florida.',
+    keywords: settings.metaKeywords || undefined,
     alternates: {
       canonical: '/'
     }

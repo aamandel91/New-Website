@@ -195,6 +195,7 @@ const PropertyContactForm: React.FC<PropertyContactFormProps> = ({
 
   return (
     <Paper
+      id="contact-form"
       elevation={3}
       sx={{
         p: 3,

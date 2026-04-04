@@ -8,6 +8,8 @@ import LinkedInIcon from '@mui/icons-material/LinkedIn'
 import YouTubeIcon from '@mui/icons-material/YouTube'
 import { Box, Container, Grid2 as Grid, IconButton, Link, Stack, Typography } from '@mui/material'
 
+import { siteSettings } from '@/configs/defaults/site-settings'
+
 const COLUMN_HEADING_SX = {
   color: 'white',
   fontWeight: 700,
@@ -32,6 +34,8 @@ const SOCIAL_ICON_SX = {
 }
 
 const Footer = () => {
+  const phoneDigits = siteSettings.phone.replace(/\D/g, '')
+
   return (
     <Box sx={{ bgcolor: '#0F1621' }}>
       {/* Main footer content */}
@@ -41,23 +45,22 @@ const Footer = () => {
           <Grid size={{ xs: 12, sm: 6, md: 3 }}>
             <Typography sx={COLUMN_HEADING_SX}>Contact</Typography>
             <Typography sx={{ color: 'white', fontSize: '15px', fontWeight: 600, mb: 1 }}>
-              Florida Home Finder
+              {siteSettings.siteName}
             </Typography>
             <Typography sx={{ color: '#999', fontSize: '14px', lineHeight: 1.8 }}>
-              eXp Realty<br />
-              10101 W Sample Rd<br />
-              Coral Springs, FL 33065
+              {siteSettings.brokerage}<br />
+              {siteSettings.address}
             </Typography>
             <Typography sx={{ color: '#999', fontSize: '14px', mt: 1.5, lineHeight: 1.8 }}>
               P:{' '}
-              <Link href="tel:9545550123" sx={{ color: '#999', textDecoration: 'none', '&:hover': { color: 'white' } }}>
-                (954) 555-0123
+              <Link href={`tel:${phoneDigits}`} sx={{ color: '#999', textDecoration: 'none', '&:hover': { color: 'white' } }}>
+                {siteSettings.phone}
               </Link>
             </Typography>
             <Typography sx={{ color: '#999', fontSize: '14px', lineHeight: 1.8 }}>
               E:{' '}
-              <Link href="mailto:info@floridahomefinder.com" sx={{ color: '#999', textDecoration: 'none', '&:hover': { color: 'white' } }}>
-                info@floridahomefinder.com
+              <Link href={`mailto:${siteSettings.email}`} sx={{ color: '#999', textDecoration: 'none', '&:hover': { color: 'white' } }}>
+                {siteSettings.email}
               </Link>
             </Typography>
           </Grid>
@@ -68,7 +71,7 @@ const Footer = () => {
             <Stack direction="row" spacing={1}>
               <IconButton
                 component="a"
-                href="https://facebook.com"
+                href={siteSettings.social.facebook}
                 target="_blank"
                 rel="noopener noreferrer"
                 sx={SOCIAL_ICON_SX}
@@ -78,7 +81,7 @@ const Footer = () => {
               </IconButton>
               <IconButton
                 component="a"
-                href="https://instagram.com"
+                href={siteSettings.social.instagram}
                 target="_blank"
                 rel="noopener noreferrer"
                 sx={SOCIAL_ICON_SX}
@@ -88,7 +91,7 @@ const Footer = () => {
               </IconButton>
               <IconButton
                 component="a"
-                href="https://linkedin.com"
+                href={siteSettings.social.linkedin}
                 target="_blank"
                 rel="noopener noreferrer"
                 sx={SOCIAL_ICON_SX}
@@ -98,7 +101,7 @@ const Footer = () => {
               </IconButton>
               <IconButton
                 component="a"
-                href="https://youtube.com"
+                href={siteSettings.social.youtube}
                 target="_blank"
                 rel="noopener noreferrer"
                 sx={SOCIAL_ICON_SX}
@@ -181,7 +184,7 @@ const Footer = () => {
               ))}
             </Stack>
             <Typography sx={{ color: '#666', fontSize: '13px', textAlign: 'center' }}>
-              &copy; {new Date().getFullYear()} Florida Home Finder. All Rights Reserved.
+              &copy; {new Date().getFullYear()} {siteSettings.siteName}. All Rights Reserved.
             </Typography>
           </Stack>
         </Container>
