@@ -17,6 +17,8 @@ import EmailIcon from '@mui/icons-material/Email'
 import LocationOnIcon from '@mui/icons-material/LocationOn'
 import BusinessIcon from '@mui/icons-material/Business'
 import SendIcon from '@mui/icons-material/Send'
+import PageWithSidebar from '@/components/layouts/PageWithSidebar'
+import InfoPageSidebar from '@/components/sidebar/InfoPageSidebar'
 import { trackFormSubmission } from '@/utils/analytics'
 import { ssIdentify } from '@/utils/suresendTracking'
 import { isFormBlocked } from '@/utils/formFilter'
@@ -112,107 +114,109 @@ export default function ContactPage() {
       </Box>
 
       <Container maxWidth="lg" sx={{ py: { xs: 6, md: 10 } }}>
-        <Grid container spacing={5}>
-          {/* Left: Contact Info + Map */}
-          <Grid size={{ xs: 12, md: 5 }}>
-            <Stack spacing={3}>
-              <Stack direction="row" spacing={2} alignItems="center">
-                <PhoneIcon sx={{ color: GOLD, fontSize: 28 }} />
-                <Box>
-                  <Typography variant="body2" color="text.secondary">Phone</Typography>
-                  <Typography variant="body1" fontWeight={600}>
-                    <a href={`tel:${siteSettings.phone.replace(/\D/g, '')}`} style={{ textDecoration: 'none', color: 'inherit' }}>
-                      {siteSettings.phone}
-                    </a>
-                  </Typography>
-                </Box>
-              </Stack>
-
-              <Stack direction="row" spacing={2} alignItems="center">
-                <EmailIcon sx={{ color: GOLD, fontSize: 28 }} />
-                <Box>
-                  <Typography variant="body2" color="text.secondary">Email</Typography>
-                  <Typography variant="body1" fontWeight={600}>
-                    <a href={`mailto:${siteSettings.email}`} style={{ textDecoration: 'none', color: 'inherit' }}>
-                      {siteSettings.email}
-                    </a>
-                  </Typography>
-                </Box>
-              </Stack>
-
-              <Stack direction="row" spacing={2} alignItems="center">
-                <LocationOnIcon sx={{ color: GOLD, fontSize: 28 }} />
-                <Box>
-                  <Typography variant="body2" color="text.secondary">Address</Typography>
-                  <Typography variant="body1" fontWeight={600}>
-                    {siteSettings.address}
-                  </Typography>
-                </Box>
-              </Stack>
-
-              <Stack direction="row" spacing={2} alignItems="center">
-                <BusinessIcon sx={{ color: GOLD, fontSize: 28 }} />
-                <Box>
-                  <Typography variant="body2" color="text.secondary">Brokerage</Typography>
-                  <Typography variant="body1" fontWeight={600}>
-                    {siteSettings.brokerage}
-                  </Typography>
-                </Box>
-              </Stack>
-
-              {/* Map */}
-              {mapUrl && (
-                <Box sx={{ borderRadius: 2, overflow: 'hidden', mt: 2 }}>
-                  <img
-                    src={mapUrl}
-                    alt="Office location map"
-                    style={{ width: '100%', height: 'auto', display: 'block' }}
-                  />
-                </Box>
-              )}
-            </Stack>
-          </Grid>
-
-          {/* Right: Form */}
-          <Grid size={{ xs: 12, md: 7 }}>
-            <Paper elevation={3} sx={{ p: { xs: 3, md: 4 } }}>
-              <Typography variant="h5" fontWeight={700} sx={{ mb: 3 }}>
-                Send Us a Message
-              </Typography>
-
-              {success && (
-                <Alert severity="success" sx={{ mb: 2 }} onClose={() => setSuccess(false)}>
-                  Message sent! We&apos;ll get back to you soon.
-                </Alert>
-              )}
-              {error && (
-                <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError(null)}>
-                  {error}
-                </Alert>
-              )}
-
-              <form onSubmit={handleSubmit}>
-                <Stack spacing={2}>
-                  <TextField label="Name" required fullWidth size="small" value={form.name} onChange={handleChange('name')} disabled={loading} />
-                  <TextField label="Email" type="email" required fullWidth size="small" value={form.email} onChange={handleChange('email')} disabled={loading} />
-                  <TextField label="Phone" type="tel" fullWidth size="small" value={form.phone} onChange={handleChange('phone')} disabled={loading} placeholder="(555) 555-1234" />
-                  <TextField label="Message" multiline rows={5} required fullWidth size="small" value={form.message} onChange={handleChange('message')} disabled={loading} />
-                  <Button
-                    type="submit"
-                    variant="contained"
-                    size="large"
-                    fullWidth
-                    disabled={loading}
-                    endIcon={<SendIcon />}
-                    sx={{ py: 1.5, bgcolor: NAVY, '&:hover': { bgcolor: '#1a2435' } }}
-                  >
-                    {loading ? 'Sending...' : 'Send Message'}
-                  </Button>
+        <PageWithSidebar sidebar={<InfoPageSidebar />}>
+          <Grid container spacing={5}>
+            {/* Left: Contact Info + Map */}
+            <Grid size={{ xs: 12, md: 6 }}>
+              <Stack spacing={3}>
+                <Stack direction="row" spacing={2} alignItems="center">
+                  <PhoneIcon sx={{ color: GOLD, fontSize: 28 }} />
+                  <Box>
+                    <Typography variant="body2" color="text.secondary">Phone</Typography>
+                    <Typography variant="body1" fontWeight={600}>
+                      <a href={`tel:${siteSettings.phone.replace(/\D/g, '')}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+                        {siteSettings.phone}
+                      </a>
+                    </Typography>
+                  </Box>
                 </Stack>
-              </form>
-            </Paper>
+
+                <Stack direction="row" spacing={2} alignItems="center">
+                  <EmailIcon sx={{ color: GOLD, fontSize: 28 }} />
+                  <Box>
+                    <Typography variant="body2" color="text.secondary">Email</Typography>
+                    <Typography variant="body1" fontWeight={600}>
+                      <a href={`mailto:${siteSettings.email}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+                        {siteSettings.email}
+                      </a>
+                    </Typography>
+                  </Box>
+                </Stack>
+
+                <Stack direction="row" spacing={2} alignItems="center">
+                  <LocationOnIcon sx={{ color: GOLD, fontSize: 28 }} />
+                  <Box>
+                    <Typography variant="body2" color="text.secondary">Address</Typography>
+                    <Typography variant="body1" fontWeight={600}>
+                      {siteSettings.address}
+                    </Typography>
+                  </Box>
+                </Stack>
+
+                <Stack direction="row" spacing={2} alignItems="center">
+                  <BusinessIcon sx={{ color: GOLD, fontSize: 28 }} />
+                  <Box>
+                    <Typography variant="body2" color="text.secondary">Brokerage</Typography>
+                    <Typography variant="body1" fontWeight={600}>
+                      {siteSettings.brokerage}
+                    </Typography>
+                  </Box>
+                </Stack>
+
+                {/* Map */}
+                {mapUrl && (
+                  <Box sx={{ borderRadius: 2, overflow: 'hidden', mt: 2 }}>
+                    <img
+                      src={mapUrl}
+                      alt="Office location map"
+                      style={{ width: '100%', height: 'auto', display: 'block' }}
+                    />
+                  </Box>
+                )}
+              </Stack>
+            </Grid>
+
+            {/* Right: Form */}
+            <Grid size={{ xs: 12, md: 6 }}>
+              <Paper elevation={3} sx={{ p: { xs: 3, md: 4 } }}>
+                <Typography variant="h5" fontWeight={700} sx={{ mb: 3 }}>
+                  Send Us a Message
+                </Typography>
+
+                {success && (
+                  <Alert severity="success" sx={{ mb: 2 }} onClose={() => setSuccess(false)}>
+                    Message sent! We&apos;ll get back to you soon.
+                  </Alert>
+                )}
+                {error && (
+                  <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError(null)}>
+                    {error}
+                  </Alert>
+                )}
+
+                <form onSubmit={handleSubmit}>
+                  <Stack spacing={2}>
+                    <TextField label="Name" required fullWidth size="small" value={form.name} onChange={handleChange('name')} disabled={loading} />
+                    <TextField label="Email" type="email" required fullWidth size="small" value={form.email} onChange={handleChange('email')} disabled={loading} />
+                    <TextField label="Phone" type="tel" fullWidth size="small" value={form.phone} onChange={handleChange('phone')} disabled={loading} placeholder="(555) 555-1234" />
+                    <TextField label="Message" multiline rows={5} required fullWidth size="small" value={form.message} onChange={handleChange('message')} disabled={loading} />
+                    <Button
+                      type="submit"
+                      variant="contained"
+                      size="large"
+                      fullWidth
+                      disabled={loading}
+                      endIcon={<SendIcon />}
+                      sx={{ py: 1.5, bgcolor: NAVY, '&:hover': { bgcolor: '#1a2435' } }}
+                    >
+                      {loading ? 'Sending...' : 'Send Message'}
+                    </Button>
+                  </Stack>
+                </form>
+              </Paper>
+            </Grid>
           </Grid>
-        </Grid>
+        </PageWithSidebar>
       </Container>
     </Box>
   )

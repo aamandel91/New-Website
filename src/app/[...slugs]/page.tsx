@@ -7,6 +7,8 @@ import ListingsGrid from '@shared/ListingsGrid'
 import AreaValueTrends from '@shared/AreaValueTrends'
 import MarketTimelineGraph from '@shared/MarketTimelineGraph'
 import StructuredData from '@shared/StructuredData'
+import PageWithSidebar from '@/components/layouts/PageWithSidebar'
+import CitySidebar from '@/components/sidebar/CitySidebar'
 
 import { subTypes, getSubTypeBySlug } from '@configs/page-generation'
 import { breadcrumbSchema, localBusinessSchema } from 'utils/structuredData'
@@ -294,143 +296,145 @@ async function renderCityPage(
           )}
         </Breadcrumbs>
 
-        <Box sx={{ mb: 4 }}>
-          <Typography variant="h3" component="h1" gutterBottom>
-            {count.toLocaleString()} Homes for Sale in {cityName}, FL
-          </Typography>
-          <Typography variant="body1" color="text.secondary">
-            Browse homes for sale in {cityName}, Florida.
-          </Typography>
-        </Box>
-
-        {/* Property Listings */}
-        <ListingsGrid city={cityName} limit={12} />
-
-        {/* Market Timeline Graph */}
-        <Typography variant="h5" component="h2" gutterBottom sx={{ mt: 4 }}>
-          {cityName} Housing Market
-        </Typography>
-        <MarketTimelineGraph city={cityName} />
-        <AreaValueTrends city={cityName} />
-
-        {/* Sub-types */}
-        <Typography variant="h5" component="h3" gutterBottom sx={{ mt: 4 }}>
-          {cityName} Florida Real Estate — Browse by Property Type
-        </Typography>
-        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 4 }}>
-          {subTypes.map((st) => (
-            <Chip
-              key={st.slug}
-              label={st.label}
-              component="a"
-              href={generateCleanUrl(cityName, st.slug)}
-              clickable
-              variant="outlined"
-            />
-          ))}
-        </Box>
-
-        {/* Neighborhoods */}
-        {neighborhoods.length > 0 && (
-          <>
-            <Typography variant="h5" gutterBottom sx={{ mt: 4 }}>
-              Neighborhoods in {cityName}
+        <PageWithSidebar sidebar={<CitySidebar city={cityName} />}>
+          <Box sx={{ mb: 4 }}>
+            <Typography variant="h3" component="h1" gutterBottom>
+              {count.toLocaleString()} Homes for Sale in {cityName}, FL
             </Typography>
-            <Grid container spacing={2}>
-              {neighborhoods
-                .sort((a, b) => (b.activeCount ?? 0) - (a.activeCount ?? 0))
-                .map((hood) => {
-                  const hoodSlug = hood.name.toLowerCase().replace(/\s+/g, '-')
-                  return (
-                    <Grid item xs={12} sm={6} md={4} key={hood.name}>
-                      <Card variant="outlined">
-                        <CardContent>
-                          <Link
-                            href={generateCleanUrl(cityName, hoodSlug)}
-                            underline="hover"
-                          >
-                            <Typography variant="h6">{hood.name}</Typography>
-                          </Link>
-                          <Typography variant="body2" color="text.secondary">
-                            {(hood.activeCount ?? 0).toLocaleString()} active listings
-                          </Typography>
-                        </CardContent>
-                      </Card>
-                    </Grid>
-                  )
-                })}
-            </Grid>
-          </>
-        )}
-
-        {/* Zip Codes */}
-        {zipCodes.length > 0 && (
-          <>
-            <Typography variant="h5" gutterBottom sx={{ mt: 4 }}>
-              Zip Codes in {cityName}
+            <Typography variant="body1" color="text.secondary">
+              Browse homes for sale in {cityName}, Florida.
             </Typography>
-            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-              {zipCodes.map((zip) => (
-                <Chip
-                  key={zip}
-                  label={zip}
-                  component="a"
-                  href={generateCleanUrl(cityName, zip)}
-                  clickable
-                  variant="outlined"
-                />
-              ))}
-            </Box>
-          </>
-        )}
+          </Box>
 
-        {/* Nearby Cities */}
-        {(() => {
-          const nearby = Object.entries(nearbyCities)
-            .filter(([, cities]) => cities.some((c) => c.toLowerCase() === cityName.toLowerCase()))
-            .flatMap(([, cities]) => cities)
-            .filter((c) => c.toLowerCase() !== cityName.toLowerCase())
-          if (nearby.length === 0) return null
-          const unique = [...new Set(nearby)]
-          return (
-            <Box sx={{ mt: 4 }}>
-              <Typography variant="h5" gutterBottom>
-                Explore Nearby Cities
+          {/* Property Listings */}
+          <ListingsGrid city={cityName} limit={12} />
+
+          {/* Market Timeline Graph */}
+          <Typography variant="h5" component="h2" gutterBottom sx={{ mt: 4 }}>
+            {cityName} Housing Market
+          </Typography>
+          <MarketTimelineGraph city={cityName} />
+          <AreaValueTrends city={cityName} />
+
+          {/* Sub-types */}
+          <Typography variant="h5" component="h3" gutterBottom sx={{ mt: 4 }}>
+            {cityName} Florida Real Estate — Browse by Property Type
+          </Typography>
+          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 4 }}>
+            {subTypes.map((st) => (
+              <Chip
+                key={st.slug}
+                label={st.label}
+                component="a"
+                href={generateCleanUrl(cityName, st.slug)}
+                clickable
+                variant="outlined"
+              />
+            ))}
+          </Box>
+
+          {/* Neighborhoods */}
+          {neighborhoods.length > 0 && (
+            <>
+              <Typography variant="h5" gutterBottom sx={{ mt: 4 }}>
+                Neighborhoods in {cityName}
+              </Typography>
+              <Grid container spacing={2}>
+                {neighborhoods
+                  .sort((a, b) => (b.activeCount ?? 0) - (a.activeCount ?? 0))
+                  .map((hood) => {
+                    const hoodSlug = hood.name.toLowerCase().replace(/\s+/g, '-')
+                    return (
+                      <Grid item xs={12} sm={6} md={4} key={hood.name}>
+                        <Card variant="outlined">
+                          <CardContent>
+                            <Link
+                              href={generateCleanUrl(cityName, hoodSlug)}
+                              underline="hover"
+                            >
+                              <Typography variant="h6">{hood.name}</Typography>
+                            </Link>
+                            <Typography variant="body2" color="text.secondary">
+                              {(hood.activeCount ?? 0).toLocaleString()} active listings
+                            </Typography>
+                          </CardContent>
+                        </Card>
+                      </Grid>
+                    )
+                  })}
+              </Grid>
+            </>
+          )}
+
+          {/* Zip Codes */}
+          {zipCodes.length > 0 && (
+            <>
+              <Typography variant="h5" gutterBottom sx={{ mt: 4 }}>
+                Zip Codes in {cityName}
               </Typography>
               <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                {unique.map((city) => (
+                {zipCodes.map((zip) => (
                   <Chip
-                    key={city}
-                    label={city}
+                    key={zip}
+                    label={zip}
                     component="a"
-                    href={generateCleanUrl(city)}
+                    href={generateCleanUrl(cityName, zip)}
                     clickable
                     variant="outlined"
                   />
                 ))}
               </Box>
-            </Box>
-          )
-        })()}
+            </>
+          )}
 
-        {/* Links */}
-        <Box sx={{ mt: 4, p: 3, bgcolor: 'grey.100', borderRadius: 2 }}>
-          <Typography variant="h6" gutterBottom>
-            Explore More
-          </Typography>
-          <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
-            <Link href={generateCleanUrl(cityName, 'schools')}>
-              <Typography variant="body2" color="primary" fontWeight="bold">
-                Schools in {cityName} →
-              </Typography>
-            </Link>
-            <Link href={`/listings/${parsed.city}`}>
-              <Typography variant="body2" color="primary" fontWeight="bold">
-                Search All Listings in {cityName} →
-              </Typography>
-            </Link>
+          {/* Nearby Cities */}
+          {(() => {
+            const nearby = Object.entries(nearbyCities)
+              .filter(([, cities]) => cities.some((c) => c.toLowerCase() === cityName.toLowerCase()))
+              .flatMap(([, cities]) => cities)
+              .filter((c) => c.toLowerCase() !== cityName.toLowerCase())
+            if (nearby.length === 0) return null
+            const unique = [...new Set(nearby)]
+            return (
+              <Box sx={{ mt: 4 }}>
+                <Typography variant="h5" gutterBottom>
+                  Explore Nearby Cities
+                </Typography>
+                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                  {unique.map((city) => (
+                    <Chip
+                      key={city}
+                      label={city}
+                      component="a"
+                      href={generateCleanUrl(city)}
+                      clickable
+                      variant="outlined"
+                    />
+                  ))}
+                </Box>
+              </Box>
+            )
+          })()}
+
+          {/* Links */}
+          <Box sx={{ mt: 4, p: 3, bgcolor: 'grey.100', borderRadius: 2 }}>
+            <Typography variant="h6" gutterBottom>
+              Explore More
+            </Typography>
+            <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
+              <Link href={generateCleanUrl(cityName, 'schools')}>
+                <Typography variant="body2" color="primary" fontWeight="bold">
+                  Schools in {cityName} →
+                </Typography>
+              </Link>
+              <Link href={`/listings/${parsed.city}`}>
+                <Typography variant="body2" color="primary" fontWeight="bold">
+                  Search All Listings in {cityName} →
+                </Typography>
+              </Link>
+            </Box>
           </Box>
-        </Box>
+        </PageWithSidebar>
       </Container>
       {process.env.NODE_ENV === 'development' && (
         <Box sx={{ position: 'fixed', bottom: 80, right: 10, bgcolor: 'rgba(0,0,0,0.7)', color: '#fff', p: 1, borderRadius: 1, fontSize: 11, zIndex: 9999 }}>
@@ -465,39 +469,41 @@ async function renderSubTypePage(
     <PageTemplate>
       <StructuredData data={breadcrumbSchema(breadcrumbItems)} />
       <Container maxWidth="lg" sx={{ py: 4 }}>
-        <Typography variant="h3" component="h1" fontWeight="bold" gutterBottom>
-          {headings.h1 || `${stConfig.label} in ${cityName}, FL`}
-        </Typography>
-        <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
-          Browse {count} {stConfig.label.toLowerCase()} currently available in {cityName}, Florida.
-        </Typography>
-
-        {/* Property Listings */}
-        <ListingsGrid city={cityName} propertyType={stConfig.propertyType || stConfig.label} limit={12} />
-
-        {/* Market Timeline */}
-        <Box sx={{ mb: 4 }}>
-          <MarketTimelineGraph city={cityName} propertyType={stConfig.label} />
-        </Box>
-
-        {/* Other Sub-Types */}
-        <Box sx={{ mt: 4, p: 3, bgcolor: 'grey.100', borderRadius: 2 }}>
-          <Typography variant="h6" gutterBottom>
-            More in {cityName}
+        <PageWithSidebar sidebar={<CitySidebar city={cityName} />}>
+          <Typography variant="h3" component="h1" fontWeight="bold" gutterBottom>
+            {headings.h1 || `${stConfig.label} in ${cityName}, FL`}
           </Typography>
-          <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-            {otherSubTypes.slice(0, 10).map((st) => (
-              <Chip
-                key={st.slug}
-                label={st.label}
-                component={Link}
-                href={generateCleanUrl(cityName, st.slug)}
-                clickable
-                variant="outlined"
-              />
-            ))}
+          <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
+            Browse {count} {stConfig.label.toLowerCase()} currently available in {cityName}, Florida.
+          </Typography>
+
+          {/* Property Listings */}
+          <ListingsGrid city={cityName} propertyType={stConfig.propertyType || stConfig.label} limit={12} />
+
+          {/* Market Timeline */}
+          <Box sx={{ mb: 4 }}>
+            <MarketTimelineGraph city={cityName} propertyType={stConfig.label} />
           </Box>
-        </Box>
+
+          {/* Other Sub-Types */}
+          <Box sx={{ mt: 4, p: 3, bgcolor: 'grey.100', borderRadius: 2 }}>
+            <Typography variant="h6" gutterBottom>
+              More in {cityName}
+            </Typography>
+            <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+              {otherSubTypes.slice(0, 10).map((st) => (
+                <Chip
+                  key={st.slug}
+                  label={st.label}
+                  component={Link}
+                  href={generateCleanUrl(cityName, st.slug)}
+                  clickable
+                  variant="outlined"
+                />
+              ))}
+            </Box>
+          </Box>
+        </PageWithSidebar>
       </Container>
       {process.env.NODE_ENV === 'development' && (
         <Box sx={{ position: 'fixed', bottom: 80, right: 10, bgcolor: 'rgba(0,0,0,0.7)', color: '#fff', p: 1, borderRadius: 1, fontSize: 11, zIndex: 9999 }}>
@@ -527,33 +533,35 @@ async function renderNeighborhoodPage(
     <PageTemplate>
       <StructuredData data={breadcrumbSchema(breadcrumbItems)} />
       <Container maxWidth="lg" sx={{ py: 4 }}>
-        <Typography variant="h3" component="h1" fontWeight="bold" gutterBottom>
-          {neighborhoodName} in {cityName}, FL
-        </Typography>
-        <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
-          Explore homes for sale in the {neighborhoodName} neighborhood of {cityName}, Florida.
-        </Typography>
-
-        {/* Property Listings */}
-        <ListingsGrid city={cityName} neighborhood={neighborhoodName} limit={12} />
-
-        <Box sx={{ mb: 4 }}>
-          <MarketTimelineGraph city={cityName} />
-        </Box>
-        <AreaValueTrends city={cityName} neighborhood={neighborhoodName} />
-
-        <Box sx={{ mt: 4, p: 3, bgcolor: 'grey.100', borderRadius: 2 }}>
-          <Typography variant="h6" gutterBottom>
-            Explore {cityName}
+        <PageWithSidebar sidebar={<CitySidebar city={cityName} neighborhood={neighborhoodName} />}>
+          <Typography variant="h3" component="h1" fontWeight="bold" gutterBottom>
+            {neighborhoodName} in {cityName}, FL
           </Typography>
-          <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
-            <Link href={generateCleanUrl(cityName)}>
-              <Typography variant="body2" color="primary" fontWeight="bold">
-                All Homes in {cityName} →
-              </Typography>
-            </Link>
+          <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
+            Explore homes for sale in the {neighborhoodName} neighborhood of {cityName}, Florida.
+          </Typography>
+
+          {/* Property Listings */}
+          <ListingsGrid city={cityName} neighborhood={neighborhoodName} limit={12} />
+
+          <Box sx={{ mb: 4 }}>
+            <MarketTimelineGraph city={cityName} />
           </Box>
-        </Box>
+          <AreaValueTrends city={cityName} neighborhood={neighborhoodName} />
+
+          <Box sx={{ mt: 4, p: 3, bgcolor: 'grey.100', borderRadius: 2 }}>
+            <Typography variant="h6" gutterBottom>
+              Explore {cityName}
+            </Typography>
+            <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
+              <Link href={generateCleanUrl(cityName)}>
+                <Typography variant="body2" color="primary" fontWeight="bold">
+                  All Homes in {cityName} →
+                </Typography>
+              </Link>
+            </Box>
+          </Box>
+        </PageWithSidebar>
       </Container>
       {process.env.NODE_ENV === 'development' && (
         <Box sx={{ position: 'fixed', bottom: 80, right: 10, bgcolor: 'rgba(0,0,0,0.7)', color: '#fff', p: 1, borderRadius: 1, fontSize: 11, zIndex: 9999 }}>
@@ -583,32 +591,34 @@ async function renderZipPage(
     <PageTemplate>
       <StructuredData data={breadcrumbSchema(breadcrumbItems)} />
       <Container maxWidth="lg" sx={{ py: 4 }}>
-        <Typography variant="h3" component="h1" fontWeight="bold" gutterBottom>
-          Homes for Sale in {cityName}, FL {zip}
-        </Typography>
-        <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
-          Browse homes and real estate in the {zip} zip code area of {cityName}, Florida.
-        </Typography>
-
-        {/* Property Listings */}
-        <ListingsGrid city={cityName} zip={zip} limit={12} />
-
-        <Box sx={{ mb: 4 }}>
-          <MarketTimelineGraph city={cityName} />
-        </Box>
-
-        <Box sx={{ mt: 4, p: 3, bgcolor: 'grey.100', borderRadius: 2 }}>
-          <Typography variant="h6" gutterBottom>
-            Explore {cityName}
+        <PageWithSidebar sidebar={<CitySidebar city={cityName} />}>
+          <Typography variant="h3" component="h1" fontWeight="bold" gutterBottom>
+            Homes for Sale in {cityName}, FL {zip}
           </Typography>
-          <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
-            <Link href={generateCleanUrl(cityName)}>
-              <Typography variant="body2" color="primary" fontWeight="bold">
-                All Homes in {cityName} →
-              </Typography>
-            </Link>
+          <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
+            Browse homes and real estate in the {zip} zip code area of {cityName}, Florida.
+          </Typography>
+
+          {/* Property Listings */}
+          <ListingsGrid city={cityName} zip={zip} limit={12} />
+
+          <Box sx={{ mb: 4 }}>
+            <MarketTimelineGraph city={cityName} />
           </Box>
-        </Box>
+
+          <Box sx={{ mt: 4, p: 3, bgcolor: 'grey.100', borderRadius: 2 }}>
+            <Typography variant="h6" gutterBottom>
+              Explore {cityName}
+            </Typography>
+            <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
+              <Link href={generateCleanUrl(cityName)}>
+                <Typography variant="body2" color="primary" fontWeight="bold">
+                  All Homes in {cityName} →
+                </Typography>
+              </Link>
+            </Box>
+          </Box>
+        </PageWithSidebar>
       </Container>
       {process.env.NODE_ENV === 'development' && (
         <Box sx={{ position: 'fixed', bottom: 80, right: 10, bgcolor: 'rgba(0,0,0,0.7)', color: '#fff', p: 1, borderRadius: 1, fontSize: 11, zIndex: 9999 }}>

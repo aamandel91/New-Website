@@ -3,6 +3,8 @@ import { Box, Container, Typography, CircularProgress } from '@mui/material'
 import type { Metadata } from 'next'
 import { BlogDisplay, BlogListing } from '@pages/blog'
 import StructuredData from '@shared/StructuredData'
+import PageWithSidebar from '@/components/layouts/PageWithSidebar'
+import BlogPostSidebar from '@/components/sidebar/BlogPostSidebar'
 import { articleSchema, breadcrumbSchema } from 'utils/structuredData'
 import type { Blog } from '@/types/blog'
 
@@ -111,7 +113,11 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
         </>
       )}
 
-      <BlogDisplay slug={params.slug} onRelatedBlogs={handleRelatedBlogs} />
+      <Container maxWidth="lg" sx={{ py: 4 }}>
+        <PageWithSidebar sidebar={<BlogPostSidebar />}>
+          <BlogDisplay slug={params.slug} onRelatedBlogs={handleRelatedBlogs} />
+        </PageWithSidebar>
+      </Container>
 
       {/* Related Articles Section */}
       <Box sx={{ bgcolor: '#f9f9f9', py: 8, mt: 4 }}>

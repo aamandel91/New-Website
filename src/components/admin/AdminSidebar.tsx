@@ -35,6 +35,7 @@ import {
   ContactPhone as CrmIcon,
   Inventory as InventoryIcon,
   Campaign as CampaignIcon,
+  Widgets as WidgetsIcon,
   ExpandLess,
   ExpandMore
 } from '@mui/icons-material'
@@ -62,6 +63,7 @@ const navItems: NavItem[] = [
   { title: 'CRM', path: '/admin/crm', icon: <CrmIcon /> },
   { title: 'Navigation', path: '/admin/navigation', icon: <NavigationIcon /> },
   { title: 'PPC Feeds', path: '/admin/ppc-feeds', icon: <CampaignIcon /> },
+  { title: 'Sidebar Widgets', path: '/admin/sidebar-widgets', icon: <WidgetsIcon /> },
   {
     title: 'SEO Tools',
     path: '/admin/seo',

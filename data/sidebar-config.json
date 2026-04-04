@@ -1,0 +1,61 @@
+{
+  "pageTypes": {
+    "city": {
+      "widgets": ["SearchWidget", "HowsTheMarket", "BrowseByType", "PopularSearches", "RecentBlogs"],
+      "enabled": true
+    },
+    "neighborhood": {
+      "widgets": ["SearchWidget", "HowsTheMarket", "BrowseByType", "PopularSearches", "RecentBlogs"],
+      "enabled": true
+    },
+    "subtype": {
+      "widgets": ["SearchWidget", "HowsTheMarket", "BrowseByType", "PopularSearches", "RecentBlogs"],
+      "enabled": true
+    },
+    "zip": {
+      "widgets": ["SearchWidget", "HowsTheMarket", "BrowseByType", "PopularSearches", "RecentBlogs"],
+      "enabled": true
+    },
+    "sell": {
+      "widgets": ["SearchWidget", "ReadyToChat", "SellerResources", "BuyerResources", "RecentBlogs"],
+      "enabled": true
+    },
+    "about": {
+      "widgets": ["SearchWidget", "TodaysListings", "RecentBlogs"],
+      "enabled": true
+    },
+    "contact": {
+      "widgets": ["SearchWidget", "TodaysListings", "RecentBlogs"],
+      "enabled": true
+    },
+    "blog": {
+      "widgets": ["BlogCategories", "BlogArchives", "BlogTags", "SearchWidget", "TodaysListings"],
+      "enabled": true
+    }
+  },
+  "widgetSettings": {
+    "ReadyToChat": {
+      "headline": "Ready to Chat?",
+      "subtext": "Schedule a free consultation with our team.",
+      "buttonText": "SCHEDULE A CALL",
+      "buttonLink": "/contact"
+    },
+    "SellerResources": {
+      "links": [
+        { "label": "Free Market Analysis", "href": "/sell#sell-form" },
+        { "label": "Marketing Your Home", "href": "/sell" },
+        { "label": "Pricing Your Home", "href": "/sell" },
+        { "label": "Adding Value", "href": "/sell" },
+        { "label": "Showing Your Home", "href": "/sell" }
+      ]
+    },
+    "BuyerResources": {
+      "links": [
+        { "label": "Mortgage Calculator", "href": "/search/gallery" },
+        { "label": "First Time Buyers", "href": "/search/gallery" },
+        { "label": "Making an Offer", "href": "/contact" },
+        { "label": "What Are Closing Costs?", "href": "/contact" }
+      ]
+    }
+  }
+}
