@@ -1,8 +1,11 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 
-import { Close as CloseIcon } from '@mui/icons-material'
+import {
+  Close as CloseIcon,
+  HomeWork as HomeWorkIcon,
+} from '@mui/icons-material'
 import {
   Box,
   Button,
@@ -16,13 +19,17 @@ import {
   TextField,
   Typography
 } from '@mui/material'
+import Link from 'next/link'
 
 import type { PropertyEstimate } from 'services/API/types'
+import APISearchCSR from 'services/API/APISearchCSR'
 import { ssIdentify } from 'utils/suresendTracking'
 
 interface PropertyValueEstimateProps {
   estimate?: PropertyEstimate
   listPrice?: number
+  mlsNumber?: string
+  boardId?: number
 }
 
 const formatCurrency = (value: number): string =>
@@ -209,19 +216,78 @@ function HistoryLineChart({
 }
 
 // ---------------------------------------------------------------------------
+// Unavailable Fallback Card
+// ---------------------------------------------------------------------------
+
+function EstimateUnavailable() {
+  return (
+    <Card variant="outlined">
+      <CardContent
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          textAlign: 'center',
+          py: 4,
+        }}
+      >
+        <HomeWorkIcon sx={{ fontSize: 48, color: 'grey.400', mb: 2 }} />
+        <Typography variant="h6" fontWeight={600} gutterBottom>
+          Estimate Not Available
+        </Typography>
+        <Typography variant="body2" color="text.secondary" sx={{ mb: 3, maxWidth: 360 }}>
+          A value estimate is not currently available for this property.
+          Get a personalized home value report instead.
+        </Typography>
+        <Button
+          component={Link}
+          href="/home-value"
+          variant="contained"
+          size="medium"
+        >
+          Get a Home Value Estimate
+        </Button>
+      </CardContent>
+    </Card>
+  )
+}
+
+// ---------------------------------------------------------------------------
 // Main Component
 // ---------------------------------------------------------------------------
 
 const PropertyValueEstimate: React.FC<PropertyValueEstimateProps> = ({
-  estimate,
-  listPrice
+  estimate: initialEstimate,
+  listPrice,
+  mlsNumber,
+  boardId = 110,
 }) => {
+  const [estimate, setEstimate] = useState<PropertyEstimate | undefined>(initialEstimate)
+  const [fetched, setFetched] = useState(false)
   const [trackModalOpen, setTrackModalOpen] = useState(false)
   const [trackEmail, setTrackEmail] = useState('')
   const [trackSubmitting, setTrackSubmitting] = useState(false)
   const [trackSubmitted, setTrackSubmitted] = useState(false)
 
-  if (!estimate || !estimate.value) return null
+  // Try to fetch estimate via CSR API if none was provided
+  useEffect(() => {
+    if (estimate?.value || !mlsNumber || fetched) return
+    setFetched(true)
+
+    APISearchCSR.getListing(mlsNumber, boardId)
+      .then((listing: any) => {
+        if (listing?.estimate?.value) {
+          setEstimate(listing.estimate)
+        }
+      })
+      .catch(() => {
+        // silently fail — fallback card will show
+      })
+  }, [estimate, mlsNumber, boardId, fetched])
+
+  if (!estimate || !estimate.value) {
+    return <EstimateUnavailable />
+  }
 
   const { low, high, value, confidence } = estimate
   const range = high - low || 1

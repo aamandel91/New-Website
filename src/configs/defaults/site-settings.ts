@@ -4,6 +4,7 @@ export interface SiteSettings {
   phone: string
   email: string
   address: string
+  heroImageUrl: string
   social: {
     facebook: string
     instagram: string
@@ -22,6 +23,7 @@ export const siteSettings: SiteSettings = {
   phone: '(954) 251-0694',
   email: 'info@floridahomefinder.com',
   address: '10101 W Sample Rd, Coral Springs, FL 33065',
+  heroImageUrl: '',
   social: {
     facebook: 'https://www.facebook.com/TheMandelTeam/',
     instagram: 'https://www.instagram.com/themandelteam/',

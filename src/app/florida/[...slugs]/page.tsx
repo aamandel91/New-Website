@@ -1,15 +1,10 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
-import nextDynamic from 'next/dynamic'
-import { Box, Container, Typography, Breadcrumbs, Link, Grid, Chip, Card, CardContent, Skeleton } from '@mui/material'
+import { Box, Container, Typography, Breadcrumbs, Link, Grid, Chip, Card, CardContent } from '@mui/material'
 
 import { PageTemplate } from '@templates'
 import StructuredData from '@shared/StructuredData'
-
-const MarketTimelineGraph = nextDynamic(() => import('@shared/MarketTimelineGraph'), {
-  ssr: false,
-  loading: () => <Skeleton variant="rectangular" height={300} sx={{ borderRadius: 1 }} />,
-})
+import MarketTimelineGraph from '@shared/MarketTimelineGraph'
 
 import { subTypes, getSubTypeBySlug, slugToCounty } from '@configs/page-generation'
 import { breadcrumbSchema, localBusinessSchema } from 'utils/structuredData'

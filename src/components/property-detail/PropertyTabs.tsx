@@ -286,6 +286,8 @@ const PropertyTabs: React.FC<PropertyTabsProps> = ({
             <PropertyValueEstimate
               estimate={property.estimate}
               listPrice={parseFloat(property.listPrice)}
+              mlsNumber={property.mlsNumber}
+              boardId={property.boardId}
             />
 
             <EstimateHistoryTable

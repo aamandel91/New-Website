@@ -1,0 +1,33 @@
+export const exploreTileImages: Record<string, string> = {
+  'miami-metro': '',
+  'broward-palm-beach': '',
+  'port-st-lucie': '',
+  'orlando': '',
+  'tampa-st-pete': '',
+  'sarasota': '',
+  'sw-florida': '',
+  'florida-keys': '',
+}
+
+export const lifestyleTileImages: Record<string, string> = {
+  '1-story': '',
+  '1-acres': '',
+  '2-story': '',
+  '55-communities': '',
+  'condo': '',
+  'foreclosures': '',
+  'gated': '',
+  'country-club': '',
+  'luxury': '',
+  'multifamily': '',
+  'new-construction': '',
+  'no-hoa': '',
+  'ocean-access': '',
+  'pet-friendly': '',
+  'pool-homes': '',
+  'single-family': '',
+  'fha-approved': '',
+  'va-approved': '',
+  'townhomes': '',
+  'waterfront': '',
+}

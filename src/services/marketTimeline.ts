@@ -1,4 +1,3 @@
-import type { ApiStatisticRecord } from 'services/API'
 import APISearchCSR from 'services/API/APISearchCSR'
 
 export interface MonthlyDataPoint {
@@ -34,7 +33,6 @@ export interface MarketTimelineResult {
 function computeTrend(data: MonthlyDataPoint[]): MarketTimelineResult['trend'] {
   if (data.length < 2) return { direction: 'flat', percentage: 0 }
 
-  // Compare the average of the last 3 months vs first 3 months
   const recentSlice = data.slice(-3)
   const earlierSlice = data.slice(0, 3)
 
@@ -57,96 +55,57 @@ function computeTrend(data: MonthlyDataPoint[]): MarketTimelineResult['trend'] {
 export async function fetchMarketTimeline(
   params: MarketTimelineParams
 ): Promise<MarketTimelineResult> {
-  const months = params.months ?? 12
-  const minDate = new Date()
-  minDate.setDate(1)
-  minDate.setMonth(minDate.getMonth() - months)
-  const minSoldDate = minDate.toISOString().split('T')[0]
-
-  const maxDate = new Date()
-  maxDate.setDate(1)
-  maxDate.setMonth(maxDate.getMonth() + 1)
-  maxDate.setDate(0) // last day of current month
-  const maxSoldDate = maxDate.toISOString().split('T')[0]
+  const emptyResult: MarketTimelineResult = {
+    data: [],
+    trend: { direction: 'flat', percentage: 0 },
+    summary: { avgPrice: 0, medPrice: 0, avgDaysOnMarket: 0 },
+  }
 
   try {
-    const response = await APISearchCSR.searchListings({
+    const result = await APISearchCSR.searchListings({
       boardId: 110,
+      city: params.city,
+      propertyType: params.propertyType,
       status: 'U',
       lastStatus: 'Sld',
-      city: params.city,
-      statistics: 'avg-soldPrice,med-soldPrice,avg-daysOnMarket,grp-mth',
-      minSoldDate,
-      maxSoldDate,
       listings: false,
+      statistics: 'soldPrice',
       resultsPerPage: 1,
-      ...(params.propertyType && { propertyType: params.propertyType }),
       ...(params.beds && { minBeds: parseInt(params.beds) }),
       ...(params.baths && { minBaths: parseInt(params.baths) }),
       ...(params.minPrice && { minPrice: parseInt(params.minPrice) }),
       ...(params.maxPrice && { maxPrice: parseInt(params.maxPrice) }),
     })
 
-    const soldPriceMth = response?.statistics?.soldPrice?.mth
-    const domMth = response?.statistics?.daysOnMarket?.mth
+    if (!result?.statistics?.soldPrice?.mth) return emptyResult
 
-    if (!soldPriceMth) {
-      return {
-        data: [],
-        trend: { direction: 'flat', percentage: 0 },
-        summary: { avgPrice: 0, medPrice: 0, avgDaysOnMarket: 0 },
-      }
-    }
-
-    // Convert monthly data to sorted array
-    const entries = Object.entries(soldPriceMth)
-      .map(([date, record]: [string, ApiStatisticRecord]) => ({
-        date,
-        avgPrice: Math.round(record.avg),
-        medPrice: Math.round(record.med),
-        count: record.count,
+    const months = result.statistics.soldPrice.mth
+    const entries = Object.entries(months)
+      .map(([month, data]: [string, any]) => ({
+        date: month,
+        avgPrice: data.avg || 0,
+        medPrice: data.med || data.avg || 0,
+        count: data.count || 0,
       }))
       .sort((a, b) => a.date.localeCompare(b.date))
-      .slice(-months)
+      .slice(-(params.months || 12))
 
     const trend = computeTrend(entries)
 
-    // Summary from the full response stats
-    const avgPrice = response?.statistics?.soldPrice?.avg
-      ? Math.round(response.statistics.soldPrice.avg)
-      : entries.length > 0
-        ? Math.round(entries.reduce((s, d) => s + d.avgPrice, 0) / entries.length)
-        : 0
-
-    const medPrice = response?.statistics?.soldPrice?.med
-      ? Math.round(response.statistics.soldPrice.med)
-      : entries.length > 0
-        ? Math.round(entries.reduce((s, d) => s + d.medPrice, 0) / entries.length)
-        : 0
-
-    const avgDaysOnMarket = response?.statistics?.daysOnMarket?.avg
-      ? Math.round(response.statistics.daysOnMarket.avg)
-      : domMth
-        ? Math.round(
-            Object.values(domMth as Record<string, ApiStatisticRecord>).reduce(
-              (s, r) => s + r.avg,
-              0
-            ) /
-              Object.keys(domMth).length
-          )
-        : 0
+    const avgPrice = entries.length > 0
+      ? Math.round(entries.reduce((s, d) => s + d.avgPrice, 0) / entries.length)
+      : 0
+    const medPrice = entries.length > 0
+      ? Math.round(entries.reduce((s, d) => s + d.medPrice, 0) / entries.length)
+      : 0
 
     return {
       data: entries,
       trend,
-      summary: { avgPrice, medPrice, avgDaysOnMarket },
+      summary: { avgPrice, medPrice, avgDaysOnMarket: 0 },
     }
   } catch (error) {
-    console.error('[MarketTimeline] error fetching data', error)
-    return {
-      data: [],
-      trend: { direction: 'flat', percentage: 0 },
-      summary: { avgPrice: 0, medPrice: 0, avgDaysOnMarket: 0 },
-    }
+    console.error('Error fetching market timeline:', error)
+    return emptyResult
   }
 }

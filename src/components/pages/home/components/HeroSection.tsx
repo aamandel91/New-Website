@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import { useRouter } from 'next/navigation'
 
@@ -69,6 +69,18 @@ const HeroSection = () => {
   const [minPrice, setMinPrice] = useState('')
   const [maxPrice, setMaxPrice] = useState('')
   const [addressInput, setAddressInput] = useState('')
+  const [heroImageUrl, setHeroImageUrl] = useState('')
+
+  useEffect(() => {
+    fetch('/api/admin/site-settings')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data?.heroImageUrl) setHeroImageUrl(data.heroImageUrl)
+      })
+      .catch(() => {
+        // keep gradient fallback
+      })
+  }, [])
 
   const handleTabClick = (tab: (typeof TABS)[number]) => {
     if ('href' in tab && tab.href) {
@@ -110,20 +122,49 @@ const HeroSection = () => {
 
   const { headline, subheadline } = TAB_CONTENT[activeTab]
 
+  const heroBackground = heroImageUrl
+    ? 'none'
+    : 'linear-gradient(135deg, #0F1621 0%, #1a3a4a 100%)'
+
   return (
     <Box
       sx={{
         minHeight: '500px',
-        background: 'linear-gradient(135deg, #0F1621 0%, #1a3a4a 100%)',
+        background: heroBackground,
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
         position: 'relative',
         px: { xs: 2, md: 4 },
-        py: { xs: 6, md: 8 }
+        py: { xs: 6, md: 8 },
+        overflow: 'hidden',
       }}
     >
+      {/* Background image with dark overlay */}
+      {heroImageUrl && (
+        <>
+          <Box
+            sx={{
+              position: 'absolute',
+              inset: 0,
+              backgroundImage: `url(${heroImageUrl})`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+              zIndex: 0,
+            }}
+          />
+          <Box
+            sx={{
+              position: 'absolute',
+              inset: 0,
+              bgcolor: 'rgba(15, 22, 33, 0.65)',
+              zIndex: 1,
+            }}
+          />
+        </>
+      )}
+
       {/* Tab Row */}
       <Box
         sx={{
@@ -134,7 +175,8 @@ const HeroSection = () => {
           justifyContent: 'center',
           overflowX: { xs: 'auto', md: 'visible' },
           maxWidth: '100%',
-          px: 1
+          px: 1,
+          zIndex: 2,
         }}
       >
         {TABS.map((tab) => {
@@ -181,7 +223,8 @@ const HeroSection = () => {
           fontSize: { xs: '32px', md: '48px' },
           fontWeight: 300,
           textAlign: 'center',
-          mb: 1
+          mb: 1,
+          zIndex: 2,
         }}
       >
         {headline}
@@ -193,7 +236,8 @@ const HeroSection = () => {
           color: 'rgba(255,255,255,0.85)',
           fontSize: '16px',
           textAlign: 'center',
-          mb: 4
+          mb: 4,
+          zIndex: 2,
         }}
       >
         {subheadline}
@@ -211,7 +255,8 @@ const HeroSection = () => {
             p: { xs: 2, md: 0 },
             display: 'flex',
             flexDirection: 'column',
-            gap: { xs: 1.5, md: 0 }
+            gap: { xs: 1.5, md: 0 },
+            zIndex: 2,
           }}
         >
           {/* Location — full width on mobile */}
@@ -391,7 +436,8 @@ const HeroSection = () => {
             bgcolor: 'rgba(255,255,255,0.1)',
             borderRadius: '6px',
             overflow: 'hidden',
-            p: { xs: 2, md: 0 }
+            p: { xs: 2, md: 0 },
+            zIndex: 2,
           }}
         >
           <Box sx={{ flex: 1, minWidth: 0 }}>
@@ -441,7 +487,8 @@ const HeroSection = () => {
             bgcolor: 'rgba(255,255,255,0.1)',
             borderRadius: '6px',
             overflow: 'hidden',
-            p: { xs: 2, md: 0 }
+            p: { xs: 2, md: 0 },
+            zIndex: 2,
           }}
         >
           <Box sx={{ flex: 1, minWidth: 0 }}>

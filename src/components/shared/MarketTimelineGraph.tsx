@@ -5,6 +5,7 @@ import { Box, Button, ButtonGroup, Paper, Stack, Typography } from '@mui/materia
 import {
   TrendingUp as TrendingUpIcon,
   TrendingDown as TrendingDownIcon,
+  BarChart as BarChartIcon,
 } from '@mui/icons-material'
 
 import MarketGraphFilters from '@shared/MarketGraphFilters'
@@ -360,12 +361,34 @@ const MarketTimelineGraph: React.FC<MarketTimelineGraphProps> = ({
           transition: 'opacity 0.3s',
         }}
       >
-        <InlineSVGChart
-          data={data}
-          trendDirection={trend.direction}
-          width={containerWidth}
-          height={svgHeight}
-        />
+        {data.length === 0 && !loading ? (
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              minHeight: 250,
+              color: 'text.secondary',
+              gap: 1.5,
+            }}
+          >
+            <BarChartIcon sx={{ fontSize: 48, color: 'grey.400' }} />
+            <Typography variant="body1" fontWeight={500} color="text.secondary">
+              No market data available yet
+            </Typography>
+            <Typography variant="body2" color="text.disabled" textAlign="center">
+              Market trend data for {city} will appear here once enough sales data is collected.
+            </Typography>
+          </Box>
+        ) : (
+          <InlineSVGChart
+            data={data}
+            trendDirection={trend.direction}
+            width={containerWidth}
+            height={svgHeight}
+          />
+        )}
       </Box>
 
       {/* Trend Summary */}
