@@ -18,7 +18,6 @@ import RelatedPages from './RelatedPages'
 import MoreProperties from './MoreProperties'
 import RelatedBlogs from './RelatedBlogs'
 import PropertyPublicRecords from './PropertyPublicRecords'
-import PreferredLender from './PreferredLender'
 
 const EstimateHistoryTable = dynamic(() => import('./EstimateHistoryTable'), {
   ssr: false,
@@ -385,7 +384,6 @@ const PropertyTabs: React.FC<PropertyTabsProps> = ({
             propertyTaxAnnual={taxes}
             hoaMonthly={hoa}
           />
-          <PreferredLender />
         </Box>
 
         {/* ── Similar Homes ── */}

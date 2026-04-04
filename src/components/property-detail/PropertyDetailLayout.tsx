@@ -23,6 +23,7 @@ import PropertyContactForm from './PropertyContactForm'
 import PropertyHeader from './PropertyHeader'
 import PropertyNotifications from './PropertyNotifications'
 import PropertyPhotoGallery from './PropertyPhotoGallery'
+import PreferredLender from './PreferredLender'
 import ViewOtherUnits from './ViewOtherUnits'
 import { getCDNPath } from 'utils/urls'
 import PropertyTabs from './PropertyTabs'
@@ -301,6 +302,7 @@ const PropertyDetailLayout: React.FC<PropertyDetailLayoutProps> = ({
                 city={address.city}
                 neighborhood={property.address?.neighborhood}
               />
+              <PreferredLender />
             </Box>
           </Grid>
         </Grid>

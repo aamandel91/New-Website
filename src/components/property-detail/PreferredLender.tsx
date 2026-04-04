@@ -6,7 +6,7 @@ import lenderConfig from '@/configs/defaults/lender'
 
 const PreferredLender: React.FC = () => {
   return (
-    <Card variant="outlined" sx={{ mt: 3 }}>
+    <Card variant="outlined">
       <CardContent sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
         <Chip
           label={lenderConfig.badgeLabel}
