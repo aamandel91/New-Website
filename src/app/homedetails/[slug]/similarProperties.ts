@@ -37,11 +37,11 @@ export async function fetchMarketStats(city: string, state: string, boardId = 11
     if (!result?.statistics) return null
 
     return {
-      averagePrice: result.statistics?.listPrice?.avg,
-      medianPrice: result.statistics?.listPrice?.med,
+      averagePrice: result.statistics?.soldPrice?.avg ?? null,
+      medianPrice: result.statistics?.soldPrice?.med ?? null,
       totalActiveListings: result.count,
       pricePerSqft: null,
-      averageDaysOnMarket: null,
+      averageDaysOnMarket: result.statistics?.daysOnMarket?.avg ?? null,
       inventoryMonths: null,
     }
   } catch (error) {

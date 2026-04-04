@@ -4,7 +4,7 @@ import { type Property } from 'services/API'
  * Maps Property API data to the format expected by components
  * This normalizes field names and types for easier component consumption
  */
-export interface NormalizedProperty extends Property {
+export interface NormalizedProperty extends Omit<Property, 'originalPrice'> {
   // Normalized fields for easier access
   price?: number
   beds?: number
@@ -35,7 +35,7 @@ export interface NormalizedProperty extends Property {
  * Normalizes a Property object from API format to component-friendly format
  */
 export function normalizeProperty(property: Property): NormalizedProperty {
-  const normalized = property as NormalizedProperty
+  const normalized = property as unknown as NormalizedProperty
 
   // Price - convert from string to number
   normalized.price = property.listPrice ? parseFloat(property.listPrice) : undefined
@@ -97,7 +97,7 @@ export function normalizeProperty(property: Property): NormalizedProperty {
 
   // Agent - use first agent from agents array
   if (property.agents && property.agents.length > 0) {
-    const agent = property.agents[0]
+    const agent = property.agents[0] as any
     normalized.agent = {
       name: agent.name,
       phone: agent.phones && agent.phones.length > 0 ? agent.phones[0] : undefined,

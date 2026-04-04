@@ -1,6 +1,6 @@
-import { Estimate } from './estimate.js'
-import { ApiRequest, ApiResponse, Operator, Class } from './index.js'
-import * as Searches from './searches.js'
+import type { Estimate } from './estimate.js'
+import type { ApiRequest, ApiResponse, Operator, Class } from './index.js'
+import type * as Searches from './searches.js'
 
 export interface Client {
   clientId: number

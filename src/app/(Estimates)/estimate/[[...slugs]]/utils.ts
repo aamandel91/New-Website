@@ -1,8 +1,20 @@
-import type { PageProps } from './page'
+type ResolvedParams = {
+  slugs?: string[]
+  clientId?: string
+}
+
+type ResolvedSearchParams = {
+  ulid?: string
+  estimateId?: string
+  clientId?: string
+  step?: string
+  s?: string
+  [key: string]: string | undefined
+}
 
 export const parseEstimateParams = (
-  params: PageProps['params'],
-  searchParams: PageProps['searchParams']
+  params: ResolvedParams,
+  searchParams: ResolvedSearchParams
 ) => {
   const { slugs = [] } = params
   // NOTE: we are using numbers for steps for now,

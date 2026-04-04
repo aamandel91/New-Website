@@ -31,7 +31,7 @@ interface OrganicSettings {
 }
 
 const AdminSettingsPage = () => {
-  const { user } = useUser()
+  const { profile: user, adminRole } = useUser()
   const router = useRouter()
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)

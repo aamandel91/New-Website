@@ -85,13 +85,13 @@ const MoreProperties: React.FC<MorePropertiesProps> = ({
       </Typography>
 
       <Stack spacing={2} divider={<Divider />}>
-        {filteredProperties.slice(0, 10).map((property) => {
+        {filteredProperties.slice(0, 10).map((property: any) => {
           const propertyUrl = generatePropertyUrl(
             property.address || {},
             property.mlsNumber
           )
           const address = property.address
-            ? `${property.address.street}, ${property.address.city}, ${property.address.state} ${property.address.zip}`
+            ? `${[property.address.streetNumber, property.address.streetName, property.address.streetSuffix].filter(Boolean).join(" ")}, ${property.address.city}, ${property.address.state} ${property.address.zip}`
             : 'Address not available'
 
           return (

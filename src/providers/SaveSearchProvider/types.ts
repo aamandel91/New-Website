@@ -17,6 +17,8 @@ export type CreateSearchParams = {
   polygon?: Position[]
   filters?: Filters
   notificationFrequency?: NotificationFrequency
+  priceChangeNotifications?: boolean
+  soldNotifications?: boolean
 }
 
 export type SaveSearchContextType = {

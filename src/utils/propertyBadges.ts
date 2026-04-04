@@ -1,4 +1,6 @@
-import { type Property } from 'services/API'
+// Uses normalized property fields (price, beds, baths, etc.) from the data mapper
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type Property = any
 
 export interface PropertyBadge {
   label: string

@@ -1,4 +1,4 @@
-import { ApiRequest, ApiResponse } from './index.js'
+import type { ApiRequest, ApiResponse } from './index.js'
 
 export interface SendRequest extends ApiRequest {
   sender: 'agent' | 'client'

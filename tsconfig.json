@@ -73,6 +73,9 @@
     ".next/types/**/*.ts"
   ],
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "backend",
+    "pocs",
+    "dev-playgrounds"
   ]
 }

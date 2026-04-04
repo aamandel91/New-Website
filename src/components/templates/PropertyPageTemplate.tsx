@@ -29,7 +29,7 @@ const PropertyPageTemplate = ({
 }: PropertyPageTemplateProps) => {
   const features = useFeatures()
   const noHeader = !features.pdpHeader
-  const { user } = useUser()
+  const { profile: user } = useUser()
 
   const {
     shouldShowRegistration,
@@ -46,7 +46,7 @@ const PropertyPageTemplate = ({
   }, [user])
 
   const propertyAddress = property.address
-    ? `${property.address.street}, ${property.address.city}, ${property.address.state} ${property.address.zip}`
+    ? `${[property.address.streetNumber, property.address.streetName, property.address.streetSuffix].filter(Boolean).join(" ")}, ${property.address.city}, ${property.address.state} ${property.address.zip}`
     : 'this property'
 
   return (

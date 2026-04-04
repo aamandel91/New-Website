@@ -12,7 +12,7 @@ import {
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 
-import { SignUpRequest } from 'services/API';
+import type { SignUpRequest } from 'services/API';
 import APIAuth from 'services/API/APIAuth';
 import { useUser } from '@/providers/UserProvider';
 import { getTrafficSource } from '@/utils/trafficSource';
@@ -37,7 +37,7 @@ const PropertyRegistrationDialog = ({
 }: PropertyRegistrationDialogProps) => {
   const [loading, setLoading] = useState(false);
   const [step, setStep] = useState<'form' | 'otp'>('form');
-  const { refreshUser } = useUser();
+  const { update } = useUser();
 
   const handleClose = () => {
     // Only allow closing if registration is not required
@@ -127,10 +127,7 @@ const PropertyRegistrationDialog = ({
 
           {step === 'form' ? (
             <>
-              <ThirdPartyLoginForm
-                onGoogleClick={handleGoogleOAuth}
-                buttonText="Continue with Google"
-              />
+              <ThirdPartyLoginForm />
 
               <OrDivider />
 

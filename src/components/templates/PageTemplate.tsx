@@ -27,7 +27,11 @@ const PageTemplate = ({
         <DialogWindows />
       </Suspense>
       <Stack direction="column" minHeight="100svh" bgcolor={bgcolor}>
-        {!noHeader && <Header />}
+        {!noHeader && (
+          <Suspense>
+            <Header />
+          </Suspense>
+        )}
         {loading ? (
           <LoadingView noHeader={noHeader} />
         ) : (

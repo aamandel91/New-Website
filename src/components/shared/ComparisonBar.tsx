@@ -73,7 +73,7 @@ const ComparisonBar: React.FC = () => {
 
             {/* Property Cards */}
             <Stack direction="row" spacing={2} sx={{ flex: 1, mx: 3, overflowX: 'auto' }}>
-              {properties.map((property) => (
+              {properties.map((property: any) => (
                 <Paper
                   key={property.mlsNumber}
                   elevation={2}
@@ -103,9 +103,9 @@ const ComparisonBar: React.FC = () => {
 
                   {/* Property Image */}
                   <Box sx={{ position: 'relative', height: 100, bgcolor: 'grey.200' }}>
-                    {property.images?.[0]?.url ? (
+                    {property.images?.[0] ? (
                       <Image
-                        src={property.images[0].url}
+                        src={typeof property.images[0] === "string" ? property.images[0] : ""}
                         alt={`Property ${property.mlsNumber}`}
                         fill
                         style={{ objectFit: 'cover' }}

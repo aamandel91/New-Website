@@ -22,6 +22,7 @@ import {
   Grid,
   List,
   ListItem,
+  ListItemButton,
   ListItemText,
   ListItemIcon,
   Divider,
@@ -221,21 +222,21 @@ export default function BulkPagesPage() {
                     </Typography>
                     <List>
                       {PROPERTY_TYPES.map((pt) => (
-                        <ListItem
-                          key={pt.id}
-                          dense
-                          button
-                          onClick={() => handleTogglePropertyType(pt.id)}
-                        >
-                          <ListItemIcon>
-                            <Checkbox
-                              edge="start"
-                              checked={selectedIds.includes(pt.id)}
-                              tabIndex={-1}
-                              disableRipple
-                            />
-                          </ListItemIcon>
-                          <ListItemText primary={pt.name} />
+                        <ListItem key={pt.id} dense disablePadding>
+                          <ListItemButton
+                            dense
+                            onClick={() => handleTogglePropertyType(pt.id)}
+                          >
+                            <ListItemIcon>
+                              <Checkbox
+                                edge="start"
+                                checked={selectedIds.includes(pt.id)}
+                                tabIndex={-1}
+                                disableRipple
+                              />
+                            </ListItemIcon>
+                            <ListItemText primary={pt.name} />
+                          </ListItemButton>
                         </ListItem>
                       ))}
                     </List>

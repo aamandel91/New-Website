@@ -133,23 +133,32 @@ const ComparisonPageContent: React.FC = () => {
     )
   }
 
+  const getPrice = (p: Property) => Number(p.listPrice) || 0
+  const getBeds = (p: Property) => p.details?.numBedrooms || ''
+  const getBaths = (p: Property) => p.details?.numBathrooms || ''
+  const getSqft = (p: Property) => Number(p.details?.sqft) || 0
+
   const comparisonData = [
-    { label: 'Price', getValue: (p: Property) => formatPrice(p.price) },
+    { label: 'Price', getValue: (p: Property) => formatPrice(getPrice(p)) },
     { label: 'Status', getValue: (p: Property) => p.status || 'N/A' },
-    { label: 'Beds', getValue: (p: Property) => p.beds?.toString() || 'N/A' },
-    { label: 'Baths', getValue: (p: Property) => p.baths?.toString() || 'N/A' },
-    { label: 'Square Feet', getValue: (p: Property) => formatNumber(p.sqft) },
+    { label: 'Beds', getValue: (p: Property) => getBeds(p)?.toString() || 'N/A' },
+    { label: 'Baths', getValue: (p: Property) => getBaths(p)?.toString() || 'N/A' },
+    { label: 'Square Feet', getValue: (p: Property) => formatNumber(getSqft(p)) },
     {
       label: 'Price per Sq Ft',
-      getValue: (p: Property) => (p.price && p.sqft ? formatPrice(p.price / p.sqft) : 'N/A'),
+      getValue: (p: Property) => {
+        const price = getPrice(p)
+        const sqft = getSqft(p)
+        return price && sqft ? formatPrice(price / sqft) : 'N/A'
+      },
     },
-    { label: 'Year Built', getValue: (p: Property) => p.yearBuilt?.toString() || 'N/A' },
-    { label: 'Lot Size', getValue: (p: Property) => (p.lotSize ? `${p.lotSize} acres` : 'N/A') },
-    { label: 'Property Type', getValue: (p: Property) => p.propertyType || 'N/A' },
-    { label: 'HOA', getValue: (p: Property) => (p.hoa ? formatPrice(p.hoa) : 'N/A') },
+    { label: 'Year Built', getValue: (p: Property) => p.details?.yearBuilt?.toString() || 'N/A' },
+    { label: 'Lot Size', getValue: (p: Property) => (p.lot?.acres ? `${p.lot.acres} acres` : 'N/A') },
+    { label: 'Property Type', getValue: (p: Property) => p.details?.propertyType || 'N/A' },
+    { label: 'HOA', getValue: (p: Property) => (p.condominium?.fees?.maintenance ? formatPrice(Number(p.condominium.fees.maintenance)) : 'N/A') },
     {
       label: 'Annual Taxes',
-      getValue: (p: Property) => (p.taxes ? formatPrice(p.taxes) : 'N/A'),
+      getValue: (p: Property) => (p.taxes?.annualAmount ? formatPrice(p.taxes.annualAmount) : 'N/A'),
     },
     {
       label: 'Days on Market',
@@ -190,9 +199,9 @@ const ComparisonPageContent: React.FC = () => {
                         overflow: 'hidden',
                       }}
                     >
-                      {property.images?.[0]?.url ? (
+                      {property.images?.[0] ? (
                         <Image
-                          src={property.images[0].url}
+                          src={typeof property.images[0] === 'string' ? property.images[0] : (property.images[0] as any)?.url || ''}
                           alt={`Property ${property.mlsNumber}`}
                           fill
                           style={{ objectFit: 'cover' }}
@@ -231,7 +240,7 @@ const ComparisonPageContent: React.FC = () => {
                     {/* Address */}
                     <Box>
                       <Typography variant="body2" fontWeight="bold" noWrap>
-                        {property.address?.street || 'Address N/A'}
+                        {property.address ? `${property.address.streetNumber || ''} ${property.address.streetName || ''}`.trim() || 'Address N/A' : 'Address N/A'}
                       </Typography>
                       <Typography variant="caption" color="text.secondary">
                         {property.address?.city}, {property.address?.state}{' '}

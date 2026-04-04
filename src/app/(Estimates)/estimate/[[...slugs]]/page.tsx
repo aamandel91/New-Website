@@ -18,18 +18,18 @@ import { formatShortAddress } from 'utils/properties'
 import { parseEstimateParams } from './utils'
 
 export type PageProps = {
-  params: {
+  params: Promise<{
     slugs?: string[]
     clientId?: string
-  }
-  searchParams: {
+  }>
+  searchParams: Promise<{
     ulid?: string
     estimateId?: string
     clientId?: string
     step?: string
     s?: string
     [key: string]: string | undefined // Allow additional query parameters
-  }
+  }>
 }
 
 const generateResultMetadata = (

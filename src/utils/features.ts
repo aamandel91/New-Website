@@ -5,11 +5,11 @@ export { type Features }
 export const createGrowthBook = () => {
   // template for creating a GrowthBook instance
   return {
-    initSync: () => {}
+    initSync: (_opts?: Record<string, unknown>) => {}
   }
 }
 
-export const getFeatureValues = () => {
+export const getFeatureValues = (_gb?: unknown) => {
   // template for getting feature values
   return features as Features
 }

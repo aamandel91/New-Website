@@ -7,6 +7,7 @@ const routes = {
   ai: '/search/map?dialog=ai', // NOTE: alias for the toolbar
   grid: '/search/grid',
   table: '/search/table',
+  gallery: '/search/gallery',
 
   city: '/search/city',
   area: '/search/area',
@@ -34,6 +35,9 @@ const routes = {
   cookies: '/cookies-policy',
   privacy: '/privacy-policy',
   terms: '/terms-of-use',
+
+  accessibility: '/accessibility',
+  dmca: '/dmca',
 
   // will be set to home or dashboard or agent
   loginRedirect: '/'

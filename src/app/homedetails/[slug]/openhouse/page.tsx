@@ -1,5 +1,5 @@
 import React from 'react'
-import { Metadata } from 'next'
+import type { Metadata } from 'next'
 import { Container, Box, Typography, Paper, Stack, Divider, Alert } from '@mui/material'
 import { notFound } from 'next/navigation'
 import Image from 'next/image'
@@ -12,20 +12,23 @@ import OpenHouseForm from 'components/open-house/OpenHouseForm'
 import { parsePropertySlug } from 'utils/propertyUrls'
 
 interface PageProps {
-  params: {
+  params: Promise<{
     slug: string
-  }
+  }>
 }
 
 // Force noindex, nofollow for all open house pages
-export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+export async function generateMetadata(props: PageProps): Promise<Metadata> {
+  const params = await props.params
   const { mlsNumber } = parsePropertySlug(params.slug)
 
   try {
-    const property = await APIPropertyDetails.fetchProperty(mlsNumber, searchConfig.defaultBoardId)
+    const property: any = await APIPropertyDetails.fetchProperty(mlsNumber, searchConfig.defaultBoardId)
 
-    const address = property.address
-      ? `${property.address.street}, ${property.address.city}, ${property.address.state}`
+    const addr = property.address || {}
+    const street = addr.street || `${addr.streetNumber || ''} ${addr.streetName || ''} ${addr.streetSuffix || ''}`.trim()
+    const address = street
+      ? `${street}, ${addr.city || ''}, ${addr.state || ''}`
       : 'Property'
 
     return {
@@ -49,11 +52,12 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   }
 }
 
-export default async function OpenHousePage({ params }: PageProps) {
+export default async function OpenHousePage(props: PageProps) {
+  const params = await props.params
   const { mlsNumber } = parsePropertySlug(params.slug)
   const boardId = searchConfig.defaultBoardId
 
-  let property
+  let property: any
   try {
     property = await APIPropertyDetails.fetchProperty(mlsNumber, boardId)
   } catch (error) {
@@ -66,7 +70,7 @@ export default async function OpenHousePage({ params }: PageProps) {
   }
 
   const address = property.address
-    ? `${property.address.street}, ${property.address.city}, ${property.address.state} ${property.address.zip}`
+    ? `${`${property.address.streetNumber || ''} ${property.address.streetName || ''} ${property.address.streetSuffix || ''}`.trim()}, ${property.address.city}, ${property.address.state} ${property.address.zip}`
     : 'Address not available'
 
   const formatPrice = (price: number | undefined) => {
@@ -84,7 +88,7 @@ export default async function OpenHousePage({ params }: PageProps) {
       {/* Back Link */}
       <Box sx={{ mb: 3 }}>
         <Link
-          href={`/homedetails/${params.slug}`}
+          href={`/homedetails/${mlsNumber}`}
           style={{
             display: 'inline-flex',
             alignItems: 'center',

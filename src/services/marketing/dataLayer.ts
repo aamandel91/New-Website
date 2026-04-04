@@ -13,16 +13,7 @@ import type {
   SearchEvent
 } from './types'
 
-declare global {
-  interface Window {
-    dataLayer: DataLayerEvent[]
-    fbq?: (
-      action: string,
-      event: string,
-      params?: Record<string, unknown>
-    ) => void
-  }
-}
+// Window augmentation moved to src/types/global.d.ts
 
 const debugMode = process.env.NEXT_PUBLIC_DEBUG_TRACKING_EVENTS === 'true'
 

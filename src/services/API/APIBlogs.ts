@@ -36,70 +36,70 @@ export class APIBlogs extends APIBase {
     const queryString = params.toString()
     const url = queryString ? `/blogs?${queryString}` : '/blogs'
 
-    return this.get<BlogsListResponse>(url)
+    return this.fetchJSON<BlogsListResponse>(url)
   }
 
   /**
    * Get featured blogs
    */
   async getFeaturedBlogs(): Promise<{ blogs: Blog[] }> {
-    return this.get<{ blogs: Blog[] }>('/blogs/featured')
+    return this.fetchJSON<{ blogs: Blog[] }>('/blogs/featured')
   }
 
   /**
    * Get all tags
    */
   async getTags(): Promise<{ tags: any[] }> {
-    return this.get<{ tags: any[] }>('/blogs/tags')
+    return this.fetchJSON<{ tags: any[] }>('/blogs/tags')
   }
 
   /**
    * Get all categories
    */
   async getCategories(): Promise<{ categories: any[] }> {
-    return this.get<{ categories: any[] }>('/blogs/categories')
+    return this.fetchJSON<{ categories: any[] }>('/blogs/categories')
   }
 
   /**
    * Get blog by slug
    */
   async getBlogBySlug(slug: string): Promise<BlogResponse> {
-    return this.get<BlogResponse>(`/blogs/${slug}`)
+    return this.fetchJSON<BlogResponse>(`/blogs/${slug}`)
   }
 
   /**
    * Get related blogs
    */
   async getRelatedBlogs(id: number): Promise<{ related: Blog[] }> {
-    return this.get<{ related: Blog[] }>(`/blogs/${id}/related`)
+    return this.fetchJSON<{ related: Blog[] }>(`/blogs/${id}/related`)
   }
 
   /**
    * Create blog (admin only)
    */
   async createBlog(blog: Omit<Blog, 'id' | 'created_at' | 'updated_at'>): Promise<BlogResponse> {
-    return this.post<BlogResponse>('/blogs', blog)
+    return this.fetchJSON<BlogResponse>('/blogs', { method: 'POST', body: JSON.stringify(blog) })
   }
 
   /**
    * Update blog (admin only)
    */
   async updateBlog(id: number, updates: Partial<Blog>): Promise<BlogResponse> {
-    return this.patch<BlogResponse>(`/blogs/${id}`, updates)
+    return this.fetchJSON<BlogResponse>(`/blogs/${id}`, { method: 'PATCH', body: JSON.stringify(updates) })
   }
 
   /**
    * Publish blog (admin only)
    */
   async publishBlog(id: number): Promise<BlogResponse> {
-    return this.post<BlogResponse>(`/blogs/${id}/publish`, {})
+    return this.fetchJSON<BlogResponse>(`/blogs/${id}/publish`, { method: 'POST', body: JSON.stringify({}) })
   }
 
   /**
    * Delete blog (admin only)
    */
   async deleteBlog(id: number): Promise<{ success: boolean }> {
-    return this.delete<{ success: boolean }>(`/blogs/${id}`)
+    return this.fetchJSON<{ success: boolean }>(`/blogs/${id}`, { method: 'DELETE' })
   }
 
   /**
@@ -117,14 +117,14 @@ export class APIBlogs extends APIBase {
     const queryString = params.toString()
     const url = queryString ? `/blogs/admin/all?${queryString}` : '/blogs/admin/all'
 
-    return this.get<BlogsListResponse>(url)
+    return this.fetchJSON<BlogsListResponse>(url)
   }
 
   /**
    * Get blog for editing
    */
   async getAdminBlog(id: number): Promise<BlogResponse> {
-    return this.get<BlogResponse>(`/blogs/admin/${id}`)
+    return this.fetchJSON<BlogResponse>(`/blogs/admin/${id}`)
   }
 
   /**
@@ -135,10 +135,9 @@ export class APIBlogs extends APIBase {
     description: string,
     content: string
   ): Promise<{ suggestions: AISuggestions }> {
-    return this.post<{ suggestions: AISuggestions }>('/blogs/ai/suggestions', {
-      title,
-      description,
-      content
+    return this.fetchJSON<{ suggestions: AISuggestions }>('/blogs/ai/suggestions', {
+      method: 'POST',
+      body: JSON.stringify({ title, description, content })
     })
   }
 }

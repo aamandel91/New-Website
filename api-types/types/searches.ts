@@ -1,5 +1,5 @@
-import { ApiRequest, ApiResponse, Class, Type } from './index.js'
-import * as Clients from './clients.js'
+import type { ApiRequest, ApiResponse, Class, Type } from './index.js'
+import type * as Clients from './clients.js'
 
 /**
  * TODO: add to docs

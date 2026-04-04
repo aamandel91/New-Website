@@ -53,14 +53,14 @@ function buildBreadcrumbs(
     items.push({ name: cityName, url: `${baseUrl}/${parsed.city}` })
   }
 
-  if (parsed.pageType === 'subType' && parsed.subType) {
+  if (parsed.pageType === 'city-subtype' && parsed.subType) {
     const stConfig = getSubTypeBySlug(parsed.subType)
     items.push({ name: stConfig?.label || slugToDisplayName(parsed.subType), url: `${baseUrl}/${parsed.city}/${parsed.subType}` })
-  } else if (parsed.pageType === 'neighborhood' && parsed.subType) {
-    items.push({ name: slugToDisplayName(parsed.subType), url: `${baseUrl}/${parsed.city}/${parsed.subType}` })
-  } else if (parsed.pageType === 'zip' && parsed.subType) {
-    items.push({ name: parsed.subType, url: `${baseUrl}/${parsed.city}/${parsed.subType}` })
-  } else if (parsed.pageType === 'schools') {
+  } else if (parsed.pageType === 'city-neighborhood' && parsed.neighborhood) {
+    items.push({ name: slugToDisplayName(parsed.neighborhood), url: `${baseUrl}/${parsed.city}/${parsed.neighborhood}` })
+  } else if (parsed.pageType === 'city-zip' && parsed.zip) {
+    items.push({ name: parsed.zip, url: `${baseUrl}/${parsed.city}/${parsed.zip}` })
+  } else if (parsed.pageType === 'city-schools') {
     items.push({ name: 'Schools', url: `${baseUrl}/${parsed.city}/schools` })
   }
 
@@ -482,7 +482,7 @@ async function renderSubTypePage(
 
           {/* Market Timeline */}
           <Box sx={{ mb: 4 }}>
-            <MarketTimelineGraph city={cityName} propertyType={stConfig.label} />
+            <MarketTimelineGraph city={cityName} />
           </Box>
 
           {/* Other Sub-Types */}

@@ -1,4 +1,4 @@
-import { ApiRequest, ApiResponse, YesNo } from './index.js'
+import type { ApiRequest, ApiResponse, YesNo } from './index.js'
 
 export interface Estimate {
   estimateId: number

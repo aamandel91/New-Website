@@ -176,7 +176,7 @@ export const toAdCustomizerFeed = (
 /**
  * Convert data to CSV format
  */
-export const toCSV = <T extends Record<string, unknown>>(data: T[]): string => {
+export const toCSV = (data: Record<string, unknown>[]): string => {
   if (data.length === 0) return ''
 
   const headers = Object.keys(data[0])

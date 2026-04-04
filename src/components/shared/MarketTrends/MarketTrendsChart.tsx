@@ -122,7 +122,7 @@ const MarketTrendsChart: React.FC<MarketTrendsChartProps> = ({
           <Line
             dataKey="daysOnMarket"
             yAxisId="right"
-            stroke={labels.daysOnMarket.color}
+            stroke={labels.daysOnMarket?.color}
             {...lineProps}
             isAnimationActive={true}
             animationBegin={500}

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
+import type { TrafficSourceData } from 'utils/trafficSource';
 import {
-  TrafficSourceData,
   getTrafficSource,
   initializeTrafficTracking,
   isPpcTraffic,

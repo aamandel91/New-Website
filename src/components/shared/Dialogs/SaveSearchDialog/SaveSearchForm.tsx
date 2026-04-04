@@ -97,7 +97,7 @@ const SaveSearchForm = ({
         notificationFrequency,
         priceChangeNotifications,
         soldNotifications
-      } as ApiSavedSearchUpdateRequest)
+      } as unknown as ApiSavedSearchUpdateRequest)
     } else {
       await createSearch({
         name,

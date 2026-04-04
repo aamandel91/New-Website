@@ -185,7 +185,7 @@ export const getMapUrl = ({
 }: {
   center: LngLat
   zoom: number
-  layout?: 'map' | 'grid' | 'table'
+  layout?: 'map' | 'grid' | 'table' | 'gallery'
   filters?: Filters
   // synthetic query params used by page but not the API
   query?: string | null

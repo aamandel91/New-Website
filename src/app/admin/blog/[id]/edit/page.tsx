@@ -2,9 +2,9 @@ import { BlogEditor } from '@pages/blog'
 import type { Metadata } from 'next'
 
 interface EditBlogPageProps {
-  params: {
+  params: Promise<{
     id: string
-  }
+  }>
 }
 
 export const metadata: Metadata = {
@@ -12,7 +12,8 @@ export const metadata: Metadata = {
   description: 'Edit an existing blog post'
 }
 
-export default function EditBlogPage({ params }: EditBlogPageProps) {
+export default async function EditBlogPage(props: EditBlogPageProps) {
+  const params = await props.params
   const blogId = parseInt(params.id, 10)
 
   if (isNaN(blogId)) {

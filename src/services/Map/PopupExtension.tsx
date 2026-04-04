@@ -57,7 +57,7 @@ export class PopupExtension {
         timeZone={i18nConfig.timeZone}
       >
         <ThemeProvider theme={theme}>
-          <FeaturesProvider payload={payload}>
+          <FeaturesProvider>
             <UserProfileProvider>
               <PropertyCard size="map" property={property} />
             </UserProfileProvider>

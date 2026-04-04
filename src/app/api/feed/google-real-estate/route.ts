@@ -48,7 +48,7 @@ export async function GET(request: NextRequest) {
     }
 
     if (format === 'csv') {
-      const csv = toCSV(feedItems)
+      const csv = toCSV(feedItems as unknown as Record<string, unknown>[])
 
       return new NextResponse(csv, {
         headers: {

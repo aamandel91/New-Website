@@ -9,9 +9,9 @@ import { articleSchema, breadcrumbSchema } from 'utils/structuredData'
 import type { Blog } from '@/types/blog'
 
 interface BlogPostPageProps {
-  params: {
+  params: Promise<{
     slug: string
-  }
+  }>
 }
 
 async function fetchBlogServer(slug: string): Promise<Blog | null> {
@@ -28,7 +28,8 @@ async function fetchBlogServer(slug: string): Promise<Blog | null> {
   }
 }
 
-export async function generateMetadata({ params }: BlogPostPageProps): Promise<Metadata> {
+export async function generateMetadata(props: BlogPostPageProps): Promise<Metadata> {
+  const params = await props.params
   const blog = await fetchBlogServer(params.slug)
 
   if (!blog) {
@@ -80,7 +81,8 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
   }
 }
 
-export default async function BlogPostPage({ params }: BlogPostPageProps) {
+export default async function BlogPostPage(props: BlogPostPageProps) {
+  const params = await props.params
   const blog = await fetchBlogServer(params.slug)
 
   const handleRelatedBlogs = (blogs: any[]) => {

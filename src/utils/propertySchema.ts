@@ -1,4 +1,6 @@
-import { type Property } from 'services/API'
+// Uses normalized property fields from propertyDataMapper
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type Property = any
 
 /**
  * Generates JSON-LD structured data for a property listing
@@ -98,7 +100,7 @@ export function generatePropertyJsonLd(property: Property, url: string) {
     // Images
     ...(mainImage && { image: mainImage }),
     ...(images.length > 0 && {
-      photo: images.map((img) => ({
+      photo: images.map((img: any) => ({
         '@type': 'ImageObject',
         url: img.url,
         ...(img.caption && { caption: img.caption }),
@@ -155,7 +157,7 @@ export function generatePropertyBreadcrumbJsonLd(
     '@type': 'ListItem',
     position: items.length + 1,
     name: address?.street || `Property ${property.mlsNumber}`,
-    item: undefined, // Current page, no link
+    item: `${baseUrl}/listing/${property.mlsNumber}`,
   })
 
   return {

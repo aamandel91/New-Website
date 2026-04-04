@@ -24,7 +24,7 @@ export type MapPosition = {
   zoom: number
 }
 
-type MapLayout = 'map' | 'grid' | 'table'
+type MapLayout = 'map' | 'grid' | 'table' | 'gallery'
 
 type MapEditMode = 'draw' | 'highlight' | null
 

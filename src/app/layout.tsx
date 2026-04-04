@@ -1,4 +1,4 @@
-import React, { type ComponentType } from 'react'
+import React, { Suspense, type ComponentType } from 'react'
 import { type Metadata, type Viewport } from 'next'
 import { Montserrat } from 'next/font/google'
 import { getLocale, getMessages } from 'next-intl/server'
@@ -71,7 +71,9 @@ const Layout = async ({ children }: { children: React.ReactNode }) => {
           }}
         />
         <GoogleTagManagerNoscript />
-        <GTMPageView />
+        <Suspense>
+          <GTMPageView />
+        </Suspense>
         <TrackingInline />
         <RemarketingPixels />
         <SureSendPixel />

@@ -1,5 +1,5 @@
-import * as V1 from '../listings.js'
-import { Extend } from '../index.js'
+import type * as V1 from '../listings.js'
+import type { Extend } from '../index.js'
 
 export interface Map {
   latitude: number

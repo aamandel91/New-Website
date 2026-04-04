@@ -972,7 +972,7 @@ export interface SignUpRequest {
   fname: string
   lname: string
   email: string
-  phone: string // Now required for all registrations
+  phone?: string
   referer?: string
   utmSource?: string
   utmMedium?: string
