@@ -1,11 +1,19 @@
 const location = {
-  stateCode: 'NC',
-  state: 'North Carolina',
-  city: 'Charlotte',
+  stateCode: 'FL',
+  state: 'Florida',
+  city: 'Boca Raton',
   // HOME PAGE STATS
   defaultFilters: {},
   // DASHBOARD LIST
-  defaultCities: ['Kansas City', 'Nashville', 'Charlotte', 'Denver', 'Austin']
+  defaultCities: [
+    'Boca Raton',
+    'Parkland',
+    'Coral Springs',
+    'Delray Beach',
+    'Boynton Beach',
+    'Pompano Beach',
+    'Fort Lauderdale'
+  ]
 }
 
 export default location

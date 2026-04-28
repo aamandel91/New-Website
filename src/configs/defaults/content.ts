@@ -25,9 +25,9 @@ const content = {
     'Florida Home Finder connects buyers and sellers with expert real estate professionals. We provide comprehensive property information, market insights, and innovative tools to make your real estate journey seamless.',
   siteFullscreenFooter: '',
   homepageHeroBlock: {
-    title: 'Find Your Dream Home in Florida',
+    title: 'Find Your Home in South Florida',
     subTitle:
-      'Discover thousands of properties and connect with experienced real estate agents across the Sunshine State. Expert guidance at every step of your journey.'
+      'Search homes for sale in Broward and Palm Beach County. Browse listings in Boca Raton, Parkland, Coral Springs, Delray Beach, and beyond.'
   },
 
   siteMetadata: {

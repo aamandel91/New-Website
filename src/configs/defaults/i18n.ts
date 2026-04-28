@@ -7,8 +7,8 @@ const config = {
   dateFormatShort: 'MMM D, YYYY',
   dateFormatMonthYear: 'MMM YYYY',
   timeFormat: 'hh:mm A',
-  timeZone: 'America/Toronto',
-  phoneNumberLocale: 'CA' as CountryCode,
+  timeZone: 'America/New_York',
+  phoneNumberLocale: 'US' as CountryCode,
   measurementSystem: 'imperial' as 'imperial' | 'metric',
   // numbers and currency
   currency: 'USD' as Currency,
