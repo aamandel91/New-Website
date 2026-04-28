@@ -5,19 +5,20 @@ const config = {
     'bedroom',
     'living room',
     'front of structure',
-    'laundry',
-    'entrance foyer',
     'dining room',
     'back of structure',
-    'patio'
+    'patio',
+    'boat dock',
+    'pool deck',
+    'ocean view'
   ],
   examples: [
     ['swimming pool', '#8BE'],
-    ['wine cellar', '#E89'],
-    ['koi pond', '#9B9'],
-    ['victorian house', '#C99'],
-    ['home theatre', '#678'],
-    ['dock', '#99E'],
+    ['waterfront home', '#6BE'],
+    ['ocean view', '#89E'],
+    ['modern kitchen', '#DB6'],
+    ['home theater', '#678'],
+    ['golf course view', '#9B9'],
     ['white kitchen with golden hardware', '#DB6']
   ],
   cdnHost: 'https://portal.repliers.com',
@@ -160,24 +161,6 @@ const config = {
       ]
     },
     {
-      group: 'basements',
-      items: [
-        '/inspirations/basements/0.webp',
-        '/inspirations/basements/1.webp',
-        '/inspirations/basements/2.jpg',
-        '/inspirations/basements/2.webp',
-        '/inspirations/basements/3.jpg',
-        '/inspirations/basements/3.webp',
-        '/inspirations/basements/4.jpg',
-        '/inspirations/basements/4.webp',
-        '/inspirations/basements/5.jpg',
-        '/inspirations/basements/6.jpg',
-        '/inspirations/basements/6.webp',
-        '/inspirations/basements/7.jpg'
-      ]
-    },
-
-    {
       group: 'pools',
       items: [
         '/inspirations/pools/0.jpg',
@@ -189,7 +172,7 @@ const config = {
       ]
     },
     {
-      group: 'decks',
+      group: 'waterfront',
       items: [
         '/inspirations/decks/0.webp',
         '/inspirations/decks/1.jpg',
