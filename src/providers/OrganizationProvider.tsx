@@ -22,7 +22,6 @@ export type OrganizationContextType = {
   addMember: (email: string, role: string) => Promise<OrganizationMember | null>
   removeMember: (email: string) => Promise<boolean>
   updateMemberRole: (email: string, role: string) => Promise<OrganizationMember | null>
-  checkUsageLimit: (metric: string) => Promise<{ allowed: boolean; current: number; limit: number } | null>
 }
 
 const OrganizationContext = createContext<OrganizationContextType | undefined>(undefined)
@@ -151,17 +150,6 @@ export const OrganizationProvider = ({ children }: { children: ReactNode }) => {
     }
   }
 
-  const checkUsageLimit = async (metric: string): Promise<{ allowed: boolean; current: number; limit: number } | null> => {
-    if (!organization) return null
-
-    try {
-      return await APIOrganization.checkUsageLimit(organization.id, metric)
-    } catch (err: any) {
-      console.error('Failed to check usage limit:', err)
-      return null
-    }
-  }
-
   const refresh = async () => {
     await fetchOrganization()
   }
@@ -183,8 +171,7 @@ export const OrganizationProvider = ({ children }: { children: ReactNode }) => {
     fetchMembers,
     addMember,
     removeMember,
-    updateMemberRole,
-    checkUsageLimit
+    updateMemberRole
   }
 
   return <OrganizationContext.Provider value={value}>{children}</OrganizationContext.Provider>

@@ -2,11 +2,9 @@ import { injectable, inject } from 'tsyringe'
 import type { Knex } from 'knex'
 import type {
   Organization,
-  CreateOrganizationInput,
   UpdateOrganizationInput,
   OrganizationMember,
   Invitation,
-  OrganizationUsage,
   AgentSubdomain
 } from '../types/organization.js'
 import crypto from 'crypto'
@@ -14,54 +12,6 @@ import crypto from 'crypto'
 @injectable()
 export class OrganizationRepository {
   constructor(@inject('db') private db: Knex) {}
-
-  /**
-   * Create a new organization
-   */
-  async createOrganization(input: CreateOrganizationInput): Promise<Organization> {
-    const now = new Date()
-    const trialEndsAt = new Date()
-    trialEndsAt.setDate(trialEndsAt.getDate() + 14) // 14-day trial
-
-    const [org] = await this.db.transaction(async (trx) => {
-      // Create organization
-      const [organization] = await trx('organizations')
-        .insert({
-          name: input.name,
-          slug: input.slug,
-          plan: input.plan || 'trial',
-          status: 'active',
-          primary_domain: input.primary_domain,
-          contact_email: input.contact_email || null,
-          contact_phone: input.contact_phone || null,
-          trial_ends_at: trialEndsAt,
-          created_at: now,
-          updated_at: now
-        })
-        .returning('*')
-
-      // Add owner as member
-      await trx('organization_members').insert({
-        org_id: organization.id,
-        email: input.owner_email,
-        role: 'owner',
-        joined_at: now,
-        created_at: now
-      })
-
-      // Add owner to ACL with admin role (role = 3)
-      await trx('acl').insert({
-        email: input.owner_email,
-        role: 3, // Admin
-        org_id: organization.id,
-        created_at: now
-      })
-
-      return [organization]
-    })
-
-    return org
-  }
 
   /**
    * Find organization by ID
@@ -226,84 +176,6 @@ export class OrganizationRepository {
   }
 
   /**
-   * Track usage metric
-   */
-  async trackUsage(orgId: bigint, metric: string, value: number): Promise<OrganizationUsage> {
-    const now = new Date()
-    const periodStart = new Date(now.getFullYear(), now.getMonth(), now.getDate()) // Start of day
-    const periodEnd = new Date(periodStart)
-    periodEnd.setDate(periodEnd.getDate() + 1) // End of day
-
-    // Upsert: increment if exists, insert if not
-    const existing = await this.db('organization_usage')
-      .where({ org_id: orgId, metric, period_start: periodStart })
-      .first()
-
-    if (existing) {
-      const [usage] = await this.db('organization_usage')
-        .where({ id: existing.id })
-        .update({ value: existing.value + value })
-        .returning('*')
-      return usage
-    }
-
-    const [usage] = await this.db('organization_usage')
-      .insert({
-        org_id: orgId,
-        metric,
-        value,
-        period_start: periodStart,
-        period_end: periodEnd,
-        created_at: now
-      })
-      .returning('*')
-
-    return usage
-  }
-
-  /**
-   * Get usage metrics for organization
-   */
-  async getUsage(
-    orgId: bigint,
-    metric?: string,
-    startDate?: Date,
-    endDate?: Date
-  ): Promise<OrganizationUsage[]> {
-    let query = this.db('organization_usage').where({ org_id: orgId })
-
-    if (metric) {
-      query = query.where({ metric })
-    }
-
-    if (startDate) {
-      query = query.where('period_start', '>=', startDate)
-    }
-
-    if (endDate) {
-      query = query.where('period_end', '<=', endDate)
-    }
-
-    return query.orderBy('period_start', 'desc')
-  }
-
-  /**
-   * Get total usage for a metric in the current period
-   */
-  async getCurrentUsage(orgId: bigint, metric: string): Promise<number> {
-    const now = new Date()
-    const periodStart = new Date(now.getFullYear(), now.getMonth(), 1) // Start of month
-
-    const result = await this.db('organization_usage')
-      .where({ org_id: orgId, metric })
-      .where('period_start', '>=', periodStart)
-      .sum('value as total')
-      .first()
-
-    return Number(result?.total || 0)
-  }
-
-  /**
    * Get agents with subdomains for an organization
    */
   async getAgentSubdomains(orgId: bigint): Promise<AgentSubdomain[]> {
@@ -322,22 +194,5 @@ export class OrganizationRepository {
       .first()
 
     return agent || null
-  }
-
-  /**
-   * List all organizations
-   */
-  async listOrganizations(limit: number = 50, offset: number = 0): Promise<{ organizations: Organization[]; total: number }> {
-    const organizations = await this.db('organizations')
-      .orderBy('created_at', 'desc')
-      .limit(limit)
-      .offset(offset)
-
-    const [{ count }] = await this.db('organizations').count('* as count')
-
-    return {
-      organizations,
-      total: Number(count)
-    }
   }
 }

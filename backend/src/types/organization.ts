@@ -5,9 +5,6 @@ export interface Organization {
   plan: string
   status: string
   settings: Record<string, any>
-  stripe_customer_id: string | null
-  stripe_subscription_id: string | null
-  trial_ends_at: Date | null
   primary_domain: string
   custom_domain: string | null
   logo_cloudinary_id: string | null
@@ -63,16 +60,6 @@ export interface Invitation {
   invited_by: string | null
   expires_at: Date | null
   accepted_at: Date | null
-  created_at: Date
-}
-
-export interface OrganizationUsage {
-  id: bigint
-  org_id: bigint
-  metric: string
-  value: number
-  period_start: Date
-  period_end: Date
   created_at: Date
 }
 

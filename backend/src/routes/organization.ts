@@ -178,41 +178,6 @@ router.post('/invitations/:token/accept', async (ctx) => {
   ctx.body = result
 })
 
-// Get usage metrics
-router.get('/:id/usage', async (ctx) => {
-  const orgId = BigInt(ctx.params.id)
-  const { metric, start_date, end_date } = ctx.query
-
-  const startDate = start_date ? new Date(start_date as string) : undefined
-  const endDate = end_date ? new Date(end_date as string) : undefined
-
-  const orgService = ctx.state.container.resolve(OrganizationService)
-  const usage = await orgService.getUsage(orgId, metric as string, startDate, endDate)
-
-  ctx.body = usage
-})
-
-// Check usage limit for a metric
-router.get('/:id/usage/:metric/check', async (ctx) => {
-  const orgId = BigInt(ctx.params.id)
-  const metric = ctx.params.metric
-
-  const orgService = ctx.state.container.resolve(OrganizationService)
-  const result = await orgService.checkUsageLimit(orgId, metric)
-
-  ctx.body = result
-})
-
-// Get plan limits
-router.get('/:id/limits', async (ctx) => {
-  const orgId = BigInt(ctx.params.id)
-
-  const orgService = ctx.state.container.resolve(OrganizationService)
-  const limits = await orgService.getPlanLimits(orgId)
-
-  ctx.body = limits
-})
-
 // Get agents with subdomains
 router.get('/:id/agents/subdomains', async (ctx) => {
   const orgId = BigInt(ctx.params.id)
@@ -237,39 +202,6 @@ router.get('/:id/agents/subdomain/:subdomain', async (ctx) => {
   }
 
   ctx.body = agent
-})
-
-// List all organizations (root only)
-router.get('/', roleMiddleware([UserRole.Root]), async (ctx) => {
-  const { limit = 50, offset = 0 } = ctx.query
-
-  const orgService = ctx.state.container.resolve(OrganizationService)
-  const result = await orgService.listOrganizations(Number(limit), Number(offset))
-
-  ctx.body = result
-})
-
-// Create new organization (root only)
-router.post('/', roleMiddleware([UserRole.Root]), async (ctx) => {
-  const { name, slug, plan, primary_domain, owner_email, contact_email, contact_phone } = ctx.request.body
-
-  if (!name || !slug || !primary_domain || !owner_email) {
-    ctx.throw(new ApiError('name, slug, primary_domain, and owner_email are required', { status: 400 }))
-    return
-  }
-
-  const orgService = ctx.state.container.resolve(OrganizationService)
-  const organization = await orgService.createOrganization({
-    name,
-    slug,
-    plan,
-    primary_domain,
-    owner_email,
-    contact_email,
-    contact_phone
-  })
-
-  ctx.body = organization
 })
 
 export default router

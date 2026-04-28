@@ -2,67 +2,16 @@ import { injectable, inject } from 'tsyringe'
 import { OrganizationRepository } from '../repository/organization.js'
 import type {
   Organization,
-  CreateOrganizationInput,
   UpdateOrganizationInput,
   OrganizationMember,
   Invitation,
-  OrganizationUsage,
   AgentSubdomain
 } from '../types/organization.js'
 import { ApiError } from '../lib/errors.js'
 
-// Plan limits for usage enforcement
-const PLAN_LIMITS: Record<string, Record<string, number>> = {
-  trial: {
-    api_calls: 1000,
-    storage_mb: 100,
-    users: 2,
-    leads: 50,
-    pages: 10,
-    agents: 1
-  },
-  starter: {
-    api_calls: 10000,
-    storage_mb: 1000,
-    users: 5,
-    leads: 500,
-    pages: 50,
-    agents: 3
-  },
-  professional: {
-    api_calls: 100000,
-    storage_mb: 10000,
-    users: 25,
-    leads: 5000,
-    pages: 500,
-    agents: 10
-  },
-  enterprise: {
-    api_calls: Infinity,
-    storage_mb: Infinity,
-    users: Infinity,
-    leads: Infinity,
-    pages: Infinity,
-    agents: Infinity
-  }
-}
-
 @injectable()
 export class OrganizationService {
   constructor(@inject(OrganizationRepository) private orgRepo: OrganizationRepository) {}
-
-  /**
-   * Create a new organization
-   */
-  async createOrganization(input: CreateOrganizationInput): Promise<Organization> {
-    // Check if slug is already taken
-    const existing = await this.orgRepo.findBySlug(input.slug)
-    if (existing) {
-      throw new ApiError('Organization slug already exists', { status: 409 })
-    }
-
-    return this.orgRepo.createOrganization(input)
-  }
 
   /**
    * Get organization by ID
@@ -153,18 +102,6 @@ export class OrganizationService {
       throw new ApiError('Organization not found', { status: 404 })
     }
 
-    // Check plan limits for users
-    const currentMembers = await this.orgRepo.getMembers(orgId)
-    const limit = PLAN_LIMITS[org.plan]?.users || 2
-
-    if (currentMembers.length >= limit) {
-      throw new ApiError(`User limit reached for ${org.plan} plan (${limit} users)`, {
-        status: 429,
-        limit,
-        current: currentMembers.length
-      })
-    }
-
     return this.orgRepo.addMember(orgId, email, role, invitedBy)
   }
 
@@ -236,39 +173,6 @@ export class OrganizationService {
   }
 
   /**
-   * Track usage metric
-   */
-  async trackUsage(orgId: bigint, metric: string, value: number = 1): Promise<void> {
-    await this.orgRepo.trackUsage(orgId, metric, value)
-  }
-
-  /**
-   * Get usage for organization
-   */
-  async getUsage(orgId: bigint, metric?: string, startDate?: Date, endDate?: Date): Promise<OrganizationUsage[]> {
-    return this.orgRepo.getUsage(orgId, metric, startDate, endDate)
-  }
-
-  /**
-   * Check if organization has reached usage limit for a metric
-   */
-  async checkUsageLimit(orgId: bigint, metric: string): Promise<{ allowed: boolean; current: number; limit: number }> {
-    const org = await this.orgRepo.findById(orgId)
-    if (!org) {
-      throw new ApiError('Organization not found', { status: 404 })
-    }
-
-    const limit = PLAN_LIMITS[org.plan]?.[metric] || 0
-    const current = await this.orgRepo.getCurrentUsage(orgId, metric)
-
-    return {
-      allowed: current < limit,
-      current,
-      limit
-    }
-  }
-
-  /**
    * Get agents with subdomains
    */
   async getAgentSubdomains(orgId: bigint): Promise<AgentSubdomain[]> {
@@ -283,13 +187,6 @@ export class OrganizationService {
   }
 
   /**
-   * List all organizations (admin only)
-   */
-  async listOrganizations(limit: number = 50, offset: number = 0) {
-    return this.orgRepo.listOrganizations(limit, offset)
-  }
-
-  /**
    * Generate URL-safe slug from name
    */
   private generateSlug(name: string): string {
@@ -297,17 +194,5 @@ export class OrganizationService {
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, '-')
       .replace(/^-+|-+$/g, '')
-  }
-
-  /**
-   * Get plan limits for an organization
-   */
-  async getPlanLimits(orgId: bigint): Promise<Record<string, number>> {
-    const org = await this.orgRepo.findById(orgId)
-    if (!org) {
-      throw new ApiError('Organization not found', { status: 404 })
-    }
-
-    return PLAN_LIMITS[org.plan] || PLAN_LIMITS.trial
   }
 }

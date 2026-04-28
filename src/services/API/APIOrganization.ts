@@ -7,9 +7,6 @@ export interface Organization {
   plan: string
   status: string
   settings: Record<string, any>
-  stripe_customer_id: string | null
-  stripe_subscription_id: string | null
-  trial_ends_at: string | null
   primary_domain: string
   custom_domain: string | null
   logo_cloudinary_id: string | null
@@ -44,16 +41,6 @@ export interface Invitation {
   created_at: string
 }
 
-export interface OrganizationUsage {
-  id: string
-  org_id: string
-  metric: string
-  value: number
-  period_start: string
-  period_end: string
-  created_at: string
-}
-
 export interface AgentSubdomain {
   id: string
   org_id: string
@@ -63,16 +50,6 @@ export interface AgentSubdomain {
   full_name: string | null
   subdomain: string | null
   active: boolean
-}
-
-export interface CreateOrganizationInput {
-  name: string
-  slug: string
-  plan?: string
-  primary_domain: string
-  owner_email: string
-  contact_email?: string
-  contact_phone?: string
 }
 
 export interface UpdateOrganizationInput {
@@ -192,47 +169,6 @@ class APIOrganization extends APIBase {
   }
 
   /**
-   * Get usage metrics
-   */
-  async getUsage(
-    orgId: string,
-    metric?: string,
-    startDate?: string,
-    endDate?: string
-  ): Promise<OrganizationUsage[]> {
-    const params = new URLSearchParams()
-    if (metric) params.append('metric', metric)
-    if (startDate) params.append('start_date', startDate)
-    if (endDate) params.append('end_date', endDate)
-
-    const queryString = params.toString()
-    const url = queryString
-      ? `/organization/${orgId}/usage?${queryString}`
-      : `/organization/${orgId}/usage`
-
-    return this.fetchJSON<OrganizationUsage[]>(url)
-  }
-
-  /**
-   * Check usage limit for a metric
-   */
-  async checkUsageLimit(
-    orgId: string,
-    metric: string
-  ): Promise<{ allowed: boolean; current: number; limit: number }> {
-    return this.fetchJSON<{ allowed: boolean; current: number; limit: number }>(
-      `/organization/${orgId}/usage/${metric}/check`
-    )
-  }
-
-  /**
-   * Get plan limits
-   */
-  async getPlanLimits(orgId: string): Promise<Record<string, number>> {
-    return this.fetchJSON<Record<string, number>>(`/organization/${orgId}/limits`)
-  }
-
-  /**
    * Get agents with subdomains
    */
   async getAgentSubdomains(orgId: string): Promise<AgentSubdomain[]> {
@@ -246,28 +182,6 @@ class APIOrganization extends APIBase {
     return this.fetchJSON<AgentSubdomain>(
       `/organization/${orgId}/agents/subdomain/${subdomain}`
     )
-  }
-
-  /**
-   * List all organizations (root only)
-   */
-  async list(
-    limit: number = 50,
-    offset: number = 0
-  ): Promise<{ organizations: Organization[]; total: number }> {
-    return this.fetchJSON<{ organizations: Organization[]; total: number }>(
-      `/organization?limit=${limit}&offset=${offset}`
-    )
-  }
-
-  /**
-   * Create new organization (root only)
-   */
-  async create(data: CreateOrganizationInput): Promise<Organization> {
-    return this.fetchJSON<Organization>('/organization', {
-      method: 'POST',
-      body: JSON.stringify(data)
-    })
   }
 }
 
