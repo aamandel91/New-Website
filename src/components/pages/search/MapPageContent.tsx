@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import dynamic from 'next/dynamic'
 import type { Position } from 'geojson'
-import type { LngLat, LngLatBounds } from 'mapbox-gl'
+import type { LngLat, LngLatBounds } from 'utils/lngLat'
 
 import { Skeleton } from '@mui/material'
 

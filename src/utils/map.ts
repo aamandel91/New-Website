@@ -1,7 +1,14 @@
 import { type Feature, type Point, type Position } from 'geojson'
-import mapboxgl, { type LngLat, type LngLatBounds } from 'mapbox-gl'
 import { type Map as MapboxMap } from 'mapbox-gl'
 import queryString from 'query-string'
+
+// POJO shims that don't pull in the mapbox-gl runtime bundle (~700KB).
+// Use these for everything except code paths that actually render a map.
+import { LngLat, LngLatBounds } from 'utils/lngLat'
+
+// Re-export so existing call sites that import `LngLat`/`LngLatBounds` from
+// 'utils/map' continue to work without changes.
+export { LngLat, LngLatBounds } from 'utils/lngLat'
 
 import { lighten } from '@mui/material'
 
@@ -39,7 +46,7 @@ export const getPolygonBounds = (polygon: Polygon) => {
     }
   )
 
-  return new mapboxgl.LngLatBounds(tl, br)
+  return new LngLatBounds(tl, br)
 }
 
 export const getPositionBounds = (position: Position[]) => {
@@ -60,7 +67,7 @@ export const getCoords = (searchParams: URLSearchParams) => {
 
   if (!lat || !lng) return null
 
-  return new mapboxgl.LngLat(toSafeNumber(lng), toSafeNumber(lat))
+  return new LngLat(toSafeNumber(lng), toSafeNumber(lat))
 }
 
 export const roundCoord = (coord: number | string) => Number(coord).toFixed(6)
@@ -229,7 +236,7 @@ export const getMarkerName = (mlsNumber: string) => `marker-${mlsNumber}`
 
 export const toMapboxPoint = (location: ApiCoords) => {
   const { latitude, longitude } = location
-  return new mapboxgl.LngLat(longitude, latitude)
+  return new LngLat(longitude, latitude)
 }
 
 export const toApiPoint = (point: Point): ApiCoords => {
@@ -240,7 +247,7 @@ export const toApiPoint = (point: Point): ApiCoords => {
 export const toMapboxBounds = (bounds: ApiBounds, buffer = 0) => {
   const { top_left, bottom_right } = bounds
 
-  return new mapboxgl.LngLatBounds(
+  return new LngLatBounds(
     // converting mixed top_left coords to northeast (mapbox._NE)
     [top_left.longitude - buffer, bottom_right.latitude + buffer],
     // and mixed bottom_right to southwest (mapbox._SW)
@@ -281,7 +288,7 @@ export const toRectangle = (bounds: LngLatBounds, buffer = 0) => {
 export const getCenter = (bounds: ApiBounds) => {
   const { top_left, bottom_right } = bounds
 
-  return new mapboxgl.LngLat(
+  return new LngLat(
     (top_left.longitude + bottom_right.longitude) / 2,
     (top_left.latitude + bottom_right.latitude) / 2
   )
@@ -291,7 +298,7 @@ export const getLngLatCenter = (bounds: LngLatBounds) =>
   getCenter(toApiBounds(bounds))
 
 export const calcZoomLevel = (
-  map: mapboxgl.Map,
+  map: MapboxMap,
   apiBounds: ApiBounds
 ): number => {
   const bounds = toMapboxBounds(apiBounds)
@@ -329,7 +336,7 @@ export const calcZoomLevelForBounds = (
 }
 
 export const calcBoundsAtZoom = (
-  map: mapboxgl.Map,
+  map: MapboxMap,
   location: ApiCoords,
   zoom: number
 ): ApiBounds => {
@@ -359,10 +366,10 @@ export const calcBoundsAtZoom = (
   const neLng = location.longitude + lngDiff / 2
   const neLat = location.latitude + latDiff / 2
 
-  const sw = new mapboxgl.LngLat(swLng, swLat)
-  const ne = new mapboxgl.LngLat(neLng, neLat)
+  const sw = new LngLat(swLng, swLat)
+  const ne = new LngLat(neLng, neLat)
 
-  return toApiBounds(new mapboxgl.LngLatBounds(sw, ne))
+  return toApiBounds(new LngLatBounds(sw, ne))
 }
 
 export const removePolygon = (map: MapboxMap) => {

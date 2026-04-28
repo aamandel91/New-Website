@@ -38,7 +38,7 @@ const CatalogMap = ({
       ...mapboxDefaults,
       touchZoomRotate: false,
       style: getMapStyleUrl(style),
-      bounds: position.bounds || getDefaultBounds(),
+      bounds: (position.bounds || getDefaultBounds()).toArray(),
       zoom: position.zoom
     })
   }
@@ -48,7 +48,7 @@ const CatalogMap = ({
     if (map?.loaded()) {
       if (coordinates || center) {
         if (coordinates) {
-          map.fitBounds(getPositionBounds(coordinates[0]), {
+          map.fitBounds(getPositionBounds(coordinates[0]).toArray(), {
             padding: 60,
             curve: 1
           })
@@ -60,7 +60,7 @@ const CatalogMap = ({
       } else {
         removePolygon(map)
         // Reset map position
-        if (position.bounds) map.fitBounds(position.bounds, { curve: 1 })
+        if (position.bounds) map.fitBounds(position.bounds.toArray(), { curve: 1 })
       }
     }
   }, [coordinates, center])

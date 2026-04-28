@@ -1,5 +1,5 @@
 import { type Position } from 'geojson'
-import { type LngLatBounds } from 'mapbox-gl'
+import { type LngLatBounds } from 'utils/lngLat'
 
 import {
   type ApiSavedSearch,

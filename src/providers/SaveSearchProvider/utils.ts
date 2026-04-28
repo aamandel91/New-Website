@@ -1,4 +1,4 @@
-import { type LngLat, type LngLatBounds } from 'mapbox-gl'
+import { type LngLat, type LngLatBounds } from 'utils/lngLat'
 
 import type { ListingStatus } from '@configs/filters'
 

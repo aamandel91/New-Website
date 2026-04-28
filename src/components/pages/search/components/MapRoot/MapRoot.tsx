@@ -7,7 +7,8 @@ import {
   useState
 } from 'react'
 import { type Position } from 'geojson'
-import { type LngLat, type LngLatBounds, Map as MapboxMap } from 'mapbox-gl'
+import { Map as MapboxMap } from 'mapbox-gl'
+import { type LngLat, type LngLatBounds } from 'utils/lngLat'
 import 'mapbox-gl/dist/mapbox-gl.css'
 import dynamic from 'next/dynamic'
 import { useLocale, useMessages } from 'next-intl'
@@ -129,7 +130,9 @@ const MapRoot = ({ zoom, center, polygon, onMove, onLoad }: MapRootProps) => {
     // `center` and `zoom` params are passed from the server-side
     // we should use `defaultBounds` rectangle if they were not passed
     const initialPosition =
-      center && zoom ? { center, zoom } : { bounds: getDefaultBounds() }
+      center && zoom
+        ? { center, zoom }
+        : { bounds: getDefaultBounds().toArray() }
 
     const map = new MapboxMap({
       container,
@@ -143,12 +146,21 @@ const MapRoot = ({ zoom, center, polygon, onMove, onLoad }: MapRootProps) => {
     map.on('load', () => {
       if (polygon) addPolygon(map, polygon)
       // prevent stale closures in the `onLoad` and `onMove` callbacks
-      onLoadRef.current(map.getBounds()!, map.getCenter(), map.getZoom())
+      // Mapbox's LngLatBounds is structurally identical to our shim's
+      onLoadRef.current(
+        map.getBounds() as unknown as LngLatBounds,
+        map.getCenter() as unknown as LngLat,
+        map.getZoom()
+      )
     })
 
     map.on('moveend', () => {
       // prevent stale closures in the `onLoad` and `onMove` callbacks
-      onMoveRef.current(map.getBounds()!, map.getCenter(), map.getZoom())
+      onMoveRef.current(
+        map.getBounds() as unknown as LngLatBounds,
+        map.getCenter() as unknown as LngLat,
+        map.getZoom()
+      )
     })
 
     // there is a slight difference between `dragstart` and `movestart` events,

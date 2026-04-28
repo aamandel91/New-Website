@@ -392,7 +392,7 @@ const Autosuggestion = ({
 
       setSearchString(query)
       setPosition({ zoom, center })
-      map.fitBounds(mapboxBounds)
+      map.fitBounds(mapboxBounds.toArray())
       const updatedUrl = updateQueryParam(query)
       router.replace(updatedUrl)
     } else {
@@ -433,7 +433,7 @@ const Autosuggestion = ({
 
       setSearchString(query)
       setPosition({ zoom, center })
-      map.fitBounds(mapboxBounds)
+      map.fitBounds(mapboxBounds.toArray())
       const updatedUrl = updateQueryParam(query)
       router.replace(updatedUrl)
     } else {

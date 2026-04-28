@@ -8,11 +8,8 @@ import React, {
   useState
 } from 'react'
 import { useSearchParams } from 'next/navigation'
-import {
-  type LngLat,
-  type LngLatBounds,
-  type Map as MapboxMap
-} from 'mapbox-gl'
+import { type Map as MapboxMap } from 'mapbox-gl'
+import { type LngLat, type LngLatBounds } from 'utils/lngLat'
 
 import { type MapStyle } from '@configs/map'
 

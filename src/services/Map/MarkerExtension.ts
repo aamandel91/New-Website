@@ -282,7 +282,7 @@ export class MarkerExtension {
         link: getMapUrl({ center, zoom }),
         label: cluster.count.toString(),
         onClick: (e) => {
-          map.fitBounds(mapboxBounds)
+          map.fitBounds(mapboxBounds.toArray())
           e.preventDefault()
         }
       })

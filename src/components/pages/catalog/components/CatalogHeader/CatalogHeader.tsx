@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import dynamic from 'next/dynamic'
 import { type Feature, type MultiLineString, type Position } from 'geojson'
-import { type LngLatLike } from 'mapbox-gl'
+import { type LngLatLike } from 'utils/lngLat'
 
 import ExploreIcon from '@mui/icons-material/Explore'
 import { Box, Button, Skeleton, Stack, Typography } from '@mui/material'
