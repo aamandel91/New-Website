@@ -20,7 +20,8 @@ const loggingConfig =
 
 const nextConfig = {
   eslint: {
-    // Pre-existing prettier formatting issues across the codebase — skip during build
+    // Pre-existing prettier formatting issues across the codebase — skip during build.
+    // TODO: Set this back to `false` before production launch so lint errors block bad deploys.
     ignoreDuringBuilds: true
   },
 
@@ -45,6 +46,14 @@ const nextConfig = {
       {
         protocol: 'https',
         hostname: '*.repliers.io'
+      },
+      {
+        protocol: 'https',
+        hostname: '*.mapbox.com'
+      },
+      {
+        protocol: 'https',
+        hostname: 'api.mapbox.com'
       }
     ]
   },
