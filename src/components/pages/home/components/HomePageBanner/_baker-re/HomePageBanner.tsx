@@ -23,9 +23,8 @@ const HomePageBanner = ({
       <Box width="100%" height="100%" position="absolute" sx={{ opacity: 0.8 }}>
         <Image
           unoptimized
+          priority
           layout="fill"
-          loading="lazy"
-          priority={false}
           objectFit="cover"
           objectPosition="center"
           src={siteSplashscreen}
