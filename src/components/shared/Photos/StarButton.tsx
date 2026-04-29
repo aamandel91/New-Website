@@ -1,3 +1,5 @@
+'use client'
+
 import React, { useEffect, useState } from 'react'
 
 import StarBorderOutlinedIcon from '@mui/icons-material/StarBorderOutlined'

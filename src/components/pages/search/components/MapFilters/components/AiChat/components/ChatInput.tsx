@@ -1,3 +1,5 @@
+'use client'
+
 import React, { useRef, useState } from 'react'
 
 import RestartAltOutlinedIcon from '@mui/icons-material/RestartAltOutlined'

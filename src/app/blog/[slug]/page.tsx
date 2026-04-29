@@ -85,9 +85,6 @@ export default async function BlogPostPage(props: BlogPostPageProps) {
   const params = await props.params
   const blog = await fetchBlogServer(params.slug)
 
-  const handleRelatedBlogs = (blogs: any[]) => {
-    console.log('Related blogs:', blogs)
-  }
 
   return (
     <Box>
@@ -117,7 +114,7 @@ export default async function BlogPostPage(props: BlogPostPageProps) {
 
       <Container maxWidth="lg" sx={{ py: 4 }}>
         <PageWithSidebar sidebar={<BlogPostSidebar />}>
-          <BlogDisplay slug={params.slug} onRelatedBlogs={handleRelatedBlogs} />
+          <BlogDisplay slug={params.slug} />
         </PageWithSidebar>
       </Container>
 

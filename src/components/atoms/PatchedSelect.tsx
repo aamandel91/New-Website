@@ -1,3 +1,5 @@
+'use client'
+
 import React, { useImperativeHandle, useRef } from 'react'
 
 import { Select, type SelectProps } from '@mui/material'

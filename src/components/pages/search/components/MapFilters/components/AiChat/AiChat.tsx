@@ -1,3 +1,5 @@
+'use client'
+
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 
 import { Box, Skeleton } from '@mui/material'
@@ -80,10 +82,6 @@ const AiChat = () => {
 
   const applyFilters = (item: ChatItem) => {
     const { params, body } = item
-    // eslint-disable-next-line no-console
-    console.log('Apply Filters', params)
-    // eslint-disable-next-line no-console
-    console.log('BODY', body)
     setFilters({
       ...params,
       ...body

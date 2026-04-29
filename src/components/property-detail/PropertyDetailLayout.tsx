@@ -120,11 +120,9 @@ const PropertyDetailLayout: React.FC<PropertyDetailLayoutProps> = ({
       : undefined
 
   // Handle form submission
-  const handleContactSubmit = async (formData: any) => {
-    // TODO: Implement contact form submission
-    console.log('Contact form submitted:', formData)
-    // You can call your API here
-    // await APIContact.submit(formData)
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const handleContactSubmit = async (_formData: any) => {
+    // TODO: Implement contact form submission via APIContact.submit(formData)
   }
 
   // Handle action buttons
@@ -167,14 +165,12 @@ const PropertyDetailLayout: React.FC<PropertyDetailLayoutProps> = ({
   }
 
   const handleRequestInfo = () => {
-    console.log('Request info')
     // Scroll to contact form
     const contactForm = document.getElementById('contact-form')
     contactForm?.scrollIntoView({ behavior: 'smooth' })
   }
 
   const handleScheduleTour = () => {
-    console.log('Schedule tour')
     // Scroll to contact form
     const contactForm = document.getElementById('contact-form')
     contactForm?.scrollIntoView({ behavior: 'smooth' })

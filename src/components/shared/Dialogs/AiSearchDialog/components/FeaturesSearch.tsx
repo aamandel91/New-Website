@@ -1,3 +1,5 @@
+'use client'
+
 import React, { useRef, useState } from 'react'
 
 import { Box, Button, Stack, TextField } from '@mui/material'

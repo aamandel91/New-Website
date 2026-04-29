@@ -1,3 +1,5 @@
+'use client'
+
 import React, { useReducer, useState } from 'react'
 
 import { Box, Button, MenuItem, Stack } from '@mui/material'

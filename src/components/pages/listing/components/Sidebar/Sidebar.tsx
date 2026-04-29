@@ -1,3 +1,5 @@
+'use client'
+
 import React, { useState } from 'react'
 
 import { Box, Paper, Skeleton, Tab, Tabs } from '@mui/material'

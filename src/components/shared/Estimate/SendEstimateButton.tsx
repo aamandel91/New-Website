@@ -1,3 +1,5 @@
+'use client'
+
 import React, { useState } from 'react'
 
 import MailOutlineIcon from '@mui/icons-material/MailOutline'

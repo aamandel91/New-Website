@@ -45,8 +45,8 @@ export async function POST(request: Request) {
     return NextResponse.json({ received: true, handled: false })
   }
 
-  // Log the event for admin lead activity
-  console.log(
+  // Log the event for admin lead activity (info level — intentional production log)
+  console.info(
     `[SureSend Webhook] ${body.event}:`,
     JSON.stringify({
       event: body.event,

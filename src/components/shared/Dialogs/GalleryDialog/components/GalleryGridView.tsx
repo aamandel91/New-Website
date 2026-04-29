@@ -1,3 +1,5 @@
+'use client'
+
 import { useMemo } from 'react'
 
 import { Box, Grid2 as Grid } from '@mui/material'

@@ -1,3 +1,5 @@
+'use client'
+
 import React, { forwardRef, useImperativeHandle, useRef, useState } from 'react'
 
 import { Box } from '@mui/material'
