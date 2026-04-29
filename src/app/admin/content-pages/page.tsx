@@ -75,6 +75,14 @@ export default function ContentPagesPage() {
   const handlePublishPage = async (id: string) => {
     try {
       await APIContentPages.publishPage(id)
+      // Refresh the sitemap cache so the newly-published page appears
+      // in /sitemaps/pages.xml within seconds. Best-effort — don't block
+      // the publish UX on this.
+      try {
+        await fetch('/api/revalidate?tag=sitemap-pages', { method: 'POST' })
+      } catch (e) {
+        console.error('Failed to revalidate sitemap-pages tag', e)
+      }
       fetchPages()
     } catch (err: any) {
       alert('Failed to publish page')

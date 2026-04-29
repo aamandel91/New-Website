@@ -167,6 +167,26 @@ export class ContentPagesRepository {
   }
 
   /**
+   * Get minimal page rows for sitemap generation (published only).
+   */
+  async getSitemapPages(
+    orgId: bigint
+  ): Promise<Array<{ id: string; slug: string; updated_at: Date; published_at: Date | null }>> {
+    const rows = await this.db('content_pages')
+      .select('id', 'slug', 'updated_at', 'published_at')
+      .where({ org_id: orgId, status: 'published' })
+      .orderBy('published_at', 'desc')
+      .limit(5000)
+
+    return rows.map((r: any) => ({
+      id: String(r.id),
+      slug: r.slug,
+      updated_at: r.updated_at,
+      published_at: r.published_at
+    }))
+  }
+
+  /**
    * Get templates
    */
   async getTemplates(orgId: bigint): Promise<ContentPage[]> {

@@ -112,6 +112,13 @@ export class ContentPagesService {
   }
 
   /**
+   * Get minimal published-page rows for sitemap generation.
+   */
+  async getSitemapPages(orgId: bigint) {
+    return this.pagesRepo.getSitemapPages(orgId)
+  }
+
+  /**
    * Get templates
    */
   async getTemplates(orgId: bigint): Promise<ContentPage[]> {

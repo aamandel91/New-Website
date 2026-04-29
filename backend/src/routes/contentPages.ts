@@ -44,6 +44,19 @@ router.get('/', authMiddleware, async (ctx) => {
 })
 
 /**
+ * GET /api/content-pages/sitemap
+ * Public endpoint: minimal fields for all published pages, used by the
+ * frontend sitemap generator. No auth required.
+ */
+router.get('/sitemap', async (ctx) => {
+  const service = ctx.state['container'].resolve(ContentPagesService)
+  const orgId = ctx.state['orgId']
+
+  const pages = await service.getSitemapPages(orgId)
+  ctx.body = { pages }
+})
+
+/**
  * GET /api/content-pages/templates
  * Get all page templates
  */

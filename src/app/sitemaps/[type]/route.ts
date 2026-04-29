@@ -163,7 +163,52 @@ async function generatePages(): Promise<SitemapEntry[]> {
       }
     }
   } catch { /* API not available */ }
-  return entries
+
+  const cmsEntries = await fetchCmsSitemapPages()
+  return mergePreferringCms(entries, cmsEntries)
+}
+
+async function fetchCmsSitemapPages(): Promise<SitemapEntry[]> {
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL
+  if (!apiUrl) return []
+
+  try {
+    const res = await fetch(`${apiUrl}/api/content-pages/sitemap`, {
+      next: { tags: ['sitemap-pages'], revalidate: 3600 },
+    })
+    if (!res.ok) {
+      console.error(`[sitemap] CMS fetch failed: ${res.status} ${res.statusText}`)
+      return []
+    }
+    const data = (await res.json()) as {
+      pages?: Array<{ slug: string; updated_at: string; published_at: string | null }>
+    }
+    if (!data.pages) return []
+
+    return data.pages.map((p) => {
+      const slug = p.slug.startsWith('/') ? p.slug.slice(1) : p.slug
+      const ts = p.updated_at || p.published_at || new Date().toISOString()
+      return {
+        url: `${BASE_URL}/${slug}`,
+        lastmod: new Date(ts).toISOString(),
+        changefreq: 'monthly',
+        priority: 0.7,
+      }
+    })
+  } catch (err) {
+    console.error('[sitemap] CMS fetch threw:', err)
+    return []
+  }
+}
+
+function mergePreferringCms(
+  existing: SitemapEntry[],
+  cms: SitemapEntry[]
+): SitemapEntry[] {
+  const byUrl = new Map<string, SitemapEntry>()
+  for (const e of existing) byUrl.set(e.url, e)
+  for (const e of cms) byUrl.set(e.url, e) // CMS overrides on conflict
+  return Array.from(byUrl.values())
 }
 
 async function generateBlog(): Promise<SitemapEntry[]> {
