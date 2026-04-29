@@ -56,6 +56,20 @@ const Layout = async ({ children }: { children: React.ReactNode }) => {
     <html lang={locale} className={montserrat.variable}>
       <head>
         <GoogleTagManager />
+        {/* Preconnect to third-party origins so the browser can warm up DNS,
+            TLS, and TCP handshakes in parallel with HTML parsing. Saves
+            ~100-300ms on first paint for any page that calls these origins. */}
+        <link rel="preconnect" href="https://cdn.repliers.io" />
+        <link rel="preconnect" href="https://api.repliers.io" />
+        <link rel="preconnect" href="https://api.mapbox.com" />
+        <link rel="preconnect" href="https://events.mapbox.com" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link
+          rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossOrigin="anonymous"
+        />
+        <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
         <meta
           name="format-detection"
           content="telephone=no, date=no, email=no, address=no"

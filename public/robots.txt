@@ -5,6 +5,11 @@ Disallow: /api/
 Disallow: /auth/
 Disallow: /_next/
 Disallow: /login
+Disallow: /account
+Disallow: /recently-viewed
+Disallow: /compare
+Disallow: /unsubscribe
+Crawl-delay: 1
 
 # Allow search with parameters (pagination, filters)
 Allow: /search/*
