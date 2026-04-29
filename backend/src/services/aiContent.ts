@@ -159,32 +159,42 @@ Respond with a JSON array of keyword objects.`
     const contextLines = [locationLine, propertyTypeLine].filter(Boolean).join('\n')
     const contextBlock = contextLines ? `\nContext:\n${contextLines}\n` : ''
 
-    const prompt = `You are a real estate content expert. Generate page content for a "${request.pageType}" page.
+    const prompt = `You are a real estate content expert. Generate structured page content for a "${request.pageType}" page that can be saved directly into a CMS.
 
 Primary keyword: ${request.keyword}${contextBlock}
 Tone: ${toneInstruction}
 
-Generate:
-1. Page title (use the primary keyword naturally)
-2. Full page content in HTML format (~500-800 words; use semantic headings)
-3. Meta title for SEO (under 60 characters, include the keyword)
-4. Meta description for SEO (under 160 characters, include the keyword)
-5. Keywords array (5-8 related keywords)
+Return JSON in EXACTLY this shape — no markdown, no code fences, just JSON:
 
-Make the content:
-- Specific to the location and/or property type when provided
-- Valuable and informative for prospective buyers and sellers
-- SEO-optimized with natural keyword usage
-- Engaging and well-structured
-
-Respond with JSON:
 {
-  "title": "Page title",
-  "content": "Full HTML content",
-  "meta_title": "SEO meta title",
-  "meta_description": "SEO description",
-  "meta_keywords": ["keyword1", "keyword2"]
-}`
+  "content": {
+    "modules": [
+      { "type": "hero", "data": { "heading": "", "subheading": "" } },
+      { "type": "text", "data": { "content": "<HTML body of ~500-800 words with H2/H3 sections>" } },
+      { "type": "faq", "data": { "items": [ { "question": "", "answer": "" }, { "question": "", "answer": "" }, { "question": "", "answer": "" } ] } },
+      { "type": "cta", "data": { "heading": "", "buttonLabel": "", "buttonHref": "/contact" } }
+    ],
+    "sidebar": [
+      { "type": "text", "data": { "heading": "At a Glance", "content": "<short HTML summary, 2-3 sentences>" } }
+    ]
+  },
+  "meta_title": "SEO meta title (under 60 characters, includes keyword)",
+  "meta_description": "SEO meta description (under 160 characters, includes keyword)",
+  "meta_keywords": ["5-8 related keywords"],
+  "structured_data": {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "name": "<same as meta_title>",
+    "description": "<same as meta_description>"
+  }
+}
+
+Rules for the body 'text' module:
+- Real HTML (use <h2>, <h3>, <p>, <ul>, <strong>) — NOT markdown
+- ~500-800 words total
+- Naturally include the primary keyword in the first paragraph
+- Specific to the location and/or property type when provided
+- Engaging, valuable, and SEO-optimized`
 
     const message = await this.anthropic.messages.create({
       model: 'claude-3-5-sonnet-20241022',
@@ -207,12 +217,23 @@ Respond with JSON:
 
       const result = JSON.parse(jsonMatch[0])
 
+      // Defensive defaults so we always return a valid AIPageContentResponse
+      // even when Claude omits or mangles a field.
+      const modules = Array.isArray(result.content?.modules)
+        ? result.content.modules
+        : []
+      const sidebar = Array.isArray(result.content?.sidebar)
+        ? result.content.sidebar
+        : []
+
       return {
-        title: result.title || 'Page Title',
-        content: result.content || '',
-        meta_title: result.meta_title || result.title,
+        content: { modules, sidebar },
+        meta_title: result.meta_title || '',
         meta_description: result.meta_description || '',
-        meta_keywords: result.meta_keywords || []
+        meta_keywords: Array.isArray(result.meta_keywords)
+          ? result.meta_keywords
+          : [],
+        structured_data: result.structured_data || undefined
       }
     } catch (error) {
       console.error('Error parsing page content response:', error)

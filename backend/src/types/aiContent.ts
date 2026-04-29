@@ -31,12 +31,24 @@ export interface AIPageContentRequest {
   tone?: string
 }
 
+/**
+ * Module of structured page content (matches the shape used by the CMS
+ * ContentPage so AI-generated output can be saved directly as a page).
+ */
+export interface AIContentModule {
+  type: string
+  data: Record<string, any>
+}
+
 export interface AIPageContentResponse {
-  title: string
-  content: string
+  content: {
+    modules: AIContentModule[]
+    sidebar: AIContentModule[]
+  }
   meta_title: string
   meta_description: string
   meta_keywords: string[]
+  structured_data?: Record<string, any>
 }
 
 export interface BulkPageGenerationRequest {
