@@ -22,6 +22,9 @@ import RefreshIcon from '@mui/icons-material/Refresh'
 import StorageIcon from '@mui/icons-material/Storage'
 import SyncIcon from '@mui/icons-material/Sync'
 import MapIcon from '@mui/icons-material/Map'
+import GridViewIcon from '@mui/icons-material/GridView'
+
+import SEOCoverageMap from './SEOCoverageMap'
 
 interface IndexEntry {
   slug: string
@@ -207,6 +210,11 @@ export default function PropertyIndexPage() {
       <Tabs value={tab} onChange={(_, v) => setTab(v)} sx={{ mb: 3 }}>
         <Tab label="Property Pages" />
         <Tab label="Area Pages" icon={<MapIcon sx={{ fontSize: 18 }} />} iconPosition="start" />
+        <Tab
+          label="SEO Coverage"
+          icon={<GridViewIcon sx={{ fontSize: 18 }} />}
+          iconPosition="start"
+        />
       </Tabs>
 
       {/* ─── Property Pages Tab ─── */}
@@ -567,6 +575,9 @@ export default function PropertyIndexPage() {
           )}
         </>
       )}
+
+      {/* ─── SEO Coverage Tab ─── */}
+      {tab === 2 && <SEOCoverageMap />}
     </Box>
   )
 }

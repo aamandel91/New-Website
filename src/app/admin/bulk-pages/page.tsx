@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useEffect, useMemo, useState } from 'react'
+import { useSearchParams } from 'next/navigation'
 import {
   Box,
   Container,
@@ -13,6 +14,7 @@ import {
   InputLabel,
   Stack,
   Alert,
+  AlertTitle,
   CircularProgress,
   Card,
   CardContent,
@@ -57,10 +59,21 @@ const PROPERTY_TYPES = [
   { id: 8, name: 'New Construction' }
 ]
 
+interface SeoCoveragePrefill {
+  city: string
+  county: string
+  subtypeSlug: string
+  subtypeLabel: string
+}
+
+const SEO_COVERAGE_STORAGE_KEY = 'bulk-pages.prefill'
+
 export default function BulkPagesPage() {
+  const searchParams = useSearchParams()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState<string | null>(null)
+  const [seoPrefill, setSeoPrefill] = useState<SeoCoveragePrefill[] | null>(null)
 
   // Form state
   const [pageType, setPageType] = useState<string>('city')
@@ -122,6 +135,38 @@ export default function BulkPagesPage() {
       cancelled = true
     }
   }, [pageType, neighborhoodCityFilter])
+
+  // SEO Coverage prefill: when arriving from /admin/property-index with a
+  // ?prefill=seo-coverage flag, read the missing (city, subtype) list from
+  // sessionStorage and pre-select the affected cities. The existing UI
+  // generates per-city pages, so we surface the requested subtypes in a
+  // banner — the actual sub-type×city expansion is a follow-up backend item.
+  useEffect(() => {
+    if (searchParams?.get('prefill') !== 'seo-coverage') return
+    try {
+      const raw = sessionStorage.getItem(SEO_COVERAGE_STORAGE_KEY)
+      if (!raw) return
+      const parsed = JSON.parse(raw) as SeoCoveragePrefill[]
+      if (!Array.isArray(parsed) || parsed.length === 0) return
+      setSeoPrefill(parsed)
+      setPageType('city')
+      sessionStorage.removeItem(SEO_COVERAGE_STORAGE_KEY)
+    } catch {
+      // ignore - prefill is best-effort
+    }
+  }, [searchParams])
+
+  // Once cities load, pre-check the cities named in the SEO coverage prefill.
+  useEffect(() => {
+    if (!seoPrefill || cities.length === 0) return
+    const wanted = new Set(seoPrefill.map((p) => p.city.toLowerCase()))
+    const ids = cities
+      .filter((c) => wanted.has(c.name.toLowerCase()))
+      .map((c) => c.id)
+    if (ids.length > 0) {
+      setSelectedIds((prev) => Array.from(new Set([...prev, ...ids])))
+    }
+  }, [seoPrefill, cities])
 
   // Make sure we have a city list available for the neighborhood city dropdown.
   useEffect(() => {
@@ -273,6 +318,19 @@ export default function BulkPagesPage() {
         {success && (
           <Alert severity="success" sx={{ mb: 2 }} onClose={() => setSuccess(null)}>
             {success}
+          </Alert>
+        )}
+
+        {seoPrefill && seoPrefill.length > 0 && (
+          <Alert
+            severity="info"
+            sx={{ mb: 2 }}
+            onClose={() => setSeoPrefill(null)}
+          >
+            <AlertTitle>Pre-filled from SEO Coverage</AlertTitle>
+            {seoPrefill.length} missing (city × subtype) combinations were
+            queued. The cities have been pre-selected below. Subtypes requested:{' '}
+            {Array.from(new Set(seoPrefill.map((p) => p.subtypeLabel))).join(', ')}.
           </Alert>
         )}
 
