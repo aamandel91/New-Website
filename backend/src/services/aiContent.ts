@@ -7,7 +7,7 @@ import type {
   AIPageContentRequest,
   AIPageContentResponse
 } from '../types/aiContent.js'
-import { SOUTH_FLORIDA_CONTEXT } from '../utils/aiPromptContext.js'
+import { getMarketContext } from '../utils/aiPromptContext.js'
 
 @injectable()
 export class AIContentService {
@@ -26,6 +26,7 @@ export class AIContentService {
     const cityContext = request.city ? ` in ${request.city}` : ''
     const toneInstruction = request.tone || 'professional and informative'
     const lengthTarget = request.length || 1500
+    const marketContext = getMarketContext(request.marketId ?? 'south-florida')
 
     const prompt = `Generate a comprehensive SEO-optimized blog post about "${request.keyword}"${cityContext}.
 
@@ -62,7 +63,7 @@ Respond with a JSON object containing:
     const message = await this.anthropic.messages.create({
       model: 'claude-3-5-sonnet-20241022',
       max_tokens: 4000,
-      system: SOUTH_FLORIDA_CONTEXT,
+      system: marketContext,
       messages: [
         {
           role: 'user',
@@ -124,7 +125,7 @@ Respond with a JSON array of keyword objects.`
     const message = await this.anthropic.messages.create({
       model: 'claude-3-5-sonnet-20241022',
       max_tokens: 2000,
-      system: SOUTH_FLORIDA_CONTEXT,
+      system: getMarketContext('south-florida'),
       messages: [
         {
           role: 'user',
@@ -163,6 +164,7 @@ Respond with a JSON array of keyword objects.`
    */
   async generatePageContent(request: AIPageContentRequest): Promise<AIPageContentResponse> {
     const toneInstruction = request.tone || 'professional and informative'
+    const marketContext = getMarketContext(request.marketId ?? 'south-florida')
     const locationLine = request.location ? `Location: ${request.location}` : ''
     const propertyTypeLine = request.propertyType
       ? `Property type: ${request.propertyType}`
@@ -210,7 +212,7 @@ Rules for the body 'text' module:
     const message = await this.anthropic.messages.create({
       model: 'claude-3-5-sonnet-20241022',
       max_tokens: 3000,
-      system: SOUTH_FLORIDA_CONTEXT,
+      system: marketContext,
       messages: [
         {
           role: 'user',

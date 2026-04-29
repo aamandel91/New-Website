@@ -1,3 +1,5 @@
+import { allActiveBoardIds } from '@configs/page-generation'
+
 const config = {
   // header autosuggest
   trieMaxResults: 3,
@@ -9,14 +11,15 @@ const config = {
   clusterPrecision: 12,
   clusterLimit: 200,
   // boards
-  defaultBoardId: 2,
+  defaultBoardId: allActiveBoardIds[0] ?? 2,
   // VOW boards explanation:
   // https://repliers.com/understanding-mls-data-feeds-idx-vow-and-back-office-whats-the-difference/
-  vowBoardId: 2, // same as defaultBoardId
+  vowBoardId: allActiveBoardIds[0] ?? 2, // same as defaultBoardId
+  boardIds: allActiveBoardIds,
 
   similarListingsRadius: 15
 }
 
-export type SearchConfig = Record<keyof typeof config, number>
+export type SearchConfig = typeof config
 
 export default config

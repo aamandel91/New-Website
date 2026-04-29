@@ -8,10 +8,11 @@ import {
   savePropertyIndex,
 } from 'services/propertyIndex'
 import type { PropertyIndexEntry } from 'services/propertyIndex'
+import { activeMarkets } from '@configs/page-generation'
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
-  const county = searchParams.get('county') || 'Broward'
+  const county = searchParams.get('county') || activeMarkets[0]?.counties[0] || 'Broward'
   const months = parseInt(searchParams.get('months') || '24', 10)
 
   // Calculate date range

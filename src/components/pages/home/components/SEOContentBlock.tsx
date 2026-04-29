@@ -2,24 +2,24 @@ import { Box, Typography } from '@mui/material'
 
 const SEO_SECTIONS = [
   {
-    title: 'Find a Florida REALTOR® Near Me',
-    text: 'Whether you are buying or selling a home in Florida, having a knowledgeable local REALTOR® by your side makes all the difference. Our experienced agents specialize in South Florida communities from Miami to Palm Beach, helping you navigate the market with confidence.'
+    title: 'Find a South Florida REALTOR® Near You',
+    text: 'Whether you are buying or selling a home in South Florida, having a knowledgeable local expert makes all the difference. The Mandel Team specializes in communities across Miami-Dade, Broward, Palm Beach, Martin, and St. Lucie Counties - from waterfront estates in Miami Beach to gated communities in Parkland and golf course homes in Boca Raton.'
   },
   {
-    title: 'Florida Community Guides',
-    text: 'Explore detailed neighborhood and community guides for cities across Florida. From waterfront living in Fort Lauderdale to family-friendly suburbs in Coral Springs, we provide insights into schools, amenities, lifestyle, and real estate trends to help you find the perfect place to call home.'
+    title: 'South Florida Community Guides',
+    text: 'Explore detailed neighborhood and community guides for cities across South Florida. From waterfront living in Fort Lauderdale to family-friendly suburbs in Coral Springs and Parkland, we cover schools, amenities, lifestyle, and real estate trends to help you find the right fit.'
   },
   {
-    title: 'Updated Florida Real Estate Listings Daily',
-    text: 'Our property listings are updated every 15 minutes directly from the MLS, ensuring you have access to the most current homes for sale across Florida. Browse single-family homes, condos, townhouses, and luxury estates with accurate pricing and availability.'
+    title: 'Updated MLS Listings Every 15 Minutes',
+    text: 'Our listings sync directly from the MLS and update every 15 minutes. Browse single-family homes, condos, townhouses, and luxury estates across all five South Florida counties with accurate pricing and real-time availability.'
   },
   {
-    title: 'Learn All About Florida',
-    text: 'Florida offers an unparalleled lifestyle with year-round sunshine, world-class beaches, and no state income tax. Whether you are relocating, investing, or looking for your dream retirement home, our resources cover everything from cost of living to the best neighborhoods in every major metro area.'
+    title: 'Why Buyers Choose South Florida',
+    text: 'South Florida offers year-round warm weather, no state income tax, world-class beaches, and one of the most diverse real estate markets in the country. From the international luxury market in Miami to the family communities of Palm Beach County and the waterfront lifestyle of the Treasure Coast - there is a South Florida that fits every buyer.'
   },
   {
-    title: 'Florida Home Search Tools',
-    text: 'Use our advanced search tools to filter properties by price, location, property type, and lifestyle features. Save your favorite listings, set up custom alerts, and get notified the moment new properties matching your criteria hit the market.'
+    title: 'Advanced Home Search Tools',
+    text: 'Filter by price, location, property type, school district, and lifestyle features. Save searches, set up instant alerts, and get notified the moment a matching property hits the market. No login required to start searching.'
   }
 ]
 
@@ -36,7 +36,7 @@ const SEOContentBlock = () => (
           mb: { xs: 4, md: 6 }
         }}
       >
-        Your Florida Real Estate Resource!
+        Your South Florida Real Estate Resource
       </Typography>
 
       <Box

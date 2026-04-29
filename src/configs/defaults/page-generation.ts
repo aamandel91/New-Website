@@ -1,3 +1,33 @@
+/**
+ * ADDING A NEW MARKET - complete checklist:
+ *
+ * 1. Set active: true on the market in the markets array below
+ * 2. Add the correct boardIds from Repliers for that market's MLS boards
+ *    (contact Repliers support - they provide board IDs per MLS feed)
+ * 3. Verify the Repliers API key has access to the new board IDs
+ * 4. Add the new market's cities to the header nav in:
+ *    src/components/templates/components/Header/navData.ts
+ * 5. Update site-settings.ts metaTitle and metaDescription if this is
+ *    a major market addition
+ * 6. Update organizationSchema areaServed in src/utils/structuredData.ts
+ * 7. Run the page generator admin for the new market's counties
+ * 8. Submit updated sitemap to Google Search Console
+ *
+ * Everything else updates automatically:
+ * - Sitemap generation
+ * - Page scoring and noindex logic
+ * - AI content market context
+ * - Nearby cities internal linking
+ * - Nav property type links
+ * - Footer links
+ * - PPC feed target areas
+ * - Homepage tile activation
+ * - Area scores dashboard
+ * - Backfill API default county
+ *
+ * PPC minimum price is $750,000. Do not lower this for any market.
+ */
+
 import type { ApiLastStatus } from 'services/API'
 
 /**
@@ -5,9 +35,122 @@ import type { ApiLastStatus } from 'services/API'
  * Defines target counties, property sub-types with search filters, and template variables.
  */
 
-export const targetCounties = ['Broward', 'Palm Beach'] as const
+export interface MarketConfig {
+  id: string
+  label: string
+  counties: string[]
+  primaryCity: string
+  boardIds: number[]
+  active: boolean
+  nearbyCities: string[]
+}
 
-export type TargetCounty = (typeof targetCounties)[number]
+export const markets: MarketConfig[] = [
+  {
+    id: 'south-florida',
+    label: 'South Florida',
+    counties: ['Miami-Dade', 'Broward', 'Palm Beach', 'Martin', 'St. Lucie'],
+    primaryCity: 'Coral Springs',
+    boardIds: [2],
+    active: true,
+    nearbyCities: [
+      // Miami-Dade
+      'Miami', 'Miami Beach', 'Coral Gables', 'Aventura', 'Sunny Isles Beach',
+      'Bal Harbour', 'Bay Harbor Islands', 'Surfside', 'Doral', 'Hialeah',
+      'Homestead', 'Kendall', 'Pinecrest', 'South Miami', 'Cutler Bay',
+      'Key Biscayne', 'Coconut Grove', 'Brickell', 'Wynwood', 'Miami Lakes',
+      'North Miami Beach', 'Palmetto Bay',
+      // Broward
+      'Fort Lauderdale', 'Coral Springs', 'Pompano Beach', 'Deerfield Beach',
+      'Boca Raton', 'Hollywood', 'Plantation', 'Davie', 'Weston', 'Coconut Creek',
+      'Parkland', 'Sunrise', 'Tamarac', 'Lighthouse Point', 'Hallandale Beach',
+      'Pembroke Pines', 'Miramar', 'Cooper City', 'Margate', 'Lauderdale by the Sea',
+      // Palm Beach
+      'West Palm Beach', 'Boca Raton', 'Delray Beach', 'Boynton Beach',
+      'Palm Beach Gardens', 'Jupiter', 'Wellington', 'Lake Worth', 'Greenacres',
+      'Royal Palm Beach', 'Palm Beach', 'Juno Beach', 'Tequesta', 'Loxahatchee',
+      // Martin
+      'Stuart', 'Palm City', 'Hobe Sound', 'Jensen Beach', 'Indiantown',
+      'Port Salerno', 'Rio', 'Sewalls Point',
+      // St. Lucie
+      'Port St. Lucie', 'Fort Pierce', 'Tradition', 'St. Lucie West',
+      'Hutchinson Island', 'White City', 'Lakewood Park'
+    ]
+  },
+  {
+    id: 'naples-swfl',
+    label: 'Naples / SW Florida',
+    counties: ['Collier', 'Lee', 'Charlotte'],
+    primaryCity: 'Naples',
+    boardIds: [],
+    active: false,
+    nearbyCities: [
+      'Naples', 'Marco Island', 'Bonita Springs', 'Estero', 'Fort Myers',
+      'Cape Coral', 'Sanibel', 'Port Charlotte', 'Punta Gorda', 'Ave Maria',
+      'Golden Gate', 'Pelican Bay', 'Vanderbilt Beach', 'North Naples',
+      'East Naples', 'Lely Resort', 'Miromar Lakes'
+    ]
+  },
+  {
+    id: 'tampa-bay',
+    label: 'Tampa Bay',
+    counties: ['Hillsborough', 'Pinellas', 'Pasco', 'Manatee'],
+    primaryCity: 'Tampa',
+    boardIds: [],
+    active: false,
+    nearbyCities: [
+      'Tampa', 'St. Petersburg', 'Clearwater', 'Brandon', 'Wesley Chapel',
+      'Riverview', 'Sarasota', 'Bradenton', 'Lakeland', 'Plant City',
+      'Palm Harbor', 'Dunedin', 'Safety Harbor', 'Odessa', 'Lutz',
+      'Land O Lakes', 'New Port Richey', 'Tarpon Springs', 'South Tampa',
+      'Davis Islands', 'Harbour Island', 'Beach Park', 'Hyde Park',
+      'Westchase', 'Carrollwood', 'Seminole Heights'
+    ]
+  },
+  {
+    id: 'orlando',
+    label: 'Orlando Metro',
+    counties: ['Orange', 'Seminole', 'Osceola', 'Lake'],
+    primaryCity: 'Orlando',
+    boardIds: [],
+    active: false,
+    nearbyCities: [
+      'Orlando', 'Winter Park', 'Windermere', 'Dr. Phillips', 'Lake Nona',
+      'Celebration', 'Kissimmee', 'Ocoee', 'Apopka', 'Altamonte Springs',
+      'Longwood', 'Winter Springs', 'Sanford', 'Clermont', 'Davenport',
+      'Maitland', 'Casselberry', 'Oviedo', 'Heathrow', 'Lake Mary'
+    ]
+  },
+  {
+    id: 'sarasota',
+    label: 'Sarasota',
+    counties: ['Sarasota'],
+    primaryCity: 'Sarasota',
+    boardIds: [],
+    active: false,
+    nearbyCities: [
+      'Sarasota', 'Venice', 'Nokomis', 'Osprey', 'North Port',
+      'Englewood', 'Longboat Key', 'Siesta Key', 'Casey Key',
+      'Palmer Ranch', 'The Meadows', 'Lakewood Ranch', 'Bird Key',
+      'Lido Key', 'Gulf Gate Estates'
+    ]
+  }
+]
+
+// Derived exports - update automatically when markets are activated
+export const activeMarkets = markets.filter(m => m.active)
+export const targetCounties = activeMarkets.flatMap(m => m.counties) as readonly string[]
+export type TargetCounty = string
+export const allActiveBoardIds = [...new Set(activeMarkets.flatMap(m => m.boardIds))]
+export const primaryCity = activeMarkets[0]?.primaryCity ?? 'Coral Springs'
+
+// nearbyCities lookup keyed by county - used for internal linking on city pages
+export const nearbyCitiesByCounty: Record<string, string[]> = {}
+for (const market of activeMarkets) {
+  for (const county of market.counties) {
+    nearbyCitiesByCounty[county] = market.nearbyCities
+  }
+}
 
 export interface SubTypeConfig {
   slug: string
@@ -73,5 +216,5 @@ export function slugToCounty(slug: string): string | undefined {
     .split('-')
     .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
     .join(' ')
-  return (targetCounties as readonly string[]).includes(name) ? name : undefined
+  return targetCounties.includes(name) ? name : undefined
 }

@@ -51,16 +51,11 @@ export function organizationSchema(): StructuredDataProps {
       email: 'info@floridahomefinder.com',
     },
     areaServed: [
-      {
-        '@type': 'AdministrativeArea',
-        name: 'Broward County',
-        containedIn: { '@type': 'State', name: 'Florida' },
-      },
-      {
-        '@type': 'AdministrativeArea',
-        name: 'Palm Beach County',
-        containedIn: { '@type': 'State', name: 'Florida' },
-      },
+      { '@type': 'AdministrativeArea', name: 'Miami-Dade County', containedIn: { '@type': 'State', name: 'Florida' } },
+      { '@type': 'AdministrativeArea', name: 'Broward County', containedIn: { '@type': 'State', name: 'Florida' } },
+      { '@type': 'AdministrativeArea', name: 'Palm Beach County', containedIn: { '@type': 'State', name: 'Florida' } },
+      { '@type': 'AdministrativeArea', name: 'Martin County', containedIn: { '@type': 'State', name: 'Florida' } },
+      { '@type': 'AdministrativeArea', name: 'St. Lucie County', containedIn: { '@type': 'State', name: 'Florida' } }
     ],
   }
 }

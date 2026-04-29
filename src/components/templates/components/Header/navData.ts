@@ -1,4 +1,4 @@
-import { subTypes } from '@configs/page-generation'
+import { subTypes, primaryCity } from '@configs/page-generation'
 
 /** South Florida cities served */
 const cities = [
@@ -23,16 +23,39 @@ const cities = [
   'Highland Beach',
   'Cooper City',
   'Palm Beach Gardens',
+  // Miami-Dade
+  'Miami Beach',
+  'Coral Gables',
+  'Aventura',
+  'Sunny Isles Beach',
+  'Doral',
+  'Hialeah',
+  'Homestead',
+  'Kendall',
+  'Pinecrest',
+  // Martin/St. Lucie
+  'Stuart',
+  'Palm City',
+  'Port St. Lucie',
+  'Fort Pierce',
+  'Jensen Beach',
+  'Hobe Sound',
+  'Tradition',
 ] as const
 
 const counties = [
   { name: 'Broward County', slug: 'broward-county' },
   { name: 'Palm Beach County', slug: 'palm-beach-county' },
+  { name: 'Miami-Dade County', slug: 'miami-dade-county' },
+  { name: 'Martin County', slug: 'martin-county' },
+  { name: 'St. Lucie County', slug: 'st-lucie-county' },
 ] as const
 
 function cityToSlug(city: string) {
   return city.toLowerCase().replace(/\s+/g, '-')
 }
+
+const primaryCitySlug = primaryCity.toLowerCase().replace(/\s+/g, '-')
 
 export const cityItems = cities.map((city) => ({
   label: city,
@@ -46,5 +69,5 @@ export const countyItems = counties.map((c) => ({
 
 export const propertyTypeItems = subTypes.map((st) => ({
   label: st.label,
-  href: `/coral-springs/${st.slug}`,
+  href: `/${primaryCitySlug}/${st.slug}`,
 }))

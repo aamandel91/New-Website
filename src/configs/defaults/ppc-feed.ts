@@ -3,6 +3,8 @@
  * Controls which area/sub-type pages qualify for paid search campaigns.
  */
 
+import { activeMarkets } from '@configs/page-generation'
+
 export interface PriceTier {
   label: string
   min: number
@@ -22,15 +24,15 @@ export interface PPCFeedConfig {
 }
 
 export const ppcFeedConfig: PPCFeedConfig = {
-  minAvgPrice: 700000,
+  minAvgPrice: 750000,
   minListings: 5,
   includeSubTypes: true,
   includeNeighborhoods: true,
   includeCities: false,
   excludeSubTypes: ['foreclosures', 'va-approved', 'fha-approved', 'rentals', 'land', 'one-acre-plus'],
-  targetAreas: ['Broward', 'Palm Beach'],
+  targetAreas: activeMarkets.flatMap(m => m.counties),
   priceTiers: [
-    { label: '$700K-$1M', min: 700000, max: 1000000 },
+    { label: '$750K-$1M', min: 750000, max: 1000000 },
     { label: '$1M-$1.5M', min: 1000000, max: 1500000 },
     { label: '$1.5M-$2M', min: 1500000, max: 2000000 },
     { label: '$2M+', min: 2000000, max: Infinity },

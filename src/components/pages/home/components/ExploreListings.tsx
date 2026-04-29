@@ -5,16 +5,34 @@ import Link from 'next/link'
 
 import { Box, Button, Typography } from '@mui/material'
 
+import { activeMarkets } from '@configs/page-generation'
+
 const METRO_AREAS = [
-  { key: 'miami-metro', label: 'MIAMI METRO', gradient: 'linear-gradient(135deg, #0F1621 0%, #1a3a4a 60%, #00B5AD 100%)', href: '/miami' },
+  { key: 'miami-metro', label: 'MIAMI METRO', gradient: 'linear-gradient(135deg, #0F1621 0%, #1a3a4a 60%, #00B5AD 100%)', href: '/search/gallery?area=miami-dade' },
   { key: 'broward-palm-beach', label: 'BROWARD / PALM BEACH METRO', gradient: 'linear-gradient(135deg, #1a3a4a 0%, #2c5364 60%, #0F1621 100%)', href: '/search/gallery?area=broward-palm-beach' },
-  { key: 'port-st-lucie', label: 'PORT ST LUCIE METRO', gradient: 'linear-gradient(135deg, #2c5364 0%, #203a43 60%, #0F1621 100%)', href: '/port-st-lucie' },
+  { key: 'port-st-lucie', label: 'PORT ST LUCIE METRO', gradient: 'linear-gradient(135deg, #2c5364 0%, #203a43 60%, #0F1621 100%)', href: '/search/gallery?area=st-lucie' },
   { key: 'orlando', label: 'ORLANDO METRO', gradient: 'linear-gradient(135deg, #0F1621 0%, #1b4332 60%, #2d6a4f 100%)', href: '/orlando' },
   { key: 'tampa-st-pete', label: 'TAMPA / ST PETE METRO', gradient: 'linear-gradient(135deg, #1a3a4a 0%, #0F1621 60%, #2c5364 100%)', href: '/tampa' },
   { key: 'sarasota', label: 'SARASOTA METRO', gradient: 'linear-gradient(135deg, #203a43 0%, #2c5364 60%, #0F1621 100%)', href: '/sarasota' },
   { key: 'sw-florida', label: 'SW FLORIDA', gradient: 'linear-gradient(135deg, #0F1621 0%, #2c5364 60%, #1a3a4a 100%)', href: '/search/gallery?area=sw-florida' },
   { key: 'florida-keys', label: 'FLORIDA KEYS', gradient: 'linear-gradient(135deg, #00B5AD 0%, #1a3a4a 60%, #0F1621 100%)', href: '/search/gallery?area=florida-keys' }
 ]
+
+function isActiveMarket(key: string): boolean {
+  const keyToMarketId: Record<string, string> = {
+    'miami-metro': 'south-florida',
+    'broward-palm-beach': 'south-florida',
+    'port-st-lucie': 'south-florida',
+    'orlando': 'orlando',
+    'tampa-st-pete': 'tampa-bay',
+    'sarasota': 'sarasota',
+    'sw-florida': 'naples-swfl',
+    'florida-keys': 'south-florida'
+  }
+  const marketId = keyToMarketId[key]
+  if (!marketId) return false
+  return activeMarkets.some(m => m.id === marketId)
+}
 
 const ExploreListings = () => {
   const [tileImages, setTileImages] = useState<Record<string, string>>({})
@@ -59,9 +77,11 @@ const ExploreListings = () => {
           const bgStyle = imageUrl
             ? `url(${imageUrl})`
             : area.gradient
+          const active = isActiveMarket(area.key)
+          const tileHref = active ? area.href : '#'
 
           return (
-            <Link key={area.key} href={area.href} style={{ textDecoration: 'none' }}>
+            <Link key={area.key} href={tileHref} style={{ textDecoration: 'none' }}>
               <Box
                 sx={{
                   height: { xs: '200px', sm: '250px', md: '300px' },
@@ -72,10 +92,11 @@ const ExploreListings = () => {
                   flexDirection: 'column',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  cursor: 'pointer',
+                  cursor: active ? 'pointer' : 'default',
+                  opacity: active ? 1 : 0.6,
                   transition: 'transform 0.3s ease',
                   '&:hover': {
-                    '& .tile-bg': { transform: 'scale(1.05)' }
+                    '& .tile-bg': { transform: active ? 'scale(1.05)' : 'none' }
                   },
                   '&::before': {
                     content: '""',
@@ -97,6 +118,27 @@ const ExploreListings = () => {
                     transition: 'transform 0.3s ease'
                   }}
                 />
+                {!active && (
+                  <Box
+                    sx={{
+                      position: 'absolute',
+                      top: 12,
+                      right: 12,
+                      bgcolor: 'rgba(0,0,0,0.7)',
+                      color: '#fff',
+                      px: 1.5,
+                      py: 0.5,
+                      borderRadius: 1,
+                      fontSize: '11px',
+                      fontWeight: 700,
+                      letterSpacing: '1px',
+                      textTransform: 'uppercase',
+                      zIndex: 3
+                    }}
+                  >
+                    Coming Soon
+                  </Box>
+                )}
                 <Typography
                   sx={{
                     color: '#fff',

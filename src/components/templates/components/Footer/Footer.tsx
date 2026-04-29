@@ -9,6 +9,7 @@ import YouTubeIcon from '@mui/icons-material/YouTube'
 import { Box, Container, Grid2 as Grid, IconButton, Link, Stack, Typography } from '@mui/material'
 
 import { siteSettings } from '@/configs/defaults/site-settings'
+import { primaryCity } from '@configs/page-generation'
 
 const COLUMN_HEADING_SX = {
   color: 'white',
@@ -35,6 +36,7 @@ const SOCIAL_ICON_SX = {
 
 const Footer = () => {
   const phoneDigits = siteSettings.phone.replace(/\D/g, '')
+  const primaryCitySlug = primaryCity.toLowerCase().replace(/\s+/g, '-')
 
   return (
     <Box sx={{ bgcolor: '#0F1621' }}>
@@ -116,9 +118,9 @@ const Footer = () => {
           <Grid size={{ xs: 12, sm: 6, md: 3 }}>
             <Typography sx={COLUMN_HEADING_SX}>Navigation</Typography>
             <Link href="/search" sx={FOOTER_LINK_SX}>Search</Link>
-            <Link href="/coral-springs" sx={FOOTER_LINK_SX}>Cities</Link>
+            <Link href={`/${primaryCitySlug}`} sx={FOOTER_LINK_SX}>Cities</Link>
             <Link href="/search?state=FL" sx={FOOTER_LINK_SX}>Counties</Link>
-            <Link href="/coral-springs/single-family-homes" sx={FOOTER_LINK_SX}>Property Type</Link>
+            <Link href={`/${primaryCitySlug}/single-family-homes`} sx={FOOTER_LINK_SX}>Property Type</Link>
             <Link href="/sell" sx={FOOTER_LINK_SX}>Sell</Link>
             <Link href="/blog" sx={FOOTER_LINK_SX}>Blog</Link>
           </Grid>
@@ -127,10 +129,10 @@ const Footer = () => {
           <Grid size={{ xs: 12, sm: 6, md: 3 }}>
             <Typography sx={COLUMN_HEADING_SX}>Popular Searches</Typography>
             <Link href="/search?sort=createdOnHigh" sx={FOOTER_LINK_SX}>Newest Listings</Link>
-            <Link href="/coral-springs/single-family-homes" sx={FOOTER_LINK_SX}>Single Family Homes</Link>
-            <Link href="/coral-springs/condos" sx={FOOTER_LINK_SX}>Condos</Link>
-            <Link href="/coral-springs/luxury" sx={FOOTER_LINK_SX}>Luxury Homes</Link>
-            <Link href="/coral-springs/waterfront" sx={FOOTER_LINK_SX}>Waterfront Homes</Link>
+            <Link href={`/${primaryCitySlug}/single-family-homes`} sx={FOOTER_LINK_SX}>Single Family Homes</Link>
+            <Link href={`/${primaryCitySlug}/condos`} sx={FOOTER_LINK_SX}>Condos</Link>
+            <Link href={`/${primaryCitySlug}/luxury`} sx={FOOTER_LINK_SX}>Luxury Homes</Link>
+            <Link href={`/${primaryCitySlug}/waterfront`} sx={FOOTER_LINK_SX}>Waterfront Homes</Link>
           </Grid>
         </Grid>
       </Container>

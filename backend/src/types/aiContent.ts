@@ -3,6 +3,7 @@ export interface AIBlogPostRequest {
   city?: string
   tone?: string
   length?: number
+  marketId?: string
 }
 
 export interface AIBlogPostResponse {
@@ -29,6 +30,7 @@ export interface AIPageContentRequest {
   location?: string
   propertyType?: string
   tone?: string
+  marketId?: string
 }
 
 /**

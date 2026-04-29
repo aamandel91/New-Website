@@ -10,7 +10,7 @@ import StructuredData from '@shared/StructuredData'
 import PageWithSidebar from '@/components/layouts/PageWithSidebar'
 import CitySidebar from '@/components/sidebar/CitySidebar'
 
-import { subTypes, getSubTypeBySlug } from '@configs/page-generation'
+import { subTypes, getSubTypeBySlug, nearbyCitiesByCounty } from '@configs/page-generation'
 import { breadcrumbSchema, faqSchema, localBusinessSchema } from 'utils/structuredData'
 import {
   parseCleanSlug,
@@ -29,12 +29,6 @@ import {
   fetchSubTypeCount,
   fetchZipCodesForCity,
 } from 'services/pageGeneration'
-
-// Nearby cities for internal linking, grouped by county
-const nearbyCities: Record<string, string[]> = {
-  'Broward': ['Fort Lauderdale', 'Coral Springs', 'Pompano Beach', 'Deerfield Beach', 'Boca Raton', 'Hollywood', 'Plantation', 'Davie', 'Weston', 'Coconut Creek', 'Parkland', 'Sunrise', 'Tamarac', 'Lighthouse Point'],
-  'Palm Beach': ['West Palm Beach', 'Boca Raton', 'Delray Beach', 'Boynton Beach', 'Palm Beach Gardens', 'Jupiter', 'Wellington', 'Lake Worth'],
-}
 
 export const revalidate = 300
 
@@ -419,12 +413,10 @@ async function renderCityPage(
 
           {/* Nearby Cities */}
           {(() => {
-            const nearby = Object.entries(nearbyCities)
-              .filter(([, cities]) => cities.some((c) => c.toLowerCase() === cityName.toLowerCase()))
-              .flatMap(([, cities]) => cities)
-              .filter((c) => c.toLowerCase() !== cityName.toLowerCase())
-            if (nearby.length === 0) return null
+            const allNearbyCities = Object.values(nearbyCitiesByCounty).flat()
+            const nearby = allNearbyCities.filter(c => c.toLowerCase() !== cityName.toLowerCase())
             const unique = [...new Set(nearby)]
+            if (unique.length === 0) return null
             return (
               <Box sx={{ mt: 4 }}>
                 <Typography variant="h5" gutterBottom>

@@ -3,7 +3,7 @@ import { Anthropic } from '@anthropic-ai/sdk'
 import { BlogRepository } from '../repository/blogs.js'
 import type { Blog, CreateBlogInput, BlogFilters, AISuggestions } from '../types/blog.js'
 import { deleteFromCloudinary } from '../utils/cloudinary.js'
-import { SOUTH_FLORIDA_CONTEXT } from '../utils/aiPromptContext.js'
+import { getMarketContext } from '../utils/aiPromptContext.js'
 
 @injectable()
 export class BlogService {
@@ -100,7 +100,7 @@ Make sure the suggestions are relevant to South Florida real estate and property
     const message = await this.anthropic.messages.create({
       model: 'claude-3-5-sonnet-20241022',
       max_tokens: 1024,
-      system: SOUTH_FLORIDA_CONTEXT,
+      system: getMarketContext('south-florida'),
       messages: [
         {
           role: 'user',
