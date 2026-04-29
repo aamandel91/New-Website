@@ -207,14 +207,9 @@ export function getSubTypeBySlug(slug: string): SubTypeConfig | undefined {
 
 /** County slug helpers */
 export function countyToSlug(county: string): string {
-  return `${county.toLowerCase().replace(/\s+/g, '-')}-county`
+  return `${county.toLowerCase().replace(/\./g, '').replace(/\s+/g, '-')}-county`
 }
 
 export function slugToCounty(slug: string): string | undefined {
-  const name = slug
-    .replace(/-county$/, '')
-    .split('-')
-    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
-    .join(' ')
-  return targetCounties.includes(name) ? name : undefined
+  return targetCounties.find((c) => countyToSlug(c) === slug)
 }
