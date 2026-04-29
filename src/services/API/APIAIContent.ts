@@ -76,6 +76,26 @@ export interface BulkPageGenerationResult {
   }>
 }
 
+export interface CityLocation {
+  id: number
+  name: string
+  county: string
+}
+
+export interface ZipLocation {
+  id: number
+  zip: string
+  city: string
+  county: string
+}
+
+export interface NeighborhoodLocation {
+  id: number
+  name: string
+  city: string
+  county: string
+}
+
 class APIAIContent extends APIBase {
   /**
    * Generate a blog post with AI
@@ -149,6 +169,40 @@ class APIAIContent extends APIBase {
       method: 'POST',
       body: JSON.stringify(request)
     })
+  }
+
+  /**
+   * List Broward + Palm Beach cities from Repliers (for the bulk-pages picker).
+   */
+  async getLocationCities(): Promise<CityLocation[]> {
+    const response = await this.fetchJSON<{ cities: CityLocation[] }>(
+      '/ai-content/locations/cities'
+    )
+    return response.cities
+  }
+
+  /**
+   * List zip codes in the target counties.
+   */
+  async getLocationZipCodes(): Promise<ZipLocation[]> {
+    const response = await this.fetchJSON<{ zipcodes: ZipLocation[] }>(
+      '/ai-content/locations/zipcodes'
+    )
+    return response.zipcodes
+  }
+
+  /**
+   * List neighborhoods (optionally filtered by parent city) in the target
+   * counties.
+   */
+  async getLocationNeighborhoods(
+    city?: string
+  ): Promise<NeighborhoodLocation[]> {
+    const qs = city ? `?city=${encodeURIComponent(city)}` : ''
+    const response = await this.fetchJSON<{
+      neighborhoods: NeighborhoodLocation[]
+    }>(`/ai-content/locations/neighborhoods${qs}`)
+    return response.neighborhoods
   }
 }
 

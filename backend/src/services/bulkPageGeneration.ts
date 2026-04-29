@@ -1,7 +1,7 @@
 import { injectable, inject } from 'tsyringe'
-import type { Knex } from 'knex'
 import { ContentPagesRepository } from '../repository/contentPages.js'
 import { AIContentService } from './aiContent.js'
+import { RepliersLocationsService } from './repliersLocations.js'
 import type {
   CreateContentPageInput,
   ContentPage
@@ -16,6 +16,7 @@ interface LocationData {
   id: number
   name: string
   type: 'city' | 'zipcode' | 'neighborhood'
+  /** For zipcodes/neighborhoods: the parent city name. */
   state?: string
   county?: string
 }
@@ -29,9 +30,10 @@ interface PropertyTypeData {
 @injectable()
 export class BulkPageGenerationService {
   constructor(
-    @inject('db') private db: Knex,
     @inject(ContentPagesRepository) private pagesRepo: ContentPagesRepository,
-    @inject(AIContentService) private aiService: AIContentService
+    @inject(AIContentService) private aiService: AIContentService,
+    @inject(RepliersLocationsService)
+    private locationsService: RepliersLocationsService
   ) {}
 
   /**
@@ -95,63 +97,46 @@ export class BulkPageGenerationService {
   }
 
   /**
-   * Get cities data
+   * Get cities data from the Repliers Locations API.
+   * Listings live in Repliers — not a local DB — so we fetch the canonical
+   * Broward + Palm Beach city list there and match against the IDs the
+   * UI passed in.
    */
   private async getCitiesData(ids: number[]): Promise<LocationData[]> {
-    // This assumes you have a cities table or can query from listings
-    const cities = await this.db('listings')
-      .select('city as name')
-      .select(this.db.raw('ROW_NUMBER() OVER (ORDER BY city) as id'))
-      .whereIn('city', ids.map((id) => id.toString()))
-      .groupBy('city')
-      .limit(100)
-
-    return cities.map((city: any) => ({
-      id: city.id,
-      name: city.name,
-      type: 'city' as const
+    const cities = await this.locationsService.getCitiesByIds(ids)
+    return cities.map((c) => ({
+      id: c.id,
+      name: c.name,
+      type: 'city' as const,
+      county: c.county,
     }))
   }
 
   /**
-   * Get zip codes data
+   * Get zip codes data from the Repliers Locations API.
    */
   private async getZipCodesData(ids: number[]): Promise<LocationData[]> {
-    const zipCodes = await this.db('listings')
-      .select('postal_code as name')
-      .select('city')
-      .select(this.db.raw('ROW_NUMBER() OVER (ORDER BY postal_code) as id'))
-      .whereIn('postal_code', ids.map((id) => id.toString()))
-      .groupBy('postal_code', 'city')
-      .limit(100)
-
-    return zipCodes.map((zip: any) => ({
-      id: zip.id,
-      name: zip.name,
+    const zips = await this.locationsService.getZipCodesByIds(ids)
+    return zips.map((z) => ({
+      id: z.id,
+      name: z.zip,
       type: 'zipcode' as const,
-      state: zip.city
+      state: z.city, // parent city (existing field name reused)
+      county: z.county,
     }))
   }
 
   /**
-   * Get neighborhoods data
+   * Get neighborhoods data from the Repliers Locations API.
    */
   private async getNeighborhoodsData(ids: number[]): Promise<LocationData[]> {
-    // Assuming you have neighborhood data in listings or a separate table
-    const neighborhoods = await this.db('listings')
-      .select('area as name')
-      .select('city')
-      .select(this.db.raw('ROW_NUMBER() OVER (ORDER BY area) as id'))
-      .whereIn('area', ids.map((id) => id.toString()))
-      .whereNotNull('area')
-      .groupBy('area', 'city')
-      .limit(100)
-
-    return neighborhoods.map((n: any) => ({
+    const neighborhoods = await this.locationsService.getNeighborhoodsByIds(ids)
+    return neighborhoods.map((n) => ({
       id: n.id,
       name: n.name,
       type: 'neighborhood' as const,
-      state: n.city
+      state: n.city,
+      county: n.county,
     }))
   }
 
@@ -229,13 +214,15 @@ export class BulkPageGenerationService {
       metaTitle = title
       metaDescription = `Find ${title.toLowerCase()} with detailed listings, photos, and market insights.`
     } else {
-      // Generate with AI
-      const aiContent = await this.aiService.generatePageContent({
+      // Generate with AI. Build the request without spreading undefineds so
+      // we stay compatible with `exactOptionalPropertyTypes: true`.
+      const aiRequest: import('../types/aiContent.js').AIPageContentRequest = {
         pageType,
         keyword,
-        location: 'type' in item ? (item as LocationData).name : undefined,
-        propertyType: 'slug' in item ? (item as PropertyTypeData).name : undefined
-      })
+      }
+      if ('type' in item) aiRequest.location = (item as LocationData).name
+      if ('slug' in item) aiRequest.propertyType = (item as PropertyTypeData).name
+      const aiContent = await this.aiService.generatePageContent(aiRequest)
 
       content = aiContent.content
       metaTitle = aiContent.meta_title

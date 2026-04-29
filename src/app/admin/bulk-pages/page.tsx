@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import {
   Box,
   Container,
@@ -33,7 +33,10 @@ import CheckIcon from '@mui/icons-material/CheckCircle'
 import ErrorIcon from '@mui/icons-material/Error'
 import APIAIContent, {
   type BulkPagePreview,
-  type BulkPageGenerationResult
+  type BulkPageGenerationResult,
+  type CityLocation,
+  type ZipLocation,
+  type NeighborhoodLocation
 } from '@/services/API/APIAIContent'
 
 const PAGE_TYPES = [
@@ -70,17 +73,129 @@ export default function BulkPagesPage() {
   const [preview, setPreview] = useState<BulkPagePreview[]>([])
   const [generationResult, setGenerationResult] = useState<BulkPageGenerationResult | null>(null)
 
-  // Mock data for cities/zipcodes/neighborhoods (in production, this would come from API)
-  const [locationInput, setLocationInput] = useState('')
+  // Live data from Repliers Locations API — fetched on demand by pageType.
+  const [cities, setCities] = useState<CityLocation[]>([])
+  const [zipcodes, setZipcodes] = useState<ZipLocation[]>([])
+  const [neighborhoods, setNeighborhoods] = useState<NeighborhoodLocation[]>([])
+  const [locationsLoading, setLocationsLoading] = useState(false)
+  // Filter for the neighborhoods picker — narrows by parent city.
+  const [neighborhoodCityFilter, setNeighborhoodCityFilter] = useState<string>('')
+  // Free-text filter to search the visible list.
+  const [filterText, setFilterText] = useState('')
+
+  // Reset all selection state whenever the page type changes.
+  const resetSelection = () => {
+    setPreview([])
+    setSelectedIds([])
+    setFilterText('')
+  }
+
+  // Load the appropriate location list when pageType changes (and on mount).
+  useEffect(() => {
+    let cancelled = false
+    const load = async () => {
+      if (pageType === 'property_type') return
+      try {
+        setLocationsLoading(true)
+        if (pageType === 'city') {
+          const list = await APIAIContent.getLocationCities()
+          if (!cancelled) setCities(list)
+        } else if (pageType === 'zipcode') {
+          const list = await APIAIContent.getLocationZipCodes()
+          if (!cancelled) setZipcodes(list)
+        } else if (pageType === 'neighborhood') {
+          const list = await APIAIContent.getLocationNeighborhoods(
+            neighborhoodCityFilter || undefined
+          )
+          if (!cancelled) setNeighborhoods(list)
+        }
+      } catch (err: any) {
+        if (!cancelled) {
+          setError(err?.message || 'Failed to load locations')
+        }
+      } finally {
+        if (!cancelled) setLocationsLoading(false)
+      }
+    }
+    load()
+    return () => {
+      cancelled = true
+    }
+  }, [pageType, neighborhoodCityFilter])
+
+  // Make sure we have a city list available for the neighborhood city dropdown.
+  useEffect(() => {
+    if (pageType !== 'neighborhood') return
+    if (cities.length > 0) return
+    let cancelled = false
+    APIAIContent.getLocationCities()
+      .then((list) => {
+        if (!cancelled) setCities(list)
+      })
+      .catch((err) => {
+        if (!cancelled) setError(err?.message || 'Failed to load cities')
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [pageType, cities.length])
+
+  // Items shown in the picker for the current pageType, after applying the
+  // free-text filter.
+  const visibleItems = useMemo(() => {
+    const text = filterText.trim().toLowerCase()
+    const matches = (haystack: string) =>
+      !text || haystack.toLowerCase().includes(text)
+
+    if (pageType === 'city') {
+      return cities
+        .filter((c) => matches(`${c.name} ${c.county}`))
+        .map((c) => ({
+          id: c.id,
+          primary: c.name,
+          secondary: `${c.county} County`,
+        }))
+    }
+    if (pageType === 'zipcode') {
+      return zipcodes
+        .filter((z) => matches(`${z.zip} ${z.city} ${z.county}`))
+        .map((z) => ({
+          id: z.id,
+          primary: z.zip,
+          secondary: `${z.city}, ${z.county} County`,
+        }))
+    }
+    if (pageType === 'neighborhood') {
+      return neighborhoods
+        .filter((n) => matches(`${n.name} ${n.city}`))
+        .map((n) => ({
+          id: n.id,
+          primary: n.name,
+          secondary: `${n.city}, ${n.county} County`,
+        }))
+    }
+    return []
+  }, [pageType, cities, zipcodes, neighborhoods, filterText])
+
+  const handleToggleId = (id: number) => {
+    setSelectedIds((prev) =>
+      prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]
+    )
+  }
+
+  const handleSelectAllVisible = () => {
+    const visibleIds = visibleItems.map((it) => it.id)
+    const allSelected = visibleIds.every((id) => selectedIds.includes(id))
+    if (allSelected) {
+      setSelectedIds((prev) => prev.filter((id) => !visibleIds.includes(id)))
+    } else {
+      setSelectedIds((prev) => Array.from(new Set([...prev, ...visibleIds])))
+    }
+  }
 
   const handlePreview = async () => {
-    if (pageType === 'property_type' && selectedIds.length === 0) {
-      setError('Please select at least one property type')
-      return
-    }
-
-    if (pageType !== 'property_type' && !locationInput) {
-      setError('Please enter location IDs (comma-separated)')
+    if (selectedIds.length === 0) {
+      setError(`Please select at least one ${pageType.replace('_', ' ')}`)
       return
     }
 
@@ -89,18 +204,9 @@ export default function BulkPagesPage() {
       setError(null)
       setPreview([])
 
-      const ids = pageType === 'property_type'
-        ? selectedIds
-        : locationInput.split(',').map(id => parseInt(id.trim())).filter(id => !isNaN(id))
-
-      if (ids.length === 0) {
-        setError('Please provide valid IDs')
-        return
-      }
-
       const previewData = await APIAIContent.previewBulkPages({
         pageType: pageType as any,
-        selectedIds: ids,
+        selectedIds,
         template: useTemplate ? template : undefined,
         autoPublish
       })
@@ -129,13 +235,9 @@ export default function BulkPagesPage() {
       setSuccess(null)
       setGenerationResult(null)
 
-      const ids = pageType === 'property_type'
-        ? selectedIds
-        : locationInput.split(',').map(id => parseInt(id.trim())).filter(id => !isNaN(id))
-
       const result = await APIAIContent.generateBulkPages({
         pageType: pageType as any,
-        selectedIds: ids,
+        selectedIds,
         template: useTemplate ? template : undefined,
         autoPublish
       })
@@ -144,18 +246,12 @@ export default function BulkPagesPage() {
       setSuccess(`Successfully generated ${result.generated} pages!`)
       setPreview([])
       setSelectedIds([])
-      setLocationInput('')
+      setFilterText('')
     } catch (err: any) {
       setError(err?.message || 'Failed to generate pages')
     } finally {
       setLoading(false)
     }
-  }
-
-  const handleTogglePropertyType = (id: number) => {
-    setSelectedIds((prev) =>
-      prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]
-    )
   }
 
   return (
@@ -196,9 +292,7 @@ export default function BulkPagesPage() {
                     label="Page Type"
                     onChange={(e) => {
                       setPageType(e.target.value)
-                      setPreview([])
-                      setSelectedIds([])
-                      setLocationInput('')
+                      resetSelection()
                     }}
                   >
                     {PAGE_TYPES.map((type) => (
@@ -223,7 +317,7 @@ export default function BulkPagesPage() {
                         <ListItem key={pt.id} dense disablePadding>
                           <ListItemButton
                             dense
-                            onClick={() => handleTogglePropertyType(pt.id)}
+                            onClick={() => handleToggleId(pt.id)}
                           >
                             <ListItemIcon>
                               <Checkbox
@@ -240,16 +334,110 @@ export default function BulkPagesPage() {
                     </List>
                   </Box>
                 ) : (
-                  <TextField
-                    label="Location IDs"
-                    fullWidth
-                    multiline
-                    rows={4}
-                    value={locationInput}
-                    onChange={(e) => setLocationInput(e.target.value)}
-                    placeholder="Enter comma-separated IDs (e.g., 1, 2, 3, 4)"
-                    helperText="In production, this would be a searchable dropdown"
-                  />
+                  <Box>
+                    <Stack
+                      direction="row"
+                      alignItems="center"
+                      justifyContent="space-between"
+                      sx={{ mb: 1 }}
+                    >
+                      <Typography variant="subtitle2">
+                        {pageType === 'city' && 'Select Cities'}
+                        {pageType === 'zipcode' && 'Select Zip Codes'}
+                        {pageType === 'neighborhood' && 'Select Neighborhoods'}
+                      </Typography>
+                      <Typography variant="caption" color="text.secondary">
+                        {selectedIds.length} selected
+                      </Typography>
+                    </Stack>
+
+                    {pageType === 'neighborhood' && (
+                      <FormControl fullWidth size="small" sx={{ mb: 1 }}>
+                        <InputLabel>Filter by City</InputLabel>
+                        <Select
+                          value={neighborhoodCityFilter}
+                          label="Filter by City"
+                          onChange={(e) => {
+                            setNeighborhoodCityFilter(e.target.value as string)
+                            setSelectedIds([])
+                          }}
+                        >
+                          <MenuItem value="">All cities</MenuItem>
+                          {cities.map((c) => (
+                            <MenuItem key={c.id} value={c.name}>
+                              {c.name} ({c.county})
+                            </MenuItem>
+                          ))}
+                        </Select>
+                      </FormControl>
+                    )}
+
+                    <TextField
+                      placeholder="Search..."
+                      size="small"
+                      fullWidth
+                      value={filterText}
+                      onChange={(e) => setFilterText(e.target.value)}
+                      sx={{ mb: 1 }}
+                    />
+
+                    {locationsLoading ? (
+                      <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
+                        <CircularProgress size={24} />
+                      </Box>
+                    ) : visibleItems.length === 0 ? (
+                      <Alert severity="info">
+                        {filterText
+                          ? 'No matches — try a different search.'
+                          : 'No locations available.'}
+                      </Alert>
+                    ) : (
+                      <>
+                        <Button
+                          size="small"
+                          onClick={handleSelectAllVisible}
+                          sx={{ mb: 0.5 }}
+                        >
+                          {visibleItems.every((it) =>
+                            selectedIds.includes(it.id)
+                          )
+                            ? 'Deselect visible'
+                            : 'Select all visible'}
+                        </Button>
+                        <List
+                          sx={{
+                            maxHeight: 400,
+                            overflow: 'auto',
+                            border: '1px solid',
+                            borderColor: 'divider',
+                            borderRadius: 1,
+                          }}
+                        >
+                          {visibleItems.map((item) => (
+                            <ListItem key={item.id} dense disablePadding>
+                              <ListItemButton
+                                dense
+                                onClick={() => handleToggleId(item.id)}
+                              >
+                                <ListItemIcon>
+                                  <Checkbox
+                                    edge="start"
+                                    checked={selectedIds.includes(item.id)}
+                                    tabIndex={-1}
+                                    disableRipple
+                                  />
+                                </ListItemIcon>
+                                <ListItemText
+                                  primary={item.primary}
+                                  secondary={item.secondary}
+                                />
+                              </ListItemButton>
+                            </ListItem>
+                          ))}
+                        </List>
+                      </>
+                    )}
+                  </Box>
                 )}
 
                 <Divider />

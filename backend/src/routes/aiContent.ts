@@ -3,6 +3,7 @@ import { container } from 'tsyringe'
 import type { Middleware } from 'koa-jwt'
 import { AIContentService } from '../services/aiContent.js'
 import { BulkPageGenerationService } from '../services/bulkPageGeneration.js'
+import { RepliersLocationsService } from '../services/repliersLocations.js'
 import { RoleMiddlewareCreator } from '../providers/middleware/role.js'
 import { UserRole } from '../constants.js'
 import type {
@@ -137,5 +138,53 @@ router.post('/bulk-pages/generate', authMiddleware, roleMiddleware([UserRole.Adm
   const result = await service.generatePages(orgId, request)
   ctx.body = result
 })
+
+/**
+ * GET /api/ai-content/locations/cities
+ * List all Broward + Palm Beach cities (from Repliers /locations) for the
+ * Bulk Page Generator UI. Returns sequential IDs the UI can pass back as
+ * selectedIds when calling /preview or /generate.
+ */
+router.get(
+  '/locations/cities',
+  authMiddleware,
+  roleMiddleware([UserRole.Admin, UserRole.Root]),
+  async (ctx) => {
+    const service = ctx.state.container.resolve(RepliersLocationsService)
+    const cities = await service.getCities()
+    ctx.body = { cities }
+  }
+)
+
+/**
+ * GET /api/ai-content/locations/zipcodes
+ * List all zip codes in the target counties.
+ */
+router.get(
+  '/locations/zipcodes',
+  authMiddleware,
+  roleMiddleware([UserRole.Admin, UserRole.Root]),
+  async (ctx) => {
+    const service = ctx.state.container.resolve(RepliersLocationsService)
+    const zipcodes = await service.getZipCodes()
+    ctx.body = { zipcodes }
+  }
+)
+
+/**
+ * GET /api/ai-content/locations/neighborhoods?city=Boca+Raton
+ * List neighborhoods, optionally filtered to a single city.
+ */
+router.get(
+  '/locations/neighborhoods',
+  authMiddleware,
+  roleMiddleware([UserRole.Admin, UserRole.Root]),
+  async (ctx) => {
+    const service = ctx.state.container.resolve(RepliersLocationsService)
+    const cityFilter = (ctx.query['city'] as string | undefined) || undefined
+    const neighborhoods = await service.getNeighborhoods(cityFilter)
+    ctx.body = { neighborhoods }
+  }
+)
 
 export default router
