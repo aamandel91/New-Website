@@ -3,6 +3,8 @@
  * Improves search engine understanding and enables rich snippets
  */
 
+import { siteSettings } from '@/configs/defaults/site-settings'
+
 export interface StructuredDataProps {
   [key: string]: any
 }
@@ -14,33 +16,52 @@ export function organizationSchema(): StructuredDataProps {
   return {
     '@context': 'https://schema.org',
     '@type': 'RealEstateAgent',
-    name: 'Florida Home Finder',
-    description: 'Find your dream home in Florida with expert real estate agents',
+    name: 'The Mandel Team at Florida Home Finder',
+    description:
+      'South Florida real estate experts serving Broward and Palm Beach County. Find homes for sale in Boca Raton, Parkland, Coral Springs, Delray Beach, and beyond.',
     url: 'https://floridahomefinder.com',
     logo: 'https://floridahomefinder.com/logo.png',
+    telephone: '+19546100563',
+    email: 'info@floridahomefinder.com',
+    foundingDate: '2010',
+    slogan: 'The agent you work with matters.',
+    numberOfEmployees: {
+      '@type': 'QuantitativeValue',
+      value: 18,
+    },
     sameAs: [
-      'https://www.facebook.com/floridahomefinder',
-      'https://www.instagram.com/floridahomefinder',
-      'https://www.linkedin.com/company/florida-home-finder',
+      siteSettings.social.facebook,
+      siteSettings.social.instagram,
+      siteSettings.social.linkedin,
+      siteSettings.social.youtube,
+      siteSettings.social.zillow,
     ],
     address: {
       '@type': 'PostalAddress',
-      streetAddress: 'Your Address Here',
-      addressLocality: 'Florida',
+      streetAddress: '10101 W Sample Rd',
+      addressLocality: 'Coral Springs',
       addressRegion: 'FL',
-      postalCode: '00000',
+      postalCode: '33065',
       addressCountry: 'US',
     },
     contactPoint: {
       '@type': 'ContactPoint',
-      telephone: '+1-XXX-XXX-XXXX',
+      telephone: '+19546100563',
       contactType: 'Customer Service',
       email: 'info@floridahomefinder.com',
     },
-    areaServed: {
-      '@type': 'State',
-      name: 'Florida',
-    },
+    areaServed: [
+      {
+        '@type': 'AdministrativeArea',
+        name: 'Broward County',
+        containedIn: { '@type': 'State', name: 'Florida' },
+      },
+      {
+        '@type': 'AdministrativeArea',
+        name: 'Palm Beach County',
+        containedIn: { '@type': 'State', name: 'Florida' },
+      },
+    ],
   }
 }
 
@@ -180,6 +201,9 @@ export function localBusinessSchema(location: {
     '@type': 'LocalBusiness',
     name: `Florida Home Finder - ${location.city}`,
     description: `Find homes in ${location.city}, ${location.state}`,
+    url: 'https://soldbymandelteam.com',
+    telephone: siteSettings.phone,
+    priceRange: '$$$$',
     address: {
       '@type': 'PostalAddress',
       addressLocality: location.city,
@@ -191,6 +215,22 @@ export function localBusinessSchema(location: {
       '@type': 'City',
       name: location.city,
     },
+    openingHoursSpecification: [
+      {
+        '@type': 'OpeningHoursSpecification',
+        dayOfWeek: [
+          'Monday',
+          'Tuesday',
+          'Wednesday',
+          'Thursday',
+          'Friday',
+          'Saturday',
+          'Sunday',
+        ],
+        opens: '08:00',
+        closes: '20:00',
+      },
+    ],
   }
 }
 
