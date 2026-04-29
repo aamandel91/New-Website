@@ -73,19 +73,27 @@ class APIBase {
 
     // Always parse the JSON response
     let data: any = null
+    let parseError: unknown = null
     try {
       data = await response.json()
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
-      // TODO: handle error
+      parseError = error
+      // Body may legitimately be empty (e.g. 204) — only log unexpected failures.
+      if (response?.ok) {
+        console.error('Failed to parse JSON response', request, error)
+      }
     }
 
     if (response?.ok) {
       return data as T
     } else {
-      // Reject with an object containing both status and JSON body
-      // WARN: fix NextJS error handling
-      return Promise.reject({ status: response.status, data })
+      // Reject with an object containing both status and JSON body so callers
+      // can decide. Preserve the original parse error for debugging.
+      return Promise.reject({
+        status: response.status,
+        data,
+        parseError
+      })
     }
   }
 }

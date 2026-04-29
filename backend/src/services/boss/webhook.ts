@@ -584,21 +584,28 @@ export default class BossWebhooksService {
     }
     debug('[Worker: catchProcessingError]: failed with error: %s', status)
 
-    // TODO: fix this binding. Error Doesn't make it to Google logs
-    const loggerFunc =
-      error instanceof ApiWarning
-        ? this.loggerGlobal.warn.bind(this.loggerGlobal)
-        : this.loggerGlobal.error.bind(this.loggerGlobal)
-    loggerFunc(
-      {
-        data: {
-          error,
-          id
-        }
-      },
-      '[BossWebhooksService]: Failed with Error: %s',
-      status
-    )
+    // Pino requires the `err` key on the merging object for proper Error
+    // serialization (otherwise the stack trace is dropped on the way to
+    // Google Cloud Logging). Call the method directly on `loggerGlobal`
+    // instead of via a bound reference so pino's `this`-based child logger
+    // context survives intact.
+    const errPayload = {
+      err: error instanceof Error ? error : new Error(String(error)),
+      id
+    }
+    if (error instanceof ApiWarning) {
+      this.loggerGlobal.warn(
+        errPayload,
+        '[BossWebhooksService]: Failed with Error: %s',
+        status
+      )
+    } else {
+      this.loggerGlobal.error(
+        errPayload,
+        '[BossWebhooksService]: Failed with Error: %s',
+        status
+      )
+    }
     await this.webhooksRepo.update(id, {
       status
     })

@@ -11,6 +11,7 @@ import React, {
 
 import { APIImageFavorites } from 'services/API'
 import { useUser } from 'providers/UserProvider'
+import useSnackbar from 'hooks/useSnackbar'
 
 type ImageFavoritesContextType = {
   images: string[]
@@ -33,6 +34,7 @@ const ImageFavoritesProvider = ({ children }: { children: ReactNode }) => {
   const [processing, setProcessing] = useState(false)
   const [removeId, setRemoveId] = useState<string | null>(null)
   const { logged, userRole } = useUser()
+  const { showSnackbar } = useSnackbar()
 
   const fetch = async () => {
     try {
@@ -52,10 +54,12 @@ const ImageFavoritesProvider = ({ children }: { children: ReactNode }) => {
       const { result } = await APIImageFavorites.addImage(id)
       if (result) {
         setImages((prevImages) => [...prevImages, id])
+      } else {
+        showSnackbar('Failed to add favorite', 'error')
       }
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    } catch (e) {
-      // TODO: handle error
+    } catch (error) {
+      console.error('Error adding favorite image', { id, error })
+      showSnackbar('Failed to add favorite', 'error')
     } finally {
       setProcessing(false)
     }
@@ -67,11 +71,14 @@ const ImageFavoritesProvider = ({ children }: { children: ReactNode }) => {
       const { result } = await APIImageFavorites.deleteImage(id)
       if (result) {
         setImages((prevImages) => prevImages.filter((image) => image !== id))
+      } else {
+        showSnackbar('Failed to remove favorite', 'error')
       }
       setRemoveId(null)
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    } catch (e) {
-      // TODO: handle error
+    } catch (error) {
+      console.error('Error removing favorite image', { id, error })
+      showSnackbar('Failed to remove favorite', 'error')
+      setRemoveId(null)
     } finally {
       setProcessing(false)
     }

@@ -1,7 +1,10 @@
 import axios, { Axios, AxiosRequestConfig } from 'axios'
 import { inject, injectable } from 'tsyringe'
 import type { AppConfig } from '../config.js'
+import _debug from 'debug'
 import { ApiError } from '../lib/errors.js'
+
+const debug = _debug('repliers:services:google')
 export type ApiMethod = 'GET'
 export interface ApiRequest {
   [key: string]: unknown
@@ -76,19 +79,25 @@ export default class GoogledService {
       ...options,
       params
     }
-    return this.axios
-      .request(options)
-      .then((axiosResponse) => {
-        // TODO: error handling
-        return axiosResponse.data
-      })
-      .catch((e) => {
-        throw new ApiError(
-          'Google API error',
-          e.response.status,
-          e.response.data
-        )
-      })
+    try {
+      const axiosResponse = await this.axios.request(options)
+      return axiosResponse.data
+    } catch (e: any) {
+      const status = e?.response?.status
+      const responseData = e?.response?.data
+      debug(
+        '[Google] request failed: url=%s params=%o status=%s message=%s',
+        url,
+        params,
+        status,
+        e?.message
+      )
+      throw new ApiError(
+        'Google API error',
+        status,
+        responseData ?? { message: e?.message ?? 'Unknown error' }
+      )
+    }
   }
   public async autocomplete(params: GoogleAutocompleteSuggestRequest) {
     return this.request<GoogleAutocompleteResponse>(
