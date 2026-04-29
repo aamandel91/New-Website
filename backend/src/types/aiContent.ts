@@ -71,3 +71,32 @@ export interface BulkPageGenerationResult {
     error: string
   }>
 }
+
+export interface CrossProductCombination {
+  city: string
+  subtype: string
+  county?: string
+  subtypeLabel?: string
+}
+
+export interface CrossProductGenerationRequest {
+  combinations: CrossProductCombination[]
+  autoPublish?: boolean
+}
+
+export interface CrossProductGenerationResult {
+  generated: number
+  skipped: number
+  failed: Array<{
+    city: string
+    subtype: string
+    error: string
+  }>
+  pages: Array<{
+    id: string
+    slug: string
+    city: string
+    subtype: string
+    status: 'draft' | 'published' | 'skipped'
+  }>
+}

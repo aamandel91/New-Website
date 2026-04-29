@@ -8,7 +8,9 @@ import type {
 } from '../types/contentPage.js'
 import type {
   BulkPageGenerationRequest,
-  BulkPageGenerationResult
+  BulkPageGenerationResult,
+  CrossProductGenerationRequest,
+  CrossProductGenerationResult
 } from '../types/aiContent.js'
 import { ApiError } from '../lib/errors.js'
 
@@ -258,6 +260,122 @@ export class BulkPageGenerationService {
     }
 
     return page
+  }
+
+  /**
+   * Generate one CMS page per (city, subtype) combination.
+   *
+   * Slug pattern: `{citySlug}/{subtypeSlug}` — must match what
+   * SEOCoverageMap reads back from the page list and what the public
+   * `[...slugs]` route expects.
+   *
+   * Idempotent: if a page with the target slug already exists for this
+   * org, the combo is reported as `skipped` and not regenerated.
+   */
+  async generateCrossProductPages(
+    orgId: bigint,
+    request: CrossProductGenerationRequest
+  ): Promise<CrossProductGenerationResult> {
+    const combinations = request.combinations || []
+    if (combinations.length === 0) {
+      throw new ApiError('At least one combination is required', { status: 400 })
+    }
+
+    const result: CrossProductGenerationResult = {
+      generated: 0,
+      skipped: 0,
+      failed: [],
+      pages: []
+    }
+
+    for (const combo of combinations) {
+      const city = (combo.city || '').trim()
+      const subtype = (combo.subtype || '').trim()
+      if (!city || !subtype) {
+        result.failed.push({
+          city: combo.city || '',
+          subtype: combo.subtype || '',
+          error: 'Missing city or subtype'
+        })
+        continue
+      }
+
+      const citySlug = this.slugify(city)
+      const subtypeSlug = this.slugify(subtype)
+      const slug = `${citySlug}/${subtypeSlug}`
+      const subtypeLabel = combo.subtypeLabel || this.titleize(subtype)
+      const title = `${subtypeLabel} in ${city}`
+
+      try {
+        const existing = await this.pagesRepo.getPageBySlug(orgId, slug)
+        if (existing) {
+          result.skipped += 1
+          result.pages.push({
+            id: String(existing.id),
+            slug: existing.slug,
+            city,
+            subtype: subtypeSlug,
+            status: 'skipped'
+          })
+          continue
+        }
+
+        const aiContent = await this.aiService.generatePageContent({
+          pageType: 'city_subtype',
+          keyword: `${subtypeLabel} in ${city}, FL`,
+          location: combo.county ? `${city}, ${combo.county} County, FL` : `${city}, FL`,
+          propertyType: subtypeLabel
+        })
+
+        // Default to draft so a human can review AI-generated SEO copy
+        // before it goes live. autoPublish is opt-in (mirrors single-axis).
+        const pageInput: CreateContentPageInput = {
+          title,
+          slug,
+          content: aiContent.content as any,
+          status: request.autoPublish ? 'published' : 'draft',
+          meta_title: aiContent.meta_title,
+          meta_description: aiContent.meta_description,
+          meta_keywords: aiContent.meta_keywords,
+          is_template: false
+        }
+        const page = await this.pagesRepo.createPage(orgId, pageInput)
+
+        let finalPage = page
+        if (request.autoPublish && page.status === 'draft') {
+          finalPage = await this.pagesRepo.publishPage(orgId, page.id)
+        }
+
+        result.generated += 1
+        result.pages.push({
+          id: String(finalPage.id),
+          slug: finalPage.slug,
+          city,
+          subtype: subtypeSlug,
+          status: finalPage.status === 'published' ? 'published' : 'draft'
+        })
+      } catch (error: any) {
+        console.error(
+          `Error generating cross-product page for ${city}/${subtypeSlug}:`,
+          error
+        )
+        result.failed.push({
+          city,
+          subtype: subtypeSlug,
+          error: error?.message || 'Failed to generate page'
+        })
+      }
+    }
+
+    return result
+  }
+
+  /** "single-family-homes" → "Single Family Homes" */
+  private titleize(slug: string): string {
+    return slug
+      .split('-')
+      .map((w) => (w.length === 0 ? w : w[0]!.toUpperCase() + w.slice(1)))
+      .join(' ')
   }
 
   /**

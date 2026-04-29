@@ -38,7 +38,8 @@ import APIAIContent, {
   type BulkPageGenerationResult,
   type CityLocation,
   type ZipLocation,
-  type NeighborhoodLocation
+  type NeighborhoodLocation,
+  type CrossProductGenerationResult
 } from '@/services/API/APIAIContent'
 
 const PAGE_TYPES = [
@@ -85,6 +86,9 @@ export default function BulkPagesPage() {
   // Preview and results
   const [preview, setPreview] = useState<BulkPagePreview[]>([])
   const [generationResult, setGenerationResult] = useState<BulkPageGenerationResult | null>(null)
+  const [crossProductResult, setCrossProductResult] =
+    useState<CrossProductGenerationResult | null>(null)
+  const [crossProductLoading, setCrossProductLoading] = useState(false)
 
   // Live data from Repliers Locations API — fetched on demand by pageType.
   const [cities, setCities] = useState<CityLocation[]>([])
@@ -138,9 +142,10 @@ export default function BulkPagesPage() {
 
   // SEO Coverage prefill: when arriving from /admin/property-index with a
   // ?prefill=seo-coverage flag, read the missing (city, subtype) list from
-  // sessionStorage and pre-select the affected cities. The existing UI
-  // generates per-city pages, so we surface the requested subtypes in a
-  // banner — the actual sub-type×city expansion is a follow-up backend item.
+  // sessionStorage. With the crossProduct backend mode, the page now
+  // generates one page per (city, subtype) directly. The single-axis
+  // controls are still rendered below so the user can fall back to them
+  // if desired.
   useEffect(() => {
     if (searchParams?.get('prefill') !== 'seo-coverage') return
     try {
@@ -150,7 +155,6 @@ export default function BulkPagesPage() {
       if (!Array.isArray(parsed) || parsed.length === 0) return
       setSeoPrefill(parsed)
       setPageType('city')
-      sessionStorage.removeItem(SEO_COVERAGE_STORAGE_KEY)
     } catch {
       // ignore - prefill is best-effort
     }
@@ -264,6 +268,47 @@ export default function BulkPagesPage() {
     }
   }
 
+  const handleGenerateCrossProduct = async () => {
+    if (!seoPrefill || seoPrefill.length === 0) return
+    if (
+      !confirm(
+        `Generate ${seoPrefill.length} (city × subtype) pages? Existing pages will be skipped.`
+      )
+    ) {
+      return
+    }
+    try {
+      setCrossProductLoading(true)
+      setError(null)
+      setSuccess(null)
+      setCrossProductResult(null)
+      const result = await APIAIContent.generateCrossProductPages({
+        combinations: seoPrefill.map((p) => ({
+          city: p.city,
+          county: p.county,
+          subtype: p.subtypeSlug,
+          subtypeLabel: p.subtypeLabel,
+        })),
+        autoPublish,
+      })
+      setCrossProductResult(result)
+      setSuccess(
+        `Generated ${result.generated} new pages, skipped ${result.skipped} existing, ${result.failed.length} failed.`
+      )
+      // Per the SEO dashboard contract: clear the prefill once consumed.
+      try {
+        sessionStorage.removeItem(SEO_COVERAGE_STORAGE_KEY)
+      } catch {
+        // ignore
+      }
+      setSeoPrefill(null)
+    } catch (err: any) {
+      setError(err?.message || 'Failed to generate cross-product pages')
+    } finally {
+      setCrossProductLoading(false)
+    }
+  }
+
   const handleGenerate = async () => {
     if (preview.length === 0) {
       setError('Please preview pages first')
@@ -326,12 +371,128 @@ export default function BulkPagesPage() {
             severity="info"
             sx={{ mb: 2 }}
             onClose={() => setSeoPrefill(null)}
+            action={
+              <Button
+                color="inherit"
+                size="small"
+                variant="outlined"
+                disabled={crossProductLoading}
+                startIcon={
+                  crossProductLoading ? <CircularProgress size={16} /> : <BulkIcon />
+                }
+                onClick={handleGenerateCrossProduct}
+              >
+                {crossProductLoading
+                  ? 'Generating…'
+                  : `Generate ${seoPrefill.length} pages`}
+              </Button>
+            }
           >
-            <AlertTitle>Pre-filled from SEO Coverage</AlertTitle>
+            <AlertTitle>Cross-product mode — from SEO Coverage</AlertTitle>
             {seoPrefill.length} missing (city × subtype) combinations were
-            queued. The cities have been pre-selected below. Subtypes requested:{' '}
+            queued. Click <strong>Generate</strong> to create one draft page
+            per pair (slug <code>{'{city}/{subtype}'}</code>). Existing pages
+            are skipped. Subtypes:{' '}
             {Array.from(new Set(seoPrefill.map((p) => p.subtypeLabel))).join(', ')}.
           </Alert>
+        )}
+
+        {crossProductResult && (
+          <Paper sx={{ p: 3, mb: 3 }} variant="outlined">
+            <Typography variant="h6" gutterBottom>
+              Cross-product Generation Results
+            </Typography>
+            <Grid container spacing={2} sx={{ mb: 2 }}>
+              <Grid item xs={12} sm={4}>
+                <Card sx={{ bgcolor: 'success.light' }}>
+                  <CardContent>
+                    <Typography variant="h4" color="success.dark">
+                      {crossProductResult.generated}
+                    </Typography>
+                    <Typography variant="body2" color="success.dark">
+                      Generated
+                    </Typography>
+                  </CardContent>
+                </Card>
+              </Grid>
+              <Grid item xs={12} sm={4}>
+                <Card sx={{ bgcolor: 'warning.light' }}>
+                  <CardContent>
+                    <Typography variant="h4" color="warning.dark">
+                      {crossProductResult.skipped}
+                    </Typography>
+                    <Typography variant="body2" color="warning.dark">
+                      Skipped (already exist)
+                    </Typography>
+                  </CardContent>
+                </Card>
+              </Grid>
+              <Grid item xs={12} sm={4}>
+                <Card sx={{ bgcolor: 'error.light' }}>
+                  <CardContent>
+                    <Typography variant="h4" color="error.dark">
+                      {crossProductResult.failed.length}
+                    </Typography>
+                    <Typography variant="body2" color="error.dark">
+                      Failed
+                    </Typography>
+                  </CardContent>
+                </Card>
+              </Grid>
+            </Grid>
+            {crossProductResult.pages.length > 0 && (
+              <Box sx={{ mb: 2 }}>
+                <Typography variant="subtitle2" gutterBottom>
+                  Pages
+                </Typography>
+                <List dense sx={{ maxHeight: 320, overflow: 'auto' }}>
+                  {crossProductResult.pages.map((p) => (
+                    <ListItem key={`${p.id}-${p.slug}`} divider>
+                      <ListItemIcon>
+                        {p.status === 'skipped' ? (
+                          <ErrorIcon color="warning" />
+                        ) : (
+                          <CheckIcon color="success" />
+                        )}
+                      </ListItemIcon>
+                      <ListItemText
+                        primary={
+                          <a
+                            href={`/admin/content-pages/${p.id}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            {p.city} · {p.subtype}
+                          </a>
+                        }
+                        secondary={`/${p.slug} — ${p.status}`}
+                      />
+                    </ListItem>
+                  ))}
+                </List>
+              </Box>
+            )}
+            {crossProductResult.failed.length > 0 && (
+              <Box>
+                <Typography variant="subtitle2" gutterBottom color="error">
+                  Failed
+                </Typography>
+                <List dense>
+                  {crossProductResult.failed.map((f, i) => (
+                    <ListItem key={i}>
+                      <ListItemIcon>
+                        <ErrorIcon color="error" />
+                      </ListItemIcon>
+                      <ListItemText
+                        primary={`${f.city} · ${f.subtype}`}
+                        secondary={f.error}
+                      />
+                    </ListItem>
+                  ))}
+                </List>
+              </Box>
+            )}
+          </Paper>
         )}
 
         <Grid container spacing={4}>

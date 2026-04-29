@@ -9,7 +9,9 @@ import { UserRole } from '../constants.js'
 import type {
   AIBlogPostRequest,
   AIPageContentRequest,
-  BulkPageGenerationRequest
+  BulkPageGenerationRequest,
+  CrossProductGenerationRequest,
+  CrossProductCombination
 } from '../types/aiContent.js'
 
 const router = new Router({
@@ -116,13 +118,55 @@ router.post('/bulk-pages/preview', authMiddleware, roleMiddleware([UserRole.Admi
 
 /**
  * POST /api/ai-content/bulk-pages/generate
- * Generate pages in bulk
+ * Generate pages in bulk.
+ *
+ * Two modes:
+ *   - default (no `mode` field, or `mode: 'singleAxis'`): single-axis page
+ *     generation (city / zipcode / neighborhood / property_type) — body
+ *     shape is BulkPageGenerationRequest.
+ *   - `mode: 'crossProduct'`: city × subtype cross-product generation —
+ *     body shape is CrossProductGenerationRequest. Used by the SEO
+ *     Coverage dashboard's "Generate Missing" handoff.
  */
 router.post('/bulk-pages/generate', authMiddleware, roleMiddleware([UserRole.Admin, UserRole.Root]), async (ctx) => {
   const service = ctx.state['container'].resolve(BulkPageGenerationService)
   const orgId = ctx.state['orgId']
-  const request = ctx.request.body as BulkPageGenerationRequest
+  const body = ctx.request.body as
+    | (BulkPageGenerationRequest & { mode?: 'singleAxis' })
+    | (CrossProductGenerationRequest & { mode: 'crossProduct' })
 
+  if (body && (body as any).mode === 'crossProduct') {
+    const cpReq = body as CrossProductGenerationRequest
+    if (!Array.isArray(cpReq.combinations) || cpReq.combinations.length === 0) {
+      ctx.status = 400
+      ctx.body = { error: 'combinations array is required for crossProduct mode' }
+      return
+    }
+    if (cpReq.combinations.length > 200) {
+      ctx.status = 400
+      ctx.body = { error: 'Maximum 200 combinations per cross-product generation' }
+      return
+    }
+    const invalid = cpReq.combinations.find(
+      (c: CrossProductCombination) =>
+        !c ||
+        typeof c.city !== 'string' ||
+        typeof c.subtype !== 'string' ||
+        c.city.trim() === '' ||
+        c.subtype.trim() === ''
+    )
+    if (invalid) {
+      ctx.status = 400
+      ctx.body = { error: 'Each combination must have non-empty city and subtype strings' }
+      return
+    }
+
+    const result = await service.generateCrossProductPages(orgId, cpReq)
+    ctx.body = result
+    return
+  }
+
+  const request = body as BulkPageGenerationRequest
   if (!request.pageType || !request.selectedIds || request.selectedIds.length === 0) {
     ctx.status = 400
     ctx.body = { error: 'Page type and selected IDs are required' }

@@ -76,6 +76,36 @@ export interface BulkPageGenerationResult {
   }>
 }
 
+export interface CrossProductCombination {
+  city: string
+  subtype: string
+  county?: string
+  subtypeLabel?: string
+}
+
+export interface CrossProductGenerationRequest {
+  mode: 'crossProduct'
+  combinations: CrossProductCombination[]
+  autoPublish?: boolean
+}
+
+export interface CrossProductGenerationResult {
+  generated: number
+  skipped: number
+  failed: Array<{
+    city: string
+    subtype: string
+    error: string
+  }>
+  pages: Array<{
+    id: string
+    slug: string
+    city: string
+    subtype: string
+    status: 'draft' | 'published' | 'skipped'
+  }>
+}
+
 export interface CityLocation {
   id: number
   name: string
@@ -169,6 +199,23 @@ class APIAIContent extends APIBase {
       method: 'POST',
       body: JSON.stringify(request)
     })
+  }
+
+  /**
+   * Generate one CMS page per (city, subtype) pair. Used by the SEO
+   * Coverage dashboard's "Generate Missing" handoff. Idempotent — pages
+   * whose slug already exists are reported as `skipped`, not duplicated.
+   */
+  async generateCrossProductPages(
+    request: Omit<CrossProductGenerationRequest, 'mode'>
+  ): Promise<CrossProductGenerationResult> {
+    return this.fetchJSON<CrossProductGenerationResult>(
+      '/ai-content/bulk-pages/generate',
+      {
+        method: 'POST',
+        body: JSON.stringify({ mode: 'crossProduct', ...request })
+      }
+    )
   }
 
   /**
