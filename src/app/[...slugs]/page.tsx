@@ -11,7 +11,7 @@ import PageWithSidebar from '@/components/layouts/PageWithSidebar'
 import CitySidebar from '@/components/sidebar/CitySidebar'
 
 import { subTypes, getSubTypeBySlug } from '@configs/page-generation'
-import { breadcrumbSchema, localBusinessSchema } from 'utils/structuredData'
+import { breadcrumbSchema, faqSchema, localBusinessSchema } from 'utils/structuredData'
 import {
   parseCleanSlug,
   slugToDisplayName,
@@ -441,6 +441,26 @@ async function renderCityPage(
           Area Score: {pageScore.score} | {pageScore.indexDirective}
         </Box>
       )}
+      <StructuredData
+        data={faqSchema([
+          {
+            question: `How much does it cost to buy a home in ${cityName}, FL?`,
+            answer: `Home prices in ${cityName} vary by property type. Browse current listings on Florida Home Finder for up-to-date pricing.`,
+          },
+          {
+            question: `Is ${cityName}, FL a good place to buy real estate?`,
+            answer: `${cityName} is located in South Florida and offers a strong real estate market. Contact The Mandel Team for a personalized market analysis.`,
+          },
+          {
+            question: `How long does it take to buy a home in ${cityName}?`,
+            answer: `The home buying process in ${cityName} typically takes 30-60 days from accepted offer to closing, depending on financing and inspection timelines.`,
+          },
+          {
+            question: `What neighborhoods are popular in ${cityName}, FL?`,
+            answer: `${cityName} has several sought-after neighborhoods. Browse our neighborhood guides to explore options that match your lifestyle.`,
+          },
+        ])}
+      />
     </PageTemplate>
   )
 }
@@ -510,6 +530,26 @@ async function renderSubTypePage(
           Area Score: {pageScore.score} | {pageScore.indexDirective}
         </Box>
       )}
+      <StructuredData
+        data={faqSchema([
+          {
+            question: `How much does a ${stConfig.label.toLowerCase()} cost in ${cityName}, FL?`,
+            answer: `${stConfig.label} prices in ${cityName} vary by location, size, and amenities. Browse current ${stConfig.label.toLowerCase()} listings on Florida Home Finder for up-to-date pricing in your target neighborhoods.`,
+          },
+          {
+            question: `Are ${stConfig.label.toLowerCase()} a good investment in ${cityName}, FL?`,
+            answer: `${stConfig.label} in ${cityName} can be a strong investment depending on your goals — primary residence, vacation home, or rental. Contact The Mandel Team for a personalized market analysis specific to ${stConfig.label.toLowerCase()} in ${cityName}.`,
+          },
+          {
+            question: `How many ${stConfig.label.toLowerCase()} are available in ${cityName}?`,
+            answer: `Inventory for ${stConfig.label.toLowerCase()} in ${cityName} changes daily. Browse our live listings on Florida Home Finder to see all currently available ${stConfig.label.toLowerCase()} matching your criteria.`,
+          },
+          {
+            question: `What's the buying process for ${stConfig.label.toLowerCase()} in ${cityName}, FL?`,
+            answer: `Buying a ${stConfig.label.toLowerCase().replace(/s$/, '')} in ${cityName} typically takes 30-60 days from accepted offer to closing, depending on financing and inspection timelines. The Mandel Team guides you through every step.`,
+          },
+        ])}
+      />
     </PageTemplate>
   )
 }
