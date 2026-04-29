@@ -6,25 +6,25 @@ import BadgeIcon from '@mui/icons-material/Badge'
 
 import { teamMembers } from '@/configs/defaults/team'
 import { siteSettings } from '@/configs/defaults/site-settings'
+import { tenant } from '@/configs/tenant.config'
 import PageWithSidebar from '@/components/layouts/PageWithSidebar'
 import InfoPageSidebar from '@/components/sidebar/InfoPageSidebar'
 import StructuredData from '@shared/StructuredData'
 import { breadcrumbSchema } from 'utils/structuredData'
 
 export const metadata: Metadata = {
-  title: 'Andy Mandel | Top South Florida Real Estate Agent | The Mandel Team',
-  description:
-    'Andy Mandel leads The Mandel Team at eXp Luxury in Broward and Palm Beach County, FL. 14+ years experience, 200+ transactions annually. Search South Florida homes with a top-ranked team.',
+  title: `${tenant.brand.leaderName} | Top South Florida Real Estate Agent | ${tenant.brand.teamName}`,
+  description: `${tenant.brand.leaderName} leads ${tenant.brand.teamName} at ${tenant.brand.brokerageLuxury} in Broward and Palm Beach County, FL. ${tenant.brand.leaderYearsExperience}+ years experience, 200+ transactions annually. Search South Florida homes with a top-ranked team.`,
   keywords: [
     'South Florida real estate agent',
     'Broward County realtor',
     'Palm Beach County homes',
-    'Mandel Team eXp Realty',
+    `${tenant.brand.teamName.replace(/^The /, '')} ${tenant.brand.brokerage}`,
     'Coral Springs real estate',
     'Boca Raton homes for sale',
   ],
   alternates: {
-    canonical: 'https://floridahomefinder.com/about',
+    canonical: `${tenant.brand.siteUrl}/about`,
   },
 }
 
@@ -39,20 +39,20 @@ const GOLD = '#C4A96E'
 const andyMandelPersonSchema = {
   '@context': 'https://schema.org',
   '@type': 'Person',
-  name: 'Andy Mandel',
+  name: tenant.brand.leaderName,
   jobTitle: 'Team Leader',
   worksFor: {
     '@type': 'RealEstateAgent',
-    name: 'The Mandel Team at Florida Home Finder',
-    url: 'https://floridahomefinder.com',
+    name: `${tenant.brand.teamName} at ${tenant.brand.siteName}`,
+    url: tenant.brand.siteUrl,
   },
-  url: 'https://floridahomefinder.com/about',
-  telephone: '+19546100563',
-  email: 'info@floridahomefinder.com',
+  url: `${tenant.brand.siteUrl}/about`,
+  telephone: tenant.contact.phoneE164,
+  email: tenant.contact.email,
   address: {
     '@type': 'PostalAddress',
-    addressLocality: 'Coral Springs',
-    addressRegion: 'FL',
+    addressLocality: tenant.contact.address.city,
+    addressRegion: tenant.contact.address.state,
     addressCountry: 'US',
   },
   sameAs: [
@@ -84,8 +84,8 @@ const andyMandelPersonSchema = {
 }
 
 const aboutBreadcrumbItems = [
-  { name: 'Home', url: 'https://floridahomefinder.com' },
-  { name: 'About', url: 'https://floridahomefinder.com/about' },
+  { name: 'Home', url: tenant.brand.siteUrl },
+  { name: 'About', url: `${tenant.brand.siteUrl}/about` },
 ]
 
 export default function AboutPage() {
@@ -104,7 +104,7 @@ export default function AboutPage() {
             #TheAgentYouWorkWithMatters
           </Typography>
           <Typography sx={{ color: 'rgba(255,255,255,0.8)', fontSize: '1.1rem', maxWidth: 600, mx: 'auto' }}>
-            The Mandel Team — We are South Floridians – born &amp; raised.
+            {tenant.brand.teamName} — We are South Floridians – born &amp; raised.
           </Typography>
         </Container>
       </Box>
@@ -118,7 +118,7 @@ export default function AboutPage() {
               About Our Team
             </Typography>
             <Typography color="text.secondary" sx={{ lineHeight: 1.8, maxWidth: 700, mx: 'auto' }}>
-              The Mandel Team has been helping families buy and sell homes across South Florida for
+              {tenant.brand.teamName} has been helping families buy and sell homes across South Florida for
               years. We pride ourselves on our deep knowledge of the local market, our unwavering
               commitment to our clients, and our results-driven approach. Whether you&apos;re buying your
               first home or selling a luxury estate, we have the expertise and passion to guide you every

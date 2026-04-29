@@ -1,9 +1,10 @@
 import { Box, Typography } from '@mui/material'
+import { tenant } from '@/configs/tenant.config'
 
 const SEO_SECTIONS = [
   {
     title: 'Find a South Florida REALTOR® Near You',
-    text: 'Whether you are buying or selling a home in South Florida, having a knowledgeable local expert makes all the difference. The Mandel Team specializes in communities across Miami-Dade, Broward, Palm Beach, Martin, and St. Lucie Counties - from waterfront estates in Miami Beach to gated communities in Parkland and golf course homes in Boca Raton.'
+    text: `Whether you are buying or selling a home in South Florida, having a knowledgeable local expert makes all the difference. ${tenant.brand.teamName} specializes in communities across Miami-Dade, Broward, Palm Beach, Martin, and St. Lucie Counties - from waterfront estates in Miami Beach to gated communities in Parkland and golf course homes in Boca Raton.`
   },
   {
     title: 'South Florida Community Guides',

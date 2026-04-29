@@ -4,6 +4,7 @@
  */
 
 import { siteSettings } from '@/configs/defaults/site-settings'
+import { tenant } from '@/configs/tenant.config'
 
 export interface StructuredDataProps {
   [key: string]: any
@@ -16,15 +17,15 @@ export function organizationSchema(): StructuredDataProps {
   return {
     '@context': 'https://schema.org',
     '@type': 'RealEstateAgent',
-    name: 'The Mandel Team at Florida Home Finder',
+    name: `${tenant.brand.teamName} at ${tenant.brand.siteName}`,
     description:
       'South Florida real estate experts serving Broward and Palm Beach County. Find homes for sale in Boca Raton, Parkland, Coral Springs, Delray Beach, and beyond.',
-    url: 'https://floridahomefinder.com',
-    logo: 'https://floridahomefinder.com/logo.png',
-    telephone: '+19546100563',
-    email: 'info@floridahomefinder.com',
+    url: tenant.brand.siteUrl,
+    logo: `${tenant.brand.siteUrl}/logo.png`,
+    telephone: tenant.contact.phoneE164,
+    email: tenant.contact.email,
     foundingDate: '2010',
-    slogan: 'The agent you work with matters.',
+    slogan: tenant.brand.slogan,
     numberOfEmployees: {
       '@type': 'QuantitativeValue',
       value: 18,
@@ -38,17 +39,17 @@ export function organizationSchema(): StructuredDataProps {
     ],
     address: {
       '@type': 'PostalAddress',
-      streetAddress: '10101 W Sample Rd',
-      addressLocality: 'Coral Springs',
-      addressRegion: 'FL',
-      postalCode: '33065',
+      streetAddress: tenant.contact.address.street,
+      addressLocality: tenant.contact.address.city,
+      addressRegion: tenant.contact.address.state,
+      postalCode: tenant.contact.address.zip,
       addressCountry: 'US',
     },
     contactPoint: {
       '@type': 'ContactPoint',
-      telephone: '+19546100563',
+      telephone: tenant.contact.phoneE164,
       contactType: 'Customer Service',
-      email: 'info@floridahomefinder.com',
+      email: tenant.contact.email,
     },
     areaServed: [
       { '@type': 'AdministrativeArea', name: 'Miami-Dade County', containedIn: { '@type': 'State', name: 'Florida' } },
@@ -81,7 +82,7 @@ export function propertySchema(property: {
     '@type': 'RealEstateProperty',
     name: property.title,
     description: property.description,
-    url: `https://floridahomefinder.com/listings/${property.id}`,
+    url: `${tenant.brand.siteUrl}/listings/${property.id}`,
     image: property.image,
     price: property.price.toString(),
     priceCurrency: 'USD',
@@ -194,7 +195,7 @@ export function localBusinessSchema(location: {
   return {
     '@context': 'https://schema.org',
     '@type': 'LocalBusiness',
-    name: `Florida Home Finder - ${location.city}`,
+    name: `${tenant.brand.siteName} - ${location.city}`,
     description: `Find homes in ${location.city}, ${location.state}`,
     url: 'https://soldbymandelteam.com',
     telephone: siteSettings.phone,
@@ -236,13 +237,13 @@ export function websiteSearchSchema(): StructuredDataProps {
   return {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
-    name: 'Florida Home Finder',
-    url: 'https://floridahomefinder.com',
+    name: tenant.brand.siteName,
+    url: tenant.brand.siteUrl,
     potentialAction: {
       '@type': 'SearchAction',
       target: {
         '@type': 'EntryPoint',
-        urlTemplate: 'https://floridahomefinder.com/search/gallery?search={search_term_string}'
+        urlTemplate: `${tenant.brand.siteUrl}/search/gallery?search={search_term_string}`
       },
       'query-input': 'required name=search_term_string'
     }

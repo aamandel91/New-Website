@@ -8,6 +8,7 @@ import type {
   AIPageContentResponse
 } from '../types/aiContent.js'
 import { getMarketContext } from '../utils/aiPromptContext.js'
+import { tenant } from '../config/tenant.config.js'
 
 @injectable()
 export class AIContentService {
@@ -40,7 +41,7 @@ Requirements:
 - Include H2 and H3 headings
 - Include a meta description under 160 characters
 - Include local South Florida market data where relevant
-- End with a call to action to contact The Mandel Team
+- End with a call to action to contact ${tenant.brand.teamName}
 
 The blog post should:
 1. Be engaging and valuable to readers

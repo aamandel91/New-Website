@@ -1,11 +1,12 @@
 import { ImageResponse } from 'next/og'
 
 import { parseAddressSlug } from 'utils/propertyUrls'
+import { tenant } from '@/configs/tenant.config'
 
 // Next.js auto-generated OG image for /homes/[slug] property pages.
 // See: https://nextjs.org/docs/app/api-reference/file-conventions/metadata/opengraph-image
 export const runtime = 'edge'
-export const alt = 'South Florida Property — Florida Home Finder'
+export const alt = `South Florida Property — ${tenant.brand.siteName}`
 export const size = { width: 1200, height: 630 }
 export const contentType = 'image/png'
 
@@ -124,7 +125,7 @@ export default async function Image({ params }: Props) {
             letterSpacing: '0.05em',
           }}
         >
-          FloridaHomeFinder.com
+          {tenant.brand.domainDisplay}
         </div>
       </div>
     ),

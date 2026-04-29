@@ -1,3 +1,5 @@
+import { tenant } from '@/configs/tenant.config'
+
 export interface TeamMember {
   name: string
   role: string
@@ -9,9 +11,9 @@ export interface TeamMember {
 
 export const teamMembers: TeamMember[] = [
   {
-    name: 'Andy Mandel',
+    name: tenant.brand.leaderName,
     role: 'Team Leader',
-    phone: '(954) 610-0563',
+    phone: tenant.contact.phone,
     license: '3284048',
   },
 ]

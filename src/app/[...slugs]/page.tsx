@@ -22,6 +22,7 @@ import {
 import type { ParsedCleanSlug } from 'utils/templateEngine'
 import APIContentPages from 'services/API/APIContentPages'
 import type { ContentPage } from 'services/API/APIContentPages'
+import { tenant } from '@/configs/tenant.config'
 import { scoreAreaPage } from 'utils/areaPageScoring'
 import {
   fetchCityNeighborhoods,
@@ -74,7 +75,7 @@ export async function generateMetadata(props: CleanPageProps): Promise<Metadata>
   const parsed = parseCleanSlug(slugs)
   if (!parsed) return {}
 
-  const baseUrl = 'https://floridahomefinder.com'
+  const baseUrl = tenant.brand.siteUrl
   const cityName = slugToDisplayName(parsed.city)
 
   // Check CMS content for scoring
@@ -92,7 +93,7 @@ export async function generateMetadata(props: CleanPageProps): Promise<Metadata>
       const count = await fetchListingCount(cityName)
       const pageScore = scoreAreaPage({ pageType: 'city', listingCount: count, hasCmsContent })
       const title = `${count} Homes for Sale in ${cityName}, FL (${new Date().getFullYear()})`
-      const description = `Browse ${count} homes for sale in ${cityName}, FL. View photos, prices, and property details. Updated daily on Florida Home Finder.`
+      const description = `Browse ${count} homes for sale in ${cityName}, FL. View photos, prices, and property details. Updated daily on ${tenant.brand.siteName}.`
       const ogImageUrl = `${baseUrl}/${parsed.city}/opengraph-image`
       return {
         title,
@@ -114,7 +115,7 @@ export async function generateMetadata(props: CleanPageProps): Promise<Metadata>
       const count = await fetchSubTypeCount(cityName, stConfig)
       const pageScore = scoreAreaPage({ pageType: 'subType', listingCount: count, subTypeSlug: stConfig.slug, hasCmsContent })
       const title = generateMetaTitle(cityName, stConfig.label, count)
-      const description = `Browse ${count} ${stConfig.label} for sale in ${cityName}, FL. View photos, prices, and property details. Updated daily on Florida Home Finder.`
+      const description = `Browse ${count} ${stConfig.label} for sale in ${cityName}, FL. View photos, prices, and property details. Updated daily on ${tenant.brand.siteName}.`
       const ogImageUrl = `${baseUrl}/${parsed.city}/${parsed.subType}/opengraph-image`
       return {
         title,
@@ -210,7 +211,7 @@ export default async function CleanCatchAllPage(props: CleanPageProps) {
     // No CMS page found — fall back to dynamic rendering
   }
 
-  const baseUrl = 'https://floridahomefinder.com'
+  const baseUrl = tenant.brand.siteUrl
   const hasCmsContent = !!(cmsPage && cmsPage.status === 'published')
 
   if (hasCmsContent && cmsPage) {
@@ -467,11 +468,11 @@ async function renderCityPage(
         data={faqSchema([
           {
             question: `How much does it cost to buy a home in ${cityName}, FL?`,
-            answer: `Home prices in ${cityName} vary by property type. Browse current listings on Florida Home Finder for up-to-date pricing.`,
+            answer: `Home prices in ${cityName} vary by property type. Browse current listings on ${tenant.brand.siteName} for up-to-date pricing.`,
           },
           {
             question: `Is ${cityName}, FL a good place to buy real estate?`,
-            answer: `${cityName} is located in South Florida and offers a strong real estate market. Contact The Mandel Team for a personalized market analysis.`,
+            answer: `${cityName} is located in South Florida and offers a strong real estate market. Contact ${tenant.brand.teamName} for a personalized market analysis.`,
           },
           {
             question: `How long does it take to buy a home in ${cityName}?`,
@@ -556,19 +557,19 @@ async function renderSubTypePage(
         data={faqSchema([
           {
             question: `How much does a ${stConfig.label.toLowerCase()} cost in ${cityName}, FL?`,
-            answer: `${stConfig.label} prices in ${cityName} vary by location, size, and amenities. Browse current ${stConfig.label.toLowerCase()} listings on Florida Home Finder for up-to-date pricing in your target neighborhoods.`,
+            answer: `${stConfig.label} prices in ${cityName} vary by location, size, and amenities. Browse current ${stConfig.label.toLowerCase()} listings on ${tenant.brand.siteName} for up-to-date pricing in your target neighborhoods.`,
           },
           {
             question: `Are ${stConfig.label.toLowerCase()} a good investment in ${cityName}, FL?`,
-            answer: `${stConfig.label} in ${cityName} can be a strong investment depending on your goals — primary residence, vacation home, or rental. Contact The Mandel Team for a personalized market analysis specific to ${stConfig.label.toLowerCase()} in ${cityName}.`,
+            answer: `${stConfig.label} in ${cityName} can be a strong investment depending on your goals — primary residence, vacation home, or rental. Contact ${tenant.brand.teamName} for a personalized market analysis specific to ${stConfig.label.toLowerCase()} in ${cityName}.`,
           },
           {
             question: `How many ${stConfig.label.toLowerCase()} are available in ${cityName}?`,
-            answer: `Inventory for ${stConfig.label.toLowerCase()} in ${cityName} changes daily. Browse our live listings on Florida Home Finder to see all currently available ${stConfig.label.toLowerCase()} matching your criteria.`,
+            answer: `Inventory for ${stConfig.label.toLowerCase()} in ${cityName} changes daily. Browse our live listings on ${tenant.brand.siteName} to see all currently available ${stConfig.label.toLowerCase()} matching your criteria.`,
           },
           {
             question: `What's the buying process for ${stConfig.label.toLowerCase()} in ${cityName}, FL?`,
-            answer: `Buying a ${stConfig.label.toLowerCase().replace(/s$/, '')} in ${cityName} typically takes 30-60 days from accepted offer to closing, depending on financing and inspection timelines. The Mandel Team guides you through every step.`,
+            answer: `Buying a ${stConfig.label.toLowerCase().replace(/s$/, '')} in ${cityName} typically takes 30-60 days from accepted offer to closing, depending on financing and inspection timelines. ${tenant.brand.teamName} guides you through every step.`,
           },
         ])}
       />

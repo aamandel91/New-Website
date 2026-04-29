@@ -15,6 +15,7 @@ import type { SelectChangeEvent } from '@mui/material'
 
 import LocationAutocomplete from '@shared/LocationAutocomplete'
 import type { LocationResult } from '@shared/LocationAutocomplete'
+import { tenant } from '@/configs/tenant.config'
 
 type HeroTab = 'buying' | 'selling' | 'estimate'
 
@@ -25,12 +26,12 @@ const TABS = [
   {
     key: 'preapproved' as const,
     label: 'Get Pre-Approved',
-    href: 'https://app.crosscountrymortgage.com/#/choose-loan-type'
+    href: tenant.integrations.lender.applyUrl
   },
   {
     key: 'instantoffer' as const,
     label: 'Instant Offer',
-    href: 'https://mandelteam.hifello.com/lp/64233cdf7d0caf0019a96a13'
+    href: tenant.integrations.instantOffer.url
   }
 ] as const
 

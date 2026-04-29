@@ -2,13 +2,14 @@ import { ImageResponse } from 'next/og'
 
 import { getSubTypeBySlug } from '@configs/page-generation'
 import { parseCleanSlug, slugToDisplayName } from 'utils/templateEngine'
+import { tenant } from '@/configs/tenant.config'
 
 // Next.js OG image route segment config — these magic exports are picked up
 // at build/request time and become Open Graph + Twitter card meta tags
 // automatically (no need to wire `openGraph.images` manually).
 // See: https://nextjs.org/docs/app/api-reference/file-conventions/metadata/opengraph-image
 export const runtime = 'edge'
-export const alt = 'Florida Home Finder'
+export const alt = tenant.brand.siteName
 export const size = { width: 1200, height: 630 }
 export const contentType = 'image/png'
 
@@ -123,7 +124,7 @@ export default async function Image({ params }: Props) {
             letterSpacing: '0.05em',
           }}
         >
-          FloridaHomeFinder.com
+          {tenant.brand.domainDisplay}
         </div>
       </div>
     ),

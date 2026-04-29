@@ -1,3 +1,5 @@
+import { tenant } from '@/configs/tenant.config'
+
 export interface SiteSettings {
   siteName: string
   brokerage: string
@@ -18,11 +20,11 @@ export interface SiteSettings {
 }
 
 export const siteSettings: SiteSettings = {
-  siteName: 'Florida Home Finder',
-  brokerage: 'eXp Realty',
-  phone: '(954) 610-0563',
-  email: 'info@floridahomefinder.com',
-  address: '10101 W Sample Rd, Coral Springs, FL 33065',
+  siteName: tenant.brand.siteName,
+  brokerage: tenant.brand.brokerage,
+  phone: tenant.contact.phone,
+  email: tenant.contact.email,
+  address: tenant.contact.address.full,
   heroImageUrl: '',
   social: {
     facebook: 'https://www.facebook.com/TheMandelTeam/',

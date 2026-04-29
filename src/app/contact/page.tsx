@@ -24,6 +24,7 @@ import { ssIdentify } from '@/utils/suresendTracking'
 import { isFormBlocked } from '@/utils/formFilter'
 import { defaultBlockedWords } from '@/configs/defaults/form-filtering'
 import { siteSettings } from '@/configs/defaults/site-settings'
+import { tenant } from '@/configs/tenant.config'
 
 const NAVY = '#0F1621'
 const GOLD = '#C4A96E'
@@ -105,7 +106,7 @@ export default function ContactPage() {
       <Box sx={{ bgcolor: NAVY, py: { xs: 8, md: 10 }, px: 3, textAlign: 'center' }}>
         <Container maxWidth="md">
           <Typography variant="h3" component="h1" sx={{ color: 'white', fontWeight: 700, mb: 2, fontSize: { xs: '1.75rem', md: '2.5rem' } }}>
-            Contact The Mandel Team
+            Contact {tenant.brand.teamName}
           </Typography>
           <Typography sx={{ color: 'rgba(255,255,255,0.7)', fontSize: '1.1rem' }}>
             We&apos;d love to hear from you. Reach out today.

@@ -5,12 +5,13 @@ import Link from 'next/link'
 
 import { Box, Button, Typography } from '@mui/material'
 import type { Blog } from '@/types/blog'
+import { tenant } from '@/configs/tenant.config'
 
 const PLACEHOLDER_ARTICLES = [
   {
     title: 'Cost of Living in Pembroke Pines FL (2026)',
     category: 'Moving To & Living In Guides',
-    author: 'Andy Mandel',
+    author: tenant.brand.leaderName,
     date: 'March 31, 2026',
     slug: '',
     thumbnail: '',
@@ -18,7 +19,7 @@ const PLACEHOLDER_ARTICLES = [
   {
     title: 'Buying a Home with an HOA in Florida (2026)',
     category: 'Home Buying',
-    author: 'Andy Mandel',
+    author: tenant.brand.leaderName,
     date: 'March 31, 2026',
     slug: '',
     thumbnail: '',
@@ -26,7 +27,7 @@ const PLACEHOLDER_ARTICLES = [
   {
     title: 'Cost of Living in Cooper City FL (2026)',
     category: 'Moving To & Living In Guides',
-    author: 'Andy Mandel',
+    author: tenant.brand.leaderName,
     date: 'March 30, 2026',
     slug: '',
     thumbnail: '',
@@ -46,7 +47,7 @@ function blogToArticle(blog: Blog): ArticleDisplay {
   return {
     title: blog.title,
     category: blog.categories?.[0] || 'Blog',
-    author: blog.author_email?.split('@')[0] || 'Andy Mandel',
+    author: blog.author_email?.split('@')[0] || tenant.brand.leaderName,
     date: blog.published_at
       ? new Date(blog.published_at).toLocaleDateString('en-US', {
           year: 'numeric',
@@ -102,7 +103,7 @@ const BlogSection = () => {
               textTransform: 'uppercase',
             }}
           >
-            Florida Home Finder
+            {tenant.brand.siteName}
           </Typography>
           <Box sx={{ width: '60px', height: '3px', bgcolor: '#00B5AD', mb: 3 }} />
           <Typography
