@@ -6,6 +6,7 @@ import BossService, { BossPeopleSingle } from './boss.js'
 import { JetStreamClient } from '@nats-io/jetstream'
 import { ApiError } from '../lib/errors.js'
 import type { AppConfig } from '../config.js'
+import type { Logger } from 'pino'
 import { RplOperator } from '../types/repliers.js'
 import _ from 'lodash'
 import { secureFubAvmLink } from '../lib/utils.js'
@@ -19,6 +20,8 @@ export default class SyncService {
     private readonly boss: BossService,
     @inject('config')
     private config: AppConfig,
+    @inject('logger.global')
+    private loggerGlobal: Logger,
     @inject('nats')
     private readonly jsc: Promise<JetStreamClient>
   ) {}
@@ -93,6 +96,17 @@ export default class SyncService {
           error: error.message
         })
       }
+      // Pino requires the top-level `err` key for proper Error serialization
+      // (mirrors fix in boss/webhook.ts catchProcessingError) so stack traces
+      // reach Google Cloud Logging.
+      this.loggerGlobal.error(
+        {
+          err: error instanceof Error ? error : new Error(String(error)),
+          id
+        },
+        '[SyncService: processUpsert]: Failed with Error: %s',
+        status
+      )
       await this.peopleSyncRepository.update(id, {
         status
       })
@@ -110,7 +124,6 @@ export default class SyncService {
     )
   }
 
-  //TODO: should be fixed the same was as in webhook.ts
   private async makeSureAVMLink(
     person: BossPeopleSingle,
     client: RplClientsClient

@@ -9,6 +9,7 @@ import storageConfigs from '@configs/storage'
 import { APIChat } from 'services/API'
 import { useSearch } from 'providers/SearchProvider'
 import useClientSide from 'hooks/useClientSide'
+import useSnackbar from 'hooks/useSnackbar'
 
 import { ChatHistoryList, ChatInput } from './components'
 import {
@@ -25,6 +26,7 @@ const { nlpTokenKey, nlpHistoryKey } = storageConfigs
 const AiChat = () => {
   const clientSide = useClientSide()
   const { setFilters, resetFilters } = useSearch()
+  const { showSnackbar } = useSnackbar()
 
   const [storageToken, storageHistory] = useMemo(
     () =>
@@ -72,9 +74,18 @@ const AiChat = () => {
       setToken(nlpId) // update token
       setHistory((prev) => [...prev, aiAnswer])
 
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (e) {
-      // TODO: handle error
+      console.error('AI chat request failed', { value, error: e })
+      const backendMessage =
+        typeof e === 'object' && e !== null && 'data' in e
+          ? (e as { data?: { message?: string; error?: string } }).data
+              ?.message ??
+            (e as { data?: { message?: string; error?: string } }).data?.error
+          : undefined
+      showSnackbar(
+        backendMessage || 'Failed to get a response. Please try again.',
+        'error'
+      )
     } finally {
       setLoading(false)
     }

@@ -408,19 +408,30 @@ export default class BossService {
         params
       }
     }
-    return this.axios
-      .request(options)
-      .then((axiosResponse) => {
-        // TODO: error handling
-        return axiosResponse.data
-      })
-      .catch((e) => {
-        throw new ApiError(
-          'Boss API error',
-          e.response?.status,
-          e.response?.data
-        )
-      })
+    try {
+      const axiosResponse = await this.axios.request(options)
+      return axiosResponse.data
+    } catch (e) {
+      // Log with pino's `err` key so the original axios error (and its stack)
+      // reach Google Cloud Logging; ApiError below loses that context. Re-throw
+      // so callers (e.g. webhook/sync flows) can still record per-job status.
+      const err = e instanceof Error ? e : new Error(String(e))
+      this.loggerGlobal.error(
+        {
+          err,
+          method,
+          url,
+          status: (e as { response?: { status?: number } })?.response?.status
+        },
+        '[BossService: request]: Boss API request failed'
+      )
+      throw new ApiError(
+        'Boss API error',
+        (e as { response?: { status?: number } })?.response?.status,
+        (e as { response?: { data?: Record<string, string | string[]> } })
+          ?.response?.data
+      )
+    }
   }
   public async eventsCreate(params: BossEventsCreateRequest) {
     return this.request<BossEventsCreateResponse>('POST', '/events', {
