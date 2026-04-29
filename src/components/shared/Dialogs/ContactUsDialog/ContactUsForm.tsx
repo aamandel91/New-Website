@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect, useReducer, useState } from 'react'
+import React, { useEffect, useMemo, useReducer, useState } from 'react'
 
 import {
   Button,
@@ -18,7 +18,8 @@ import useSnackbar from 'hooks/useSnackbar'
 import { formatPhoneNumberAsYouType } from 'utils/formatters'
 import { sanitizePhoneNumber } from 'utils/properties/sanitizers'
 import { joinNonEmpty } from 'utils/strings'
-import { validateEmail, validatePhone } from 'utils/validators'
+
+import schema from './schema'
 
 const ContactUsForm = ({
   mode = 'contactUs',
@@ -46,15 +47,19 @@ const ContactUsForm = ({
   const [values, setValues] = useState(getFormData())
   const [touched, setTouched] = useState(false)
 
-  const phoneValid = validatePhone(values.phone)
-  // TODO: use joi to validate form
-  const formValid =
-    values.name &&
-    values.name.length <= 70 &&
-    validateEmail(values.email) &&
-    phoneValid &&
-    values.message.length >= 10 &&
-    values.message.length <= 1024
+  const fieldErrors = useMemo(() => {
+    const { error } = schema.validate(values, { abortEarly: false })
+    const result: Partial<Record<keyof typeof values, string>> = {}
+    if (error) {
+      for (const detail of error.details) {
+        const key = detail.path[0] as keyof typeof values
+        if (key && !result[key]) result[key] = detail.message
+      }
+    }
+    return result
+  }, [values])
+
+  const formValid = Object.keys(fieldErrors).length === 0
 
   const addComment = async (values: any) => {
     const { name, email, phone, message } = values
@@ -105,9 +110,12 @@ const ContactUsForm = ({
       showSnackbar('Message has been sent', 'success')
       setTouched(false)
       onSend?.()
-    } catch (e) {
-      // @TODO error handling https://trello.com/c/i19202n0/5-fe-error-interceptors-repliers-mapbox-backend
-      showSnackbar((e as ErrorCause)?.cause?.message, 'error')
+    } catch (error) {
+      console.error('Error sending contact message', error)
+      const message =
+        (error as ErrorCause)?.cause?.message ||
+        'Could not send your message. Please try again.'
+      showSnackbar(message, 'error')
     } finally {
       toggleLoading()
     }
@@ -131,14 +139,8 @@ const ContactUsForm = ({
                   fullWidth
                   onChange={handleChange}
                   value={values.name}
-                  error={touched && (!values.name || values.name.length > 70)}
-                  helperText={
-                    touched && !values.name
-                      ? 'Name is required'
-                      : touched && values.name.length > 70
-                        ? 'Max field length is 70 chars'
-                        : ''
-                  }
+                  error={touched && !!fieldErrors.name}
+                  helperText={touched ? fieldErrors.name || '' : ''}
                 />
               </Grid>
               <Grid item xs={2} sm={1}>
@@ -150,12 +152,8 @@ const ContactUsForm = ({
                   fullWidth
                   onChange={handleChange}
                   value={values.email}
-                  error={touched && !validateEmail(values.email)}
-                  helperText={
-                    touched && !validateEmail(values.email)
-                      ? 'Enter valid email'
-                      : ''
-                  }
+                  error={touched && !!fieldErrors.email}
+                  helperText={touched ? fieldErrors.email || '' : ''}
                 />
               </Grid>
               <Grid item xs={2} sm={1}>
@@ -167,10 +165,8 @@ const ContactUsForm = ({
                   fullWidth
                   onChange={handleChangePhone}
                   value={values.phone}
-                  error={touched && !phoneValid}
-                  helperText={
-                    touched && !phoneValid ? 'Incorrect phone format' : ''
-                  }
+                  error={touched && !!fieldErrors.phone}
+                  helperText={touched ? fieldErrors.phone || '' : ''}
                 />
               </Grid>
               <Grid item xs={2}>
@@ -184,17 +180,8 @@ const ContactUsForm = ({
                   fullWidth
                   value={values.message}
                   onChange={handleChange}
-                  error={
-                    touched &&
-                    (values.message.length < 10 || values.message.length > 1024)
-                  }
-                  helperText={
-                    touched && values.message.length < 10
-                      ? 'Message is required and should be more than 10 symbols'
-                      : values.message.length > 1024
-                        ? 'Message is required and should be more than 1024 symbols'
-                        : ''
-                  }
+                  error={touched && !!fieldErrors.message}
+                  helperText={touched ? fieldErrors.message || '' : ''}
                 />
               </Grid>
             </Grid>
