@@ -187,8 +187,6 @@ export default class AdminSettingsService {
         id: 0,
         key,
         value: defaults[key],
-        description: null,
-        updatedBy: null,
         createdAt: new Date(),
         updatedAt: new Date()
       };

@@ -16,17 +16,27 @@ const router = new Router({
 const authMiddleware = container.resolve<Middleware>("middleware.jwt")
 const roleMiddleware = container.resolve<RoleMiddlewareCreator>("middleware.role")
 
+function requireParam(ctx: any, name: string): string | null {
+  const value = ctx.params[name]
+  if (!value) {
+    ctx.status = 400
+    ctx.body = { error: `${name} is required` }
+    return null
+  }
+  return value
+}
+
 /**
  * GET /api/content-pages
  * Get all content pages with optional filters
  */
 router.get('/', authMiddleware, async (ctx) => {
-  const service = ctx.state.container.resolve(ContentPagesService)
-  const orgId = ctx.state.orgId
+  const service = ctx.state['container'].resolve(ContentPagesService)
+  const orgId = ctx.state['orgId']
 
   const filters: ContentPageFilters = {
-    status: ctx.query.status as string,
-    is_template: ctx.query.is_template === 'true'
+    status: ctx.query['status'] as string,
+    is_template: ctx.query['is_template'] === 'true'
   }
 
   const pages = await service.getPages(orgId, filters)
@@ -38,8 +48,8 @@ router.get('/', authMiddleware, async (ctx) => {
  * Get all page templates
  */
 router.get('/templates', authMiddleware, async (ctx) => {
-  const service = ctx.state.container.resolve(ContentPagesService)
-  const orgId = ctx.state.orgId
+  const service = ctx.state['container'].resolve(ContentPagesService)
+  const orgId = ctx.state['orgId']
 
   const templates = await service.getTemplates(orgId)
   ctx.body = { templates }
@@ -50,9 +60,10 @@ router.get('/templates', authMiddleware, async (ctx) => {
  * Get page by slug
  */
 router.get('/slug/:slug', async (ctx) => {
-  const service = ctx.state.container.resolve(ContentPagesService)
-  const orgId = ctx.state.orgId
-  const { slug } = ctx.params
+  const service = ctx.state['container'].resolve(ContentPagesService)
+  const orgId = ctx.state['orgId']
+  const slug = requireParam(ctx, 'slug')
+  if (!slug) return
 
   const page = await service.getPageBySlug(orgId, slug)
 
@@ -70,9 +81,11 @@ router.get('/slug/:slug', async (ctx) => {
  * Get page by ID
  */
 router.get('/:id', authMiddleware, async (ctx) => {
-  const service = ctx.state.container.resolve(ContentPagesService)
-  const orgId = ctx.state.orgId
-  const id = BigInt(ctx.params.id)
+  const service = ctx.state['container'].resolve(ContentPagesService)
+  const orgId = ctx.state['orgId']
+  const idParam = requireParam(ctx, 'id')
+  if (!idParam) return
+  const id = BigInt(idParam)
 
   const page = await service.getPageById(orgId, id)
 
@@ -90,8 +103,8 @@ router.get('/:id', authMiddleware, async (ctx) => {
  * Create a new page
  */
 router.post('/', authMiddleware, roleMiddleware([UserRole.Admin, UserRole.Root]), async (ctx) => {
-  const service = ctx.state.container.resolve(ContentPagesService)
-  const orgId = ctx.state.orgId
+  const service = ctx.state['container'].resolve(ContentPagesService)
+  const orgId = ctx.state['orgId']
   const input = ctx.request.body as CreateContentPageInput
 
   const page = await service.createPage(orgId, input)
@@ -104,9 +117,11 @@ router.post('/', authMiddleware, roleMiddleware([UserRole.Admin, UserRole.Root])
  * Update a page
  */
 router.patch('/:id', authMiddleware, roleMiddleware([UserRole.Admin, UserRole.Root]), async (ctx) => {
-  const service = ctx.state.container.resolve(ContentPagesService)
-  const orgId = ctx.state.orgId
-  const id = BigInt(ctx.params.id)
+  const service = ctx.state['container'].resolve(ContentPagesService)
+  const orgId = ctx.state['orgId']
+  const idParam = requireParam(ctx, 'id')
+  if (!idParam) return
+  const id = BigInt(idParam)
   const input = ctx.request.body as UpdateContentPageInput
 
   const page = await service.updatePage(orgId, id, input)
@@ -118,9 +133,11 @@ router.patch('/:id', authMiddleware, roleMiddleware([UserRole.Admin, UserRole.Ro
  * Delete a page
  */
 router.delete('/:id', authMiddleware, roleMiddleware([UserRole.Admin, UserRole.Root]), async (ctx) => {
-  const service = ctx.state.container.resolve(ContentPagesService)
-  const orgId = ctx.state.orgId
-  const id = BigInt(ctx.params.id)
+  const service = ctx.state['container'].resolve(ContentPagesService)
+  const orgId = ctx.state['orgId']
+  const idParam = requireParam(ctx, 'id')
+  if (!idParam) return
+  const id = BigInt(idParam)
 
   const success = await service.deletePage(orgId, id)
   ctx.body = { success }
@@ -131,9 +148,11 @@ router.delete('/:id', authMiddleware, roleMiddleware([UserRole.Admin, UserRole.R
  * Publish a page
  */
 router.post('/:id/publish', authMiddleware, roleMiddleware([UserRole.Admin, UserRole.Root]), async (ctx) => {
-  const service = ctx.state.container.resolve(ContentPagesService)
-  const orgId = ctx.state.orgId
-  const id = BigInt(ctx.params.id)
+  const service = ctx.state['container'].resolve(ContentPagesService)
+  const orgId = ctx.state['orgId']
+  const idParam = requireParam(ctx, 'id')
+  if (!idParam) return
+  const id = BigInt(idParam)
 
   const page = await service.publishPage(orgId, id)
   ctx.body = { page }
@@ -144,9 +163,11 @@ router.post('/:id/publish', authMiddleware, roleMiddleware([UserRole.Admin, User
  * Duplicate a page from template
  */
 router.post('/:id/duplicate', authMiddleware, roleMiddleware([UserRole.Admin, UserRole.Root]), async (ctx) => {
-  const service = ctx.state.container.resolve(ContentPagesService)
-  const orgId = ctx.state.orgId
-  const templateId = BigInt(ctx.params.id)
+  const service = ctx.state['container'].resolve(ContentPagesService)
+  const orgId = ctx.state['orgId']
+  const idParam = requireParam(ctx, 'id')
+  if (!idParam) return
+  const templateId = BigInt(idParam)
   const { title } = ctx.request.body as { title: string }
 
   if (!title) {

@@ -1,7 +1,7 @@
 import { injectable, inject } from 'tsyringe'
 import { Anthropic } from '@anthropic-ai/sdk'
 import { BlogRepository } from '../repository/blogs.js'
-import type { Blog, CreateBlogInput, UpdateBlogInput, BlogFilters, AISuggestions } from '../types/blog.js'
+import type { Blog, CreateBlogInput, BlogFilters, AISuggestions } from '../types/blog.js'
 import { deleteFromCloudinary } from '../utils/cloudinary.js'
 
 @injectable()
@@ -10,7 +10,7 @@ export class BlogService {
 
   constructor(@inject(BlogRepository) private blogRepo: BlogRepository) {
     this.anthropic = new Anthropic({
-      apiKey: process.env.ANTHROPIC_API_KEY
+      apiKey: process.env['ANTHROPIC_API_KEY'] || ''
     })
   }
 
@@ -108,7 +108,8 @@ Make sure the suggestions are relevant to real estate and property matters.`
     })
 
     // Extract JSON from response
-    const responseText = message.content[0].type === 'text' ? message.content[0].text : ''
+    const block = message.content[0]
+    const responseText = block && block.type === 'text' ? block.text : ''
 
     try {
       // Find JSON in the response

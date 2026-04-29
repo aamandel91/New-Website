@@ -43,7 +43,7 @@ export class BulkPageGenerationService {
     orgId: bigint,
     request: BulkPageGenerationRequest
   ): Promise<BulkPageGenerationResult> {
-    const results: ContentPage[] = []
+    const created: ContentPage[] = []
     const errors: { id: number; error: string }[] = []
 
     // Get the data for the selected items
@@ -57,7 +57,7 @@ export class BulkPageGenerationService {
     for (const item of items) {
       try {
         const page = await this.generateSinglePage(orgId, request.pageType, item, request)
-        results.push(page)
+        created.push(page)
       } catch (error: any) {
         console.error(`Error generating page for ${item.name}:`, error)
         errors.push({
@@ -68,9 +68,13 @@ export class BulkPageGenerationService {
     }
 
     return {
-      generated: results.length,
+      generated: created.length,
       failed: errors.length,
-      results,
+      results: created.map((p) => ({
+        id: String(p.id),
+        title: p.title,
+        slug: p.slug
+      })),
       errors
     }
   }
@@ -243,7 +247,6 @@ export class BulkPageGenerationService {
       status: request.autoPublish ? 'published' : 'draft',
       meta_title: metaTitle,
       meta_description: metaDescription,
-      featured_image_url: null,
       is_template: false
     }
 

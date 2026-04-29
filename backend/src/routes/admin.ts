@@ -70,8 +70,13 @@ router.get('/settings', async ctx => {
 });
 
 router.get('/settings/:key', async ctx => {
-   const adminSettingsService = ctx.state.container.resolve(AdminSettingsService);
-   const setting = await adminSettingsService.getSetting(ctx.params.key);
+   const adminSettingsService = ctx.state['container'].resolve(AdminSettingsService);
+   const key = ctx.params['key'];
+   if (!key) {
+      ctx.throw(new ApiError('Key is required', 400));
+      return;
+   }
+   const setting = await adminSettingsService.getSetting(key);
    if (!setting) {
       ctx.throw(new ApiError('Setting not found', 404));
       return;
@@ -80,14 +85,19 @@ router.get('/settings/:key', async ctx => {
 });
 
 router.patch('/settings/:key', async ctx => {
-   const adminSettingsService = ctx.state.container.resolve(AdminSettingsService);
-   const { value } = ctx.request.body;
+   const adminSettingsService = ctx.state['container'].resolve(AdminSettingsService);
+   const { value } = ctx.request.body as { value?: any };
    if (value === undefined) {
       ctx.throw(new ApiError('Value is required', 400));
       return;
    }
-   const userEmail = ctx.state.user?.email;
-   ctx.body = await adminSettingsService.updateSetting(ctx.params.key, value, userEmail);
+   const userEmail = ctx.state['user']?.email;
+   const key = ctx.params['key'];
+   if (!key) {
+      ctx.throw(new ApiError('Key is required', 400));
+      return;
+   }
+   ctx.body = await adminSettingsService.updateSetting(key, value, userEmail);
 });
 
 // Specific PPC settings endpoints
@@ -97,13 +107,13 @@ router.get('/settings/ppc/registration', async ctx => {
 });
 
 router.patch('/settings/ppc/registration', async ctx => {
-   const adminSettingsService = ctx.state.container.resolve(AdminSettingsService);
-   const { enabled, sources, viewThreshold } = ctx.request.body;
+   const adminSettingsService = ctx.state['container'].resolve(AdminSettingsService);
+   const { enabled, sources, viewThreshold } = ctx.request.body as { enabled?: boolean; sources?: any; viewThreshold?: number };
    if (enabled === undefined || !sources || viewThreshold === undefined) {
       ctx.throw(new ApiError('enabled, sources, and viewThreshold are required', 400));
       return;
    }
-   const userEmail = ctx.state.user?.email;
+   const userEmail = ctx.state['user']?.email;
    ctx.body = await adminSettingsService.updatePpcRegistrationSettings({ enabled, sources, viewThreshold }, userEmail);
 });
 
@@ -113,13 +123,13 @@ router.get('/settings/organic/registration', async ctx => {
 });
 
 router.patch('/settings/organic/registration', async ctx => {
-   const adminSettingsService = ctx.state.container.resolve(AdminSettingsService);
-   const { enabled, viewThreshold } = ctx.request.body;
+   const adminSettingsService = ctx.state['container'].resolve(AdminSettingsService);
+   const { enabled, viewThreshold } = ctx.request.body as { enabled?: boolean; viewThreshold?: number };
    if (enabled === undefined || viewThreshold === undefined) {
       ctx.throw(new ApiError('enabled and viewThreshold are required', 400));
       return;
    }
-   const userEmail = ctx.state.user?.email;
+   const userEmail = ctx.state['user']?.email;
    ctx.body = await adminSettingsService.updateOrganicRegistrationSettings({ enabled, viewThreshold }, userEmail);
 });
 

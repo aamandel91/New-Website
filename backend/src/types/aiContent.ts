@@ -52,21 +52,22 @@ export interface AIPageContentResponse {
 }
 
 export interface BulkPageGenerationRequest {
-  pageType: 'city' | 'zipcode' | 'neighborhood' | 'property_type' | 'school_district'
+  pageType: 'city' | 'zipcode' | 'neighborhood' | 'property_type'
   selectedIds: number[]
   template?: string
   autoPublish?: boolean
 }
 
-export interface BulkPageGenerationResponse {
-  total: number
-  created: number
+export interface BulkPageGenerationResult {
+  generated: number
   failed: number
-  pages: {
-    id: bigint
+  results: Array<{
+    id: string
     title: string
     slug: string
-    status: string
-  }[]
-  errors: string[]
+  }>
+  errors: Array<{
+    id: number
+    error: string
+  }>
 }

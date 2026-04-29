@@ -120,7 +120,7 @@ export class OrganizationService {
     const members = await this.orgRepo.getMembers(orgId)
     const owners = members.filter((m) => m.role === 'owner')
 
-    if (owners.length === 1 && owners[0].email === email) {
+    if (owners.length === 1 && owners[0]?.email === email) {
       throw new ApiError('Cannot remove the last owner', { status: 400 })
     }
 

@@ -116,10 +116,9 @@ export class LeadsService {
       throw new ApiError('Lead not found', { status: 404 })
     }
 
-    return this.leadsRepo.addActivity(orgId, leadId, {
-      ...input,
-      performed_by: performedBy
-    })
+    const activityInput: CreateActivityInput = { ...input }
+    if (performedBy !== undefined) activityInput.performed_by = performedBy
+    return this.leadsRepo.addActivity(orgId, leadId, activityInput)
   }
 
   /**

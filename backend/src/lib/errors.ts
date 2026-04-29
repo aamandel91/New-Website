@@ -64,12 +64,17 @@ export class ApiError extends Error {
   opts: Record<string, string | string[]> | undefined
   constructor(
     message: string,
-    status?: number,
+    statusOrOpts?: number | { status?: number; opts?: Record<string, string | string[]> },
     opts?: Record<string, string | string[]>
   ) {
     super(message)
-    this.status = status
-    this.opts = opts
+    if (typeof statusOrOpts === 'number') {
+      this.status = statusOrOpts
+      this.opts = opts
+    } else if (statusOrOpts && typeof statusOrOpts === 'object') {
+      this.status = statusOrOpts.status
+      this.opts = statusOrOpts.opts
+    }
   }
 }
 export class DBError extends Error {}

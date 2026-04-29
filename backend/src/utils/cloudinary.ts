@@ -2,9 +2,9 @@ import { v2 as cloudinary } from 'cloudinary'
 
 // Initialize Cloudinary
 cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET
+  cloud_name: process.env['CLOUDINARY_CLOUD_NAME'] || '',
+  api_key: process.env['CLOUDINARY_API_KEY'] || '',
+  api_secret: process.env['CLOUDINARY_API_SECRET'] || ''
 })
 
 export interface CloudinaryUploadResult {
@@ -63,7 +63,7 @@ export async function uploadToCloudinary(
  */
 export async function deleteFromCloudinary(publicId: string): Promise<void> {
   return new Promise((resolve, reject) => {
-    cloudinary.uploader.destroy(publicId, (error, result) => {
+    cloudinary.uploader.destroy(publicId, (error) => {
       if (error) reject(error)
       else resolve()
     })
@@ -74,8 +74,6 @@ export async function deleteFromCloudinary(publicId: string): Promise<void> {
  * Generate Cloudinary image URLs with transformations
  */
 export function generateCloudinaryUrls(publicId: string): CloudinaryTransformUrl {
-  const baseUrl = `https://res.cloudinary.com/${process.env.CLOUDINARY_CLOUD_NAME}/image/upload`
-
   return {
     // Original image with WebP format for modern browsers
     url: cloudinary.url(publicId, {

@@ -128,17 +128,18 @@ export default class OAuthService {
       // Try to get traffic source for the user
       const trafficSource = await this.trafficSourceService.getTrafficSource(user.clientId);
 
-      const params = await this.registerClientSelector.select({
-         user,
-         provider,
-         trafficSource: trafficSource ? {
-            utmSource: trafficSource.utmSource,
-            utmMedium: trafficSource.utmMedium,
-            utmCampaign: trafficSource.utmCampaign,
-            trafficType: trafficSource.trafficType,
-            landingPage: trafficSource.landingPage
-         } : undefined
-      });
+      let trafficSourceForReport: { utmSource?: string; utmMedium?: string; utmCampaign?: string; trafficType?: string; landingPage?: string } | undefined
+      if (trafficSource) {
+         trafficSourceForReport = {}
+         if (trafficSource.utmSource !== undefined) trafficSourceForReport.utmSource = trafficSource.utmSource
+         if (trafficSource.utmMedium !== undefined) trafficSourceForReport.utmMedium = trafficSource.utmMedium
+         if (trafficSource.utmCampaign !== undefined) trafficSourceForReport.utmCampaign = trafficSource.utmCampaign
+         if (trafficSource.trafficType !== undefined) trafficSourceForReport.trafficType = trafficSource.trafficType
+         if (trafficSource.landingPage !== undefined) trafficSourceForReport.landingPage = trafficSource.landingPage
+      }
+      const selectInput: any = { user, provider }
+      if (trafficSourceForReport !== undefined) selectInput.trafficSource = trafficSourceForReport
+      const params = await this.registerClientSelector.select(selectInput);
       if (!params) {
          debug("reportClientRegistration: params is null");
          return;

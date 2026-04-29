@@ -16,22 +16,32 @@ const router = new Router({
 const authMiddleware = container.resolve<Middleware>("middleware.jwt")
 const roleMiddleware = container.resolve<RoleMiddlewareCreator>("middleware.role")
 
+function requireId(ctx: any): string | null {
+  const id = ctx.params['id']
+  if (!id) {
+    ctx.status = 400
+    ctx.body = { error: 'Id is required' }
+    return null
+  }
+  return id
+}
+
 /**
  * GET /api/navigation
  * Get all navigation items with optional filters
  */
 router.get('/', async (ctx) => {
-  const service = ctx.state.container.resolve(NavigationService)
-  const orgId = ctx.state.orgId
+  const service = ctx.state['container'].resolve(NavigationService)
+  const orgId = ctx.state['orgId']
 
   const filters: NavigationFilters = {}
 
-  if (ctx.query.position) {
-    filters.position = ctx.query.position as string
+  if (ctx.query['position']) {
+    filters.position = ctx.query['position'] as string
   }
 
-  if (ctx.query.is_visible !== undefined) {
-    filters.is_visible = ctx.query.is_visible === 'true'
+  if (ctx.query['is_visible'] !== undefined) {
+    filters.visible = ctx.query['is_visible'] === 'true'
   }
 
   const items = await service.getItems(orgId, filters)
@@ -43,9 +53,11 @@ router.get('/', async (ctx) => {
  * Get navigation item by ID
  */
 router.get('/:id', authMiddleware, roleMiddleware([UserRole.Admin, UserRole.Root]), async (ctx) => {
-  const service = ctx.state.container.resolve(NavigationService)
-  const orgId = ctx.state.orgId
-  const id = BigInt(ctx.params.id)
+  const service = ctx.state['container'].resolve(NavigationService)
+  const orgId = ctx.state['orgId']
+  const idParam = requireId(ctx)
+  if (!idParam) return
+  const id = BigInt(idParam)
 
   const item = await service.getItemById(orgId, id)
 
@@ -63,8 +75,8 @@ router.get('/:id', authMiddleware, roleMiddleware([UserRole.Admin, UserRole.Root
  * Create a new navigation item
  */
 router.post('/', authMiddleware, roleMiddleware([UserRole.Admin, UserRole.Root]), async (ctx) => {
-  const service = ctx.state.container.resolve(NavigationService)
-  const orgId = ctx.state.orgId
+  const service = ctx.state['container'].resolve(NavigationService)
+  const orgId = ctx.state['orgId']
   const input = ctx.request.body as CreateNavigationItemInput
 
   const item = await service.createItem(orgId, input)
@@ -77,9 +89,11 @@ router.post('/', authMiddleware, roleMiddleware([UserRole.Admin, UserRole.Root])
  * Update a navigation item
  */
 router.patch('/:id', authMiddleware, roleMiddleware([UserRole.Admin, UserRole.Root]), async (ctx) => {
-  const service = ctx.state.container.resolve(NavigationService)
-  const orgId = ctx.state.orgId
-  const id = BigInt(ctx.params.id)
+  const service = ctx.state['container'].resolve(NavigationService)
+  const orgId = ctx.state['orgId']
+  const idParam = requireId(ctx)
+  if (!idParam) return
+  const id = BigInt(idParam)
   const input = ctx.request.body as UpdateNavigationItemInput
 
   const item = await service.updateItem(orgId, id, input)
@@ -91,9 +105,11 @@ router.patch('/:id', authMiddleware, roleMiddleware([UserRole.Admin, UserRole.Ro
  * Delete a navigation item
  */
 router.delete('/:id', authMiddleware, roleMiddleware([UserRole.Admin, UserRole.Root]), async (ctx) => {
-  const service = ctx.state.container.resolve(NavigationService)
-  const orgId = ctx.state.orgId
-  const id = BigInt(ctx.params.id)
+  const service = ctx.state['container'].resolve(NavigationService)
+  const orgId = ctx.state['orgId']
+  const idParam = requireId(ctx)
+  if (!idParam) return
+  const id = BigInt(idParam)
 
   const success = await service.deleteItem(orgId, id)
   ctx.body = { success }
@@ -104,8 +120,8 @@ router.delete('/:id', authMiddleware, roleMiddleware([UserRole.Admin, UserRole.R
  * Reorder navigation items
  */
 router.post('/reorder', authMiddleware, roleMiddleware([UserRole.Admin, UserRole.Root]), async (ctx) => {
-  const service = ctx.state.container.resolve(NavigationService)
-  const orgId = ctx.state.orgId
+  const service = ctx.state['container'].resolve(NavigationService)
+  const orgId = ctx.state['orgId']
   const { position, itemIds } = ctx.request.body as {
     position: string
     itemIds: string[]
@@ -130,9 +146,11 @@ router.post('/reorder', authMiddleware, roleMiddleware([UserRole.Admin, UserRole
  * Duplicate a navigation item
  */
 router.post('/:id/duplicate', authMiddleware, roleMiddleware([UserRole.Admin, UserRole.Root]), async (ctx) => {
-  const service = ctx.state.container.resolve(NavigationService)
-  const orgId = ctx.state.orgId
-  const id = BigInt(ctx.params.id)
+  const service = ctx.state['container'].resolve(NavigationService)
+  const orgId = ctx.state['orgId']
+  const idParam = requireId(ctx)
+  if (!idParam) return
+  const id = BigInt(idParam)
 
   const item = await service.duplicateItem(orgId, id)
   ctx.status = 201
@@ -144,9 +162,11 @@ router.post('/:id/duplicate', authMiddleware, roleMiddleware([UserRole.Admin, Us
  * Toggle visibility of a navigation item
  */
 router.post('/:id/toggle-visibility', authMiddleware, roleMiddleware([UserRole.Admin, UserRole.Root]), async (ctx) => {
-  const service = ctx.state.container.resolve(NavigationService)
-  const orgId = ctx.state.orgId
-  const id = BigInt(ctx.params.id)
+  const service = ctx.state['container'].resolve(NavigationService)
+  const orgId = ctx.state['orgId']
+  const idParam = requireId(ctx)
+  if (!idParam) return
+  const id = BigInt(idParam)
 
   const item = await service.toggleVisibility(orgId, id)
   ctx.body = { item }

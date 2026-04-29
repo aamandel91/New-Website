@@ -132,7 +132,8 @@ export class ContentPagesRepository {
     }
 
     // Get total count
-    const [{ count }] = await query.clone().count('* as count')
+    const countRow = await query.clone().count('* as count').first()
+    const count = Number(countRow?.['count'] ?? 0)
 
     // Apply pagination
     const limit = filters.limit || 50
@@ -190,14 +191,15 @@ export class ContentPagesRepository {
       throw new Error('Template not found')
     }
 
-    return this.createPage(orgId, {
+    const input: CreateContentPageInput = {
       title: newTitle,
       content: template.content,
       status: 'draft',
-      category: template.category,
       meta_keywords: template.meta_keywords,
       robots: template.robots
-    })
+    }
+    if (template.category !== null) input.category = template.category
+    return this.createPage(orgId, input)
   }
 
   /**

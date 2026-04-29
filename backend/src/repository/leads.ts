@@ -117,7 +117,8 @@ export class LeadsRepository {
     }
 
     // Get total count
-    const [{ count }] = await query.clone().count('* as count')
+    const countRow = await query.clone().count('* as count').first()
+    const count = Number(countRow?.['count'] ?? 0)
 
     // Apply pagination
     const limit = filters.limit || 20
@@ -184,7 +185,8 @@ export class LeadsRepository {
     byStatus: Record<string, number>
     bySource: Record<string, number>
   }> {
-    const [{ count: total }] = await this.db('leads').where({ org_id: orgId }).count('* as count')
+    const totalRow = await this.db('leads').where({ org_id: orgId }).count('* as count').first()
+    const total = Number(totalRow?.['count'] ?? 0)
 
     const byStatus = await this.db('leads')
       .where({ org_id: orgId })
@@ -199,15 +201,16 @@ export class LeadsRepository {
       .groupBy('source')
 
     return {
-      total: Number(total),
-      byStatus: byStatus.reduce((acc, row) => {
-        acc[row.status] = Number(row.count)
+      total,
+      byStatus: byStatus.reduce<Record<string, number>>((acc, row: any) => {
+        const key = row['status'] ?? 'unknown'
+        acc[key] = Number(row['count'])
         return acc
-      }, {} as Record<string, number>),
-      bySource: bySource.reduce((acc, row) => {
-        acc[row.source || 'unknown'] = Number(row.count)
+      }, {}),
+      bySource: bySource.reduce<Record<string, number>>((acc, row: any) => {
+        acc[row['source'] || 'unknown'] = Number(row['count'])
         return acc
-      }, {} as Record<string, number>)
+      }, {})
     }
   }
 

@@ -127,7 +127,8 @@ export class NavigationService {
       }
     }
 
-    return this.navRepo.reorderItems(orgId, position, itemIds)
+    await this.navRepo.reorderItems(orgId, itemIds)
+    return this.navRepo.getItems(orgId, { position })
   }
 
   /**
@@ -143,15 +144,15 @@ export class NavigationService {
     const input: CreateNavigationItemInput = {
       label: `${item.label} (Copy)`,
       type: item.type,
-      url: item.url,
-      page_id: item.page_id,
       position: item.position,
-      icon: item.icon,
+      visible: item.visible,
+      order_index: item.order_index,
       dropdown_items: item.dropdown_items,
-      mega_menu_config: item.mega_menu_config,
-      is_visible: item.is_visible,
-      open_new_tab: item.open_new_tab
+      target: item.target
     }
+    if (item.url !== null) input.url = item.url
+    if (item.icon !== null) input.icon = item.icon
+    if (item.css_classes !== null) input.css_classes = item.css_classes
 
     return this.navRepo.createItem(orgId, input)
   }
@@ -167,7 +168,7 @@ export class NavigationService {
     }
 
     return this.navRepo.updateItem(orgId, id, {
-      is_visible: !item.is_visible
+      visible: !item.visible
     })
   }
 }

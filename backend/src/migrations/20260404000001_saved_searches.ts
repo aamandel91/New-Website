@@ -1,8 +1,4 @@
-import crypto from 'node:crypto'
-import { promisify } from 'node:util'
 import type { Knex } from 'knex'
-
-const scryptAsync = promisify(crypto.scrypt)
 
 export async function up(knex: Knex): Promise<void> {
   // Site users table (home buyers/sellers — separate from admin_users)

@@ -14,7 +14,7 @@ export class AIContentService {
 
   constructor() {
     this.anthropic = new Anthropic({
-      apiKey: process.env.ANTHROPIC_API_KEY
+      apiKey: process.env['ANTHROPIC_API_KEY'] || ''
     })
   }
 
@@ -64,7 +64,8 @@ Respond with a JSON object containing:
       ]
     })
 
-    const responseText = message.content[0].type === 'text' ? message.content[0].text : ''
+    const block = message.content[0]
+    const responseText = block && block.type === 'text' ? block.text : ''
 
     try {
       const jsonMatch = responseText.match(/\{[\s\S]*\}/)
@@ -123,7 +124,8 @@ Respond with a JSON array of keyword objects.`
       ]
     })
 
-    const responseText = message.content[0].type === 'text' ? message.content[0].text : ''
+    const block = message.content[0]
+    const responseText = block && block.type === 'text' ? block.text : ''
 
     try {
       const jsonMatch = responseText.match(/\[[\s\S]*\]/)
@@ -207,7 +209,8 @@ Rules for the body 'text' module:
       ]
     })
 
-    const responseText = message.content[0].type === 'text' ? message.content[0].text : ''
+    const block = message.content[0]
+    const responseText = block && block.type === 'text' ? block.text : ''
 
     try {
       const jsonMatch = responseText.match(/\{[\s\S]*\}/)
@@ -226,15 +229,16 @@ Rules for the body 'text' module:
         ? result.content.sidebar
         : []
 
-      return {
+      const response: AIPageContentResponse = {
         content: { modules, sidebar },
         meta_title: result.meta_title || '',
         meta_description: result.meta_description || '',
         meta_keywords: Array.isArray(result.meta_keywords)
           ? result.meta_keywords
-          : [],
-        structured_data: result.structured_data || undefined
+          : []
       }
+      if (result.structured_data) response.structured_data = result.structured_data
+      return response
     } catch (error) {
       console.error('Error parsing page content response:', error)
       throw new Error('Failed to generate page content')

@@ -252,25 +252,26 @@ export default class AuthService {
       });
 
       // Store traffic source information
-      const trafficSourceData = await this.trafficSourceService.storeTrafficSource({
-         clientId: userInfo.clientId,
-         utmSource: params.utmSource,
-         utmMedium: params.utmMedium,
-         utmCampaign: params.utmCampaign,
-         utmTerm: params.utmTerm,
-         utmContent: params.utmContent,
-         referer: params.referer,
-         landingPage: params.landingPage
-      });
+      const trafficSourceInput: any = { clientId: userInfo.clientId }
+      if (params.utmSource !== undefined) trafficSourceInput.utmSource = params.utmSource
+      if (params.utmMedium !== undefined) trafficSourceInput.utmMedium = params.utmMedium
+      if (params.utmCampaign !== undefined) trafficSourceInput.utmCampaign = params.utmCampaign
+      if (params.utmTerm !== undefined) trafficSourceInput.utmTerm = params.utmTerm
+      if (params.utmContent !== undefined) trafficSourceInput.utmContent = params.utmContent
+      if (params.referer !== undefined) trafficSourceInput.referer = params.referer
+      if (params.landingPage !== undefined) trafficSourceInput.landingPage = params.landingPage
+      const trafficSourceData = await this.trafficSourceService.storeTrafficSource(trafficSourceInput);
 
       // Report registration with traffic source information
-      this.reportClientRegistration(userInfo, params.referer, trafficSourceData ? {
-         utmSource: trafficSourceData.utmSource,
-         utmMedium: trafficSourceData.utmMedium,
-         utmCampaign: trafficSourceData.utmCampaign,
-         trafficType: trafficSourceData.trafficType,
-         landingPage: trafficSourceData.landingPage
-      } : undefined);
+      const trafficSourceForReport: any = {}
+      if (trafficSourceData) {
+         if (trafficSourceData.utmSource !== undefined) trafficSourceForReport.utmSource = trafficSourceData.utmSource
+         if (trafficSourceData.utmMedium !== undefined) trafficSourceForReport.utmMedium = trafficSourceData.utmMedium
+         if (trafficSourceData.utmCampaign !== undefined) trafficSourceForReport.utmCampaign = trafficSourceData.utmCampaign
+         if (trafficSourceData.trafficType !== undefined) trafficSourceForReport.trafficType = trafficSourceData.trafficType
+         if (trafficSourceData.landingPage !== undefined) trafficSourceForReport.landingPage = trafficSourceData.landingPage
+      }
+      this.reportClientRegistration(userInfo, params.referer || '', trafficSourceData ? trafficSourceForReport : undefined);
       // and follow otp login flow
       return this.login({
          email: userInfo.email,
@@ -339,12 +340,13 @@ export default class AuthService {
       }
    ) {
       try {
-         const params = await this.registerClientSelector.select({
+         const selectInput: any = {
             user,
             provider: "otp",
-            referer,
-            trafficSource
-         });
+            referer
+         }
+         if (trafficSource !== undefined) selectInput.trafficSource = trafficSource
+         const params = await this.registerClientSelector.select(selectInput);
          if (!params) {
             debug("reportClientRegistration: params is null");
             return;

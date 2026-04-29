@@ -1,6 +1,6 @@
 import { injectable, inject } from 'tsyringe'
-import type Knex from 'knex'
-import type { Blog, CreateBlogInput, UpdateBlogInput, BlogFilters, BlogTag, BlogCategory } from '../types/blog'
+import type { Knex } from 'knex'
+import type { Blog, CreateBlogInput, BlogFilters, BlogTag, BlogCategory } from '../types/blog.js'
 
 @injectable()
 export class BlogRepository {
@@ -122,8 +122,10 @@ export class BlogRepository {
     }
 
     // Get total count before pagination
-    const [{ count }] = await this.db(query.clone() as any)
+    const countRow = await this.db(query.clone() as any)
       .count('* as count')
+      .first()
+    const count = Number(countRow?.['count'] ?? 0)
 
     // Apply ordering and pagination
     const offset = filters.offset || 0
@@ -139,7 +141,7 @@ export class BlogRepository {
 
     return {
       blogs: blogs.map(b => this.formatBlog(b)),
-      total: parseInt(count)
+      total: count
     }
   }
 

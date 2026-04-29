@@ -578,16 +578,16 @@ router.patch('/site-user/me', authMiddleware, async (ctx) => {
     password?: string
   }
 
-  const db = ctx.state.container.resolve<Knex>('db')
+  const db = ctx.state['container'].resolve<Knex>('db')
   const updates: Record<string, any> = { updated_at: db.fn.now() }
 
-  if (name !== undefined) updates.name = name
-  if (email !== undefined) updates.email = email.toLowerCase()
-  if (phone !== undefined) updates.phone = phone
+  if (name !== undefined) updates['name'] = name
+  if (email !== undefined) updates['email'] = email.toLowerCase()
+  if (phone !== undefined) updates['phone'] = phone
   if (password) {
     const salt = crypto.randomBytes(16).toString('hex')
     const derived = (await scryptAsync(password, salt, 64)) as Buffer
-    updates.password_hash = `${salt}:${derived.toString('hex')}`
+    updates['password_hash'] = `${salt}:${derived.toString('hex')}`
   }
 
   await db('site_users').where({ id: payload.userId }).update(updates)
@@ -669,14 +669,19 @@ router.patch('/site-saved-searches/:id', authMiddleware, async (ctx) => {
     return
   }
 
-  const searchId = parseInt(ctx.params['id'], 10)
+  const idParam = ctx.params['id']
+  if (!idParam) {
+    ctx.throw(new ApiError('Id is required', 400))
+    return
+  }
+  const searchId = parseInt(idParam, 10)
   const { name, filters, alertFrequency } = ctx.request.body as {
     name?: string
     filters?: object
     alertFrequency?: string
   }
 
-  const db = ctx.state.container.resolve<Knex>('db')
+  const db = ctx.state['container'].resolve<Knex>('db')
 
   // Verify ownership
   const existing = await db('saved_searches').where({ id: searchId, user_id: payload.userId }).first()
@@ -686,9 +691,9 @@ router.patch('/site-saved-searches/:id', authMiddleware, async (ctx) => {
   }
 
   const updates: Record<string, any> = { updated_at: db.fn.now() }
-  if (name !== undefined) updates.name = name
-  if (filters !== undefined) updates.filters = JSON.stringify(filters)
-  if (alertFrequency !== undefined) updates.alert_frequency = alertFrequency
+  if (name !== undefined) updates['name'] = name
+  if (filters !== undefined) updates['filters'] = JSON.stringify(filters)
+  if (alertFrequency !== undefined) updates['alert_frequency'] = alertFrequency
 
   await db('saved_searches').where({ id: searchId }).update(updates)
   const search = await db('saved_searches').where({ id: searchId }).first()
@@ -703,8 +708,13 @@ router.delete('/site-saved-searches/:id', authMiddleware, async (ctx) => {
     return
   }
 
-  const searchId = parseInt(ctx.params['id'], 10)
-  const db = ctx.state.container.resolve<Knex>('db')
+  const idParam2 = ctx.params['id']
+  if (!idParam2) {
+    ctx.throw(new ApiError('Id is required', 400))
+    return
+  }
+  const searchId = parseInt(idParam2, 10)
+  const db = ctx.state['container'].resolve<Knex>('db')
 
   const existing = await db('saved_searches').where({ id: searchId, user_id: payload.userId }).first()
   if (!existing) {

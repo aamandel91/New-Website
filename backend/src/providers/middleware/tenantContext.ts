@@ -20,10 +20,10 @@ export default {
       let orgId: bigint | null = null
       let org: any = null
 
-      const orgService = ctx.state.container.resolve(OrganizationService)
+      const orgService = ctx.state['container'].resolve(OrganizationService)
       const hostname = ctx.request.hostname
       const orgHeader = ctx.request.headers['x-organization-id']
-      const orgParam = ctx.query.org_id
+      const orgParam = ctx.query['org_id']
 
       try {
         // Priority 1: Header (for API clients)
@@ -57,20 +57,21 @@ export default {
         }
 
         // Set in context
-        ctx.state.orgId = orgId
-        ctx.state.org = org
+        ctx.state['orgId'] = orgId
+        ctx.state['org'] = org
 
         // Also check if request is from an agent subdomain
         if (org && hostname) {
           const parts = hostname.split('.')
           if (parts.length >= 2) {
             const possibleSubdomain = parts[0]
-
-            // Check if this is an agent subdomain
-            const agent = await orgService.findAgentBySubdomain(org.id, possibleSubdomain)
-            if (agent) {
-              ctx.state.agentSubdomain = possibleSubdomain
-              ctx.state.agent = agent
+            if (possibleSubdomain) {
+              // Check if this is an agent subdomain
+              const agent = await orgService.findAgentBySubdomain(org.id, possibleSubdomain)
+              if (agent) {
+                ctx.state['agentSubdomain'] = possibleSubdomain
+                ctx.state['agent'] = agent
+              }
             }
           }
         }

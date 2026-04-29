@@ -119,8 +119,8 @@ router.post('/bulk-pages/preview', authMiddleware, roleMiddleware([UserRole.Admi
  * Generate pages in bulk
  */
 router.post('/bulk-pages/generate', authMiddleware, roleMiddleware([UserRole.Admin, UserRole.Root]), async (ctx) => {
-  const service = ctx.state.container.resolve(BulkPageGenerationService)
-  const orgId = ctx.state.orgId
+  const service = ctx.state['container'].resolve(BulkPageGenerationService)
+  const orgId = ctx.state['orgId']
   const request = ctx.request.body as BulkPageGenerationRequest
 
   if (!request.pageType || !request.selectedIds || request.selectedIds.length === 0) {
