@@ -4,6 +4,7 @@ import type { Middleware } from 'koa-jwt'
 import { AIContentService } from '../services/aiContent.js'
 import { BulkPageGenerationService } from '../services/bulkPageGeneration.js'
 import { RepliersLocationsService } from '../services/repliersLocations.js'
+import { KeywordQueueService } from '../services/keywordQueue.js'
 import { RoleMiddlewareCreator } from '../providers/middleware/role.js'
 import { UserRole } from '../constants.js'
 import type {
@@ -13,6 +14,10 @@ import type {
   CrossProductGenerationRequest,
   CrossProductCombination
 } from '../types/aiContent.js'
+import type {
+  KeywordQueueInsertItem,
+  KeywordQueueStatus
+} from '../types/keywordQueue.js'
 
 const router = new Router({
   prefix: '/ai-content'
@@ -228,6 +233,150 @@ router.get(
     const cityFilter = (ctx.query['city'] as string | undefined) || undefined
     const neighborhoods = await service.getNeighborhoods(cityFilter)
     ctx.body = { neighborhoods }
+  }
+)
+
+/**
+ * GET /api/ai-content/keyword-queue
+ * List queue. Filters: ?status=pending&city=Boca+Raton&priority_min=5
+ * Sorted priority DESC, created_at ASC. Capped at 500 rows.
+ */
+router.get(
+  '/keyword-queue',
+  authMiddleware,
+  roleMiddleware([UserRole.Admin, UserRole.Root]),
+  async (ctx) => {
+    const service = ctx.state['container'].resolve(KeywordQueueService)
+    const status = ctx.query['status'] as string | undefined
+    const city = ctx.query['city'] as string | undefined
+    const priorityMinRaw = ctx.query['priority_min'] as string | undefined
+
+    const allowedStatuses: KeywordQueueStatus[] = [
+      'pending',
+      'generating',
+      'done',
+      'failed'
+    ]
+    if (status && !allowedStatuses.includes(status as KeywordQueueStatus)) {
+      ctx.status = 400
+      ctx.body = { error: 'Invalid status filter' }
+      return
+    }
+
+    const priorityMin = priorityMinRaw !== undefined
+      ? Number(priorityMinRaw)
+      : undefined
+    if (priorityMinRaw !== undefined && Number.isNaN(priorityMin)) {
+      ctx.status = 400
+      ctx.body = { error: 'priority_min must be a number' }
+      return
+    }
+
+    const filters: import('../types/keywordQueue.js').KeywordQueueListFilters = {}
+    if (status) filters.status = status as KeywordQueueStatus
+    if (city) filters.city = city
+    if (priorityMin !== undefined) filters.priority_min = priorityMin
+
+    const items = await service.list(filters)
+    ctx.body = { items }
+  }
+)
+
+/**
+ * POST /api/ai-content/keyword-queue
+ * Body: { items: Array<{ keyword, city?, priority?, targetUrl?, notes? }> }
+ * Insert all and return inserted rows.
+ */
+router.post(
+  '/keyword-queue',
+  authMiddleware,
+  roleMiddleware([UserRole.Admin, UserRole.Root]),
+  async (ctx) => {
+    const service = ctx.state['container'].resolve(KeywordQueueService)
+    const body = ctx.request.body as { items?: KeywordQueueInsertItem[] }
+
+    if (!body || !Array.isArray(body.items) || body.items.length === 0) {
+      ctx.status = 400
+      ctx.body = { error: 'items array is required' }
+      return
+    }
+
+    if (body.items.length > 500) {
+      ctx.status = 400
+      ctx.body = { error: 'Maximum 500 keywords per request' }
+      return
+    }
+
+    const invalid = body.items.find(
+      (it) => !it || typeof it.keyword !== 'string' || it.keyword.trim() === ''
+    )
+    if (invalid) {
+      ctx.status = 400
+      ctx.body = { error: 'Each item must have a non-empty keyword string' }
+      return
+    }
+
+    const inserted = await service.addMany(body.items)
+    ctx.body = { items: inserted }
+  }
+)
+
+/**
+ * DELETE /api/ai-content/keyword-queue/:id
+ */
+router.delete(
+  '/keyword-queue/:id',
+  authMiddleware,
+  roleMiddleware([UserRole.Admin, UserRole.Root]),
+  async (ctx) => {
+    const service = ctx.state['container'].resolve(KeywordQueueService)
+    const id = ctx.params['id']
+    if (!id) {
+      ctx.status = 400
+      ctx.body = { error: 'id is required' }
+      return
+    }
+
+    const ok = await service.deleteById(id)
+    if (!ok) {
+      ctx.status = 404
+      ctx.body = { error: 'Queue entry not found' }
+      return
+    }
+    ctx.body = { ok: true }
+  }
+)
+
+/**
+ * POST /api/ai-content/keyword-queue/process
+ * Body: { count?: number }  // default 5, server-capped at 20
+ * Atomically claims next N pending items, generates a blog post per row
+ * serially, and links the new blog id back to the queue entry.
+ */
+router.post(
+  '/keyword-queue/process',
+  authMiddleware,
+  roleMiddleware([UserRole.Admin, UserRole.Root]),
+  async (ctx) => {
+    const service = ctx.state['container'].resolve(KeywordQueueService)
+    const body = (ctx.request.body || {}) as { count?: number }
+    const requested = typeof body.count === 'number' ? body.count : 5
+    if (!Number.isInteger(requested) || requested < 1) {
+      ctx.status = 400
+      ctx.body = { error: 'count must be a positive integer' }
+      return
+    }
+    const count = Math.min(requested, 20)
+
+    const authorEmail = ctx.state['user']?.email
+    if (!authorEmail) {
+      ctx.status = 401
+      ctx.body = { error: 'Authenticated user email required' }
+      return
+    }
+
+    const result = await service.processNext(count, authorEmail)
+    ctx.body = result
   }
 )
 

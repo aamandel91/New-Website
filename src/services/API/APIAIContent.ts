@@ -126,6 +126,42 @@ export interface NeighborhoodLocation {
   county: string
 }
 
+export type KeywordQueueStatus = 'pending' | 'generating' | 'done' | 'failed'
+
+export interface KeywordQueueRow {
+  id: string
+  keyword: string
+  city: string | null
+  status: KeywordQueueStatus
+  priority: number
+  blog_post_id: string | null
+  target_url: string | null
+  notes: string | null
+  created_at: string
+  updated_at: string
+}
+
+export interface KeywordQueueInsertItem {
+  keyword: string
+  city?: string
+  priority?: number
+  targetUrl?: string
+  notes?: string
+}
+
+export interface KeywordQueueProcessResult {
+  processed: number
+  succeeded: number
+  failed: number
+  results: Array<{
+    id: string
+    keyword: string
+    status: KeywordQueueStatus
+    blogPostId?: string
+    error?: string
+  }>
+}
+
 class APIAIContent extends APIBase {
   /**
    * Generate a blog post with AI
@@ -250,6 +286,62 @@ class APIAIContent extends APIBase {
       neighborhoods: NeighborhoodLocation[]
     }>(`/ai-content/locations/neighborhoods${qs}`)
     return response.neighborhoods
+  }
+
+  /**
+   * List keyword queue rows. Filters: status, city, priority_min.
+   */
+  async listKeywordQueue(filters: {
+    status?: KeywordQueueStatus
+    city?: string
+    priority_min?: number
+  } = {}): Promise<KeywordQueueRow[]> {
+    const params = new URLSearchParams()
+    if (filters.status) params.set('status', filters.status)
+    if (filters.city) params.set('city', filters.city)
+    if (filters.priority_min !== undefined) {
+      params.set('priority_min', String(filters.priority_min))
+    }
+    const qs = params.toString() ? `?${params.toString()}` : ''
+    const response = await this.fetchJSON<{ items: KeywordQueueRow[] }>(
+      `/ai-content/keyword-queue${qs}`
+    )
+    return response.items
+  }
+
+  /**
+   * Add one or many keywords to the queue.
+   */
+  async addKeywordsToQueue(
+    items: KeywordQueueInsertItem[]
+  ): Promise<KeywordQueueRow[]> {
+    const response = await this.fetchJSON<{ items: KeywordQueueRow[] }>(
+      '/ai-content/keyword-queue',
+      {
+        method: 'POST',
+        body: JSON.stringify({ items })
+      }
+    )
+    return response.items
+  }
+
+  async deleteKeywordQueueEntry(id: string): Promise<void> {
+    await this.fetchJSON<{ ok: boolean }>(`/ai-content/keyword-queue/${id}`, {
+      method: 'DELETE'
+    })
+  }
+
+  /**
+   * Process the next N pending keywords (default 5, server-capped at 20).
+   */
+  async processKeywordQueue(count: number): Promise<KeywordQueueProcessResult> {
+    return this.fetchJSON<KeywordQueueProcessResult>(
+      '/ai-content/keyword-queue/process',
+      {
+        method: 'POST',
+        body: JSON.stringify({ count })
+      }
+    )
   }
 }
 

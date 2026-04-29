@@ -25,11 +25,13 @@ import {
 import AIIcon from '@mui/icons-material/AutoAwesome'
 import ArticleIcon from '@mui/icons-material/Article'
 import SearchIcon from '@mui/icons-material/Search'
+import QueueIcon from '@mui/icons-material/Queue'
 import APIAIContent, {
   type AIBlogPostResponse,
   type AIKeywordSuggestion
 } from '@/services/API/APIAIContent'
 import { useRouter } from 'next/navigation'
+import KeywordQueueTab from './components/KeywordQueueTab'
 
 interface TabPanelProps {
   children?: React.ReactNode
@@ -158,6 +160,7 @@ export default function AIContentPage() {
           >
             <Tab icon={<ArticleIcon />} label="Generate Blog Post" iconPosition="start" />
             <Tab icon={<SearchIcon />} label="Keyword Research" iconPosition="start" />
+            <Tab icon={<QueueIcon />} label="Keyword Queue" iconPosition="start" />
           </Tabs>
 
           {/* Blog Generation Tab */}
@@ -419,6 +422,11 @@ export default function AIContentPage() {
                 )}
               </Grid>
             </Grid>
+          </TabPanel>
+
+          {/* Keyword Queue Tab */}
+          <TabPanel value={activeTab} index={2}>
+            <KeywordQueueTab />
           </TabPanel>
         </Paper>
       </Box>
