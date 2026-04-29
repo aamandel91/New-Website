@@ -98,15 +98,16 @@ class APISearch extends APIBase {
       })
     }
 
-    const searchParams = new URLSearchParams({
-      ...params,
-      listings: false,
-      aggregates: 'map',
-      clusterPrecision: 1,
-      boardId: searchConfig.defaultBoardId,
-      searchFields: 'address.city,address.neighborhood'
-    } as any)
-    // TODO: fix type of params mutation
+    const merged: Record<string, string> = {}
+    for (const [key, value] of Object.entries(params)) {
+      if (value !== undefined && value !== null) merged[key] = String(value)
+    }
+    merged.listings = 'false'
+    merged.aggregates = 'map'
+    merged.clusterPrecision = '1'
+    merged.boardId = String(searchConfig.defaultBoardId)
+    merged.searchFields = 'address.city,address.neighborhood'
+    const searchParams = new URLSearchParams(merged)
 
     return this.fetchJSON<ApiQueryResponse>(
       `/listings/search?${searchParams}`,

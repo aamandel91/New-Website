@@ -23,7 +23,11 @@ import {
   yAxisProps
 } from '@shared/Stats'
 
+import { type ApiStatisticRecord } from 'services/API'
 import { formatEnglishPrice, formatPrice } from 'utils/formatters'
+
+type EstimateHistoryByMonth = Record<string, { value: number }>
+type NeighborhoodHistoryByMonth = Record<string, ApiStatisticRecord>
 
 export const labels = {
   value: {
@@ -43,8 +47,8 @@ const PriceTrendsChart = ({
   neighborhoodData,
   timeRange
 }: {
-  data: any // TODO: add type
-  neighborhoodData: any | null
+  data: EstimateHistoryByMonth
+  neighborhoodData: NeighborhoodHistoryByMonth | null
   timeRange: ChartTimeRange
 }) => {
   const dates = Object.keys(data)
@@ -54,9 +58,10 @@ const PriceTrendsChart = ({
   const prices = Object.values(data)
     .reverse()
     .slice(-timeRange - 1)
-    .map((record: any) => record.value)
+    .map((record) => record.value)
 
-  let chartData = dates.map((date, index) => ({
+  type ChartRow = { date: string; value: number | null; med: number | null }
+  let chartData: ChartRow[] = dates.map((date, index) => ({
     date,
     value: prices[index],
     med: neighborhoodData?.[date]?.med ? neighborhoodData[date].med : null
@@ -73,7 +78,11 @@ const PriceTrendsChart = ({
   if (chartData.length === 24) {
     const firstDate = dayjs().subtract(24, 'month').format('YYYY-MM')
     chartData = [
-      { date: firstDate, value: null, med: neighborhoodData?.[firstDate]?.med },
+      {
+        date: firstDate,
+        value: null,
+        med: neighborhoodData?.[firstDate]?.med ?? null
+      },
       ...chartData
     ]
   }

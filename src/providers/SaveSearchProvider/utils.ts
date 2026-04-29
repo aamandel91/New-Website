@@ -1,5 +1,3 @@
-import { type LngLat, type LngLatBounds } from 'utils/lngLat'
-
 import type { ListingStatus } from '@configs/filters'
 
 import {
@@ -109,8 +107,8 @@ export const getListingStatus = (searchType: string): ListingStatus =>
 export const getRadius = (position: MapPosition) => {
   const { bounds, center } = position
   if (!bounds || !center) return 0
-  const ne = (bounds as LngLatBounds).getNorthEast() // WARN: TODO: very dangerous type casting
-  const radius = (center as LngLat).distanceTo(ne) / 1000 // WARN: TODO: very dangerous type casting
+  const ne = bounds.getNorthEast()
+  const radius = center.distanceTo(ne) / 1000
   return radius
 }
 

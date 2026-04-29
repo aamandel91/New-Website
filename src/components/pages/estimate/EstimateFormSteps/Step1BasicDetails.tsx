@@ -46,10 +46,9 @@ const BasicDetailsStep = () => {
     if (!estimateData && !historyData?.details) {
       const defaults = condoType ? defaultsCondo : defaultsResidential
 
-      // TODO: extend this to extract keys out of the defaultDetails object
-      // and set them all
-      setValue('details.sqft', defaults.details.sqft)
-      setValue('details.style', defaults.details.style)
+      for (const [key, value] of Object.entries(defaults.details)) {
+        setValue(`details.${key}`, value)
+      }
     }
   }, [condoType, estimateData, historyData])
 
