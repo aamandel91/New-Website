@@ -20,7 +20,7 @@ export interface SiteSettings {
 export const siteSettings: SiteSettings = {
   siteName: 'Florida Home Finder',
   brokerage: 'eXp Realty',
-  phone: '(954) 251-0694',
+  phone: '(954) 610-0563',
   email: 'info@floridahomefinder.com',
   address: '10101 W Sample Rd, Coral Springs, FL 33065',
   heroImageUrl: '',
