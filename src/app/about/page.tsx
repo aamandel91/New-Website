@@ -3,22 +3,96 @@ import type { Metadata } from 'next'
 import { Box, Container, Grid2 as Grid, Paper, Stack, Typography, Avatar } from '@mui/material'
 import PhoneIcon from '@mui/icons-material/Phone'
 import BadgeIcon from '@mui/icons-material/Badge'
+
 import { teamMembers } from '@/configs/defaults/team'
+import { siteSettings } from '@/configs/defaults/site-settings'
 import PageWithSidebar from '@/components/layouts/PageWithSidebar'
 import InfoPageSidebar from '@/components/sidebar/InfoPageSidebar'
+import StructuredData from '@shared/StructuredData'
+import { breadcrumbSchema } from 'utils/structuredData'
 
 export const metadata: Metadata = {
-  title: 'About The Mandel Team',
+  title: 'Andy Mandel | Top South Florida Real Estate Agent | The Mandel Team',
   description:
-    'Meet The Mandel Team — South Florida real estate experts. Born and raised in South Florida, we bring local expertise and dedication to every client.',
+    'Andy Mandel leads The Mandel Team at eXp Luxury in Broward and Palm Beach County, FL. 14+ years experience, 200+ transactions annually. Search South Florida homes with a top-ranked team.',
+  keywords: [
+    'South Florida real estate agent',
+    'Broward County realtor',
+    'Palm Beach County homes',
+    'Mandel Team eXp Realty',
+    'Coral Springs real estate',
+    'Boca Raton homes for sale',
+  ],
+  alternates: {
+    canonical: 'https://floridahomefinder.com/about',
+  },
 }
 
 const NAVY = '#0F1621'
 const GOLD = '#C4A96E'
 
+/**
+ * JSON-LD Person schema for Andy Mandel — helps Google build a Knowledge
+ * Graph entry, enables rich result eligibility, and ties this page to the
+ * organization schema on the homepage via worksFor.
+ */
+const andyMandelPersonSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: 'Andy Mandel',
+  jobTitle: 'Team Leader',
+  worksFor: {
+    '@type': 'RealEstateAgent',
+    name: 'The Mandel Team at Florida Home Finder',
+    url: 'https://floridahomefinder.com',
+  },
+  url: 'https://floridahomefinder.com/about',
+  telephone: '+19546100563',
+  email: 'info@floridahomefinder.com',
+  address: {
+    '@type': 'PostalAddress',
+    addressLocality: 'Coral Springs',
+    addressRegion: 'FL',
+    addressCountry: 'US',
+  },
+  sameAs: [
+    siteSettings.social.facebook,
+    siteSettings.social.instagram,
+    siteSettings.social.linkedin,
+    siteSettings.social.youtube,
+    siteSettings.social.zillow,
+  ],
+  knowsAbout: [
+    'Real Estate',
+    'South Florida Real Estate',
+    'Broward County',
+    'Palm Beach County',
+    'Luxury Real Estate',
+    'Home Buying',
+    'Home Selling',
+  ],
+  hasCredential: [
+    {
+      '@type': 'EducationalOccupationalCredential',
+      credentialCategory: 'Florida Real Estate License',
+      recognizedBy: {
+        '@type': 'Organization',
+        name: 'Florida Department of Business and Professional Regulation',
+      },
+    },
+  ],
+}
+
+const aboutBreadcrumbItems = [
+  { name: 'Home', url: 'https://floridahomefinder.com' },
+  { name: 'About', url: 'https://floridahomefinder.com/about' },
+]
+
 export default function AboutPage() {
   return (
     <Box>
+      <StructuredData data={andyMandelPersonSchema} />
+      <StructuredData data={breadcrumbSchema(aboutBreadcrumbItems)} />
       {/* Hero */}
       <Box sx={{ bgcolor: NAVY, py: { xs: 8, md: 12 }, px: 3, textAlign: 'center' }}>
         <Container maxWidth="md">
