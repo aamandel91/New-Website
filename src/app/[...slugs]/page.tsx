@@ -99,13 +99,19 @@ export async function generateMetadata(props: CleanPageProps): Promise<Metadata>
       const pageScore = scoreAreaPage({ pageType: 'city', listingCount: count, hasCmsContent })
       const title = `${count} Homes for Sale in ${cityName}, FL (${new Date().getFullYear()})`
       const description = `Browse ${count} homes for sale in ${cityName}, FL. View photos, prices, and property details. Updated daily on Florida Home Finder.`
+      const ogImageUrl = `${baseUrl}/${parsed.city}/opengraph-image`
       return {
         title,
         description,
         robots: pageScore.indexDirective,
         alternates: { canonical: `${baseUrl}/${parsed.city}` },
-        openGraph: { title, description, type: 'website' },
-        twitter: { card: 'summary_large_image', title, description },
+        openGraph: {
+          title,
+          description,
+          type: 'website',
+          images: [{ url: ogImageUrl, width: 1200, height: 630 }],
+        },
+        twitter: { card: 'summary_large_image', title, description, images: [ogImageUrl] },
       }
     }
     case 'city-subtype': {
@@ -115,25 +121,37 @@ export async function generateMetadata(props: CleanPageProps): Promise<Metadata>
       const pageScore = scoreAreaPage({ pageType: 'subType', listingCount: count, subTypeSlug: stConfig.slug, hasCmsContent })
       const title = generateMetaTitle(cityName, stConfig.label, count)
       const description = `Browse ${count} ${stConfig.label} for sale in ${cityName}, FL. View photos, prices, and property details. Updated daily on Florida Home Finder.`
+      const ogImageUrl = `${baseUrl}/${parsed.city}/${parsed.subType}/opengraph-image`
       return {
         title,
         description,
         robots: pageScore.indexDirective,
         alternates: { canonical: `${baseUrl}/${parsed.city}/${parsed.subType}` },
-        openGraph: { title, description, type: 'website' },
-        twitter: { card: 'summary_large_image', title, description },
+        openGraph: {
+          title,
+          description,
+          type: 'website',
+          images: [{ url: ogImageUrl, width: 1200, height: 630 }],
+        },
+        twitter: { card: 'summary_large_image', title, description, images: [ogImageUrl] },
       }
     }
     case 'city-schools': {
       const pageScore = scoreAreaPage({ pageType: 'schools', listingCount: 0, hasCmsContent })
       const title = `Schools in ${cityName}, FL`
       const description = `Explore schools in ${cityName}, Florida. Find top-rated public and private schools near your new home.`
+      const ogImageUrl = `${baseUrl}/${parsed.city}/schools/opengraph-image`
       return {
         title,
         description,
         robots: pageScore.indexDirective,
-        openGraph: { title, description, type: 'website' },
-        twitter: { card: 'summary_large_image', title, description },
+        openGraph: {
+          title,
+          description,
+          type: 'website',
+          images: [{ url: ogImageUrl, width: 1200, height: 630 }],
+        },
+        twitter: { card: 'summary_large_image', title, description, images: [ogImageUrl] },
       }
     }
     case 'city-zip': {
@@ -141,12 +159,18 @@ export async function generateMetadata(props: CleanPageProps): Promise<Metadata>
       const pageScore = scoreAreaPage({ pageType: 'zip', listingCount: count, hasCmsContent })
       const title = `${count} Homes for Sale in ${cityName}, FL ${parsed.zip} (${new Date().getFullYear()})`
       const description = `Browse ${count} homes for sale in ${cityName} zip code ${parsed.zip}, FL. Updated daily.`
+      const ogImageUrl = `${baseUrl}/${parsed.city}/${parsed.zip}/opengraph-image`
       return {
         title,
         description,
         robots: pageScore.indexDirective,
-        openGraph: { title, description, type: 'website' },
-        twitter: { card: 'summary_large_image', title, description },
+        openGraph: {
+          title,
+          description,
+          type: 'website',
+          images: [{ url: ogImageUrl, width: 1200, height: 630 }],
+        },
+        twitter: { card: 'summary_large_image', title, description, images: [ogImageUrl] },
       }
     }
     case 'city-neighborhood': {
@@ -155,12 +179,18 @@ export async function generateMetadata(props: CleanPageProps): Promise<Metadata>
       const neighborhoodName = slugToDisplayName(parsed.neighborhood!)
       const title = `Homes for Sale in ${neighborhoodName}, ${cityName}, FL`
       const description = `Browse homes for sale in ${neighborhoodName}, ${cityName}, FL. View photos, prices, and property details.`
+      const ogImageUrl = `${baseUrl}/${parsed.city}/${parsed.neighborhood}/opengraph-image`
       return {
         title,
         description,
         robots: pageScore.indexDirective,
-        openGraph: { title, description, type: 'website' },
-        twitter: { card: 'summary_large_image', title, description },
+        openGraph: {
+          title,
+          description,
+          type: 'website',
+          images: [{ url: ogImageUrl, width: 1200, height: 630 }],
+        },
+        twitter: { card: 'summary_large_image', title, description, images: [ogImageUrl] },
       }
     }
   }
