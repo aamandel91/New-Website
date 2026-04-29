@@ -24,9 +24,11 @@ export interface AIKeywordSuggestion {
 }
 
 export interface AIPageContentRequest {
-  template: string
-  variables: Record<string, string>
   pageType: string
+  keyword: string
+  location?: string
+  propertyType?: string
+  tone?: string
 }
 
 export interface AIPageContentResponse {

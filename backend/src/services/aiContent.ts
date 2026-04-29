@@ -140,32 +140,41 @@ Respond with a JSON array of keyword objects.`
   }
 
   /**
-   * Generate page content from template
+   * Generate page content from a structured request.
+   *
+   * Inputs (all derived from AIPageContentRequest):
+   *   - pageType:     'city' | 'subType' | 'neighborhood' | etc — picks the
+   *                   structure / heading style of the generated copy.
+   *   - keyword:      primary SEO keyword the page should target.
+   *   - location:     optional locality (e.g. 'Boca Raton, FL').
+   *   - propertyType: optional property type (e.g. 'condos').
+   *   - tone:         optional voice instruction (default: professional and informative).
    */
   async generatePageContent(request: AIPageContentRequest): Promise<AIPageContentResponse> {
-    const variablesText = Object.entries(request.variables)
-      .map(([key, value]) => `${key}: ${value}`)
-      .join('\n')
+    const toneInstruction = request.tone || 'professional and informative'
+    const locationLine = request.location ? `Location: ${request.location}` : ''
+    const propertyTypeLine = request.propertyType
+      ? `Property type: ${request.propertyType}`
+      : ''
+    const contextLines = [locationLine, propertyTypeLine].filter(Boolean).join('\n')
+    const contextBlock = contextLines ? `\nContext:\n${contextLines}\n` : ''
 
-    const prompt = `You are a real estate content expert. Generate page content for a ${request.pageType} page.
+    const prompt = `You are a real estate content expert. Generate page content for a "${request.pageType}" page.
 
-Template Variables:
-${variablesText}
-
-Template:
-${request.template}
+Primary keyword: ${request.keyword}${contextBlock}
+Tone: ${toneInstruction}
 
 Generate:
-1. Page title (use template variables)
-2. Full page content in HTML format (use template variables, expand to ~500-800 words)
-3. Meta title for SEO
-4. Meta description for SEO
-5. Keywords array
+1. Page title (use the primary keyword naturally)
+2. Full page content in HTML format (~500-800 words; use semantic headings)
+3. Meta title for SEO (under 60 characters, include the keyword)
+4. Meta description for SEO (under 160 characters, include the keyword)
+5. Keywords array (5-8 related keywords)
 
 Make the content:
-- Specific to the location/property type
-- Valuable and informative
-- SEO-optimized
+- Specific to the location and/or property type when provided
+- Valuable and informative for prospective buyers and sellers
+- SEO-optimized with natural keyword usage
 - Engaging and well-structured
 
 Respond with JSON:
@@ -212,23 +221,21 @@ Respond with JSON:
   }
 
   /**
-   * Generate content for multiple variables at once (batch generation)
+   * Generate content for multiple page requests at once (batch generation).
+   *
+   * Each request is processed sequentially with a small delay between calls
+   * to stay below Anthropic's rate limits. A failure on one request is
+   * logged and the loop continues with the next — partial results are
+   * still returned.
    */
   async generateBatchContent(
-    template: string,
-    variablesList: Record<string, string>[],
-    pageType: string
+    requests: AIPageContentRequest[]
   ): Promise<AIPageContentResponse[]> {
     const results: AIPageContentResponse[] = []
 
-    // Generate in batches to avoid rate limits
-    for (const variables of variablesList) {
+    for (const request of requests) {
       try {
-        const content = await this.generatePageContent({
-          template,
-          variables,
-          pageType
-        })
+        const content = await this.generatePageContent(request)
         results.push(content)
 
         // Small delay to avoid rate limiting
