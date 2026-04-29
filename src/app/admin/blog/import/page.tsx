@@ -16,9 +16,19 @@ import {
   CircularProgress,
   Chip
 } from '@mui/material'
-import MDEditor from '@uiw/react-md-editor'
+import dynamic from 'next/dynamic'
 import '@uiw/react-md-editor/markdown-editor.css'
 import '@uiw/react-markdown-preview/markdown.css'
+
+// Lazy-load the heavy markdown editor (~9MB raw). Admin-only.
+const MDEditor = dynamic(() => import('@uiw/react-md-editor'), {
+  ssr: false,
+  loading: () => (
+    <Box sx={{ height: 400, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <CircularProgress />
+    </Box>
+  )
+})
 import { htmlToMarkdown } from '@/utils/htmlToMarkdown'
 import APIBlogs from '@/services/API/APIBlogs'
 

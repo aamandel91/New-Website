@@ -28,13 +28,11 @@ import {
   CardContent,
   Grid,
 } from '@mui/material'
-import {
-  ContentCopy as CopyIcon,
-  Download as DownloadIcon,
-  Refresh as RefreshIcon,
-  Preview as PreviewIcon,
-  Campaign as CampaignIcon,
-} from '@mui/icons-material'
+import CopyIcon from '@mui/icons-material/ContentCopy'
+import DownloadIcon from '@mui/icons-material/Download'
+import RefreshIcon from '@mui/icons-material/Refresh'
+import PreviewIcon from '@mui/icons-material/Preview'
+import CampaignIcon from '@mui/icons-material/Campaign'
 
 import { ppcFeedConfig } from '@configs/ppc-feed'
 import { subTypes } from '@configs/page-generation'

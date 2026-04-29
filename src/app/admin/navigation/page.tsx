@@ -31,15 +31,13 @@ import {
   Switch,
   FormControlLabel
 } from '@mui/material'
-import {
-  Add as AddIcon,
-  Edit as EditIcon,
-  Delete as DeleteIcon,
-  ContentCopy as CopyIcon,
-  Visibility as VisibilityIcon,
-  VisibilityOff as VisibilityOffIcon,
-  DragIndicator as DragIcon
-} from '@mui/icons-material'
+import AddIcon from '@mui/icons-material/Add'
+import EditIcon from '@mui/icons-material/Edit'
+import DeleteIcon from '@mui/icons-material/Delete'
+import CopyIcon from '@mui/icons-material/ContentCopy'
+import VisibilityIcon from '@mui/icons-material/Visibility'
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff'
+import DragIcon from '@mui/icons-material/DragIndicator'
 import APINavigation, { type NavigationItem, type CreateNavigationItemInput } from '@/services/API/APINavigation'
 
 const POSITIONS = ['left', 'right', 'mobile', 'footer']

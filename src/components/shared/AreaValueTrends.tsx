@@ -2,10 +2,8 @@
 
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { Box, Paper, Stack, Typography } from '@mui/material'
-import {
-  TrendingUp as TrendingUpIcon,
-  TrendingDown as TrendingDownIcon,
-} from '@mui/icons-material'
+import TrendingUpIcon from '@mui/icons-material/TrendingUp'
+import TrendingDownIcon from '@mui/icons-material/TrendingDown'
 
 import type { Property } from 'services/API'
 import APISearchCSR from 'services/API/APISearchCSR'

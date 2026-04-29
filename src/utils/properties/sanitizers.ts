@@ -1,4 +1,4 @@
-import parsePhoneNumber from 'libphonenumber-js'
+import parsePhoneNumber from 'libphonenumber-js/min'
 
 import i18nConfig from '@configs/i18n'
 import propsConfig from '@configs/properties'

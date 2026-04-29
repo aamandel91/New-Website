@@ -2,7 +2,8 @@
 
 import React from 'react'
 import { AppBar, Toolbar, Typography, Button, Box, Chip } from '@mui/material'
-import { Logout as LogoutIcon, OpenInNew as OpenInNewIcon } from '@mui/icons-material'
+import LogoutIcon from '@mui/icons-material/Logout'
+import OpenInNewIcon from '@mui/icons-material/OpenInNew'
 import { useUser } from '@/providers/UserProvider'
 import { useOrganization } from '@/providers/OrganizationProvider'
 import { useRouter } from 'next/navigation'

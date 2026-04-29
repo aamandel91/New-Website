@@ -14,16 +14,14 @@ import {
   Button,
   Skeleton,
 } from '@mui/material'
-import {
-  TrendingUp as TrendingUpIcon,
-  TrendingDown as TrendingDownIcon,
-  Home as HomeIcon,
-  CalendarToday as CalendarIcon,
-  AttachMoney as MoneyIcon,
-  ExpandMore as ExpandMoreIcon,
-  ExpandLess as ExpandLessIcon,
-  BarChart as BarChartIcon,
-} from '@mui/icons-material'
+import TrendingUpIcon from '@mui/icons-material/TrendingUp'
+import TrendingDownIcon from '@mui/icons-material/TrendingDown'
+import HomeIcon from '@mui/icons-material/Home'
+import CalendarIcon from '@mui/icons-material/CalendarToday'
+import MoneyIcon from '@mui/icons-material/AttachMoney'
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
+import ExpandLessIcon from '@mui/icons-material/ExpandLess'
+import BarChartIcon from '@mui/icons-material/BarChart'
 
 const MarketTimelineGraph = dynamic(() => import('@shared/MarketTimelineGraph'), {
   ssr: false,

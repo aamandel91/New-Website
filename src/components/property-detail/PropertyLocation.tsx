@@ -17,15 +17,13 @@ import {
   Tab,
   Link,
 } from '@mui/material'
-import {
-  School as SchoolIcon,
-  ShoppingCart as ShoppingIcon,
-  Restaurant as RestaurantIcon,
-  LocalHospital as HospitalIcon,
-  DirectionsBus as TransitIcon,
-  Park as ParkIcon,
-  Place as PlaceIcon,
-} from '@mui/icons-material'
+import SchoolIcon from '@mui/icons-material/School'
+import ShoppingIcon from '@mui/icons-material/ShoppingCart'
+import RestaurantIcon from '@mui/icons-material/Restaurant'
+import HospitalIcon from '@mui/icons-material/LocalHospital'
+import TransitIcon from '@mui/icons-material/DirectionsBus'
+import ParkIcon from '@mui/icons-material/Park'
+import PlaceIcon from '@mui/icons-material/Place'
 
 import mapConfig from '@configs/map'
 

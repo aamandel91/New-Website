@@ -2,10 +2,8 @@
 
 import React, { useEffect, useState } from 'react'
 
-import {
-  Close as CloseIcon,
-  HomeWork as HomeWorkIcon,
-} from '@mui/icons-material'
+import CloseIcon from '@mui/icons-material/Close'
+import HomeWorkIcon from '@mui/icons-material/HomeWork'
 import {
   Box,
   Button,

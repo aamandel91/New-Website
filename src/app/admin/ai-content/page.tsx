@@ -22,11 +22,9 @@ import {
   Chip,
   Grid
 } from '@mui/material'
-import {
-  AutoAwesome as AIIcon,
-  Article as ArticleIcon,
-  Search as SearchIcon
-} from '@mui/icons-material'
+import AIIcon from '@mui/icons-material/AutoAwesome'
+import ArticleIcon from '@mui/icons-material/Article'
+import SearchIcon from '@mui/icons-material/Search'
 import APIAIContent, {
   type AIBlogPostResponse,
   type AIKeywordSuggestion

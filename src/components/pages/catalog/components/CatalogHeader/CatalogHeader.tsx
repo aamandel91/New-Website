@@ -9,7 +9,9 @@ import ExploreIcon from '@mui/icons-material/Explore'
 import { Box, Button, Skeleton, Stack, Typography } from '@mui/material'
 
 import defaultLocation from '@configs/location'
-import { simplify } from '@turf/turf'
+// Use the focused @turf/simplify package instead of the @turf/turf meta-package
+// (which would pull in all 115 turf submodules — ~9MB raw).
+import { simplify } from '@turf/simplify'
 
 import type {
   ApiBoardArea,

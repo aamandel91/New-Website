@@ -10,12 +10,10 @@ import {
   CircularProgress,
   Alert
 } from '@mui/material'
-import {
-  TrendingUp,
-  People,
-  ContactMail,
-  ShowChart
-} from '@mui/icons-material'
+import TrendingUp from '@mui/icons-material/TrendingUp'
+import People from '@mui/icons-material/People'
+import ContactMail from '@mui/icons-material/ContactMail'
+import ShowChart from '@mui/icons-material/ShowChart'
 import APILeads from '@/services/API/APILeads'
 import { useOrganization } from '@/providers/OrganizationProvider'
 

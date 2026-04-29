@@ -9,10 +9,8 @@ import {
   useTheme,
   useMediaQuery,
 } from '@mui/material'
-import {
-  ChevronLeft as ChevronLeftIcon,
-  ChevronRight as ChevronRightIcon,
-} from '@mui/icons-material'
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
+import ChevronRightIcon from '@mui/icons-material/ChevronRight'
 
 import { type Property } from 'services/API'
 import PropertyCard from '@shared/Property/Card/Card'

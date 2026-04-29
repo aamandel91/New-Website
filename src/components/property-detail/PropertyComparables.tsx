@@ -19,12 +19,10 @@ import {
   CardMedia,
   CardContent,
 } from '@mui/material'
-import {
-  Home as HomeIcon,
-  CalendarToday as CalendarIcon,
-  TrendingUp as TrendingUpIcon,
-  TrendingDown as TrendingDownIcon,
-} from '@mui/icons-material'
+import HomeIcon from '@mui/icons-material/Home'
+import CalendarIcon from '@mui/icons-material/CalendarToday'
+import TrendingUpIcon from '@mui/icons-material/TrendingUp'
+import TrendingDownIcon from '@mui/icons-material/TrendingDown'
 
 import { type Property } from 'services/API'
 import { formatEnglishPrice } from 'utils/formatters'

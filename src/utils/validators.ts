@@ -1,7 +1,7 @@
 'use client'
 
 import Joi from 'joi'
-import { isValidPhoneNumber } from 'libphonenumber-js'
+import { isValidPhoneNumber } from 'libphonenumber-js/min'
 
 import i18nConfig from '@configs/i18n'
 

@@ -23,11 +23,9 @@ import {
   Alert
 } from '@mui/material'
 import type { SelectChangeEvent } from '@mui/material'
-import {
-  Add as AddIcon,
-  Edit as EditIcon,
-  Delete as DeleteIcon
-} from '@mui/icons-material'
+import AddIcon from '@mui/icons-material/Add'
+import EditIcon from '@mui/icons-material/Edit'
+import DeleteIcon from '@mui/icons-material/Delete'
 import { getTokenSync } from 'utils/tokens'
 
 const API_URL = `${process.env.NEXT_PUBLIC_API_URL}/api`

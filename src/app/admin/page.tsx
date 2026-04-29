@@ -14,15 +14,13 @@ import {
   ListItemIcon,
   ListItemText
 } from '@mui/material'
-import {
-  Description as DescriptionIcon,
-  Article as ArticleIcon,
-  People as PeopleIcon,
-  House as HouseIcon,
-  Add as AddIcon,
-  Edit as EditIcon,
-  DynamicFeed as PageGenIcon
-} from '@mui/icons-material'
+import DescriptionIcon from '@mui/icons-material/Description'
+import ArticleIcon from '@mui/icons-material/Article'
+import PeopleIcon from '@mui/icons-material/People'
+import HouseIcon from '@mui/icons-material/House'
+import AddIcon from '@mui/icons-material/Add'
+import EditIcon from '@mui/icons-material/Edit'
+import PageGenIcon from '@mui/icons-material/DynamicFeed'
 import { useRouter } from 'next/navigation'
 import { useOrganization } from '@/providers/OrganizationProvider'
 import { getTokenSync } from 'utils/tokens'

@@ -13,10 +13,8 @@ import {
   CardMedia,
 } from '@mui/material'
 import Link from 'next/link'
-import {
-  Article as ArticleIcon,
-  CalendarToday as DateIcon,
-} from '@mui/icons-material'
+import ArticleIcon from '@mui/icons-material/Article'
+import DateIcon from '@mui/icons-material/CalendarToday'
 
 interface BlogPost {
   id: string

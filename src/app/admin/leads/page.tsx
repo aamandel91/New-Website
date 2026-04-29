@@ -29,12 +29,10 @@ import {
   CircularProgress,
   Pagination
 } from '@mui/material'
-import {
-  Add as AddIcon,
-  Edit as EditIcon,
-  Delete as DeleteIcon,
-  Visibility as VisibilityIcon
-} from '@mui/icons-material'
+import AddIcon from '@mui/icons-material/Add'
+import EditIcon from '@mui/icons-material/Edit'
+import DeleteIcon from '@mui/icons-material/Delete'
+import VisibilityIcon from '@mui/icons-material/Visibility'
 import APILeads, { type Lead, type LeadFilters } from '@/services/API/APILeads'
 
 const STATUSES = ['new', 'contacted', 'qualified', 'showing', 'offer', 'under_contract', 'closed', 'lost']

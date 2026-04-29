@@ -18,13 +18,11 @@ import {
   InputLabel
 } from '@mui/material'
 import type { SelectChangeEvent } from '@mui/material'
-import {
-  Search as SearchIcon,
-  Home as HomeIcon,
-  QrCode2 as QrCodeIcon,
-  ContentCopy as CopyIcon,
-  Print as PrintIcon
-} from '@mui/icons-material'
+import SearchIcon from '@mui/icons-material/Search'
+import HomeIcon from '@mui/icons-material/Home'
+import QrCodeIcon from '@mui/icons-material/QrCode2'
+import CopyIcon from '@mui/icons-material/ContentCopy'
+import PrintIcon from '@mui/icons-material/Print'
 
 interface PropertyData {
   mlsNumber: string

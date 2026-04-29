@@ -25,13 +25,11 @@ import {
   Snackbar,
   Tooltip
 } from '@mui/material'
-import {
-  ContentCopy as CopyIcon,
-  Delete as DeleteIcon,
-  Download as DownloadIcon,
-  Visibility as ViewIcon,
-  Close as CloseIcon
-} from '@mui/icons-material'
+import CopyIcon from '@mui/icons-material/ContentCopy'
+import DeleteIcon from '@mui/icons-material/Delete'
+import DownloadIcon from '@mui/icons-material/Download'
+import ViewIcon from '@mui/icons-material/Visibility'
+import CloseIcon from '@mui/icons-material/Close'
 
 import type { OpenHouseVisitor } from '@/types/openHouse'
 

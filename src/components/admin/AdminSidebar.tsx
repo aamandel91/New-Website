@@ -16,29 +16,27 @@ import {
   useMediaQuery,
   useTheme
 } from '@mui/material'
-import {
-  Dashboard as DashboardIcon,
-  Description as DescriptionIcon,
-  AutoAwesome as AutoAwesomeIcon,
-  Article as ArticleIcon,
-  ImportExport as ImportExportIcon,
-  People as PeopleIcon,
-  House as HouseIcon,
-  Menu as MenuIcon,
-  Settings as SettingsIcon,
-  BarChart as BarChartIcon,
-  Search as SearchIcon,
-  Security as SecurityIcon,
-  DynamicFeed as PageGenIcon,
-  Navigation as NavigationIcon,
-  AdminPanelSettings as AdminUsersIcon,
-  ContactPhone as CrmIcon,
-  Inventory as InventoryIcon,
-  Campaign as CampaignIcon,
-  Widgets as WidgetsIcon,
-  ExpandLess,
-  ExpandMore
-} from '@mui/icons-material'
+import DashboardIcon from '@mui/icons-material/Dashboard'
+import DescriptionIcon from '@mui/icons-material/Description'
+import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome'
+import ArticleIcon from '@mui/icons-material/Article'
+import ImportExportIcon from '@mui/icons-material/ImportExport'
+import PeopleIcon from '@mui/icons-material/People'
+import HouseIcon from '@mui/icons-material/House'
+import MenuIcon from '@mui/icons-material/Menu'
+import SettingsIcon from '@mui/icons-material/Settings'
+import BarChartIcon from '@mui/icons-material/BarChart'
+import SearchIcon from '@mui/icons-material/Search'
+import SecurityIcon from '@mui/icons-material/Security'
+import PageGenIcon from '@mui/icons-material/DynamicFeed'
+import NavigationIcon from '@mui/icons-material/Navigation'
+import AdminUsersIcon from '@mui/icons-material/AdminPanelSettings'
+import CrmIcon from '@mui/icons-material/ContactPhone'
+import InventoryIcon from '@mui/icons-material/Inventory'
+import CampaignIcon from '@mui/icons-material/Campaign'
+import WidgetsIcon from '@mui/icons-material/Widgets'
+import ExpandLess from '@mui/icons-material/ExpandLess'
+import ExpandMore from '@mui/icons-material/ExpandMore'
 
 const DRAWER_WIDTH = 260
 const BG_COLOR = '#0F1621'

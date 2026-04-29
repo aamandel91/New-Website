@@ -20,9 +20,21 @@ import {
   Tabs,
   Paper
 } from '@mui/material'
-import MDEditor from '@uiw/react-md-editor'
+import dynamic from 'next/dynamic'
 import '@uiw/react-md-editor/markdown-editor.css'
 import '@uiw/react-markdown-preview/markdown.css'
+
+// MDEditor is a heavy markdown editor (~9MB raw / sizable client chunk).
+// Lazy-load it so the BlogEditor page shell renders before the editor
+// downloads. Admin-only feature — doesn't affect public visitors.
+const MDEditor = dynamic(() => import('@uiw/react-md-editor'), {
+  ssr: false,
+  loading: () => (
+    <Box sx={{ height: 400, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <CircularProgress />
+    </Box>
+  )
+})
 import type { Blog, AISuggestions } from '@/types/blog'
 import APIBlogs from '@/services/API/APIBlogs'
 import ImageUploader from '@/components/admin/ImageUploader'

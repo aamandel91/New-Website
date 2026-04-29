@@ -13,11 +13,9 @@ import {
   Stack,
   Chip,
 } from '@mui/material'
-import {
-  Save as SaveIcon,
-  RestartAlt as ResetIcon,
-  Add as AddIcon,
-} from '@mui/icons-material'
+import SaveIcon from '@mui/icons-material/Save'
+import ResetIcon from '@mui/icons-material/RestartAlt'
+import AddIcon from '@mui/icons-material/Add'
 
 const DEFAULT_ROBOTS = `# Robots.txt
 # Control how search engines crawl your site

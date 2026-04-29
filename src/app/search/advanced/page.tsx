@@ -23,7 +23,7 @@ import {
   Typography
 } from '@mui/material'
 import type { SelectChangeEvent } from '@mui/material'
-import { Search as SearchIcon } from '@mui/icons-material'
+import SearchIcon from '@mui/icons-material/Search'
 
 import LocationAutocomplete from '@shared/LocationAutocomplete'
 import type { LocationResult } from '@shared/LocationAutocomplete'

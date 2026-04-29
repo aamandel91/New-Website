@@ -11,13 +11,11 @@ import {
   Chip,
 } from '@mui/material'
 import Link from 'next/link'
-import {
-  LocationCity as CityIcon,
-  Apartment as NeighborhoodIcon,
-  Home as PropertyTypeIcon,
-  School as SchoolIcon,
-  Place as AreaIcon,
-} from '@mui/icons-material'
+import CityIcon from '@mui/icons-material/LocationCity'
+import NeighborhoodIcon from '@mui/icons-material/Apartment'
+import PropertyTypeIcon from '@mui/icons-material/Home'
+import SchoolIcon from '@mui/icons-material/School'
+import AreaIcon from '@mui/icons-material/Place'
 
 interface RelatedPage {
   title: string

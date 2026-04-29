@@ -14,12 +14,10 @@ import {
   Tabs,
   Typography,
 } from '@mui/material'
-import {
-  School as SchoolIcon,
-  Park as ParkIcon,
-  DirectionsBus as TransitIcon,
-  Place as PlaceIcon,
-} from '@mui/icons-material'
+import SchoolIcon from '@mui/icons-material/School'
+import ParkIcon from '@mui/icons-material/Park'
+import TransitIcon from '@mui/icons-material/DirectionsBus'
+import PlaceIcon from '@mui/icons-material/Place'
 
 import { APIPlaces } from 'services/API'
 import type { PlacesResponse, PlaceItem } from 'services/API'

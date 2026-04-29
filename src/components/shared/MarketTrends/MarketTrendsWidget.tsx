@@ -19,7 +19,11 @@ import InventoryIcon from '@mui/icons-material/Inventory2'
 import { formatEnglishPrice } from 'utils/formatters'
 import { pluralize } from 'utils/strings'
 
-import MarketTrendsChart from './MarketTrendsChart'
+// MarketTrendsChartLazy is a Client Component that internally lazy-loads the
+// real chart (which pulls in recharts ~120KB gzipped). This means city /
+// neighborhood pages — which include this widget below the fold — don't ship
+// recharts in their initial bundle.
+import MarketTrendsChart from './MarketTrendsChartLazy'
 import { fetchMarketTrends, getMarketCondition } from './utils'
 
 interface MarketTrendsWidgetProps {

@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react'
 import { Box, Paper, Typography } from '@mui/material'
-import { DirectionsWalk as WalkIcon } from '@mui/icons-material'
+import WalkIcon from '@mui/icons-material/DirectionsWalk'
 
 interface WalkScoreProps {
   lat: number

@@ -2,11 +2,9 @@
 
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { Box, Button, ButtonGroup, Paper, Stack, Typography } from '@mui/material'
-import {
-  TrendingUp as TrendingUpIcon,
-  TrendingDown as TrendingDownIcon,
-  BarChart as BarChartIcon,
-} from '@mui/icons-material'
+import TrendingUpIcon from '@mui/icons-material/TrendingUp'
+import TrendingDownIcon from '@mui/icons-material/TrendingDown'
+import BarChartIcon from '@mui/icons-material/BarChart'
 
 import MarketGraphFilters from '@shared/MarketGraphFilters'
 import type { MarketGraphFilterValues } from '@shared/MarketGraphFilters'

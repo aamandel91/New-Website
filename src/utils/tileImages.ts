@@ -1,3 +1,4 @@
+import 'server-only'
 import { promises as fs } from 'fs'
 import path from 'path'
 import { exploreTileImages, lifestyleTileImages } from '@/configs/defaults/tile-images'

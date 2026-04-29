@@ -2,11 +2,9 @@
 
 import React, { useState } from 'react'
 
-import {
-  CompareArrows as CompareIcon,
-  ExpandLess as ExpandLessIcon,
-  ExpandMore as ExpandMoreIcon
-} from '@mui/icons-material'
+import CompareIcon from '@mui/icons-material/CompareArrows'
+import ExpandLessIcon from '@mui/icons-material/ExpandLess'
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import {
   Box,
   Button,

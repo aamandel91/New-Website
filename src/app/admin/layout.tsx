@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
 import { Box, IconButton, useMediaQuery, useTheme } from '@mui/material'
-import { Menu as MenuIcon } from '@mui/icons-material'
+import MenuIcon from '@mui/icons-material/Menu'
 import { useUser } from '@/providers/UserProvider'
 import { getTokenSync, expired } from 'utils/tokens'
 import AdminSidebar, { DRAWER_WIDTH } from '@/components/admin/AdminSidebar'

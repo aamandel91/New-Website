@@ -18,12 +18,10 @@ import {
   TableRow,
   Typography,
 } from '@mui/material'
-import {
-  Refresh as RefreshIcon,
-  Storage as StorageIcon,
-  Sync as SyncIcon,
-  Map as MapIcon,
-} from '@mui/icons-material'
+import RefreshIcon from '@mui/icons-material/Refresh'
+import StorageIcon from '@mui/icons-material/Storage'
+import SyncIcon from '@mui/icons-material/Sync'
+import MapIcon from '@mui/icons-material/Map'
 
 interface IndexEntry {
   slug: string

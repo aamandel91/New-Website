@@ -1,5 +1,5 @@
 import dayjs from 'dayjs'
-import parsePhoneNumber, { AsYouType } from 'libphonenumber-js'
+import parsePhoneNumber, { AsYouType } from 'libphonenumber-js/min'
 
 import i18nConfig from '@configs/i18n'
 import propsConfig from '@configs/properties'

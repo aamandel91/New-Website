@@ -28,11 +28,9 @@ import {
   Divider,
   TextField
 } from '@mui/material'
-import {
-  LibraryAdd as BulkIcon,
-  CheckCircle as CheckIcon,
-  Error as ErrorIcon
-} from '@mui/icons-material'
+import BulkIcon from '@mui/icons-material/LibraryAdd'
+import CheckIcon from '@mui/icons-material/CheckCircle'
+import ErrorIcon from '@mui/icons-material/Error'
 import APIAIContent, {
   type BulkPagePreview,
   type BulkPageGenerationResult

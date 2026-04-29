@@ -30,14 +30,12 @@ import {
   IconButton,
   Autocomplete
 } from '@mui/material'
-import {
-  Add as AddIcon,
-  Delete as DeleteIcon,
-  ArrowBack as BackIcon,
-  ArrowForward as NextIcon,
-  Publish as GenerateIcon,
-  ContentCopy as CopyIcon
-} from '@mui/icons-material'
+import AddIcon from '@mui/icons-material/Add'
+import DeleteIcon from '@mui/icons-material/Delete'
+import BackIcon from '@mui/icons-material/ArrowBack'
+import NextIcon from '@mui/icons-material/ArrowForward'
+import GenerateIcon from '@mui/icons-material/Publish'
+import CopyIcon from '@mui/icons-material/ContentCopy'
 import APISearch from '@/services/API/APISearch'
 import APIContentPages from '@/services/API/APIContentPages'
 import type { ContentPage } from '@/services/API/APIContentPages'
