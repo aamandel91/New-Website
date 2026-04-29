@@ -14,6 +14,7 @@ import { useMapOptions } from 'providers/MapOptionsProvider'
 import { useSearch } from 'providers/SearchProvider'
 import { useUser } from 'providers/UserProvider'
 import useClientSide from 'hooks/useClientSide'
+import { removePolygon } from 'utils/map'
 
 import './styles.css'
 import drawStyles from './styles'
@@ -31,7 +32,7 @@ const MapDrawButton = ({
   const { logged } = useUser()
   const clientSide = useClientSide()
   const mapDrawRef = useRef<MapboxDraw | null>(null)
-  const { polygon, clearPolygon, setPolygon } = useSearch()
+  const { polygon, setPolygon } = useSearch()
   const { setTitle, editMode, setEditMode, clearEditMode } = useMapOptions()
   const { mapRef } = useMapOptions()
   const map = mapRef.current
@@ -54,6 +55,9 @@ const MapDrawButton = ({
       const arr = (data[0].geometry as GeoJSON.Polygon).coordinates[0]
       setTitle(polygonSelectTitle)
       disableMarkerEvents()
+      // a new polygon has been drawn — drop the previous polygon-fill layer
+      // so it doesn't visually overlap with MapboxDraw's rendering
+      if (map) removePolygon(map)
       setPolygon(arr)
       onChange?.(arr)
     }
@@ -106,8 +110,6 @@ const MapDrawButton = ({
   }
 
   const handleDrawClick = () => {
-    clearPolygon() // TODO: future task: do not delete existing polygon
-
     if (drawMode) {
       setTitle(null)
       clearEditMode()
