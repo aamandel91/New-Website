@@ -8,9 +8,13 @@ import { useRecentlyViewed } from '@/hooks/useRecentlyViewed'
 import { trackPropertyView } from '@/utils/analytics'
 import { ssTrackPropertyView, ssTrackSavedProperty } from '@/utils/suresendTracking'
 
-import type { Property } from 'services/API'
+import { APIContact, type Property } from 'services/API'
 import { useFavorites } from 'providers/FavoritesProvider'
 import { useFeatures } from 'providers/FeaturesProvider'
+import useSnackbar from 'hooks/useSnackbar'
+import { extractErrorMessage } from 'utils/errors'
+
+import type { ContactFormData } from './PropertyContactForm'
 
 import CommunityLink from './CommunityLink'
 import ExploreMore from './ExploreMore'
@@ -44,6 +48,7 @@ const PropertyDetailLayout: React.FC<PropertyDetailLayoutProps> = ({
   const { toggle: toggleFavorite, find: findFavorite } = useFavorites()
   const { addProperty: addToRecentlyViewed } = useRecentlyViewed()
   const features = useFeatures()
+  const { showSnackbar } = useSnackbar()
   const [snackbarOpen, setSnackbarOpen] = useState(false)
 
   // Check if property is favorited
@@ -119,10 +124,20 @@ const PropertyDetailLayout: React.FC<PropertyDetailLayoutProps> = ({
         }
       : undefined
 
-  // Handle form submission
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const handleContactSubmit = async (_formData: any) => {
-    // TODO: Implement contact form submission via APIContact.submit(formData)
+  const handleContactSubmit = async (formData: ContactFormData) => {
+    try {
+      await APIContact.submit({
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone,
+        message: formData.message,
+        mlsNumber: property.mlsNumber
+      })
+      showSnackbar('Message has been sent', 'success')
+    } catch (error) {
+      showSnackbar(extractErrorMessage(error), 'error')
+      throw error
+    }
   }
 
   // Handle action buttons

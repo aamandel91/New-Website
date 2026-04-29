@@ -75,7 +75,10 @@ type UserContextType = {
   userRole: boolean
   agentRole: boolean
   adminRole: boolean
-  update: (data: Partial<ApiUserProfile>) => Promise<boolean>
+  update: (data: Partial<ApiUserProfile>) => Promise<{
+    status: number
+    data?: any
+  }>
   requestOtpLogin: (values: OtpLoginValues) => Promise<{
     status: number
     data?: any
@@ -243,18 +246,18 @@ const UserProvider = ({ children }: { children: ReactNode }) => {
     }
   }
 
-  const update = async (data: Partial<ApiUserProfile>) => {
-    if (!logged) return false
+  const update = async (
+    data: Partial<ApiUserProfile>
+  ): Promise<{ status: number; data?: any }> => {
+    if (!logged) return { status: 401 }
 
     try {
       setLoading(true)
       await APIUser.update(data)
       saveProfile({ ...profile, ...data })
-      return true
-    } catch (error) {
-      // TODO: do not show error message, but pass status code to the caller
-      console.error('[UserProvider] profile update failed', error)
-      return false
+      return { status: 200 }
+    } catch (error: any) {
+      return { status: error?.status ?? 0, data: error?.data }
     } finally {
       setLoading(false)
     }

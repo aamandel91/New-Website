@@ -44,6 +44,27 @@ class APIContact extends APIBase {
     })
   }
 
+  submit(body: ContactFormRequest & { mlsNumber?: string }) {
+    if (body.mlsNumber) {
+      return this.requestInfo({
+        name: body.name,
+        email: body.email,
+        phone: body.phone || '',
+        message: body.message,
+        mlsNumber: body.mlsNumber
+      })
+    }
+    return this.fetchJSON('/contact/contactus', {
+      method: 'POST',
+      body: JSON.stringify({
+        name: body.name,
+        email: body.email,
+        phone: body.phone,
+        message: body.message
+      })
+    })
+  }
+
   requestInfo(body: ContactRequestInfo) {
     return this.fetchJSON('/contact/requestinfo', {
       method: 'POST',

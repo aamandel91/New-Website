@@ -72,13 +72,20 @@ const ProfileForm = ({
       }
     })
 
-    const success = await update(validated)
+    const result = await update(validated)
 
-    if (success) {
+    if (result.status === 200) {
       showSnackbar('User has been updated', 'success')
       onSubmit?.()
+    } else if (result.status === 401) {
+      showSnackbar('Please sign in to update your profile.', 'error')
+    } else if (result.status === 429) {
+      showSnackbar('Too many requests. Please try again later.', 'error')
     } else {
-      showSnackbar('An error occurred while saving the user.', 'error')
+      const message =
+        (result.data && (result.data.message || result.data.error)) ||
+        'An error occurred while saving the user.'
+      showSnackbar(message, 'error')
     }
   }
 

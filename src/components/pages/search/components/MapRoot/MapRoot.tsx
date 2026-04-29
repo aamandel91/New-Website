@@ -261,8 +261,9 @@ const MapRoot = ({ zoom, center, polygon, onMove, onLoad }: MapRootProps) => {
 
   // resize map after returning from the grid layout
   useEffect(() => {
-    // TODO: add debouncing
-    if (layout === 'map') setTimeout(() => MapService.map?.resize(), 700)
+    if (layout !== 'map') return
+    const handle = setTimeout(() => MapService.map?.resize(), 700)
+    return () => clearTimeout(handle)
   }, [layout])
 
   useEffect(() => {
