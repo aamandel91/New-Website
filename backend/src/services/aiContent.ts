@@ -7,6 +7,7 @@ import type {
   AIPageContentRequest,
   AIPageContentResponse
 } from '../types/aiContent.js'
+import { SOUTH_FLORIDA_CONTEXT } from '../utils/aiPromptContext.js'
 
 @injectable()
 export class AIContentService {
@@ -26,7 +27,7 @@ export class AIContentService {
     const toneInstruction = request.tone || 'professional and informative'
     const lengthTarget = request.length || 1500
 
-    const prompt = `You are an expert real estate content writer. Generate a comprehensive SEO-optimized blog post about "${request.keyword}"${cityContext}.
+    const prompt = `Generate a comprehensive SEO-optimized blog post about "${request.keyword}"${cityContext}.
 
 Requirements:
 - Tone: ${toneInstruction}
@@ -34,6 +35,11 @@ Requirements:
 - Format: Markdown
 - Include: Title, excerpt, full article content
 - SEO: Meta title, meta description, keywords, tags
+- Minimum 1500 words
+- Include H2 and H3 headings
+- Include a meta description under 160 characters
+- Include local South Florida market data where relevant
+- End with a call to action to contact The Mandel Team
 
 The blog post should:
 1. Be engaging and valuable to readers
@@ -56,6 +62,7 @@ Respond with a JSON object containing:
     const message = await this.anthropic.messages.create({
       model: 'claude-3-5-sonnet-20241022',
       max_tokens: 4000,
+      system: SOUTH_FLORIDA_CONTEXT,
       messages: [
         {
           role: 'user',
@@ -96,7 +103,7 @@ Respond with a JSON object containing:
   async suggestKeywords(topic: string, city?: string): Promise<AIKeywordSuggestion[]> {
     const cityContext = city ? ` in ${city}` : ''
 
-    const prompt = `You are an SEO expert specializing in real estate. Suggest 10 high-value keywords related to "${topic}"${cityContext}.
+    const prompt = `Suggest 10 high-value SEO keywords related to "${topic}"${cityContext}, specifically targeting South Florida buyer and seller intent (Broward County and Palm Beach County).
 
 For each keyword, provide:
 - keyword: the actual keyword phrase
@@ -106,16 +113,18 @@ For each keyword, provide:
 - relatedKeywords: array of 3-5 related keywords
 
 Focus on:
-- Long-tail keywords
-- Local search intent
-- Buyer/seller intent
-- Question-based queries
+- South Florida buyer intent (relocation, luxury, waterfront, 55+, gated communities)
+- South Florida seller intent (home valuation, listing prep, market timing)
+- Specific city and neighborhood targeting (Boca Raton, Parkland, Delray Beach, Fort Lauderdale, Weston, etc.)
+- Long-tail and question-based queries
+- Where relevant, include Spanish-language search terms as secondary suggestions in the relatedKeywords array, reflecting the significant Latin American buyer demographic in South Florida. Only include Spanish terms when they meaningfully match the topic - skip them for hyper-local English-only terms.
 
 Respond with a JSON array of keyword objects.`
 
     const message = await this.anthropic.messages.create({
       model: 'claude-3-5-sonnet-20241022',
       max_tokens: 2000,
+      system: SOUTH_FLORIDA_CONTEXT,
       messages: [
         {
           role: 'user',
@@ -161,7 +170,7 @@ Respond with a JSON array of keyword objects.`
     const contextLines = [locationLine, propertyTypeLine].filter(Boolean).join('\n')
     const contextBlock = contextLines ? `\nContext:\n${contextLines}\n` : ''
 
-    const prompt = `You are a real estate content expert. Generate structured page content for a "${request.pageType}" page that can be saved directly into a CMS.
+    const prompt = `Generate structured page content for a "${request.pageType}" page that can be saved directly into a CMS.
 
 Primary keyword: ${request.keyword}${contextBlock}
 Tone: ${toneInstruction}
@@ -201,6 +210,7 @@ Rules for the body 'text' module:
     const message = await this.anthropic.messages.create({
       model: 'claude-3-5-sonnet-20241022',
       max_tokens: 3000,
+      system: SOUTH_FLORIDA_CONTEXT,
       messages: [
         {
           role: 'user',

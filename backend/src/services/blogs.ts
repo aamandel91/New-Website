@@ -3,6 +3,7 @@ import { Anthropic } from '@anthropic-ai/sdk'
 import { BlogRepository } from '../repository/blogs.js'
 import type { Blog, CreateBlogInput, BlogFilters, AISuggestions } from '../types/blog.js'
 import { deleteFromCloudinary } from '../utils/cloudinary.js'
+import { SOUTH_FLORIDA_CONTEXT } from '../utils/aiPromptContext.js'
 
 @injectable()
 export class BlogService {
@@ -74,7 +75,7 @@ export class BlogService {
    * Generate AI suggestions for meta title, description, keywords, and tags
    */
   async generateAISuggestions(title: string, description: string, content: string): Promise<AISuggestions> {
-    const prompt = `You are a helpful SEO expert. Based on the following blog post, generate suggestions for:
+    const prompt = `Acting as an SEO expert, based on the following blog post, generate suggestions for:
 1. A compelling meta title (max 60 characters)
 2. A concise meta description (max 160 characters)
 3. 5-7 relevant SEO keywords
@@ -94,11 +95,12 @@ Please respond in JSON format:
   "tags": ["tag1", "tag2", ...]
 }
 
-Make sure the suggestions are relevant to real estate and property matters.`
+Make sure the suggestions are relevant to South Florida real estate and property matters.`
 
     const message = await this.anthropic.messages.create({
       model: 'claude-3-5-sonnet-20241022',
       max_tokens: 1024,
+      system: SOUTH_FLORIDA_CONTEXT,
       messages: [
         {
           role: 'user',
