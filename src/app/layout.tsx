@@ -74,9 +74,11 @@ const Layout = async ({ children }: { children: React.ReactNode }) => {
           name="format-detection"
           content="telephone=no, date=no, email=no, address=no"
         />
-        {/* TODO: Add hreflang tags when Spanish content is available */}
-        {/* <link rel="alternate" hreflang="en" href="https://floridahomefinder.com{path}" /> */}
-        {/* <link rel="alternate" hreflang="es" href="https://floridahomefinder.com/es{path}" /> */}
+        {/* NOTE: When Spanish content is published, add hreflang alternate tags here:
+            <link rel="alternate" hreflang="en-US" href={`${siteUrl}${pathname}`} />
+            <link rel="alternate" hreflang="es-US" href={`${siteUrl}/es${pathname}`} />
+            <link rel="alternate" hreflang="x-default" href={`${siteUrl}${pathname}`} />
+            Tracked in docs/cleanup/deferred-items.md. */}
       </head>
       <body suppressHydrationWarning>
         <script

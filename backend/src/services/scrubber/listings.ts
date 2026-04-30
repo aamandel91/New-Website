@@ -60,7 +60,6 @@ export class ListingsScrubber extends BaseScrubber {
     debug('Scrubbing as guest')
     debug('Data: %s, Dups: %O', data['mlsNumber'], data['duplicates'])
 
-    //TODO: Update tests to support this
     if (
       config.settings.scrubbing_duplicates_enabled &&
       data['status'] === RplStatus.A &&

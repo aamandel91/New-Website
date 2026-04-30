@@ -128,14 +128,10 @@ export async function POST(request: Request) {
       ipAddress: request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip'),
     }
 
-    // TODO: Integration points for backend services
-    // 1. Send to Repliers API (similar to contact service)
-    // 2. Create event in eventsCollection
-    // 3. Store in database
-    // 4. Send notification email to agent
-    // 5. Add to CRM (Follow Up Boss, etc.)
-
-    // For now, log the sign-in (in production, this would be sent to your backend/CRM)
+    // NOTE: Open-house sign-in workflow is scaffolding only — feature is not
+    // yet prioritized. When wired up, integration points are: Repliers API
+    // lead capture, eventsCollection record, agent email notification, and
+    // CRM (Follow Up Boss) push. Tracked in docs/cleanup/deferred-items.md.
     console.log('Open House Sign-In:', JSON.stringify(signInData, null, 2))
 
     // Example: Send to backend API (uncomment and configure when ready)

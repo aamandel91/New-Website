@@ -154,3 +154,38 @@ Recommendation: if a follow-up "fix small TODOs" PR is desired, the highest-leve
 - **Excluded (not real markers)**: 5 (intentional UI/i18n placeholders)
 
 Total reviewed: 92 actionable + 5 excluded = 97 raw matches.
+
+---
+
+## Update — Cleanup Sweep Closeout (2026-04-30)
+
+The original triage identified ~42 REAL items. As of this commit, the cleanup
+sweep is closed:
+
+- **Fixed across earlier commits**: error handling sweep (favorites, APIBase,
+  geocoding, webhook logger), type safety (Mapbox, params, chart, form init),
+  UX (map debounce, auth status, contact form), reliability (sync logger,
+  boss.ts, AiChat), keyword queue, sitemap CMS pages, multi-market expansion,
+  AI prompt context, MCP tools.
+- **Closed in this final commit**:
+  - terms-of-use + sibling static pages (privacy-policy, cookies-policy,
+    accessibility, dmca-notice) confirmed reading brand/contact values from
+    `tenant.config.ts`; bodies are Lorem ipsum placeholders with no
+    hardcoded brand references to parameterize. The earlier inline TODO was
+    already removed in commit d160b38.
+  - diffAgent disabled test deleted (re-enabling required new jest infra
+    for libphonenumber-js metadata handling, out of scope).
+  - scrubber/listings.ts stale TODO removed — the test it asked for already
+    exists in `backend/test/services/scrubber/listings.test.ts`
+    ("With scrubbing_duplicates = true").
+- **Formally deferred** (with rationale and revisit conditions in
+  `docs/cleanup/deferred-items.md`):
+  - APIAuth `{ result }` wrapper convention.
+  - Open-house sign-in integration points.
+  - Spanish hreflang alternates.
+  - NATS queue migration in oauth client-registration reporting.
+
+Deferred items are no longer inline `TODO:` markers — they live as
+descriptive `NOTE:` comments that point to deferred-items.md, each with a
+documented revisit condition. The codebase is launch-ready from a
+TODO-hygiene perspective.

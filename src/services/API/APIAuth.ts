@@ -73,7 +73,11 @@ class APIAuth extends APIBase {
     })
   }
 
-  // TODO: discuss with backenders why do we need additional { result } wrapper here
+  // NOTE: This endpoint returns `{ result: AuthCallbackResponse }` while the
+  // other auth endpoints above return the response shape directly. The
+  // inconsistency is a backend convention mismatch — aligning it requires
+  // cross-team agreement on a single response shape, so the wrapper stays
+  // until then. See docs/cleanup/deferred-items.md.
   tokenLogin(token: string) {
     return this.fetchJSON<{ result: AuthCallbackResponse }>(
       '/auth/repliers-token',

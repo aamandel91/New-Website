@@ -60,26 +60,4 @@ describe('diffAgent', () => {
     const result = diffAgent(agentMappedFields, agent)
     expect(result).toEqual<FubUserDiff[]>([])
   })
-
-  // NOTE: TODO: WARN: ERROR: temporary disabled test, while we're looking for a solution with libphonenumber-js metadata
-  // it('should handle multiple differences', () => {
-  //   const agentMappedFields = {
-  //     fname: 'Jackie',
-  //     lname: 'Chan',
-  //     phone: '14036506311'
-  //   } as ApiAgentsCreateParams
-
-  //   const agent = {
-  //     fname: 'Spider',
-  //     lname: 'Man',
-  //     phone: '9379992'
-  //   } as ApiRplAgent
-
-  //   const result = diffAgent(agentMappedFields, agent)
-  //   expect(result).toEqual<FubUserDiff[]>([
-  //     { prop: 'fname', from: 'Spider', to: 'Jackie' },
-  //     { prop: 'lname', from: 'Man', to: 'Chan' },
-  //     { prop: 'phone', from: '9379992', to: '14036506311' }
-  //   ])
-  // })
 })

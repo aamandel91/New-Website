@@ -84,8 +84,11 @@ export default class OAuthService {
             user = await this.repliersClients.create({
                ...userProfile
             });
-            // no await here, we don't want to wait for this to finish
-            // TODO: we need to move this to NATS queue for those servers that use NATS
+            // no await here, we don't want to wait for this to finish.
+            // NOTE: For NATS-backed deployments this should publish to a queue
+            // instead of running inline. This deployment does not use NATS, so
+            // the synchronous fire-and-forget call is correct today. Tracked
+            // in docs/cleanup/deferred-items.md.
             this.reportClientRegistration(user, provider);
          }
       } else {
