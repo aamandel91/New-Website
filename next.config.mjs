@@ -57,6 +57,15 @@ const nextConfig = {
       }
     ]
   },
+  async redirects() {
+    return [
+      {
+        source: '/florida/:path*',
+        destination: '/:path*',
+        permanent: true
+      }
+    ]
+  },
   ...loggingConfig
 }
 
