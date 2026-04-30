@@ -1,6 +1,7 @@
 import React, { Suspense, type ComponentType } from 'react'
 import { type Metadata, type Viewport } from 'next'
 import { Montserrat } from 'next/font/google'
+import Script from 'next/script'
 import { getLocale, getMessages } from 'next-intl/server'
 
 import { GlobalStyles } from '@mui/material'
@@ -93,6 +94,19 @@ const Layout = async ({ children }: { children: React.ReactNode }) => {
         <TrackingInline />
         <RemarketingPixels />
         <SureSendPixel />
+        {/* UserWay accessibility widget (free tier — no account needed).
+            Adds a floating button (bottom-left, data-position="6") for users
+            to adjust font size, contrast, screen reader, dyslexia-friendly
+            font, etc. Required by the Accessibility Statement.
+            To upgrade to paid tier: get an account at userway.org and set
+            NEXT_PUBLIC_USERWAY_ACCOUNT_ID env var. */}
+        <Script
+          id="userway-widget"
+          src="https://cdn.userway.org/widget.js"
+          data-account={process.env.NEXT_PUBLIC_USERWAY_ACCOUNT_ID || ''}
+          data-position="6"
+          strategy="afterInteractive"
+        />
         <GlobalStyles styles={globalStyles} />
         <Providers
           locale={locale}
