@@ -6,6 +6,11 @@
  * structured data, AI prompt context, OG images, email templates,
  * and integrations all read from here.
  *
+ * Email addresses are intentionally split:
+ *   contact.email       — marketing / general / public-facing inbox
+ *   contact.legalEmail  — DMCA notices, account termination requests,
+ *                         copyright claims, and other legal correspondence
+ *
  * To rebrand the site:
  * 1. Edit values below
  * 2. If a backend value changed, also update backend/src/config/tenant.config.ts
@@ -40,7 +45,8 @@ export interface TenantConfig {
     phone: string                // display format "(954) 610-0563"
     phoneE164: string            // "+19546100563" — for tel: links and structured data
     phoneDigits: string          // "9546100563" — for raw uses
-    email: string                // "info@floridahomefinder.com"
+    email: string                // "info@floridahomefinder.com" — marketing/general inbox
+    legalEmail: string           // "andy@mandelteam.com" — DMCA / account / legal correspondence
     address: {
       street: string
       city: string
@@ -94,6 +100,7 @@ export const tenant: TenantConfig = {
     phoneE164: `+1${PHONE_DIGITS}`,
     phoneDigits: PHONE_DIGITS,
     email: 'info@floridahomefinder.com',
+    legalEmail: 'andy@mandelteam.com',
     address: {
       ...ADDRESS,
       full: `${ADDRESS.street}, ${ADDRESS.city}, ${ADDRESS.state} ${ADDRESS.zip}`,

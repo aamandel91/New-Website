@@ -7,9 +7,9 @@ import StructuredData from '@shared/StructuredData'
 import { breadcrumbSchema } from 'utils/structuredData'
 import { tenant } from '@/configs/tenant.config'
 
-const title = 'Terms of Use'
+const title = 'Terms of Service'
 const url = `${tenant.brand.siteUrl}/terms-of-use`
-const description = `Read the terms and conditions for using the ${tenant.brand.siteName} website and services.`
+const description = `Terms of Service for ${tenant.brand.siteName}. Read our policies on account creation, content, intellectual property, and more.`
 
 export const metadata: Metadata = {
   title,
