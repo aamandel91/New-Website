@@ -3,19 +3,45 @@ import { type Metadata } from 'next'
 
 import Markdown from '@content/dmca-notice'
 import { StaticPageTemplate } from '@templates'
+import StructuredData from '@shared/StructuredData'
+import { breadcrumbSchema } from 'utils/structuredData'
+import { tenant } from '@/configs/tenant.config'
 
 const title = 'DMCA Notice'
+const url = `${tenant.brand.siteUrl}/dmca-notice`
+const description = `Digital Millennium Copyright Act (DMCA) notice and copyright information for ${tenant.brand.siteName}.`
 
 export const metadata: Metadata = {
-  title
+  title,
+  description,
+  robots: { index: true, follow: true },
+  alternates: { canonical: url },
+  openGraph: {
+    type: 'website',
+    title: `${title} | ${tenant.brand.siteName}`,
+    description,
+    url,
+    siteName: tenant.brand.siteName,
+  },
+  twitter: {
+    card: 'summary',
+    title: `${title} | ${tenant.brand.siteName}`,
+    description,
+  },
 }
 
-const AboutPage = () => {
+const DmcaPage = () => {
   return (
     <StaticPageTemplate title={title}>
+      <StructuredData
+        data={breadcrumbSchema([
+          { name: 'Home', url: tenant.brand.siteUrl },
+          { name: title, url },
+        ])}
+      />
       <Markdown />
     </StaticPageTemplate>
   )
 }
 
-export default AboutPage
+export default DmcaPage

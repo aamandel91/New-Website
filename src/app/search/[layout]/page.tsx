@@ -6,6 +6,7 @@ import { Page404Template, PageTemplate } from '@templates'
 import MapPageContent from '@pages/search'
 import StructuredData from '@shared/StructuredData'
 import { breadcrumbSchema } from 'utils/structuredData'
+import { tenant } from '@/configs/tenant.config'
 
 import { APISaveSearch } from 'services/API'
 import { type Filters } from 'services/Search'
@@ -20,22 +21,74 @@ import {
   getPositionFromPolygon
 } from './_utils'
 
-export const metadata: Metadata = {
-  title: 'Homes for Sale in South Florida | Florida Home Finder',
-  description:
-    'Search homes for sale in South Florida. Filter by city, neighborhood, price, beds, baths, property type, and more on Florida Home Finder.',
-  openGraph: {
-    title: 'Homes for Sale in South Florida | Florida Home Finder',
-    description:
-      'Search homes for sale in South Florida. Filter by city, neighborhood, price, beds, baths, property type, and more on Florida Home Finder.',
-    type: 'website',
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'Homes for Sale in South Florida | Florida Home Finder',
-    description:
-      'Search homes for sale in South Florida. Filter by city, neighborhood, price, beds, baths, property type, and more on Florida Home Finder.',
-  },
+const SITE_URL = tenant.brand.siteUrl
+const SITE_NAME = tenant.brand.siteName
+
+const pickStr = (v: string | string[] | number | undefined): string | undefined => {
+  if (Array.isArray(v)) return v[0]
+  if (v === undefined || v === null) return undefined
+  return String(v)
+}
+
+export async function generateMetadata(props: {
+  params: Promise<Params>
+  searchParams: Promise<SearchParams>
+}): Promise<Metadata> {
+  const params = await props.params
+  const searchParams = await props.searchParams
+
+  const location = pickStr(searchParams.location)
+  const minPrice = pickStr(searchParams.minPrice)
+  const maxPrice = pickStr(searchParams.maxPrice)
+  const bedrooms = pickStr((searchParams as any).bedrooms)
+  const propertyType = pickStr((searchParams as any).propertyType)
+
+  let title = `Homes for Sale in South Florida | ${SITE_NAME}`
+  let description = `Search homes for sale in South Florida. Filter by city, neighborhood, price, beds, baths, property type, and more on ${SITE_NAME}.`
+
+  if (location) {
+    title = `Homes for Sale in ${location}, FL`
+    description = `Search homes for sale in ${location}, Florida.`
+    if (bedrooms) title += ` — ${bedrooms} Bedrooms`
+    if (minPrice && maxPrice) {
+      title += ` — $${minPrice} to $${maxPrice}`
+      description += ` Priced between $${minPrice} and $${maxPrice}.`
+    }
+    if (propertyType) {
+      title += ` — ${propertyType}`
+    }
+    title += ` | ${SITE_NAME}`
+  }
+
+  // Faceted filter combinations are noindex (filtered duplicates of the
+  // canonical /[city] landing pages). Core /search/{layout} remains indexable.
+  const hasFilters = !!(location || minPrice || maxPrice || bedrooms || propertyType)
+  const robots = hasFilters
+    ? { index: false, follow: true }
+    : { index: true, follow: true }
+
+  // Canonical: only the main layout URL gets a canonical to avoid
+  // confusing Google with every filter combination.
+  const canonical = `${SITE_URL}/search/${params.layout || 'gallery'}`
+
+  return {
+    title,
+    description,
+    robots,
+    alternates: { canonical },
+    openGraph: {
+      title,
+      description,
+      type: 'website',
+      url: canonical,
+      siteName: SITE_NAME,
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+    },
+  }
 }
 
 const MapPage = async (props: {
@@ -70,8 +123,8 @@ const MapPage = async (props: {
     <PageTemplate noFooter>
       <StructuredData
         data={breadcrumbSchema([
-          { name: 'Home', url: 'https://floridahomefinder.com' },
-          { name: 'Search', url: 'https://floridahomefinder.com/search/gallery' },
+          { name: 'Home', url: SITE_URL },
+          { name: 'Search', url: `${SITE_URL}/search/gallery` },
         ])}
       />
       <MapOptionsProvider

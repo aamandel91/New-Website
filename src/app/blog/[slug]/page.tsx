@@ -6,6 +6,7 @@ import StructuredData from '@shared/StructuredData'
 import PageWithSidebar from '@/components/layouts/PageWithSidebar'
 import BlogPostSidebar from '@/components/sidebar/BlogPostSidebar'
 import { articleSchema, breadcrumbSchema } from 'utils/structuredData'
+import { tenant } from '@/configs/tenant.config'
 import type { Blog } from '@/types/blog'
 
 interface BlogPostPageProps {
@@ -32,31 +33,35 @@ export async function generateMetadata(props: BlogPostPageProps): Promise<Metada
   const params = await props.params
   const blog = await fetchBlogServer(params.slug)
 
+  const baseUrl = tenant.brand.siteUrl
+
   if (!blog) {
     return {
-      title: 'Blog Post | Florida Home Finder',
+      title: `Blog Post | ${tenant.brand.siteName}`,
       description: 'Read our latest blog post about real estate and lifestyle',
       robots: { index: false }
     }
   }
+
+  const authorDisplay = blog.author_email || tenant.brand.leaderName
 
   return {
     title: blog.meta_title || blog.title,
     description: blog.meta_description || blog.description,
     keywords: blog.meta_keywords && blog.meta_keywords.length > 0 ? blog.meta_keywords : blog.tags,
     alternates: {
-      canonical: `https://floridahomefinder.com/blog/${blog.slug}`
+      canonical: `${baseUrl}/blog/${blog.slug}`
     },
     openGraph: {
       type: 'article',
       publishedTime: blog.published_at ? new Date(blog.published_at).toISOString() : undefined,
       modifiedTime: new Date(blog.updated_at).toISOString(),
-      authors: [blog.author_email],
+      authors: [authorDisplay],
       tags: blog.tags,
       title: blog.title,
       description: blog.description,
-      url: `https://floridahomefinder.com/blog/${blog.slug}`,
-      siteName: 'Florida Home Finder',
+      url: `${baseUrl}/blog/${blog.slug}`,
+      siteName: tenant.brand.siteName,
       ...(blog.featured_image_url && {
         images: [
           {
@@ -75,8 +80,7 @@ export async function generateMetadata(props: BlogPostPageProps): Promise<Metada
       description: blog.description,
       ...(blog.featured_image_url && {
         images: [blog.featured_image_url]
-      }),
-      creator: '@FloridaHomeFinder'
+      })
     }
   }
 }
@@ -84,7 +88,7 @@ export async function generateMetadata(props: BlogPostPageProps): Promise<Metada
 export default async function BlogPostPage(props: BlogPostPageProps) {
   const params = await props.params
   const blog = await fetchBlogServer(params.slug)
-
+  const baseUrl = tenant.brand.siteUrl
 
   return (
     <Box>
@@ -95,18 +99,18 @@ export default async function BlogPostPage(props: BlogPostPageProps) {
               title: blog.title,
               description: blog.description,
               content: blog.content,
-              image: blog.featured_image_url || 'https://floridahomefinder.com/default-og-image.jpg',
-              author: blog.author_email,
+              image: blog.featured_image_url || `${baseUrl}/default-og-image.jpg`,
+              author: blog.author_email || tenant.brand.leaderName,
               publishedDate: new Date(blog.published_at || blog.created_at),
               modifiedDate: new Date(blog.updated_at),
-              url: `https://floridahomefinder.com/blog/${blog.slug}`
+              url: `${baseUrl}/blog/${blog.slug}`
             })}
           />
           <StructuredData
             data={breadcrumbSchema([
-              { name: 'Home', url: 'https://floridahomefinder.com' },
-              { name: 'Blog', url: 'https://floridahomefinder.com/blog' },
-              { name: blog.title, url: `https://floridahomefinder.com/blog/${blog.slug}` }
+              { name: 'Home', url: baseUrl },
+              { name: 'Blog', url: `${baseUrl}/blog` },
+              { name: blog.title, url: `${baseUrl}/blog/${blog.slug}` }
             ])}
           />
         </>

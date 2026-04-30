@@ -15,7 +15,8 @@
  * Values NOT in this config (intentional):
  * - Market geography (counties, cities) — see src/configs/defaults/page-generation.ts
  * - SEO meta titles/descriptions — see src/configs/defaults/site-settings.ts and
- *   the various `_seo-template.tsx` files (these are market-tuned, not tenant-tuned)
+ *   the live page generators (e.g. src/app/[...slugs]/page.tsx). Per-page-type
+ *   SEO coverage is documented in docs/seo/seo-coverage.md.
  * - Brand colors and logo — currently inlined in OG image generators and pages
  *   (visual identity refactor is a future pass)
  */

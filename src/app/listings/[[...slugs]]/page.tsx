@@ -10,6 +10,7 @@ import PropertyPage from 'app/listing/[slug]/page'
 import { type ApiBoardCity } from 'services/API'
 import { localBusinessSchema, breadcrumbSchema } from 'utils/structuredData'
 import { getCatalogUrl } from 'utils/urls'
+import { tenant } from '@/configs/tenant.config'
 
 import { parseUrlFilters, parseUrlParams } from './_parsers'
 import { fetchListings, fetchLocations } from './_requests'
@@ -104,7 +105,7 @@ const LocationsCatalogPage = async (props: {
       ? (currentLocation as ApiBoardCity).neighborhoods || []
       : []
 
-  const baseUrl = 'https://floridahomefinder.com'
+  const baseUrl = tenant.brand.siteUrl
   const breadcrumbItems = [
     { name: 'Home', url: baseUrl },
     { name: 'Listings', url: `${baseUrl}/listings` }
