@@ -9,7 +9,7 @@ import { tenant } from '@/configs/tenant.config'
 
 const title = 'Privacy Policy'
 const url = `${tenant.brand.siteUrl}/privacy-policy`
-const description = `Learn how ${tenant.brand.siteName} collects, uses, and protects your personal information.`
+const description = `Privacy Policy for ${tenant.brand.siteName}. Read about how we collect, use, and protect your personal information.`
 
 export const metadata: Metadata = {
   title,
