@@ -1,27 +1,16 @@
 import { ImageResponse } from 'next/og'
+import type { NextRequest } from 'next/server'
 
 import { parseAddressSlug } from 'utils/propertyUrls'
 import { tenant } from '@/configs/tenant.config'
 
-// Next.js auto-generated OG image for /homes/[slug] property pages.
-// See: https://nextjs.org/docs/app/api-reference/file-conventions/metadata/opengraph-image
 export const runtime = 'edge'
-export const alt = `South Florida Property — ${tenant.brand.siteName}`
-export const size = { width: 1200, height: 630 }
-export const contentType = 'image/png'
 
 const NAVY = '#1a1a2e'
 const GOLD = '#b19a55'
 const WHITE = '#f5f5f5'
 const MUTED = '#9b9b9b'
 
-interface Props {
-  params: { slug: string }
-}
-
-/**
- * Title-case a slug-derived string ("123 main st" -> "123 Main St").
- */
 function titleCase(str: string): string {
   return str
     .split(' ')
@@ -29,15 +18,15 @@ function titleCase(str: string): string {
     .join(' ')
 }
 
-export default async function Image({ params }: Props) {
-  const parsed = parseAddressSlug(params.slug)
+export async function GET(req: NextRequest) {
+  const slug = req.nextUrl.searchParams.get('slug') ?? ''
+  const parsed = parseAddressSlug(slug)
 
-  // Fall back to the raw slug if parsing fails so we still ship a card.
   const street = parsed ? titleCase(parsed.street) : ''
   const city = parsed ? titleCase(parsed.city) : ''
   const region = parsed ? `${parsed.state} ${parsed.zip}` : ''
 
-  const addressLine1 = street || params.slug.replace(/-/g, ' ')
+  const addressLine1 = street || slug.replace(/-/g, ' ')
   const addressLine2 = city && region ? `${city}, ${region}` : ''
 
   return new ImageResponse(
@@ -56,7 +45,6 @@ export default async function Image({ params }: Props) {
           fontFamily: 'sans-serif',
         }}
       >
-        {/* Eyebrow / category label */}
         <div
           style={{
             display: 'flex',
@@ -71,7 +59,6 @@ export default async function Image({ params }: Props) {
           South Florida Property
         </div>
 
-        {/* Subtle gold accent bar */}
         <div
           style={{
             display: 'flex',
@@ -82,7 +69,6 @@ export default async function Image({ params }: Props) {
           }}
         />
 
-        {/* Address line 1 — street */}
         <div
           style={{
             display: 'flex',
@@ -98,7 +84,6 @@ export default async function Image({ params }: Props) {
           {addressLine1}
         </div>
 
-        {/* Address line 2 — city, state zip */}
         {addressLine2 ? (
           <div
             style={{
@@ -114,7 +99,6 @@ export default async function Image({ params }: Props) {
           </div>
         ) : null}
 
-        {/* Site brand */}
         <div
           style={{
             display: 'flex',
@@ -130,7 +114,8 @@ export default async function Image({ params }: Props) {
       </div>
     ),
     {
-      ...size,
+      width: 1200,
+      height: 630,
     }
   )
 }

@@ -1,32 +1,17 @@
 import { ImageResponse } from 'next/og'
+import type { NextRequest } from 'next/server'
 
 import { getSubTypeBySlug } from '@configs/page-generation'
 import { parseCleanSlug, slugToDisplayName } from 'utils/templateEngine'
 import { tenant } from '@/configs/tenant.config'
 
-// Next.js OG image route segment config — these magic exports are picked up
-// at build/request time and become Open Graph + Twitter card meta tags
-// automatically (no need to wire `openGraph.images` manually).
-// See: https://nextjs.org/docs/app/api-reference/file-conventions/metadata/opengraph-image
 export const runtime = 'edge'
-export const alt = tenant.brand.siteName
-export const size = { width: 1200, height: 630 }
-export const contentType = 'image/png'
 
 const NAVY = '#1a1a2e'
 const GOLD = '#b19a55'
 const WHITE = '#f5f5f5'
 const MUTED = '#9b9b9b'
 
-interface Props {
-  params: { slugs?: string[] }
-}
-
-/**
- * Build a human-readable heading for the OG card based on the pageType
- * parsed from the URL slug. We use the same parser as the page itself so the
- * card always matches what the visitor will see.
- */
 function getHeading(slugs: string[] | undefined): string {
   if (!slugs || slugs.length === 0) return 'South Florida Real Estate'
   const parsed = parseCleanSlug(slugs)
@@ -53,8 +38,10 @@ function getHeading(slugs: string[] | undefined): string {
   }
 }
 
-export default async function Image({ params }: Props) {
-  const heading = getHeading(params.slugs)
+export async function GET(req: NextRequest) {
+  const slugParam = req.nextUrl.searchParams.get('slug') ?? ''
+  const slugs = slugParam ? slugParam.split('/').filter(Boolean) : []
+  const heading = getHeading(slugs)
 
   return new ImageResponse(
     (
@@ -72,7 +59,6 @@ export default async function Image({ params }: Props) {
           fontFamily: 'sans-serif',
         }}
       >
-        {/* Subtle gold accent bar */}
         <div
           style={{
             display: 'flex',
@@ -83,7 +69,6 @@ export default async function Image({ params }: Props) {
           }}
         />
 
-        {/* Main heading — city / page name */}
         <div
           style={{
             display: 'flex',
@@ -99,7 +84,6 @@ export default async function Image({ params }: Props) {
           {heading}
         </div>
 
-        {/* Tagline */}
         <div
           style={{
             display: 'flex',
@@ -113,7 +97,6 @@ export default async function Image({ params }: Props) {
           South Florida Real Estate
         </div>
 
-        {/* Site brand */}
         <div
           style={{
             display: 'flex',
@@ -129,7 +112,8 @@ export default async function Image({ params }: Props) {
       </div>
     ),
     {
-      ...size,
+      width: 1200,
+      height: 630,
     }
   )
 }

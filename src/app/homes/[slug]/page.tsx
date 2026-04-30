@@ -18,6 +18,7 @@ import content from '@configs/content'
 import searchConfig from '@configs/search'
 import StructuredData from '@shared/StructuredData'
 import { PropertyPageTemplate, Property404Template } from '@templates'
+import { tenant } from '@/configs/tenant.config'
 
 import type { Property, HistoryItemType } from 'services/API'
 import APISearchCSR from 'services/API/APISearchCSR'
@@ -159,6 +160,8 @@ export async function generateMetadata(props: HomesPageProps): Promise<Metadata>
       })
     : null
 
+  const ogImageUrl = `${tenant.brand.siteUrl}/api/og/property?slug=${encodeURIComponent(params.slug)}`
+
   return {
     title,
     description,
@@ -167,7 +170,9 @@ export async function generateMetadata(props: HomesPageProps): Promise<Metadata>
       title,
       description,
       type: 'website',
+      images: [{ url: ogImageUrl, width: 1200, height: 630, alt: title }],
     },
+    twitter: { card: 'summary_large_image', title, description, images: [ogImageUrl] },
     alternates: {
       canonical: `/homes/${params.slug}`,
     },

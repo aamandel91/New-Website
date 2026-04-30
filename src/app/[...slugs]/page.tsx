@@ -94,7 +94,7 @@ export async function generateMetadata(props: CleanPageProps): Promise<Metadata>
       const pageScore = scoreAreaPage({ pageType: 'city', listingCount: count, hasCmsContent })
       const title = `${count} Homes for Sale in ${cityName}, FL (${new Date().getFullYear()})`
       const description = `Browse ${count} homes for sale in ${cityName}, FL. View photos, prices, and property details. Updated daily on ${tenant.brand.siteName}.`
-      const ogImageUrl = `${baseUrl}/${parsed.city}/opengraph-image`
+      const ogImageUrl = `${baseUrl}/api/og/city?slug=${encodeURIComponent(parsed.city)}`
       return {
         title,
         description,
@@ -116,7 +116,7 @@ export async function generateMetadata(props: CleanPageProps): Promise<Metadata>
       const pageScore = scoreAreaPage({ pageType: 'subType', listingCount: count, subTypeSlug: stConfig.slug, hasCmsContent })
       const title = generateMetaTitle(cityName, stConfig.label, count)
       const description = `Browse ${count} ${stConfig.label} for sale in ${cityName}, FL. View photos, prices, and property details. Updated daily on ${tenant.brand.siteName}.`
-      const ogImageUrl = `${baseUrl}/${parsed.city}/${parsed.subType}/opengraph-image`
+      const ogImageUrl = `${baseUrl}/api/og/city?slug=${encodeURIComponent(`${parsed.city}/${parsed.subType}`)}`
       return {
         title,
         description,
@@ -135,7 +135,7 @@ export async function generateMetadata(props: CleanPageProps): Promise<Metadata>
       const pageScore = scoreAreaPage({ pageType: 'schools', listingCount: 0, hasCmsContent })
       const title = `Schools in ${cityName}, FL`
       const description = `Explore schools in ${cityName}, Florida. Find top-rated public and private schools near your new home.`
-      const ogImageUrl = `${baseUrl}/${parsed.city}/schools/opengraph-image`
+      const ogImageUrl = `${baseUrl}/api/og/city?slug=${encodeURIComponent(`${parsed.city}/schools`)}`
       return {
         title,
         description,
@@ -154,7 +154,7 @@ export async function generateMetadata(props: CleanPageProps): Promise<Metadata>
       const pageScore = scoreAreaPage({ pageType: 'zip', listingCount: count, hasCmsContent })
       const title = `${count} Homes for Sale in ${cityName}, FL ${parsed.zip} (${new Date().getFullYear()})`
       const description = `Browse ${count} homes for sale in ${cityName} zip code ${parsed.zip}, FL. Updated daily.`
-      const ogImageUrl = `${baseUrl}/${parsed.city}/${parsed.zip}/opengraph-image`
+      const ogImageUrl = `${baseUrl}/api/og/city?slug=${encodeURIComponent(`${parsed.city}/${parsed.zip}`)}`
       return {
         title,
         description,
@@ -174,7 +174,7 @@ export async function generateMetadata(props: CleanPageProps): Promise<Metadata>
       const neighborhoodName = slugToDisplayName(parsed.neighborhood!)
       const title = `Homes for Sale in ${neighborhoodName}, ${cityName}, FL`
       const description = `Browse homes for sale in ${neighborhoodName}, ${cityName}, FL. View photos, prices, and property details.`
-      const ogImageUrl = `${baseUrl}/${parsed.city}/${parsed.neighborhood}/opengraph-image`
+      const ogImageUrl = `${baseUrl}/api/og/city?slug=${encodeURIComponent(`${parsed.city}/${parsed.neighborhood}`)}`
       return {
         title,
         description,
