@@ -199,13 +199,18 @@ const PropertyHeader: React.FC<PropertyHeaderProps> = ({
   const pathname = usePathname()
 
   const handleStartOffer = () => {
-    // The /offer subroute lives under /listing/[slug]/offer and expects a
-    // legacy /listing/ slug with MLS in the trailing segment. The parent
-    // /listing/[slug] is now a 301 redirect to /homes/[slug] (address-only,
-    // no MLS), so this handler can only run from a true /listing/ pathname.
-    const slug = pathname.split('/listing/')[1]
-    if (slug) {
-      window.location.href = `/listing/${slug}/offer`
+    // The canonical offer form lives at /homes/[slug]/offer. The PDP
+    // typically renders at /homes/<address>; if we're somehow rendered
+    // under a legacy /listing/<slug> path, the /listing/ subroute will
+    // 301 to /homes/, so navigating there is still safe.
+    const homesSlug = pathname.split('/homes/')[1]
+    if (homesSlug) {
+      window.location.href = `/homes/${homesSlug.split('/')[0]}/offer`
+      return
+    }
+    const listingSlug = pathname.split('/listing/')[1]
+    if (listingSlug) {
+      window.location.href = `/listing/${listingSlug.split('/')[0]}/offer`
     }
   }
 

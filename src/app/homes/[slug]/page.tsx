@@ -15,21 +15,20 @@ import {
 } from '@mui/material'
 
 import content from '@configs/content'
-import searchConfig from '@configs/search'
 import StructuredData from '@shared/StructuredData'
 import { PropertyPageTemplate, Property404Template } from '@templates'
 import { tenant } from '@/configs/tenant.config'
 
 import type { Property, HistoryItemType } from 'services/API'
-import APISearchCSR from 'services/API/APISearchCSR'
 import { getProtocolHost } from 'utils/urls'
-import { parseAddressSlug, generateStaticPropertyUrl } from 'utils/propertyUrls'
+import { parseAddressSlug } from 'utils/propertyUrls'
 import { generatePropertyJsonLd, generatePropertyBreadcrumbJsonLd } from 'utils/propertySchema'
 import { scorePropertyPage } from '@/utils/propertyPageScoring'
 
 import { PropertyTransactionHistory, NotifyWhenListed } from '@/components/property-detail'
 
 import { fetchSimilarProperties, fetchMarketStats } from '../../listing/[slug]/similarProperties'
+import { fetchAddressListings } from './addressLookup'
 
 export const revalidate = 300
 
@@ -37,30 +36,6 @@ export const revalidate = 300
 
 type HomesPageProps = {
   params: Promise<{ slug: string }>
-}
-
-// ─── Data fetching ────────────────────────────────────────────────
-
-async function fetchAddressListings(slug: string) {
-  const parsed = parseAddressSlug(slug)
-  if (!parsed) return { listings: [], parsed: null }
-
-  // Split street back to components for API call
-  const streetParts = parsed.street.trim().split(/\s+/)
-  const streetNumber = streetParts[0] || ''
-  const streetName = streetParts.slice(1).join(' ') || parsed.street
-
-  const result = await APISearchCSR.getAddressHistory(
-    streetNumber,
-    streetName,
-    parsed.city,
-    searchConfig.defaultBoardId
-  )
-
-  return {
-    listings: (result?.listings as Property[]) || [],
-    parsed,
-  }
 }
 
 function categorizeListings(listings: Property[]) {
