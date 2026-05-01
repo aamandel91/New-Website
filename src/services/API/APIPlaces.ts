@@ -1,5 +1,3 @@
-import APIClientSide from './APIClientSide'
-
 export interface PlaceItem {
   name: string
   type: string
@@ -20,14 +18,23 @@ export interface PlacesResponse {
   [key: string]: PlaceItem[] | undefined
 }
 
-class APIPlaces extends APIClientSide {
+const PLACES_API_URL = `${process.env.NEXT_PUBLIC_API_URL || ''}/api/places`
+
+class APIPlaces {
   async getPlaces(lat: number, lng: number): Promise<PlacesResponse> {
-    const data = await this.fetch('/places', {
+    const params = new URLSearchParams({
       lat: String(lat),
       long: String(lng),
     })
-    if (!data) return {}
-    return this.normalizePlaces(data)
+    try {
+      const response = await fetch(`${PLACES_API_URL}?${params.toString()}`)
+      if (!response.ok) return {}
+      const data = await response.json()
+      if (!data) return {}
+      return this.normalizePlaces(data)
+    } catch {
+      return {}
+    }
   }
 
   private normalizePlaces(raw: any): PlacesResponse {

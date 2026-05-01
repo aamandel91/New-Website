@@ -74,8 +74,14 @@ class APISearchCSR extends APIClientSide {
     return this.fetch('/listings', mapped)
   }
 
-  async getListing(mlsNumber: string, boardId: number = DEFAULT_BOARD_ID): Promise<Property | null> {
-    return this.fetch(`/listings/${mlsNumber}`, { boardId })
+  async getListing(
+    mlsNumber: string,
+    boardId: number = DEFAULT_BOARD_ID,
+    fields?: string
+  ): Promise<Property | null> {
+    const params: Record<string, unknown> = { boardId }
+    if (fields) params.fields = fields
+    return this.fetch(`/listings/${mlsNumber}`, params)
   }
 
   async getLocations(boardId: number = DEFAULT_BOARD_ID) {

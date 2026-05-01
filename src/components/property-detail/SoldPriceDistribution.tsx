@@ -143,6 +143,7 @@ const SoldPriceDistribution: React.FC<SoldPriceDistributionProps> = ({
         lastStatus: 'Sld',
         resultsPerPage: 100,
         listings: true,
+        fields: 'soldPrice',
       }
       if (neighborhood) params.neighborhood = neighborhood
       if (propertyType) params.propertyType = propertyType

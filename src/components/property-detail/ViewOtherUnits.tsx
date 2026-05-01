@@ -46,6 +46,7 @@ const ViewOtherUnits: React.FC<ViewOtherUnitsProps> = ({
           search: `${streetNumber} ${streetName}`,
           status: 'A',
           resultsPerPage: 50,
+          fields: 'mlsNumber',
         })
 
         if (cancelled) return

@@ -35,6 +35,8 @@ export async function GET(request: Request) {
         pageNum,
         sortBy: 'updatedOnDesc',
         minSoldDate: minSoldDateStr,
+        fields:
+          'mlsNumber,status,lastStatus,soldDate,soldPrice,images[1],updatedOn,address,details.description,history,estimate.value',
       })
 
       if (!result?.listings || result.listings.length === 0) break

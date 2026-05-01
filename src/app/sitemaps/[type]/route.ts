@@ -87,6 +87,8 @@ async function generateSold(): Promise<SitemapEntry[]> {
       lastStatus: 'Sld',
       resultsPerPage: 500,
       sortBy: 'updatedOnDesc',
+      fields:
+        'mlsNumber,status,lastStatus,soldDate,soldPrice,images[1],updatedOn,address,details.description,history,estimate.value',
     })
 
     if (!result?.listings) return []

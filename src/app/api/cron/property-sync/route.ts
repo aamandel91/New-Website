@@ -65,6 +65,8 @@ export async function GET(request: Request) {
       status: 'A',
       resultsPerPage: 500,
       sortBy: 'updatedOnDesc',
+      fields:
+        'mlsNumber,status,lastStatus,soldDate,soldPrice,images[1],updatedOn,address,details.description,history,estimate.value',
     })
 
     if (activeResult?.listings) {
@@ -92,6 +94,8 @@ export async function GET(request: Request) {
       resultsPerPage: 500,
       sortBy: 'updatedOnDesc',
       minSoldDate,
+      fields:
+        'mlsNumber,status,lastStatus,soldDate,soldPrice,images[1],updatedOn,address,details.description,history,estimate.value',
     })
 
     if (soldResult?.listings) {

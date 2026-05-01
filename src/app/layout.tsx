@@ -62,6 +62,7 @@ const Layout = async ({ children }: { children: React.ReactNode }) => {
             ~100-300ms on first paint for any page that calls these origins. */}
         <link rel="preconnect" href="https://cdn.repliers.io" />
         <link rel="preconnect" href="https://api.repliers.io" />
+        <link rel="preconnect" href="https://csr-api.repliers.io" />
         <link rel="preconnect" href="https://api.mapbox.com" />
         <link rel="preconnect" href="https://events.mapbox.com" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />

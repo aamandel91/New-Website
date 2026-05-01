@@ -421,6 +421,7 @@ export type ApiQueryParamsAllowedFields =
   | 'details.propertyType'
   | 'details.sqft'
   | 'details.style'
+  | 'images[1]'
 
 export type ApiStatus = 'A' | 'U'
 

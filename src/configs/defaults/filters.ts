@@ -37,7 +37,7 @@ export const listingFields: Array<ListingFields> = [
   'soldDate',
   'address',
   'map',
-  'images',
+  'images[1]',
   'imagesScore',
   'imageInsights',
   'details.numBathrooms',

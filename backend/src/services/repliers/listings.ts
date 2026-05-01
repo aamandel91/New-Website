@@ -233,6 +233,10 @@ export default class RepliersListings extends RepliersBase {
     )
   }
 
+  public places(params: { lat: string; long: string }) {
+    return this.request<Record<string, unknown>>('GET', '/places', params)
+  }
+
   // Maybe extract to a separate service?
   public nlp(params: RplNlpDto) {
     return this.request<RplNlpResponse>(

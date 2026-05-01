@@ -272,7 +272,7 @@ const PropertyValueEstimate: React.FC<PropertyValueEstimateProps> = ({
     if (estimate?.value || !mlsNumber || fetched) return
     setFetched(true)
 
-    APISearchCSR.getListing(mlsNumber, boardId)
+    APISearchCSR.getListing(mlsNumber, boardId, 'estimate')
       .then((listing: any) => {
         if (listing?.estimate?.value) {
           setEstimate(listing.estimate)

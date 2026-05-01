@@ -232,6 +232,7 @@ const AreaValueTrends: React.FC<AreaValueTrendsProps> = ({
         status: 'A',
         resultsPerPage: 50,
         hasImages: true,
+        fields: 'estimate',
       })
 
       if (!response || !response.listings) {
