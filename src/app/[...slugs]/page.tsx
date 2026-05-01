@@ -10,7 +10,7 @@ import StructuredData from '@shared/StructuredData'
 import PageWithSidebar from '@/components/layouts/PageWithSidebar'
 import CitySidebar from '@/components/sidebar/CitySidebar'
 
-import { subTypes, getSubTypeBySlug, nearbyCitiesByCounty } from '@configs/page-generation'
+import { subTypes, getSubTypeBySlug, nearbyCitiesByCounty, findCountyForCity } from '@configs/page-generation'
 import { breadcrumbSchema, faqSchema, localBusinessSchema } from 'utils/structuredData'
 import {
   parseCleanSlug,
@@ -414,9 +414,15 @@ async function renderCityPage(
 
           {/* Nearby Cities */}
           {(() => {
-            const allNearbyCities = Object.values(nearbyCitiesByCounty).flat()
-            const nearby = allNearbyCities.filter(c => c.toLowerCase() !== cityName.toLowerCase())
-            const unique = [...new Set(nearby)]
+            const county = findCountyForCity(cityName)
+            const countyCities = county ? (nearbyCitiesByCounty[county] ?? []) : []
+            const nearby = countyCities.filter(c => c.toLowerCase() !== cityName.toLowerCase())
+            // Fallback: if the city isn't in our county map (e.g., a CMS page
+            // for a city outside active markets), fall back to the full
+            // active-market list so the section still renders meaningful links.
+            const unique = nearby.length > 0
+              ? [...new Set(nearby)]
+              : [...new Set(Object.values(nearbyCitiesByCounty).flat().filter(c => c.toLowerCase() !== cityName.toLowerCase()))]
             if (unique.length === 0) return null
             return (
               <Box sx={{ mt: 4 }}>

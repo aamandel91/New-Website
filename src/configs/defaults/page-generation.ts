@@ -42,7 +42,7 @@ export interface MarketConfig {
   primaryCity: string
   boardIds: number[]
   active: boolean
-  nearbyCities: string[]
+  citiesByCounty: Record<string, string[]>
 }
 
 export const markets: MarketConfig[] = [
@@ -53,29 +53,34 @@ export const markets: MarketConfig[] = [
     primaryCity: 'Coral Springs',
     boardIds: [2],
     active: true,
-    nearbyCities: [
-      // Miami-Dade
-      'Miami', 'Miami Beach', 'Coral Gables', 'Aventura', 'Sunny Isles Beach',
-      'Bal Harbour', 'Bay Harbor Islands', 'Surfside', 'Doral', 'Hialeah',
-      'Homestead', 'Kendall', 'Pinecrest', 'South Miami', 'Cutler Bay',
-      'Key Biscayne', 'Coconut Grove', 'Brickell', 'Wynwood', 'Miami Lakes',
-      'North Miami Beach', 'Palmetto Bay',
-      // Broward
-      'Fort Lauderdale', 'Coral Springs', 'Pompano Beach', 'Deerfield Beach',
-      'Boca Raton', 'Hollywood', 'Plantation', 'Davie', 'Weston', 'Coconut Creek',
-      'Parkland', 'Sunrise', 'Tamarac', 'Lighthouse Point', 'Hallandale Beach',
-      'Pembroke Pines', 'Miramar', 'Cooper City', 'Margate', 'Lauderdale by the Sea',
-      // Palm Beach
-      'West Palm Beach', 'Boca Raton', 'Delray Beach', 'Boynton Beach',
-      'Palm Beach Gardens', 'Jupiter', 'Wellington', 'Lake Worth', 'Greenacres',
-      'Royal Palm Beach', 'Palm Beach', 'Juno Beach', 'Tequesta', 'Loxahatchee',
-      // Martin
-      'Stuart', 'Palm City', 'Hobe Sound', 'Jensen Beach', 'Indiantown',
-      'Port Salerno', 'Rio', 'Sewalls Point',
-      // St. Lucie
-      'Port St. Lucie', 'Fort Pierce', 'Tradition', 'St. Lucie West',
-      'Hutchinson Island', 'White City', 'Lakewood Park'
-    ]
+    citiesByCounty: {
+      'Miami-Dade': [
+        'Miami', 'Miami Beach', 'Coral Gables', 'Aventura', 'Sunny Isles Beach',
+        'Bal Harbour', 'Bay Harbor Islands', 'Surfside', 'Doral', 'Hialeah',
+        'Homestead', 'Kendall', 'Pinecrest', 'South Miami', 'Cutler Bay',
+        'Key Biscayne', 'Coconut Grove', 'Brickell', 'Wynwood', 'Miami Lakes',
+        'North Miami Beach', 'Palmetto Bay'
+      ],
+      'Broward': [
+        'Fort Lauderdale', 'Coral Springs', 'Pompano Beach', 'Deerfield Beach',
+        'Hollywood', 'Plantation', 'Davie', 'Weston', 'Coconut Creek',
+        'Parkland', 'Sunrise', 'Tamarac', 'Lighthouse Point', 'Hallandale Beach',
+        'Pembroke Pines', 'Miramar', 'Cooper City', 'Margate', 'Lauderdale by the Sea'
+      ],
+      'Palm Beach': [
+        'Boca Raton', 'West Palm Beach', 'Delray Beach', 'Boynton Beach',
+        'Palm Beach Gardens', 'Jupiter', 'Wellington', 'Lake Worth', 'Greenacres',
+        'Royal Palm Beach', 'Palm Beach', 'Juno Beach', 'Tequesta', 'Loxahatchee'
+      ],
+      'Martin': [
+        'Stuart', 'Palm City', 'Hobe Sound', 'Jensen Beach', 'Indiantown',
+        'Port Salerno', 'Rio', 'Sewalls Point'
+      ],
+      'St. Lucie': [
+        'Port St. Lucie', 'Fort Pierce', 'Tradition', 'St. Lucie West',
+        'Hutchinson Island', 'White City', 'Lakewood Park'
+      ]
+    }
   },
   {
     id: 'naples-swfl',
@@ -84,12 +89,19 @@ export const markets: MarketConfig[] = [
     primaryCity: 'Naples',
     boardIds: [],
     active: false,
-    nearbyCities: [
-      'Naples', 'Marco Island', 'Bonita Springs', 'Estero', 'Fort Myers',
-      'Cape Coral', 'Sanibel', 'Port Charlotte', 'Punta Gorda', 'Ave Maria',
-      'Golden Gate', 'Pelican Bay', 'Vanderbilt Beach', 'North Naples',
-      'East Naples', 'Lely Resort', 'Miromar Lakes'
-    ]
+    citiesByCounty: {
+      'Collier': [
+        'Naples', 'Marco Island', 'Bonita Springs', 'Estero', 'Pelican Bay',
+        'Vanderbilt Beach', 'North Naples', 'East Naples', 'Lely Resort',
+        'Golden Gate', 'Ave Maria'
+      ],
+      'Lee': [
+        'Fort Myers', 'Cape Coral', 'Sanibel', 'Miromar Lakes'
+      ],
+      'Charlotte': [
+        'Port Charlotte', 'Punta Gorda'
+      ]
+    }
   },
   {
     id: 'tampa-bay',
@@ -98,14 +110,27 @@ export const markets: MarketConfig[] = [
     primaryCity: 'Tampa',
     boardIds: [],
     active: false,
-    nearbyCities: [
-      'Tampa', 'St. Petersburg', 'Clearwater', 'Brandon', 'Wesley Chapel',
-      'Riverview', 'Sarasota', 'Bradenton', 'Lakeland', 'Plant City',
-      'Palm Harbor', 'Dunedin', 'Safety Harbor', 'Odessa', 'Lutz',
-      'Land O Lakes', 'New Port Richey', 'Tarpon Springs', 'South Tampa',
-      'Davis Islands', 'Harbour Island', 'Beach Park', 'Hyde Park',
-      'Westchase', 'Carrollwood', 'Seminole Heights'
-    ]
+    citiesByCounty: {
+      'Hillsborough': [
+        'Tampa', 'Brandon', 'Riverview', 'Plant City', 'Lutz',
+        'South Tampa', 'Davis Islands', 'Harbour Island', 'Beach Park',
+        'Hyde Park', 'Westchase', 'Carrollwood', 'Seminole Heights'
+      ],
+      'Pinellas': [
+        'St. Petersburg', 'Clearwater', 'Palm Harbor', 'Dunedin',
+        'Safety Harbor', 'Tarpon Springs'
+      ],
+      'Pasco': [
+        'Wesley Chapel', 'Odessa', 'Land O Lakes', 'New Port Richey'
+      ],
+      // Lakeland is actually Polk County; assumed Manatee here for a rough grouping
+      // since the original flat list included it under tampa-bay. Sarasota is in
+      // its own market, so kept under Manatee here loosely as an inactive-market
+      // best-guess until tampa-bay is activated.
+      'Manatee': [
+        'Bradenton', 'Sarasota', 'Lakeland'
+      ]
+    }
   },
   {
     id: 'orlando',
@@ -114,12 +139,22 @@ export const markets: MarketConfig[] = [
     primaryCity: 'Orlando',
     boardIds: [],
     active: false,
-    nearbyCities: [
-      'Orlando', 'Winter Park', 'Windermere', 'Dr. Phillips', 'Lake Nona',
-      'Celebration', 'Kissimmee', 'Ocoee', 'Apopka', 'Altamonte Springs',
-      'Longwood', 'Winter Springs', 'Sanford', 'Clermont', 'Davenport',
-      'Maitland', 'Casselberry', 'Oviedo', 'Heathrow', 'Lake Mary'
-    ]
+    citiesByCounty: {
+      'Orange': [
+        'Orlando', 'Winter Park', 'Windermere', 'Dr. Phillips', 'Lake Nona',
+        'Maitland', 'Apopka', 'Ocoee'
+      ],
+      'Seminole': [
+        'Altamonte Springs', 'Longwood', 'Winter Springs', 'Sanford',
+        'Casselberry', 'Oviedo', 'Lake Mary', 'Heathrow'
+      ],
+      'Osceola': [
+        'Kissimmee', 'Celebration'
+      ],
+      'Lake': [
+        'Clermont', 'Davenport'
+      ]
+    }
   },
   {
     id: 'sarasota',
@@ -128,12 +163,14 @@ export const markets: MarketConfig[] = [
     primaryCity: 'Sarasota',
     boardIds: [],
     active: false,
-    nearbyCities: [
-      'Sarasota', 'Venice', 'Nokomis', 'Osprey', 'North Port',
-      'Englewood', 'Longboat Key', 'Siesta Key', 'Casey Key',
-      'Palmer Ranch', 'The Meadows', 'Lakewood Ranch', 'Bird Key',
-      'Lido Key', 'Gulf Gate Estates'
-    ]
+    citiesByCounty: {
+      'Sarasota': [
+        'Sarasota', 'Venice', 'Nokomis', 'Osprey', 'North Port',
+        'Englewood', 'Longboat Key', 'Siesta Key', 'Casey Key',
+        'Palmer Ranch', 'The Meadows', 'Lakewood Ranch', 'Bird Key',
+        'Lido Key', 'Gulf Gate Estates'
+      ]
+    }
   }
 ]
 
@@ -148,8 +185,22 @@ export const primaryCity = activeMarkets[0]?.primaryCity ?? 'Coral Springs'
 export const nearbyCitiesByCounty: Record<string, string[]> = {}
 for (const market of activeMarkets) {
   for (const county of market.counties) {
-    nearbyCitiesByCounty[county] = market.nearbyCities
+    nearbyCitiesByCounty[county] = market.citiesByCounty[county] ?? []
   }
+}
+
+// Reverse lookup: city name (lowercased) → county. Built from active markets.
+export const cityToCounty: Record<string, string> = {}
+for (const market of activeMarkets) {
+  for (const [county, cities] of Object.entries(market.citiesByCounty)) {
+    for (const city of cities) {
+      cityToCounty[city.toLowerCase()] = county
+    }
+  }
+}
+
+export function findCountyForCity(cityName: string): string | undefined {
+  return cityToCounty[cityName.toLowerCase()]
 }
 
 export interface SubTypeConfig {
