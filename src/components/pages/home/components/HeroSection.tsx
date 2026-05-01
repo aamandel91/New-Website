@@ -125,7 +125,7 @@ const HeroSection = () => {
 
   const heroBackground = heroImageUrl
     ? 'none'
-    : 'linear-gradient(135deg, #0F1621 0%, #1a3a4a 100%)'
+    : tenant.visualIdentity.heroImages.homepageGradient
 
   return (
     <Box

@@ -9,6 +9,7 @@ import YouTubeIcon from '@mui/icons-material/YouTube'
 import { Box, Container, Grid2 as Grid, IconButton, Link, Stack, Typography } from '@mui/material'
 
 import { siteSettings } from '@/configs/defaults/site-settings'
+import { tenant } from '@/configs/tenant.config'
 import { primaryCity } from '@configs/page-generation'
 
 const COLUMN_HEADING_SX = {
@@ -39,7 +40,7 @@ const Footer = () => {
   const primaryCitySlug = primaryCity.toLowerCase().replace(/\s+/g, '-')
 
   return (
-    <Box sx={{ bgcolor: '#0F1621' }}>
+    <Box sx={{ bgcolor: tenant.visualIdentity.colors.footerBackground }}>
       {/* Main footer content */}
       <Container maxWidth={false} sx={{ maxWidth: 1400, py: { xs: 6, md: 8 }, px: { xs: 3, md: 4 } }}>
         <Grid container spacing={{ xs: 4, md: 6 }}>

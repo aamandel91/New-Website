@@ -1,17 +1,21 @@
 import { darken, lighten } from '@mui/material'
 
+import { tenant } from '@/configs/tenant.config'
+
+const vi = tenant.visualIdentity.colors
+
 export const white = '#FFFFFF'
 export const light = '#999999'
-export const medium = '#666666'
-export const dark = '#1a1a1a'
+export const medium = vi.textMuted
+export const dark = vi.text
 export const black = '#202020'
 
-export const background = '#FFFFFF'
+export const background = vi.background
 
-// main gold/tan accent
-export const primary = '#b19a55'
-// secondary gold accent
-export const secondary = '#b19a55'
+// main brand accent
+export const primary = vi.primary
+// secondary accent
+export const secondary = vi.accent
 // markers color, normally the same as secondary
 export const marker = secondary
 export const soldMarker = darken(marker, 0.2)
@@ -19,14 +23,14 @@ export const rentMarker = marker
 
 export const hint = light
 export const disabled = light
-export const divider = '#d9d9d9'
+export const divider = vi.border
 
 // alert / toast / snackbar colors
 
-export const info = '#2196F3'
-export const error = '#F44336'
-export const success = '#4CAF50'
-export const warning = '#FFC107'
+export const info = vi.info
+export const error = vi.error
+export const success = vi.success
+export const warning = vi.warning
 
 // Chart colors
 

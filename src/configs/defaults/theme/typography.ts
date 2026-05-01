@@ -1,11 +1,12 @@
 import { toRem } from 'utils/theme'
+import { tenant } from '@/configs/tenant.config'
 
 import { type TypographyOptions } from '@mui/material/styles/createTypography'
 
 const typography: TypographyOptions = {
   htmlFontSize: 16, // HTML base font size in pixels
   fontSize: 14, // 14px to match floridahomefinder.com
-  fontFamily: ['var(--font-montserrat)', 'Montserrat', 'Arial', 'Helvetica', 'sans-serif'].join(','),
+  fontFamily: tenant.visualIdentity.fonts.body,
 
   h1: {
     fontWeight: 400,

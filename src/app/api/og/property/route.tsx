@@ -6,10 +6,20 @@ import { tenant } from '@/configs/tenant.config'
 
 export const runtime = 'edge'
 
-const NAVY = '#1a1a2e'
-const GOLD = '#b19a55'
+const NAVY = tenant.visualIdentity.colors.ogBackground
+const GOLD = tenant.visualIdentity.colors.accent
 const WHITE = '#f5f5f5'
-const MUTED = '#9b9b9b'
+const MUTED = tenant.visualIdentity.colors.ogMuted
+const OG_FONT = tenant.visualIdentity.ogImage.fontFamily
+
+function hexToRgb(hex: string): string {
+  const h = hex.replace('#', '')
+  const r = parseInt(h.slice(0, 2), 16)
+  const g = parseInt(h.slice(2, 4), 16)
+  const b = parseInt(h.slice(4, 6), 16)
+  return `${r}, ${g}, ${b}`
+}
+const GOLD_RGB = hexToRgb(GOLD)
 
 function titleCase(str: string): string {
   return str
@@ -40,9 +50,9 @@ export async function GET(req: NextRequest) {
           justifyContent: 'center',
           alignItems: 'center',
           backgroundColor: NAVY,
-          backgroundImage: `radial-gradient(circle at 25% 30%, rgba(177, 154, 85, 0.18) 0%, transparent 60%), radial-gradient(circle at 75% 70%, rgba(177, 154, 85, 0.10) 0%, transparent 50%)`,
+          backgroundImage: `radial-gradient(circle at 25% 30%, rgba(${GOLD_RGB}, 0.18) 0%, transparent 60%), radial-gradient(circle at 75% 70%, rgba(${GOLD_RGB}, 0.10) 0%, transparent 50%)`,
           padding: '80px',
-          fontFamily: 'sans-serif',
+          fontFamily: OG_FONT,
         }}
       >
         <div

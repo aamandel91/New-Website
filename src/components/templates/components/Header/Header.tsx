@@ -6,6 +6,7 @@ import { AppBar, Box, Button, Container, Stack } from '@mui/material'
 
 import { useFeatures } from 'providers/FeaturesProvider'
 import useClientSide from 'hooks/useClientSide'
+import { tenant } from '@/configs/tenant.config'
 
 import {
   Autosuggestion,
@@ -42,7 +43,7 @@ const Header = () => {
         sx={{
           zIndex: 'modal',
           position: 'fixed',
-          bgcolor: '#0F1621 !important',
+          bgcolor: `${tenant.visualIdentity.colors.headerBackground} !important`,
           color: 'white !important',
           boxShadow: 'none !important',
           borderBottom: '1px solid rgba(255,255,255,0.06)',

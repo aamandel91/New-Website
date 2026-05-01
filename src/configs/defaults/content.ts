@@ -1,13 +1,17 @@
 import { type Metadata } from 'next'
 
 import { type ToolbarConfig } from '@templates/Header/components/ToolbarMenu'
+import { tenant } from '@/configs/tenant.config'
+
+const logo = tenant.visualIdentity.logo
+const heroImages = tenant.visualIdentity.heroImages
 
 const content = {
-  siteLogo: { url: '/logo.svg', width: 36, height: 36 },
-  siteMobileLogo: { url: '/logo.svg', width: 36, height: 36 },
-  siteFooterLogo: { url: '/logo-footer.svg', width: 80, height: 100 },
-  siteSplashscreen: '/splashscreen.webp',
-  loginSplashscreen: '/splashscreen.webp',
+  siteLogo: { url: logo.src, width: logo.width, height: logo.height },
+  siteMobileLogo: { url: logo.src, width: logo.width, height: logo.height },
+  siteFooterLogo: { url: logo.footerSrc, width: logo.footerWidth, height: logo.footerHeight },
+  siteSplashscreen: heroImages.homepage,
+  loginSplashscreen: heroImages.homepage,
   siteName: 'Florida Home Finder',
   siteDefaultBrokerageName: 'Florida Home Finder Real Estate',
   siteKeywords: [
