@@ -10,7 +10,7 @@ import StructuredData from '@shared/StructuredData'
 import PageWithSidebar from '@/components/layouts/PageWithSidebar'
 import CitySidebar from '@/components/sidebar/CitySidebar'
 
-import { subTypes, getSubTypeBySlug, nearbyCitiesByCounty, findCountyForCity } from '@configs/page-generation'
+import { subTypes, getSubTypeBySlug, findNearbyCities, activeMarkets } from '@configs/page-generation'
 import { breadcrumbSchema, faqSchema, localBusinessSchema } from 'utils/structuredData'
 import {
   parseCleanSlug,
@@ -414,15 +414,20 @@ async function renderCityPage(
 
           {/* Nearby Cities */}
           {(() => {
-            const county = findCountyForCity(cityName)
-            const countyCities = county ? (nearbyCitiesByCounty[county] ?? []) : []
-            const nearby = countyCities.filter(c => c.toLowerCase() !== cityName.toLowerCase())
-            // Fallback: if the city isn't in our county map (e.g., a CMS page
-            // for a city outside active markets), fall back to the full
-            // active-market list so the section still renders meaningful links.
-            const unique = nearby.length > 0
-              ? [...new Set(nearby)]
-              : [...new Set(Object.values(nearbyCitiesByCounty).flat().filter(c => c.toLowerCase() !== cityName.toLowerCase()))]
+            // Radius-based: 20 miles, expanding to 50 if fewer than 12 found.
+            const radiusMatches = findNearbyCities(cityName)
+            // Fallback: city has no coords or isn't in active markets — fall
+            // back to the full active-market city list so the section still
+            // renders meaningful links (e.g., CMS pages for cities outside
+            // the markets config).
+            const unique = radiusMatches.length > 0
+              ? radiusMatches
+              : [...new Set(
+                  activeMarkets
+                    .flatMap(m => Object.values(m.citiesByCounty).flat())
+                    .map(c => c.name)
+                    .filter(n => n.toLowerCase() !== cityName.toLowerCase())
+                )]
             if (unique.length === 0) return null
             return (
               <Box sx={{ mt: 4 }}>
