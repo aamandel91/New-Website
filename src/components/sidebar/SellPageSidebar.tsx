@@ -1,7 +1,7 @@
 'use client'
 
 import React from 'react'
-import { Sidebar } from '@/components/sidebar'
+import Sidebar from './Sidebar'
 import SearchWidget from './SearchWidget'
 import ReadyToChat from './ReadyToChat'
 import SellerResources from './SellerResources'

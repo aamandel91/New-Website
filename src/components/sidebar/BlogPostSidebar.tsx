@@ -1,7 +1,7 @@
 'use client'
 
 import React from 'react'
-import { Sidebar } from '@/components/sidebar'
+import Sidebar from './Sidebar'
 import BlogCategories from './BlogCategories'
 import BlogArchives from './BlogArchives'
 import BlogTags from './BlogTags'
