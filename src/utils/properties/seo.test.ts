@@ -10,30 +10,34 @@ import {
 import { getSeoUrl, parseSeoUrl } from './seo'
 
 describe('utils/properties/seo', () => {
-  it('should correctly format addresses to SEO url', () => {
+  it('should emit permanent /homes/ URLs from address fields', () => {
+    // unitNumber and streetDirection are intentionally dropped — the permanent
+    // /homes/ URL is address-only (street + city + state + zip).
     expect(getSeoUrl(property1)).toBe(
-      '/listing/ph3-135-lower-barrette-way-east-ottawa-k1l-7z9-12345-12'
+      '/homes/135-lower-barrette-way-ottawa-k1l-7z9'
     )
     expect(getSeoUrl(property2)).toBe(
-      '/listing/135-lower-barrette-way-ottawa-k1l-7z9-12346-13'
+      '/homes/135-lower-barrette-way-ottawa-k1l-7z9'
     )
   })
 
-  it('should correctly format adresses with additional image param', () => {
+  it('should preserve startImage as a query param on /homes/ URLs', () => {
     expect(getSeoUrl(property2, { startImage: 12 })).toBe(
-      '/listing/135-lower-barrette-way-ottawa-k1l-7z9-12346-13?startImage=12'
+      '/homes/135-lower-barrette-way-ottawa-k1l-7z9?startImage=12'
     )
   })
 
-  it('should correctly format adresses with missing boardId or boardId passed in arguments to SEO url', () => {
+  it('should ignore boardId for /homes/ URLs (address-only) and preserve startImage', () => {
+    // boardId is no longer encoded — the permanent URL is address-only.
     expect(getSeoUrl(property3, { boardId: 14 })).toBe(
-      '/listing/13-5-d-artagnan-bay-ottawa-12346-14?startImage=1'
+      '/homes/13-5-d-artagnan-bay-ottawa?startImage=1'
     )
-    expect(getSeoUrl(property4, { boardId: 15 })).toBe('/listing/12347-15')
+    // No address at all — last-resort fallback to the legacy /listing/<mls> form.
+    expect(getSeoUrl(property4, { boardId: 15 })).toBe('/listing/12347')
   })
 
-  it('should correctly format adresses with scrabbed fields and missing boardId to SEO url', () => {
-    expect(getSeoUrl(property5)).toBe('/listing/o-reilly-12346')
+  it('should strip scrubbed placeholders from address fields before building the slug', () => {
+    expect(getSeoUrl(property5)).toBe('/homes/o-reilly')
   })
 
   it('should correctly parse SEO url to address', () => {

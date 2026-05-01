@@ -1,24 +1,27 @@
-import routes from '@configs/routes'
 import searchConfig from '@configs/search'
 
 import { type Property } from 'services/API'
+import { generatePropertyUrl } from 'utils/propertyUrls'
 import {
   capitalize,
   joinNonEmpty,
 } from 'utils/strings'
 
 import { formatShortAddress } from './formatters'
-import { sanitizeAddress } from './sanitizers'
+import { sanitizeScrubbed } from './sanitizers'
 import {
   rent,
   sold
 } from '.'
 
 /**
- * @description This function generates a SEO-friendly URL for a property.
- * It uses the property's address and MLS number to create a URL path.
- * The boardId is used as a query parameter.
- * */
+ * @description Generates the canonical URL for a property.
+ * Emits the permanent address-based `/homes/[slug]` URL whenever address
+ * fields are present; falls back to the legacy `/listing/<mls>` form only
+ * as a last resort when no address is available. `startImage` is preserved
+ * as a query string; `boardId` is no longer encoded in the path because the
+ * permanent URL is address-only.
+ */
 export const getSeoUrl = (
   property: Partial<Property>,
   options?: {
@@ -27,17 +30,27 @@ export const getSeoUrl = (
   }
 ): string => {
   const { address = {}, mlsNumber = '' } = property
-  const boardId = options?.boardId || property.boardId
   const startImage = options?.startImage || property.startImage
 
-  const addr = sanitizeAddress(address as Property['address'])
-  // Construct the URL path, conditionally adding the hyphen between addr and mlsNumber
-  const seoUrlPath =
-    (addr ? `${addr}-${mlsNumber}` : mlsNumber) + (boardId ? `-${boardId}` : '')
+  // Strip the "!scrubbed!" placeholder from address fields before building
+  // the URL so scrubbed listings don't leak the placeholder into the slug.
+  const scrub = (v?: string) => {
+    const cleaned = sanitizeScrubbed(v || '').trim()
+    return cleaned || undefined
+  }
+  const cleanedAddress = {
+    streetNumber: scrub((address as Property['address']).streetNumber),
+    streetName: scrub((address as Property['address']).streetName),
+    streetSuffix: scrub((address as Property['address']).streetSuffix),
+    city: scrub((address as Property['address']).city),
+    state: scrub((address as Property['address']).state),
+    zip: scrub((address as Property['address']).zip),
+  }
 
+  const baseUrl = generatePropertyUrl(cleanedAddress, mlsNumber)
   const queryString = startImage ? `?startImage=${startImage}` : ''
 
-  return `${routes.listing}/${seoUrlPath}${queryString}`
+  return `${baseUrl}${queryString}`
 }
 
 // TODO: remove hardcoded strings and map propertyType to constants

@@ -19,6 +19,7 @@ import FavoriteIcon from '@mui/icons-material/Favorite'
 
 import { useSiteUser } from 'providers/SiteUserProvider'
 import LoginDialog from 'components/auth/LoginDialog'
+import { generatePropertyUrl } from 'utils/propertyUrls'
 
 export default function FavoritesPage() {
   const { isLoggedIn, user, removeFavorite } = useSiteUser()
@@ -59,7 +60,10 @@ export default function FavoritesPage() {
               <Card variant="outlined" sx={{ height: '100%' }}>
                 <CardMedia
                   component="a"
-                  href={`/listing/${fav.mlsNumber}`}
+                  href={generatePropertyUrl(
+                    { street: fav.address },
+                    fav.mlsNumber
+                  )}
                   sx={{
                     height: 180,
                     bgcolor: '#f0f0f0',

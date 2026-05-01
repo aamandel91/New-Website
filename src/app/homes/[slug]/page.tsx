@@ -170,6 +170,7 @@ export async function generateMetadata(props: HomesPageProps): Promise<Metadata>
       title,
       description,
       type: 'website',
+      url: `${tenant.brand.siteUrl}/homes/${params.slug}`,
       images: [{ url: ogImageUrl, width: 1200, height: 630, alt: title }],
     },
     twitter: { card: 'summary_large_image', title, description, images: [ogImageUrl] },

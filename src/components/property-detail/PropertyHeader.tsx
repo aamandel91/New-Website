@@ -199,6 +199,10 @@ const PropertyHeader: React.FC<PropertyHeaderProps> = ({
   const pathname = usePathname()
 
   const handleStartOffer = () => {
+    // The /offer subroute lives under /listing/[slug]/offer and expects a
+    // legacy /listing/ slug with MLS in the trailing segment. The parent
+    // /listing/[slug] is now a 301 redirect to /homes/[slug] (address-only,
+    // no MLS), so this handler can only run from a true /listing/ pathname.
     const slug = pathname.split('/listing/')[1]
     if (slug) {
       window.location.href = `/listing/${slug}/offer`

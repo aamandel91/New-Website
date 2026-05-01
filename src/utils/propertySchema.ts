@@ -1,3 +1,5 @@
+import { generatePropertyUrl } from './propertyUrls'
+
 // Uses normalized property fields from propertyDataMapper
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Property = any
@@ -157,7 +159,7 @@ export function generatePropertyBreadcrumbJsonLd(
     '@type': 'ListItem',
     position: items.length + 1,
     name: address?.street || `Property ${property.mlsNumber}`,
-    item: `${baseUrl}/listing/${property.mlsNumber}`,
+    item: `${baseUrl}${generatePropertyUrl(address || {}, property.mlsNumber)}`,
   })
 
   return {

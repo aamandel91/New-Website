@@ -76,7 +76,7 @@ export const toGoogleRealEstateFeed = (
   return properties.map((property) => ({
     'Property ID': property.listing_id,
     'Property name': property.name,
-    'Final URL': `${baseUrl}/listing/${property.listing_id}`,
+    'Final URL': `${baseUrl}${property.url}`,
     'Image URL': property.image_url,
     'Destination name': `${property.city}, ${property.region}`,
     Price: `${property.price} ${property.currency}`,
@@ -99,7 +99,7 @@ export const toGooglePageFeed = (
   baseUrl: string
 ): GooglePageFeedItem[] => {
   return properties.map((property) => ({
-    'Page URL': `${baseUrl}/listing/${property.listing_id}`,
+    'Page URL': `${baseUrl}${property.url}`,
     'Custom label': generateCustomLabel(property)
   }))
 }
@@ -122,7 +122,7 @@ export const toFacebookCatalog = (
         : 'in stock',
     condition: 'new',
     price: `${property.price} ${property.currency}`,
-    link: `${baseUrl}/listing/${property.listing_id}`,
+    link: `${baseUrl}${property.url}`,
     image_link: property.image_url,
     brand: brandName,
     google_product_category: '2271', // Property > Residential Properties
@@ -219,7 +219,7 @@ export const toXML = (
       <g:id>${escapeXml(property.listing_id)}</g:id>
       <title>${escapeXml(property.name)}</title>
       <description>${escapeXml(generateDescription(property))}</description>
-      <link>${escapeXml(`${baseUrl}/listing/${property.listing_id}`)}</link>
+      <link>${escapeXml(`${baseUrl}${property.url}`)}</link>
       <g:image_link>${escapeXml(property.image_url)}</g:image_link>
       <g:price>${property.price} ${property.currency}</g:price>
       <g:availability>${property.availability === 'sold' || property.availability === 'pending' ? 'out of stock' : 'in stock'}</g:availability>
