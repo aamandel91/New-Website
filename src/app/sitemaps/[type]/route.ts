@@ -131,6 +131,18 @@ async function generateSold(): Promise<SitemapEntry[]> {
 
 async function generatePages(): Promise<SitemapEntry[]> {
   const entries: SitemapEntry[] = []
+
+  // Global property-type aggregate pages: /condos, /single-family-homes, etc.
+  const now = new Date().toISOString()
+  for (const st of subTypes) {
+    entries.push({
+      url: `${BASE_URL}/${st.slug}`,
+      lastmod: now,
+      changefreq: 'monthly',
+      priority: 0.7,
+    })
+  }
+
   try {
     for (const county of targetCounties) {
       const cities = await fetchCountyCities(county)

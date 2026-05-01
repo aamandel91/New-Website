@@ -1,4 +1,4 @@
-import { subTypes, primaryCity } from '@configs/page-generation'
+import { subTypes } from '@configs/page-generation'
 
 /** South Florida cities served */
 const cities = [
@@ -55,8 +55,6 @@ function cityToSlug(city: string) {
   return city.toLowerCase().replace(/\s+/g, '-')
 }
 
-const primaryCitySlug = primaryCity.toLowerCase().replace(/\s+/g, '-')
-
 export const cityItems = cities.map((city) => ({
   label: city,
   href: `/${cityToSlug(city)}`,
@@ -69,5 +67,5 @@ export const countyItems = counties.map((c) => ({
 
 export const propertyTypeItems = subTypes.map((st) => ({
   label: st.label,
-  href: `/${primaryCitySlug}/${st.slug}`,
+  href: `/${st.slug}`,
 }))

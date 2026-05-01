@@ -178,6 +178,7 @@ export type CleanPageType =
   | 'city-schools'
   | 'city-zip'
   | 'city-neighborhood'
+  | 'property-type'
 
 export interface ParsedCleanSlug {
   pageType: CleanPageType
@@ -190,6 +191,10 @@ export interface ParsedCleanSlug {
 /**
  * Parse a clean URL slug array into structured params.
  *
+ * Detection logic for 1-segment slugs:
+ *   - matches subTypes slug → global property-type aggregate page
+ *   - otherwise → city page
+ *
  * Detection logic for 2-segment slugs:
  *   - 5 digits → zip code
  *   - matches subTypes slug → sub-type
@@ -197,6 +202,7 @@ export interface ParsedCleanSlug {
  *   - otherwise → neighborhood
  *
  * Supported patterns:
+ *   [condos]                         → global property-type page
  *   [fort-lauderdale]                → city page
  *   [fort-lauderdale, condos]        → city + subtype
  *   [fort-lauderdale, 33301]         → city + zip
@@ -209,8 +215,14 @@ export function parseCleanSlug(slugs: string[]): ParsedCleanSlug | null {
   const city = slugs[0]
   if (!city) return null
 
-  // City-only page
+  // Single-segment: property-type aggregate page if it matches a known
+  // subtype slug; otherwise treated as a city page. Subtype slugs are
+  // hyphenated multi-word terms (condos, single-family-homes, etc.) and do
+  // not collide with any city name in the active markets config.
   if (slugs.length === 1) {
+    if (getSubTypeBySlug(city)) {
+      return { pageType: 'property-type', city: '', subType: city }
+    }
     return { pageType: 'city', city }
   }
 

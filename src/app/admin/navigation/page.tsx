@@ -1,5 +1,21 @@
 'use client'
 
+/**
+ * Custom navigation items editor.
+ *
+ * This admin page edits database-stored custom nav items: external links,
+ * mega menus, dropdowns, banner alerts, etc.
+ *
+ * It does NOT edit:
+ * - The hardcoded property-type items (Condos, Single Family Homes, etc)
+ *   — those are auto-generated from src/configs/defaults/page-generation.ts
+ *   in src/components/templates/components/Header/navData.ts
+ * - The hardcoded city items (Boca Raton, Fort Lauderdale, etc)
+ *   — those are the `cities` array in navData.ts
+ *
+ * If you need to change a hardcoded nav item, edit navData.ts directly.
+ */
+
 import React, { useEffect, useState } from 'react'
 import {
   Box,

@@ -44,6 +44,15 @@ function buildBreadcrumbs(
     { name: 'Florida', url: `${baseUrl}/search/gallery` },
   ]
 
+  if (parsed.pageType === 'property-type' && parsed.subType) {
+    const stConfig = getSubTypeBySlug(parsed.subType)
+    items.push({
+      name: stConfig?.label || slugToDisplayName(parsed.subType),
+      url: `${baseUrl}/${parsed.subType}`,
+    })
+    return items
+  }
+
   if (cityName) {
     items.push({ name: cityName, url: `${baseUrl}/${parsed.city}` })
   }
@@ -89,6 +98,26 @@ export async function generateMetadata(props: CleanPageProps): Promise<Metadata>
   }
 
   switch (parsed.pageType) {
+    case 'property-type': {
+      const stConfig = getSubTypeBySlug(parsed.subType!)
+      if (!stConfig) return {}
+      const marketLabel = activeMarkets[0]?.label ?? 'South Florida'
+      const title = `${stConfig.label} for Sale in ${marketLabel} (${new Date().getFullYear()})`
+      const description = `Browse ${stConfig.label.toLowerCase()} for sale across ${marketLabel}. View photos, prices, and property details. Updated daily on ${tenant.brand.siteName}.`
+      const ogImageUrl = `${baseUrl}/api/og/city?slug=${encodeURIComponent(parsed.subType!)}`
+      return {
+        title,
+        description,
+        alternates: { canonical: `${baseUrl}/${parsed.subType}` },
+        openGraph: {
+          title,
+          description,
+          type: 'website',
+          images: [{ url: ogImageUrl, width: 1200, height: 630 }],
+        },
+        twitter: { card: 'summary_large_image', title, description, images: [ogImageUrl] },
+      }
+    }
     case 'city': {
       const count = await fetchListingCount(cityName)
       const pageScore = scoreAreaPage({ pageType: 'city', listingCount: count, hasCmsContent })
@@ -219,6 +248,8 @@ export default async function CleanCatchAllPage(props: CleanPageProps) {
   }
 
   switch (parsed.pageType) {
+    case 'property-type':
+      return renderPropertyTypePage(parsed, baseUrl)
     case 'city':
       return renderCityPage(parsed, cityName, baseUrl, hasCmsContent)
     case 'city-subtype':
@@ -232,6 +263,128 @@ export default async function CleanCatchAllPage(props: CleanPageProps) {
     default:
       notFound()
   }
+}
+
+// ---------------------------------------------------------------------------
+// Property-Type (Global Aggregate) Page
+// ---------------------------------------------------------------------------
+
+async function renderPropertyTypePage(parsed: ParsedCleanSlug, baseUrl: string) {
+  const stConfig = getSubTypeBySlug(parsed.subType!)
+  if (!stConfig) notFound()
+
+  const marketLabel = activeMarkets[0]?.label ?? 'South Florida'
+  const countyNames = activeMarkets.flatMap((m) => m.counties)
+  const countyList = countyNames.length > 0
+    ? `${countyNames.slice(0, -1).join(', ')}${countyNames.length > 1 ? ', and ' : ''}${countyNames[countyNames.length - 1]} ${countyNames.length === 1 ? 'County' : 'Counties'}`
+    : marketLabel
+
+  const allCities: string[] = []
+  for (const market of activeMarkets) {
+    for (const cities of Object.values(market.citiesByCounty)) {
+      for (const city of cities) {
+        if (!allCities.includes(city.name)) allCities.push(city.name)
+      }
+    }
+  }
+
+  const breadcrumbItems = buildBreadcrumbs(parsed, '', baseUrl)
+
+  return (
+    <PageTemplate>
+      <StructuredData data={breadcrumbSchema(breadcrumbItems)} />
+      <Container maxWidth="lg" sx={{ py: 4 }}>
+        <Breadcrumbs sx={{ mb: 3 }}>
+          {breadcrumbItems.map((item, i) =>
+            i < breadcrumbItems.length - 1 ? (
+              <Link key={item.url} href={item.url} color="inherit">
+                {item.name}
+              </Link>
+            ) : (
+              <Typography key={item.url} color="text.primary">
+                {item.name}
+              </Typography>
+            )
+          )}
+        </Breadcrumbs>
+
+        <Box sx={{ mb: 4 }}>
+          <Typography variant="h3" component="h1" fontWeight="bold" gutterBottom>
+            {stConfig.label} for Sale in {marketLabel}
+          </Typography>
+          <Typography variant="body1" color="text.secondary">
+            Browse {stConfig.label.toLowerCase()} listings across {countyList}.
+          </Typography>
+        </Box>
+
+        {/* Property Listings — global, no city filter */}
+        <ListingsGrid propertyType={stConfig.propertyType || stConfig.label} limit={24} />
+
+        {/* Cities grid — internal links to per-city subtype pages */}
+        {allCities.length > 0 && (
+          <Box sx={{ mt: 5 }}>
+            <Typography variant="h5" component="h2" gutterBottom>
+              Find {stConfig.label} in
+            </Typography>
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+              {allCities.map((city) => (
+                <Chip
+                  key={city}
+                  label={city}
+                  component="a"
+                  href={generateCleanUrl(city, parsed.subType)}
+                  clickable
+                  variant="outlined"
+                />
+              ))}
+            </Box>
+          </Box>
+        )}
+
+        <Box sx={{ mt: 5, p: 3, bgcolor: 'grey.100', borderRadius: 2 }}>
+          <Typography variant="h6" gutterBottom>
+            Explore More
+          </Typography>
+          <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
+            {subTypes
+              .filter((st) => st.slug !== parsed.subType)
+              .slice(0, 12)
+              .map((st) => (
+                <Chip
+                  key={st.slug}
+                  label={st.label}
+                  component="a"
+                  href={`/${st.slug}`}
+                  clickable
+                  variant="outlined"
+                />
+              ))}
+          </Box>
+        </Box>
+      </Container>
+
+      <StructuredData
+        data={faqSchema([
+          {
+            question: `How many ${stConfig.label.toLowerCase()} are for sale in ${marketLabel}?`,
+            answer: `Inventory for ${stConfig.label.toLowerCase()} across ${marketLabel} changes daily. Browse our live listings on ${tenant.brand.siteName} to see all currently available ${stConfig.label.toLowerCase()}.`,
+          },
+          {
+            question: `What's the average price of ${stConfig.label.toLowerCase()} in ${marketLabel}?`,
+            answer: `${stConfig.label} prices vary widely by city and neighborhood across ${marketLabel}. Browse current listings on ${tenant.brand.siteName} for up-to-date pricing in your target area.`,
+          },
+          {
+            question: `Which cities have the most ${stConfig.label.toLowerCase()} available?`,
+            answer: `${stConfig.label} are available across all major cities in ${marketLabel}. Click any city above to see local inventory and pricing.`,
+          },
+          {
+            question: `How do I buy ${stConfig.label.toLowerCase()} in ${marketLabel}?`,
+            answer: `Buying ${stConfig.label.toLowerCase()} in ${marketLabel} typically takes 30-60 days from accepted offer to closing. ${tenant.brand.teamName} guides you through every step.`,
+          },
+        ])}
+      />
+    </PageTemplate>
+  )
 }
 
 // ---------------------------------------------------------------------------
