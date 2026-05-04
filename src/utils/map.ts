@@ -10,10 +10,10 @@ import { LngLat, LngLatBounds } from 'utils/lngLat'
 // 'utils/map' continue to work without changes.
 export { LngLat, LngLatBounds } from 'utils/lngLat'
 
-import { lighten } from '@mui/material'
+import { alpha, lighten } from '@mui/material'
 
 import apiConfig from '@configs/api'
-import { info, secondary } from '@configs/colors'
+import { error, info, secondary, success } from '@configs/colors'
 import mapConfig, { type MapStyle } from '@configs/map'
 import paramsConfig from '@configs/params'
 import routes from '@configs/routes'
@@ -188,7 +188,8 @@ export const getMapUrl = ({
   layout = 'map',
   filters,
   query,
-  page
+  page,
+  polygonsParam
 }: {
   center: LngLat
   zoom: number
@@ -197,6 +198,8 @@ export const getMapUrl = ({
   // synthetic query params used by page but not the API
   query?: string | null
   page?: number | string | null
+  // Encoded polygons (multi-zone) JSON string, included when non-empty.
+  polygonsParam?: string | null
 }) => {
   const base = `${routes[layout]}?${formatCoords(center)}&z=${String(zoom).slice(0, 8)}`
   const nonEmptyFilters = getNonDefaultFilters(filters || {})
@@ -205,7 +208,8 @@ export const getMapUrl = ({
     {
       ...nonEmptyFilters,
       page: Number(page) > 1 ? Number(page) : null,
-      q: query
+      q: query,
+      polygons: polygonsParam || null
     },
     {
       arrayFormat: 'none',
@@ -420,3 +424,269 @@ export const addPolygon = (map: MapboxMap, polygon: Position[]) => {
     })
   }
 }
+
+// ─── multi-polygon helpers ──────────────────────────────────────────────
+
+export type PolygonZoneType = 'include' | 'exclude'
+
+export type PolygonZone = {
+  coords: Position[]
+  type: PolygonZoneType
+}
+
+export const includeColor = success
+export const excludeColor = error
+
+// Standard ray-casting point-in-polygon (even-odd rule).
+// Polygon coords are [lng, lat] pairs. Works for self-intersecting shapes.
+export const pointInPolygon = (
+  lng: number,
+  lat: number,
+  polygon: Position[]
+): boolean => {
+  let inside = false
+  for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
+    const [xi, yi] = polygon[i]
+    const [xj, yj] = polygon[j]
+    const intersect =
+      yi > lat !== yj > lat &&
+      lng < ((xj - xi) * (lat - yi)) / (yj - yi || Number.MIN_VALUE) + xi
+    if (intersect) inside = !inside
+  }
+  return inside
+}
+
+export const isPropertyExcluded = (
+  lat: number,
+  lng: number,
+  excludeZones: PolygonZone[]
+): boolean => {
+  for (const zone of excludeZones) {
+    if (pointInPolygon(lng, lat, zone.coords)) return true
+  }
+  return false
+}
+
+const ZONES_SOURCE_ID = 'polygon-zones'
+const ZONES_INCLUDE_FILL = 'polygon-zones-include-fill'
+const ZONES_INCLUDE_LINE = 'polygon-zones-include-line'
+const ZONES_EXCLUDE_FILL = 'polygon-zones-exclude-fill'
+const ZONES_EXCLUDE_LINE = 'polygon-zones-exclude-line'
+const ZONES_LABELS = 'polygon-zones-labels'
+const ZONES_HIGHLIGHT = 'polygon-zones-highlight'
+
+const polygonCentroid = (coords: Position[]): Position => {
+  let sx = 0
+  let sy = 0
+  for (const [x, y] of coords) {
+    sx += x
+    sy += y
+  }
+  const n = coords.length || 1
+  return [sx / n, sy / n]
+}
+
+export const removeZonesLayers = (map: MapboxMap) => {
+  for (const id of [
+    ZONES_INCLUDE_FILL,
+    ZONES_INCLUDE_LINE,
+    ZONES_EXCLUDE_FILL,
+    ZONES_EXCLUDE_LINE,
+    ZONES_LABELS,
+    ZONES_HIGHLIGHT
+  ]) {
+    try {
+      if (map.getLayer(id)) map.removeLayer(id)
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (_e) {
+      // ignore
+    }
+  }
+  try {
+    if (map.getSource(ZONES_SOURCE_ID)) map.removeSource(ZONES_SOURCE_ID)
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  } catch (_e) {
+    // ignore
+  }
+}
+
+export const renderZones = (
+  map: MapboxMap,
+  zones: PolygonZone[],
+  highlightIndex: number | null = null
+) => {
+  removeZonesLayers(map)
+  if (!zones.length) return
+
+  const features: Feature[] = zones.map((z, idx) => {
+    const ring =
+      z.coords.length &&
+      (z.coords[0][0] !== z.coords[z.coords.length - 1][0] ||
+        z.coords[0][1] !== z.coords[z.coords.length - 1][1])
+        ? [...z.coords, z.coords[0]]
+        : z.coords
+    const centroid = polygonCentroid(z.coords)
+    return {
+      type: 'Feature',
+      geometry: { type: 'Polygon', coordinates: [ring] },
+      properties: {
+        zoneType: z.type,
+        index: idx,
+        label: String(idx + 1),
+        centroidLng: centroid[0],
+        centroidLat: centroid[1]
+      }
+    }
+  })
+
+  map.addSource(ZONES_SOURCE_ID, {
+    type: 'geojson',
+    data: { type: 'FeatureCollection', features }
+  })
+
+  map.addLayer({
+    id: ZONES_INCLUDE_FILL,
+    type: 'fill',
+    source: ZONES_SOURCE_ID,
+    filter: ['==', ['get', 'zoneType'], 'include'],
+    paint: {
+      'fill-color': includeColor,
+      'fill-opacity': 0.2
+    }
+  })
+
+  map.addLayer({
+    id: ZONES_INCLUDE_LINE,
+    type: 'line',
+    source: ZONES_SOURCE_ID,
+    filter: ['==', ['get', 'zoneType'], 'include'],
+    paint: {
+      'line-color': alpha(includeColor, 0.7),
+      'line-width': 2
+    }
+  })
+
+  map.addLayer({
+    id: ZONES_EXCLUDE_FILL,
+    type: 'fill',
+    source: ZONES_SOURCE_ID,
+    filter: ['==', ['get', 'zoneType'], 'exclude'],
+    paint: {
+      'fill-color': excludeColor,
+      'fill-opacity': 0.2
+    }
+  })
+
+  map.addLayer({
+    id: ZONES_EXCLUDE_LINE,
+    type: 'line',
+    source: ZONES_SOURCE_ID,
+    filter: ['==', ['get', 'zoneType'], 'exclude'],
+    paint: {
+      'line-color': alpha(excludeColor, 0.7),
+      'line-width': 2
+    }
+  })
+
+  // Numeric labels at polygon centroid
+  const labelFeatures: Feature[] = zones.map((z, idx) => ({
+    type: 'Feature',
+    geometry: { type: 'Point', coordinates: polygonCentroid(z.coords) },
+    properties: {
+      label: String(idx + 1),
+      zoneType: z.type
+    }
+  }))
+
+  // Re-add as a separate source for labels (single FeatureCollection with point centroids)
+  // We piggyback on the same source by using a symbol layer with a centroid expression.
+  map.addLayer({
+    id: ZONES_LABELS,
+    type: 'symbol',
+    source: ZONES_SOURCE_ID,
+    layout: {
+      'text-field': ['get', 'label'],
+      'text-size': 14,
+      'text-allow-overlap': true,
+      'symbol-placement': 'point'
+    },
+    paint: {
+      'text-color': '#ffffff',
+      'text-halo-color': [
+        'case',
+        ['==', ['get', 'zoneType'], 'exclude'],
+        excludeColor,
+        includeColor
+      ],
+      'text-halo-width': 2
+    }
+  })
+
+  if (
+    highlightIndex !== null &&
+    highlightIndex >= 0 &&
+    highlightIndex < zones.length
+  ) {
+    map.addLayer({
+      id: ZONES_HIGHLIGHT,
+      type: 'line',
+      source: ZONES_SOURCE_ID,
+      filter: ['==', ['get', 'index'], highlightIndex],
+      paint: {
+        'line-color': '#000000',
+        'line-width': 4,
+        'line-opacity': 0.6
+      }
+    })
+  }
+
+  // unused features array (kept above for label feature derivation)
+  void labelFeatures
+}
+
+// ─── URL serialization for polygons ─────────────────────────────────────
+
+export const encodePolygons = (zones: PolygonZone[]): string => {
+  // Compact form: array of [type, [[lng,lat], ...]]
+  const compact = zones.map((z) => [z.type === 'exclude' ? 'x' : 'i', z.coords])
+  return JSON.stringify(compact)
+}
+
+export const decodePolygons = (raw: string | null | undefined): PolygonZone[] => {
+  if (!raw) return []
+  try {
+    const parsed = JSON.parse(raw)
+    if (!Array.isArray(parsed)) return []
+    const zones: PolygonZone[] = []
+    for (const item of parsed) {
+      // New compact form: ['i' | 'x', coords]
+      if (Array.isArray(item) && item.length === 2 && Array.isArray(item[1])) {
+        const [t, coords] = item
+        const type: PolygonZoneType =
+          t === 'x' || t === 'exclude' ? 'exclude' : 'include'
+        zones.push({ type, coords: coords as Position[] })
+        continue
+      }
+      // Object form: { type, coords }
+      if (item && typeof item === 'object' && Array.isArray(item.coords)) {
+        const type: PolygonZoneType =
+          item.type === 'exclude' ? 'exclude' : 'include'
+        zones.push({ type, coords: item.coords as Position[] })
+      }
+    }
+    return zones
+  } catch {
+    return []
+  }
+}
+
+// Backward-compat: convert a legacy single-polygon coord array to a single
+// inclusion zone. Returns [] if input is empty or invalid.
+export const polygonToZones = (
+  polygon: Position[] | null | undefined
+): PolygonZone[] => {
+  if (!polygon || !polygon.length) return []
+  return [{ type: 'include', coords: polygon }]
+}
+
+

@@ -38,9 +38,26 @@ export const getMapPolygon = (polygon: Position[]) => ({
   map: '[[' + polygon.map((p) => '[' + p.join(',') + ']').join(',') + ']]'
 })
 
-export const getPageParams = (pageNum: number = 1) => ({
+// Repliers' `map` param accepts an array of polygons (logical OR — listing
+// matches if it's inside any). Each polygon is a coordinate ring.
+export const getMapPolygons = (polygons: Position[][]) => {
+  if (!polygons.length) return getDefaultRectangle()
+  const rings = polygons.map(
+    (poly) => '[' + poly.map((p) => '[' + p.join(',') + ']').join(',') + ']'
+  )
+  return { map: '[' + rings.join(',') + ']' }
+}
+
+// pageNum: 1-based page index. bumpForExclusions: when client-side exclusion
+// filtering is active, request more listings per page so the post-filter
+// result count stays reasonable. Threshold 50 mirrors the spec.
+export const getPageParams = (
+  pageNum: number = 1,
+  bumpForExclusions = false
+) => ({
   pageNum,
-  resultsPerPage
+  resultsPerPage:
+    bumpForExclusions && resultsPerPage < 50 ? 60 : resultsPerPage
 })
 
 export const getNonDefaultFilters = (

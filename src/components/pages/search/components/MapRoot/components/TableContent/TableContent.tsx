@@ -24,7 +24,7 @@ import { type Property } from 'services/API'
 import {
   getDefaultRectangle,
   getListingFields,
-  getMapPolygon,
+  getMapPolygons,
   getMapRectangle,
   getPageParams
 } from 'services/Search'
@@ -32,6 +32,7 @@ import { useMapOptions } from 'providers/MapOptionsProvider'
 import { useSearch } from 'providers/SearchProvider'
 import useBreakpoints from 'hooks/useBreakpoints'
 import { formatEnglishPrice } from 'utils/formatters'
+import { isPropertyExcluded } from 'utils/map'
 import {
   slicePropertiesPerPage,
   toServerPage,
@@ -55,7 +56,7 @@ const TableContent = () => {
   const [serverProperties, setServerProperties] = useState<Property[]>([])
   const [clientProperties, setClientProperties] = useState<Property[]>([])
 
-  const { search, filters, polygon, list, loading, count, page, multiUnits } =
+  const { search, filters, polygons, list, loading, count, page, multiUnits } =
     useSearch()
 
   const pagesCount = Math.ceil(count / searchConfig.pageSize)
@@ -77,8 +78,11 @@ const TableContent = () => {
   const fetchListings = async () => {
     const { bounds } = position
 
-    const fetchBounds = polygon
-      ? getMapPolygon(polygon)
+    const includeZones = polygons.filter((z) => z.type === 'include')
+    const excludeZones = polygons.filter((z) => z.type === 'exclude')
+
+    const fetchBounds = includeZones.length
+      ? getMapPolygons(includeZones.map((z) => z.coords))
       : bounds
         ? getMapRectangle(bounds)
         : getDefaultRectangle()
@@ -87,15 +91,22 @@ const TableContent = () => {
       ...filters,
       ...fetchBounds,
       ...getListingFields(),
-      ...getPageParams(serverPage)
+      ...getPageParams(serverPage, excludeZones.length > 0)
     })
 
     if (!response) return
 
-    const { listings } = response
+    const filteredListings = excludeZones.length
+      ? response.listings.filter((listing) => {
+          const lat = listing.map?.latitude
+          const lng = listing.map?.longitude
+          if (typeof lat !== 'number' || typeof lng !== 'number') return true
+          return !isPropertyExcluded(lat, lng, excludeZones)
+        })
+      : response.listings
 
-    setServerProperties(listings)
-    setClientProperties(slicePropertiesPerPage(listings, clientPage))
+    setServerProperties(filteredListings)
+    setClientProperties(slicePropertiesPerPage(filteredListings, clientPage))
     scrollToTop()
   }
 

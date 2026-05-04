@@ -3,7 +3,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import dynamic from 'next/dynamic'
-import type { Position } from 'geojson'
 import type { LngLat, LngLatBounds } from 'utils/lngLat'
 
 import { Skeleton } from '@mui/material'
@@ -15,12 +14,20 @@ import {
   getDefaultRectangle,
   getListingFields,
   getMapPolygon,
+  getMapPolygons,
   getMapRectangle,
   getPageParams
 } from 'services/Search'
 import { type MapPosition, useMapOptions } from 'providers/MapOptionsProvider'
 import { useSearch } from 'providers/SearchProvider'
-import { getMapUrl } from 'utils/map'
+import { type PolygonZone } from 'utils/map'
+import {
+  decodePolygons,
+  encodePolygons,
+  getMapUrl,
+  isPropertyExcluded,
+  polygonToZones
+} from 'utils/map'
 import { updateWindowHistory } from 'utils/urls'
 import { trackSearch } from '@/utils/analytics'
 import { ssTrackEvent } from '@/utils/suresendTracking'
@@ -35,34 +42,99 @@ const MapRoot = dynamic(() => import('./components/MapRoot'), {
 const MapPageContent = () => {
   const searchParams = useSearchParams()
   const [mapLoaded, setMapLoaded] = useState(false)
-  const { search, save, filters, polygon } = useSearch()
+  const {
+    search,
+    save,
+    filters,
+    polygons,
+    setPolygons
+  } = useSearch()
   const { layout, position, setPosition } = useMapOptions()
 
   const query = searchParams.get('q')
   const page = searchParams.get('page')
 
+  // ── one-time URL → polygons hydration (handles legacy ?polygon= and new
+  // ?polygons= query params). The SearchProvider already accepts these via
+  // server-side props, but we also support client-side share/bookmark URLs
+  // that arrive after first paint.
+  const hydratedRef = useRef(false)
+  useEffect(() => {
+    if (hydratedRef.current) return
+    hydratedRef.current = true
+
+    if (polygons.length) return // already populated from server props
+
+    const polygonsRaw = searchParams.get('polygons')
+    if (polygonsRaw) {
+      const zones = decodePolygons(polygonsRaw)
+      if (zones.length) setPolygons(zones)
+      return
+    }
+
+    const legacyRaw = searchParams.get('polygon')
+    if (legacyRaw) {
+      try {
+        const coords = JSON.parse(legacyRaw)
+        if (Array.isArray(coords) && coords.length) {
+          setPolygons(polygonToZones(coords))
+        }
+      } catch {
+        // ignore malformed legacy polygon
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
   const fetchData = async (
     position: MapPosition,
     filters: Filters,
-    polygon: Position[] | null
+    polygons: PolygonZone[]
   ) => {
     const { zoom, bounds } = position
 
-    const fetchBounds = polygon
-      ? getMapPolygon(polygon)
+    const includeZones = polygons.filter((z) => z.type === 'include')
+    const excludeZones = polygons.filter((z) => z.type === 'exclude')
+
+    // Inclusions go to Repliers as the `map` param. With no inclusions,
+    // fall back to the visible bounds rectangle.
+    const fetchBounds = includeZones.length
+      ? getMapPolygons(includeZones.map((z) => z.coords))
       : bounds
         ? getMapRectangle(bounds)
         : getDefaultRectangle()
 
+    // Bump page size when exclusions are present so the visible (post-filter)
+    // result count doesn't get too sparse.
+    const pageParams = getPageParams(1, excludeZones.length > 0)
+
     const response = await search({
       ...filters,
       ...fetchBounds,
-      ...getPageParams(),
+      ...pageParams,
       ...getListingFields(),
       ...getClusterParams(zoom)
     })
 
     if (!response) return
+
+    // Apply client-side exclusion filter on the listings (and aggregated
+    // counts as a best-effort approximation — the backend `count` reflects
+    // pre-exclusion counts).
+    if (excludeZones.length) {
+      const filteredListings = response.listings.filter((listing) => {
+        const lat = listing.map?.latitude
+        const lng = listing.map?.longitude
+        if (typeof lat !== 'number' || typeof lng !== 'number') return true
+        return !isPropertyExcluded(lat, lng, excludeZones)
+      })
+      const hidden = response.listings.length - filteredListings.length
+      ;(response as any).listings = filteredListings
+      ;(response as any).count = Math.max(
+        0,
+        (response.count || 0) - hidden
+      )
+    }
 
     const { list, clusters, count } = save(response)
 
@@ -76,6 +148,9 @@ const MapPageContent = () => {
       propertyType: filters.propertyType,
     })
   }
+
+  // Backward-compat: silence unused import linter for getMapPolygon
+  void getMapPolygon
 
   const handleMapLoad = (
     bounds: LngLatBounds,
@@ -99,19 +174,30 @@ const MapPageContent = () => {
   useEffect(() => {
     if (!mapLoaded) return
     if (!center || !zoom) return
-    fetchData(position, filters, polygon)
-  }, [position, filters, polygon])
+    fetchData(position, filters, polygons)
+  }, [position, filters, polygons])
 
-  const prevParams = useRef(JSON.stringify({ center, zoom, filters }))
-  const curParams = JSON.stringify({ center, zoom, filters })
+  const polygonsParam = polygons.length ? encodePolygons(polygons) : null
+
+  const prevParams = useRef(
+    JSON.stringify({ center, zoom, filters, polygonsParam })
+  )
+  const curParams = JSON.stringify({ center, zoom, filters, polygonsParam })
   const shouldReplaceUrl = curParams !== prevParams.current
 
-  // WARN: every `center`|`zoom`|`filters` change should reset the page to 1
+  // WARN: every `center`|`zoom`|`filters`|polygons change should reset page to 1
   useEffect(() => {
     if (!center || !zoom) return
     if (!shouldReplaceUrl) return
     prevParams.current = curParams
-    const url = getMapUrl({ center, zoom, layout, filters, query })
+    const url = getMapUrl({
+      center,
+      zoom,
+      layout,
+      filters,
+      query,
+      polygonsParam
+    })
     updateWindowHistory(url)
   }, [shouldReplaceUrl])
 
@@ -120,9 +206,23 @@ const MapPageContent = () => {
   // but rather update the window history URL directly
   useEffect(() => {
     if (!center || !zoom) return
-    const url = getMapUrl({ center, zoom, layout, filters, query, page })
+    const url = getMapUrl({
+      center,
+      zoom,
+      layout,
+      filters,
+      query,
+      page,
+      polygonsParam
+    })
     updateWindowHistory(url)
   }, [layout])
+
+  // First inclusion zone — passed down for legacy single-polygon callers
+  // (e.g. the initial map.addPolygon paint). When polygons is empty, this is
+  // null.
+  const legacyPolygon =
+    polygons.find((z) => z.type === 'include')?.coords || null
 
   return (
     <>
@@ -130,7 +230,7 @@ const MapPageContent = () => {
       <MapRoot
         zoom={zoom}
         center={center}
-        polygon={polygon}
+        polygon={legacyPolygon}
         onMove={handleMapMove}
         onLoad={handleMapLoad}
       />

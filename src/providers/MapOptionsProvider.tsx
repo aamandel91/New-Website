@@ -23,7 +23,7 @@ export type MapPosition = {
 
 type MapLayout = 'map' | 'grid' | 'table' | 'gallery'
 
-type MapEditMode = 'draw' | 'highlight' | null
+type MapEditMode = 'draw' | 'draw-include' | 'draw-exclude' | 'highlight' | null
 
 type MapOptionsContextProps = {
   position: MapPosition

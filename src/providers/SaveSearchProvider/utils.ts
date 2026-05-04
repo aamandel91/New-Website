@@ -127,7 +127,14 @@ export const getRadiusDecimal = (position: MapPosition) => {
 }
 
 export const prepareParams = (params: CreateSearchParams, clientId: number) => {
-  const { filters, polygon, bounds, name, notificationFrequency } = params
+  const {
+    filters,
+    polygon,
+    polygons,
+    bounds,
+    name,
+    notificationFrequency
+  } = params
 
   const {
     listingType,
@@ -144,8 +151,22 @@ export const prepareParams = (params: CreateSearchParams, clientId: number) => {
 
   // SaveSearch specific parameters which differ from Search filters
 
-  // TODO: get rid of toRectangle(string conversion) and reparsing it back to JSON
-  const map = polygon ? [polygon] : JSON.parse(toRectangle(bounds!))
+  // Repliers' saved-search backend uses inclusions only for notification
+  // matching — exclusions are filtered client-side at view time. We persist
+  // the full polygon set in `excludePolygons` (custom field on the saved
+  // search payload) so the frontend can re-apply exclusions on viewing.
+  const includeZones = (polygons || []).filter((z) => z.type === 'include')
+  const excludeZones = (polygons || []).filter((z) => z.type === 'exclude')
+
+  let map: any[]
+  if (includeZones.length) {
+    map = includeZones.map((z) => z.coords)
+  } else if (polygon) {
+    // legacy single-polygon caller
+    map = [polygon]
+  } else {
+    map = JSON.parse(toRectangle(bounds!))
+  }
 
   const type = listingStatus === 'rent' ? 'lease' : 'sale'
   const soldNotifications = ['all', 'sold'].includes(listingStatus || '')
@@ -161,6 +182,9 @@ export const prepareParams = (params: CreateSearchParams, clientId: number) => {
 
   return removeFalsyItems({
     map,
+    excludePolygons: excludeZones.length
+      ? excludeZones.map((z) => z.coords)
+      : undefined,
     name,
     type,
     class: searchClasses,

@@ -6,11 +6,11 @@ import { useSearch } from 'providers/SearchProvider'
 
 const MapTitle = () => {
   const { title, setTitle, clearEditMode } = useMapOptions()
-  const { clearPolygon } = useSearch()
+  const { clearPolygons } = useSearch()
 
   const handleClear = () => {
     setTitle(null)
-    clearPolygon()
+    clearPolygons()
     clearEditMode()
   }
 

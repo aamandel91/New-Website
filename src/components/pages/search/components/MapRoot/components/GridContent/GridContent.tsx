@@ -14,7 +14,7 @@ import { type Property } from 'services/API'
 import {
   getDefaultRectangle,
   getListingFields,
-  getMapPolygon,
+  getMapPolygons,
   getMapRectangle,
   getPageParams,
   isClientSideSort
@@ -27,7 +27,7 @@ import {
   filterPriceReduced,
   sortPropertiesClientSide
 } from 'utils/properties'
-import { getMarkerName } from 'utils/map'
+import { getMarkerName, isPropertyExcluded } from 'utils/map'
 import {
   slicePropertiesPerPage,
   toServerPage,
@@ -65,7 +65,7 @@ const GridContent = ({
   const {
     search,
     filters,
-    polygon,
+    polygons,
     list,
     loading,
     count,
@@ -117,8 +117,11 @@ const GridContent = ({
   const fetchListings = async () => {
     const { bounds } = position
 
-    const fetchBounds = polygon
-      ? getMapPolygon(polygon)
+    const includeZones = polygons.filter((z) => z.type === 'include')
+    const excludeZones = polygons.filter((z) => z.type === 'exclude')
+
+    const fetchBounds = includeZones.length
+      ? getMapPolygons(includeZones.map((z) => z.coords))
       : bounds
         ? getMapRectangle(bounds)
         : getDefaultRectangle()
@@ -127,15 +130,22 @@ const GridContent = ({
       ...filters,
       ...fetchBounds,
       ...getListingFields(),
-      ...getPageParams(serverPage)
+      ...getPageParams(serverPage, excludeZones.length > 0)
     })
 
     if (!response) return
 
-    const { listings } = response
+    const filteredListings = excludeZones.length
+      ? response.listings.filter((listing) => {
+          const lat = listing.map?.latitude
+          const lng = listing.map?.longitude
+          if (typeof lat !== 'number' || typeof lng !== 'number') return true
+          return !isPropertyExcluded(lat, lng, excludeZones)
+        })
+      : response.listings
 
-    setServerProperties(listings)
-    setClientProperties(slicePropertiesPerPage(listings, clientPage))
+    setServerProperties(filteredListings)
+    setClientProperties(slicePropertiesPerPage(filteredListings, clientPage))
     scrollToTop()
   }
 

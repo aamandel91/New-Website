@@ -10,6 +10,7 @@ export {
   getDefaultRectangle,
   getListingFields,
   getMapPolygon,
+  getMapPolygons,
   getMapRectangle,
   getNonDefaultFilters,
   getPageParams

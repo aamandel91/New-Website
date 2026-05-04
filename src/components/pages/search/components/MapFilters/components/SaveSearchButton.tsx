@@ -14,7 +14,8 @@ const SaveSearchButton = ({ size }: { size: 'medium' | 'small' }) => {
   const { logged } = useUser()
   const clientSide = useClientSide()
   const { loading } = useSaveSearch()
-  const { count, polygon } = useSearch()
+  const { count, polygons } = useSearch()
+  const hasPolygons = polygons.length > 0
   const { showDialog: showLogin } = useDialog('auth')
   const { showDialog: showConfirmation } = useDialog('save-search')
   const { layout, setEditMode, clearEditMode } = useMapOptions()
@@ -25,16 +26,16 @@ const SaveSearchButton = ({ size }: { size: 'medium' | 'small' }) => {
   }
 
   const highlightSearchArea = () => {
-    if (!polygon) setEditMode('highlight')
+    if (!hasPolygons) setEditMode('highlight')
   }
 
   const hideSearchAreaHighlighting = () => {
-    if (polygon) setEditMode('draw')
+    if (hasPolygons) setEditMode(null)
     else clearEditMode()
   }
 
-  const place = polygon
-    ? ' inside the area. Try to edit it.'
+  const place = hasPolygons
+    ? ' inside your search areas. Try editing the polygons.'
     : layout === 'map'
       ? ' on screen. Try to zoom in.'
       : '. Tighten your search filters.' // layout === 'grid

@@ -1,15 +1,29 @@
-import { lighten } from '@mui/material'
-
-import { info as mainColor } from '@configs/colors'
+import { error, success } from '@configs/colors'
 
 const whiteColor = '#fff'
-const lightColor = lighten(mainColor, 0.5)
-const fillOpacity = 0.25
+const fillOpacity = 0.2
+const strokeOpacityHex = 'B3' // ~70% alpha as hex suffix
 
-const lineWidth = 1.5
-
+const lineWidth = 1.8
 const pointRadius = 7
 const midpointRadius = 5
+
+// Shape color is determined per-feature by `properties.zoneType`. `case`
+// expressions let MapboxDraw render include zones in green and exclude
+// zones in red within the same draw layer.
+const fillColor: any = [
+  'case',
+  ['==', ['get', 'user_zoneType'], 'exclude'],
+  error,
+  success
+]
+
+const lineColor: any = [
+  'case',
+  ['==', ['get', 'user_zoneType'], 'exclude'],
+  error,
+  success
+]
 
 const customStyles = [
   {
@@ -22,8 +36,8 @@ const customStyles = [
       ['!=', 'mode', 'static']
     ],
     paint: {
-      'fill-color': mainColor,
-      'fill-outline-color': mainColor,
+      'fill-color': fillColor,
+      'fill-outline-color': fillColor,
       'fill-opacity': fillOpacity
     }
   },
@@ -32,9 +46,9 @@ const customStyles = [
     type: 'fill',
     filter: ['all', ['==', 'active', 'true'], ['==', '$type', 'Polygon']],
     paint: {
-      'fill-color': lightColor,
-      'fill-outline-color': lightColor,
-      'fill-opacity': fillOpacity
+      'fill-color': fillColor,
+      'fill-outline-color': fillColor,
+      'fill-opacity': fillOpacity + 0.05
     }
   },
   {
@@ -51,8 +65,9 @@ const customStyles = [
       'line-join': 'round'
     },
     paint: {
-      'line-color': mainColor,
-      'line-width': lineWidth
+      'line-color': lineColor,
+      'line-width': lineWidth,
+      'line-opacity': 0.7
     }
   },
   {
@@ -64,8 +79,9 @@ const customStyles = [
       'line-join': 'round'
     },
     paint: {
-      'line-color': mainColor,
-      'line-width': lineWidth
+      'line-color': lineColor,
+      'line-width': lineWidth,
+      'line-opacity': 0.9
     }
   },
   {
@@ -77,7 +93,7 @@ const customStyles = [
       'line-join': 'round'
     },
     paint: {
-      'line-color': mainColor,
+      'line-color': lineColor,
       'line-width': lineWidth
     }
   },
@@ -87,7 +103,7 @@ const customStyles = [
     filter: ['all', ['==', '$type', 'Point'], ['==', 'meta', 'midpoint']],
     paint: {
       'circle-radius': 5,
-      'circle-color': mainColor
+      'circle-color': lineColor
     }
   },
   {
@@ -110,7 +126,7 @@ const customStyles = [
     ],
     paint: {
       'circle-radius': pointRadius,
-      'circle-color': mainColor
+      'circle-color': lineColor
     }
   },
   {
@@ -155,7 +171,7 @@ const customStyles = [
     ],
     paint: {
       'circle-radius': midpointRadius - lineWidth,
-      'circle-color': mainColor
+      'circle-color': lineColor
     }
   },
   {
@@ -183,9 +199,12 @@ const customStyles = [
     ],
     paint: {
       'circle-radius': pointRadius - lineWidth,
-      'circle-color': mainColor
+      'circle-color': lineColor
     }
   }
 ]
+
+// `strokeOpacityHex` retained for callers that want a fixed alpha-suffixed hex.
+void strokeOpacityHex
 
 export default customStyles

@@ -850,6 +850,10 @@ export interface ApiSavedSearchCreateRequest {
   class: ApiClass[]
 
   map?: [number, number][][]
+  // Exclusion polygons stored on the saved search payload. Repliers' backend
+  // ignores this field for notification matching; the frontend re-applies
+  // exclusion filtering when the user views the saved search results.
+  excludePolygons?: [number, number][][]
   name?: string
   streetNumbers?: Array<string>
   streetNames?: Array<string>

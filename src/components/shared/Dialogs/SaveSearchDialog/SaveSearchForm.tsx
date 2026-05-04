@@ -60,7 +60,9 @@ const SaveSearchForm = ({
   onCancel?: () => void
 }) => {
   const { editId, list, processing, createSearch, editSearch } = useSaveSearch()
-  const { filters, polygon } = useSearch()
+  const { filters, polygons } = useSearch()
+  const firstIncludeCoords =
+    polygons.find((z) => z.type === 'include')?.coords || null
   const { position } = useMapOptions()
   const { bounds } = position
 
@@ -102,7 +104,9 @@ const SaveSearchForm = ({
       await createSearch({
         name,
         filters,
-        ...(polygon ? { polygon } : { bounds }),
+        // Always pass the full multi-zone payload when present so
+        // exclusion polygons are preserved in the saved search.
+        ...(polygons.length ? { polygons } : { bounds }),
         notificationFrequency,
         priceChangeNotifications,
         soldNotifications
@@ -142,8 +146,8 @@ const SaveSearchForm = ({
 
   useEffect(() => {
     if (!editId) {
-      if (polygon) {
-        const polygonBounds = getPositionBounds(polygon)
+      if (firstIncludeCoords) {
+        const polygonBounds = getPositionBounds(firstIncludeCoords)
         const polygonPosition: MapPosition = {
           center: polygonBounds.getCenter(),
           bounds: polygonBounds,

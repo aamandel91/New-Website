@@ -6,15 +6,23 @@ import {
   type ApiSavedSearchUpdateRequest
 } from 'services/API'
 import type { Filters } from 'services/Search'
+import {
+  type PolygonZone,
+  type PolygonZoneType
+} from 'utils/map'
 
 import { type notifications } from './constants'
 
 export type NotificationFrequency = (typeof notifications)[number]
 
+export type { PolygonZone, PolygonZoneType }
+
 export type CreateSearchParams = {
   name?: string
   bounds?: LngLatBounds
+  // legacy single-polygon (treated as a single 'include' zone)
   polygon?: Position[]
+  polygons?: PolygonZone[]
   filters?: Filters
   notificationFrequency?: NotificationFrequency
   priceChangeNotifications?: boolean
@@ -30,6 +38,7 @@ export type SaveSearchContextType = {
     bounds,
     filters,
     polygon,
+    polygons,
     notificationFrequency
   }: CreateSearchParams) => Promise<void>
   editSearch: (id: number, params: ApiSavedSearchUpdateRequest) => void

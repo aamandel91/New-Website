@@ -13,6 +13,7 @@ import { defaultFilters } from '@configs/filters'
 import { type ApiQueryResponse, type Property } from 'services/API'
 import SearchService, { type Filters } from 'services/Search'
 import { type KeywordParseResult } from 'utils/keywordSearch'
+import { type PolygonZone, polygonToZones } from 'utils/map'
 import { sortPropertyScoredImages } from 'utils/properties'
 
 import { type SavedResponse, type SearchContextType } from './types'
@@ -31,10 +32,12 @@ const emptySavedResponse = {
 const SearchProvider = ({
   filters,
   polygon,
+  polygons,
   children
 }: {
   filters?: Filters
   polygon?: Position[]
+  polygons?: PolygonZone[]
   children?: React.ReactNode
 }) => {
   const [loading, setLoading] = useState(false)
@@ -43,9 +46,12 @@ const SearchProvider = ({
 
   const [searchFilters, setFilters] = useState(filters || defaultFilters)
 
-  const [searchPolygon, setPolygon] = useState<Position[] | null>(
-    polygon || null
-  )
+  const initialZones: PolygonZone[] = polygons?.length
+    ? polygons
+    : polygonToZones(polygon)
+
+  const [searchPolygons, setSearchPolygons] =
+    useState<PolygonZone[]>(initialZones)
 
   const [keywordFilter, setKeywordFilter] =
     useState<KeywordParseResult | null>(null)
@@ -74,7 +80,24 @@ const SearchProvider = ({
 
   const resetFilters = () => setFilters(defaultFilters)
 
-  const clearPolygon = () => setPolygon(null)
+  // Multi-polygon ops
+  const setPolygons = (zones: PolygonZone[]) => setSearchPolygons(zones)
+  const addPolygonZone = (zone: PolygonZone) =>
+    setSearchPolygons((prev) => [...prev, zone])
+  const removePolygonZone = (index: number) =>
+    setSearchPolygons((prev) => prev.filter((_z, i) => i !== index))
+  const clearPolygons = () => setSearchPolygons([])
+
+  // Backward-compat single-polygon ops: replace ALL zones with one inclusion
+  // shape (matches old single-polygon semantics for callers that haven't
+  // migrated to the multi-zone API yet).
+  const setPolygon = (coords: Position[]) =>
+    setSearchPolygons([{ type: 'include', coords }])
+  const clearPolygon = () => setSearchPolygons([])
+
+  // Derived: legacy `polygon` is the first inclusion zone's coords (if any).
+  const legacyPolygon =
+    searchPolygons.find((z) => z.type === 'include')?.coords || null
 
   const save = (response: ApiQueryResponse) => {
     setLoading(true)
@@ -127,16 +150,21 @@ const SearchProvider = ({
       search,
       save,
       ...saved, // destructured saved object shorthands
-      polygon: searchPolygon,
+      polygon: legacyPolygon,
       setPolygon,
       clearPolygon,
+      polygons: searchPolygons,
+      setPolygons,
+      addPolygonZone,
+      removePolygonZone,
+      clearPolygons,
       multiUnits,
       saveMultiUnits,
       clearMultiUnits: () => saveMultiUnits([]),
       keywordFilter,
       setKeywordFilter
     }),
-    [searchFilters, searchPolygon, loading, saved, multiUnits, keywordFilter]
+    [searchFilters, searchPolygons, loading, saved, multiUnits, keywordFilter]
   )
 
   return (

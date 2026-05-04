@@ -9,7 +9,7 @@ import { DialogCloseButton } from '@shared/Dialogs/components'
 
 import SearchService, {
   type Filters,
-  getMapPolygon,
+  getMapPolygons,
   getMapRectangle
 } from 'services/Search'
 import { useDialog } from 'providers/DialogProvider'
@@ -36,7 +36,10 @@ const AdvancedFiltersForm = ({
 }) => {
   const [tab, setTab] = useState('advanced')
   const { position } = useMapOptions()
-  const { filters, polygon, setFilters, resetFilters } = useSearch()
+  const { filters, polygons, setFilters, resetFilters } = useSearch()
+  const includeCoords = polygons
+    .filter((z) => z.type === 'include')
+    .map((z) => z.coords)
 
   const intialState = {
     ...defaultAdvancedFilters,
@@ -80,7 +83,9 @@ const AdvancedFiltersForm = ({
       ...requestFilters,
       ...dialogState,
       aggregates: 'listPrice',
-      ...(polygon ? getMapPolygon(polygon) : getMapRectangle(bounds))
+      ...(includeCoords.length
+        ? getMapPolygons(includeCoords)
+        : getMapRectangle(bounds))
     })
     if (!response) return
 
@@ -95,7 +100,9 @@ const AdvancedFiltersForm = ({
     const response2 = await SearchService.fetch({
       ...filters,
       ...dialogState,
-      ...(polygon ? getMapPolygon(polygon) : getMapRectangle(bounds))
+      ...(includeCoords.length
+        ? getMapPolygons(includeCoords)
+        : getMapRectangle(bounds))
     })
     if (response2) setCount(response2.count)
   }

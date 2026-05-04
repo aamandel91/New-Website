@@ -13,6 +13,7 @@ import { type Filters } from 'services/Search'
 import AiSearchProvider from 'providers/AiSearchProvider'
 import MapOptionsProvider from 'providers/MapOptionsProvider'
 import SearchProvider from 'providers/SearchProvider'
+import { type PolygonZone } from 'utils/map'
 
 import { type Params, type SearchParams } from './_types'
 import {
@@ -104,11 +105,24 @@ const MapPage = async (props: {
   let position: any | undefined
   let filters: Filters | undefined
   let polygon: Position[] | undefined
+  let polygons: PolygonZone[] | undefined
 
   if (searchId) {
     const savedSearch = await APISaveSearch.fetch(searchId)
     const { name, map } = savedSearch
     polygon = map[0]
+
+    // Reassemble multi-zone polygons from the saved search payload:
+    // every entry in `map` is an inclusion zone, plus any exclusion zones
+    // persisted alongside via the `excludePolygons` field.
+    const includes: PolygonZone[] = (map || []).map((coords: any) => ({
+      type: 'include',
+      coords
+    }))
+    const excludes: PolygonZone[] = (
+      (savedSearch as any).excludePolygons || []
+    ).map((coords: any) => ({ type: 'exclude', coords }))
+    polygons = [...includes, ...excludes]
 
     title = name // use saved search name as map title (show special header)
     filters = getFiltersFromSavedSearch(savedSearch)
@@ -133,7 +147,7 @@ const MapPage = async (props: {
         layout={layout}
         style={style}
       >
-        <SearchProvider filters={filters} polygon={polygon}>
+        <SearchProvider filters={filters} polygon={polygon} polygons={polygons}>
           <AiSearchProvider image={aiImage} feature={aiFeature}>
             <MapPageContent />
           </AiSearchProvider>

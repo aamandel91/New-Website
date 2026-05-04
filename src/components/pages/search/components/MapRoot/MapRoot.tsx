@@ -33,7 +33,7 @@ import { useUser } from 'providers/UserProvider'
 import useBreakpoints from 'hooks/useBreakpoints'
 import useIntersectionObserver from 'hooks/useIntersectionObserver'
 import { getDefaultBounds, getMapStyleUrl } from 'utils/map'
-import { addPolygon, removePolygon } from 'utils/map'
+import { addPolygon, removePolygon, removeZonesLayers, renderZones } from 'utils/map'
 import { getSeoUrl } from 'utils/properties'
 
 import {
@@ -49,6 +49,7 @@ import {
   SaveSearchCanvas,
   TableContent
 } from './components'
+import PolygonsPanel from './components/PolygonsPanel'
 
 const MapDrawButton = dynamic(() => import('./components/MapDrawButton'), {
   ssr: false,
@@ -71,6 +72,7 @@ const MapRoot = ({ zoom, center, polygon, onMove, onLoad }: MapRootProps) => {
   const features = useFeatures()
   const router = useRouter()
   const [mapVisible, mapContainerRef] = useIntersectionObserver(0)
+  const [highlightIndex, setHighlightIndex] = useState<number | null>(null)
 
   const [showDrawer, setShowDrawer] = useState(false)
 
@@ -79,12 +81,13 @@ const MapRoot = ({ zoom, center, polygon, onMove, onLoad }: MapRootProps) => {
     loading,
     clusters,
     multiUnits,
+    polygons,
     saveMultiUnits,
     clearMultiUnits
   } = useSearch()
 
   const { mobile, tablet } = useBreakpoints()
-  const { layout, style, setMapRef } = useMapOptions()
+  const { layout, style, editMode, setMapRef } = useMapOptions()
   const multiUnitsRef = useRef(multiUnits)
   const { logged } = useUser()
 
@@ -270,11 +273,31 @@ const MapRoot = ({ zoom, center, polygon, onMove, onLoad }: MapRootProps) => {
     MapService.map?.setStyle(getMapStyleUrl(style))
   }, [style])
 
+  // Render multi-polygon zone overlays when not in draw mode (mapbox-draw owns
+  // its own layers while drawing).
   useEffect(() => {
-    if (MapService.map && !polygon) {
-      removePolygon(MapService.map)
+    const map = MapService.map
+    if (!map) return
+    const isDrawing =
+      editMode === 'draw' ||
+      editMode === 'draw-include' ||
+      editMode === 'draw-exclude'
+
+    if (isDrawing) {
+      removeZonesLayers(map)
+      removePolygon(map)
+      return
     }
-  }, [polygon])
+
+    // Drop legacy single-polygon layer; multi-zone layers replace it.
+    removePolygon(map)
+
+    // If the map style has just been swapped, sources/layers may have been
+    // reset — re-render after a tick.
+    const apply = () => renderZones(map, polygons, highlightIndex)
+    if (map.isStyleLoaded()) apply()
+    else map.once('styledata', apply)
+  }, [polygons, highlightIndex, editMode, style])
 
   useEffect(() => {
     if (mapContainerRef.current) {
@@ -303,6 +326,9 @@ const MapRoot = ({ zoom, center, polygon, onMove, onLoad }: MapRootProps) => {
         <MapStyleSwitch />
         <MapTitle />
         <SaveSearchCanvas />
+        {features.saveSearch && (
+          <PolygonsPanel onHighlight={setHighlightIndex} />
+        )}
         {(mobile || tablet) && (
           <>
             <OpenDrawerButton onClick={handleOpenDrawerClick} />

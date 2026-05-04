@@ -7,6 +7,7 @@ import {
 } from 'services/API'
 import { type Filters } from 'services/Search'
 import { type KeywordParseResult } from 'utils/keywordSearch'
+import { type PolygonZone } from 'utils/map'
 
 export type SavedResponse = {
   count: number
@@ -28,9 +29,18 @@ export type SearchContextType = SavedResponse & {
   resetFilters: () => void
   search: (params: any) => Promise<ApiQueryResponse | undefined>
   save: (response: ApiQueryResponse) => SavedResponse
+  // Backward-compat single-polygon accessors. `polygon` is the coords of the
+  // first inclusion zone (if any); `setPolygon`/`clearPolygon` operate on the
+  // single-include shape, replacing the entire `polygons` collection.
   polygon: Position[] | null
   setPolygon: (polygon: Position[]) => void
   clearPolygon: () => void
+  // Multi-polygon API
+  polygons: PolygonZone[]
+  setPolygons: (polygons: PolygonZone[]) => void
+  addPolygonZone: (zone: PolygonZone) => void
+  removePolygonZone: (index: number) => void
+  clearPolygons: () => void
   multiUnits: Property[]
   saveMultiUnits: (properties: Property[]) => void
   clearMultiUnits: () => void
