@@ -40,6 +40,7 @@
       "@nats-io/jetstream": "^3.0.2",
       "@nats-io/transport-node": "^3.0.2",
       "@ngrok/ngrok": "^1.5.1",
+      "@sendgrid/mail": "^8.1.6",
       "addresser": "github:Repliers-io/addresser",
       "axios": "^1.15.2",
       "cloud-pine": "^2.0.1",

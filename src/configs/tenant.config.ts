@@ -106,6 +106,9 @@ export interface TenantConfig {
     phoneDigits: string          // "9546100563" — for raw uses
     email: string                // "info@floridahomefinder.com" — marketing/general inbox
     legalEmail: string           // "andy@mandelteam.com" — DMCA / account / legal correspondence
+    notificationsEmail: string   // "notifications@mandelteam.com" — listing-alerts team sender
+    inboundReplyDomain: string   // "reply.floridahomefinder.com" — SendGrid Inbound Parse host
+    fallbackAgentEmail: string   // catches replies that can't be routed
     address: {
       street: string
       city: string
@@ -113,6 +116,12 @@ export interface TenantConfig {
       zip: string
       full: string               // computed: full single-line address
     }
+  }
+  // Repliers infra (used by listing-alerts client provisioning)
+  repliers: {
+    agentId: number              // default Repliers Agent ID; 0 = unset (graceful degrade)
+    baseUrl: string
+    csrUrl: string
   }
   // Integrations
   integrations: {
@@ -162,10 +171,18 @@ export const tenant: TenantConfig = {
     phoneDigits: PHONE_DIGITS,
     email: 'info@floridahomefinder.com',
     legalEmail: 'andy@mandelteam.com',
+    notificationsEmail: 'notifications@mandelteam.com',
+    inboundReplyDomain: 'reply.floridahomefinder.com',
+    fallbackAgentEmail: 'andy@mandelteam.com',
     address: {
       ...ADDRESS,
       full: `${ADDRESS.street}, ${ADDRESS.city}, ${ADDRESS.state} ${ADDRESS.zip}`,
     },
+  },
+  repliers: {
+    agentId: parseInt(process.env['REPLIERS_AGENT_ID'] || process.env['NEXT_PUBLIC_REPLIERS_AGENT_ID'] || '0'),
+    baseUrl: process.env['REPLIERS_BASE_URL'] || 'https://api.repliers.io',
+    csrUrl: process.env['REPLIERS_CSR_URL'] || 'https://csr-api.repliers.io',
   },
   integrations: {
     lender: {
