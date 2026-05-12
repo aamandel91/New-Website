@@ -88,6 +88,33 @@ export function generatePropertyJsonLd(property: Property, url: string) {
         }
       : undefined,
 
+    // Geo coordinates (when the listing carries map data)
+    ...(property.map?.latitude && property.map?.longitude
+      ? {
+          geo: {
+            '@type': 'GeoCoordinates',
+            latitude: property.map.latitude,
+            longitude: property.map.longitude,
+          },
+        }
+      : {}),
+
+    // Containing place (city) — gives crawlers a stable entity reference
+    ...(address?.city
+      ? {
+          containedInPlace: {
+            '@type': 'Place',
+            name: address.city,
+            address: {
+              '@type': 'PostalAddress',
+              addressLocality: address.city,
+              addressRegion: address.state || 'FL',
+              addressCountry: 'US',
+            },
+          },
+        }
+      : {}),
+
     // Additional property information
     ...(yearBuilt && { yearBuilt }),
     ...(propertyType && { additionalType: propertyType }),

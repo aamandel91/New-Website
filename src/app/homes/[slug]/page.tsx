@@ -26,6 +26,7 @@ import { generatePropertyJsonLd, generatePropertyBreadcrumbJsonLd } from 'utils/
 import { scorePropertyPage } from '@/utils/propertyPageScoring'
 
 import { PropertyTransactionHistory, NotifyWhenListed } from '@/components/property-detail'
+import AboutTheArea from '@/components/property-detail/sections/AboutTheArea'
 
 import { fetchSimilarProperties, fetchMarketStats } from '../../listing/[slug]/similarProperties'
 import { fetchAddressListings } from './addressLookup'
@@ -237,7 +238,16 @@ export default async function HomesPage(props: HomesPageProps) {
           similarProperties={similarProperties}
           marketStats={marketStats}
         />
-        <Container maxWidth="xl" sx={{ pb: 4 }}>
+        <Container maxWidth="xl" sx={{ pb: 4, display: 'flex', flexDirection: 'column', gap: 3 }}>
+          <AboutTheArea
+            cityName={active.address?.city}
+            coordinates={
+              active.map?.latitude && active.map?.longitude
+                ? { lat: active.map.latitude, lng: active.map.longitude }
+                : undefined
+            }
+            variant="pdp"
+          />
           <PropertyTransactionHistory history={history} />
         </Container>
         {process.env.NODE_ENV === 'development' && pageScore && (
@@ -288,6 +298,15 @@ export default async function HomesPage(props: HomesPageProps) {
         />
         <Container maxWidth="xl" sx={{ pb: 4, display: 'flex', flexDirection: 'column', gap: 3 }}>
           <NotifyWhenListed propertyAddress={fullAddress} />
+          <AboutTheArea
+            cityName={pending.address?.city}
+            coordinates={
+              pending.map?.latitude && pending.map?.longitude
+                ? { lat: pending.map.latitude, lng: pending.map.longitude }
+                : undefined
+            }
+            variant="pdp"
+          />
           <PropertyTransactionHistory history={history} />
         </Container>
         {process.env.NODE_ENV === 'development' && pageScore && (

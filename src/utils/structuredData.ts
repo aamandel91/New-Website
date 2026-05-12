@@ -251,6 +251,94 @@ export function websiteSearchSchema(): StructuredDataProps {
 }
 
 /**
+ * Place schema for a city landing page. Optionally enriched with an
+ * AggregateRating (e.g. average of nearby school ratings).
+ */
+export function placeSchema(params: {
+  cityName: string
+  state?: string
+  countyName?: string
+  lat?: number
+  lng?: number
+  url: string
+  aggregateRating?: { ratingValue: number; reviewCount: number }
+}): StructuredDataProps {
+  const schema: StructuredDataProps = {
+    '@context': 'https://schema.org',
+    '@type': 'Place',
+    name: params.cityName,
+    url: params.url,
+    address: {
+      '@type': 'PostalAddress',
+      addressLocality: params.cityName,
+      addressRegion: params.state || 'FL',
+      addressCountry: 'US',
+    },
+  }
+  if (typeof params.lat === 'number' && typeof params.lng === 'number') {
+    schema.geo = {
+      '@type': 'GeoCoordinates',
+      latitude: params.lat,
+      longitude: params.lng,
+    }
+  }
+  if (params.countyName) {
+    schema.containedInPlace = {
+      '@type': 'AdministrativeArea',
+      name: params.countyName,
+    }
+  }
+  if (params.aggregateRating) {
+    schema.aggregateRating = {
+      '@type': 'AggregateRating',
+      ratingValue: params.aggregateRating.ratingValue.toFixed(1),
+      reviewCount: params.aggregateRating.reviewCount,
+      bestRating: '5',
+      worstRating: '1',
+    }
+  }
+  return schema
+}
+
+/**
+ * EducationalOrganization schema for a single nearby school.
+ */
+export function educationalOrganizationSchema(params: {
+  name: string
+  cityName?: string
+  state?: string
+  level?: string
+  rating?: number
+}): StructuredDataProps {
+  const schema: StructuredDataProps = {
+    '@context': 'https://schema.org',
+    '@type': 'EducationalOrganization',
+    name: params.name,
+  }
+  if (params.cityName) {
+    schema.address = {
+      '@type': 'PostalAddress',
+      addressLocality: params.cityName,
+      addressRegion: params.state || 'FL',
+      addressCountry: 'US',
+    }
+  }
+  if (params.level) {
+    schema.educationalLevel = params.level
+  }
+  if (params.rating !== undefined) {
+    schema.aggregateRating = {
+      '@type': 'AggregateRating',
+      ratingValue: params.rating.toFixed(1),
+      bestRating: '5',
+      worstRating: '1',
+      reviewCount: 1,
+    }
+  }
+  return schema
+}
+
+/**
  * FAQPage schema for FAQ sections
  */
 export function faqSchema(

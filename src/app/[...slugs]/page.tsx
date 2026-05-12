@@ -10,7 +10,8 @@ import StructuredData from '@shared/StructuredData'
 import PageWithSidebar from '@/components/layouts/PageWithSidebar'
 import CitySidebar from '@/components/sidebar/CitySidebar'
 
-import { subTypes, getSubTypeBySlug, findNearbyCities, activeMarkets } from '@configs/page-generation'
+import { subTypes, getSubTypeBySlug, findNearbyCities, activeMarkets, allActiveCities } from '@configs/page-generation'
+import AboutTheArea from '@/components/property-detail/sections/AboutTheArea'
 import { breadcrumbSchema, faqSchema, localBusinessSchema } from 'utils/structuredData'
 import {
   parseCleanSlug,
@@ -483,6 +484,26 @@ async function renderCityPage(
               Browse homes for sale in {cityName}, Florida.
             </Typography>
           </Box>
+
+          {/* Living in {City} — demographics, schools, market stats. SSR'd
+              so the rich content is in the HTML for crawlers. */}
+          {(() => {
+            const cityCoord = allActiveCities.find(
+              (c) => c.name.toLowerCase() === cityName.toLowerCase()
+            )
+            return (
+              <AboutTheArea
+                cityName={cityName}
+                coordinates={
+                  cityCoord
+                    ? { lat: cityCoord.lat, lng: cityCoord.lng }
+                    : undefined
+                }
+                variant="city"
+                id="living-in"
+              />
+            )
+          })()}
 
           {/* Property Listings */}
           <ListingsGrid city={cityName} limit={12} />
