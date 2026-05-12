@@ -109,6 +109,10 @@ const MobileMenu = () => {
               Search
             </Link>
 
+            <Link href="/ai-search" onClick={handleClose} sx={MOBILE_LINK_SX}>
+              AI Search
+            </Link>
+
             <Accordion sx={ACCORDION_SX} disableGutters>
               <AccordionSummary expandIcon={<ExpandMoreIcon sx={{ color: 'white' }} />}>
                 <Typography sx={{ ...MOBILE_LINK_SX, py: 0 }}>Cities</Typography>

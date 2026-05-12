@@ -257,6 +257,7 @@ function generateStatic(): SitemapEntry[] {
     { url: `${BASE_URL}/home-value`, lastmod: now, changefreq: 'monthly', priority: 0.7 },
     { url: `${BASE_URL}/search/gallery`, lastmod: now, changefreq: 'daily', priority: 0.9 },
     { url: `${BASE_URL}/search/advanced`, lastmod: now, changefreq: 'daily', priority: 0.8 },
+    { url: `${BASE_URL}/ai-search`, lastmod: now, changefreq: 'weekly', priority: 0.8 },
     { url: `${BASE_URL}/privacy`, lastmod: now, changefreq: 'yearly', priority: 0.5 },
     { url: `${BASE_URL}/terms`, lastmod: now, changefreq: 'yearly', priority: 0.5 },
   ]
