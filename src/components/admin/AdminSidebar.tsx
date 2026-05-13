@@ -69,7 +69,8 @@ const navItems: NavItem[] = [
     children: [
       { title: 'Robots.txt', path: '/admin/robots', icon: <SecurityIcon /> },
       { title: 'AI Content', path: '/admin/ai-content', icon: <AutoAwesomeIcon /> },
-      { title: 'Property Index', path: '/admin/property-index', icon: <InventoryIcon /> }
+      { title: 'Property Index', path: '/admin/property-index', icon: <InventoryIcon /> },
+      { title: 'Meta Templates', path: '/admin/seo-templates', icon: <DescriptionIcon /> }
     ]
   },
   { title: 'Users', path: '/admin/users', icon: <AdminUsersIcon /> },
@@ -94,7 +95,10 @@ export default function AdminSidebar({ mobileOpen = false, onMobileClose }: Admi
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down('md'))
   const [seoOpen, setSeoOpen] = useState(
-    pathname.startsWith('/admin/robots') || pathname.startsWith('/admin/ai-content') || pathname.startsWith('/admin/property-index')
+    pathname.startsWith('/admin/robots') ||
+      pathname.startsWith('/admin/ai-content') ||
+      pathname.startsWith('/admin/property-index') ||
+      pathname.startsWith('/admin/seo-templates')
   )
 
   const handleNavigation = (path: string) => {

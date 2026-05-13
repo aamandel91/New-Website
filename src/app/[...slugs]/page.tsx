@@ -30,7 +30,11 @@ import {
   fetchListingCount,
   fetchSubTypeCount,
   fetchZipCodesForCity,
+  fetchListingStats,
+  formatPrice,
+  buildSubTypeFilters,
 } from 'services/pageGeneration'
+import { renderSeoMeta, type TemplateContext } from 'services/seoMetaTemplates'
 
 export const revalidate = 300
 
@@ -103,8 +107,20 @@ export async function generateMetadata(props: CleanPageProps): Promise<Metadata>
       const stConfig = getSubTypeBySlug(parsed.subType!)
       if (!stConfig) return {}
       const marketLabel = activeMarkets[0]?.label ?? 'South Florida'
-      const title = `${stConfig.label} for Sale in ${marketLabel} (${new Date().getFullYear()})`
-      const description = `Browse ${stConfig.label.toLowerCase()} for sale across ${marketLabel}. View photos, prices, and property details. Updated daily on ${tenant.brand.siteName}.`
+      let title = `${stConfig.label} for Sale in ${marketLabel} (${new Date().getFullYear()})`
+      let description = `Browse ${stConfig.label.toLowerCase()} for sale across ${marketLabel}. View photos, prices, and property details. Updated daily on ${tenant.brand.siteName}.`
+      const stats = await fetchListingStats({}, buildSubTypeFilters(stConfig))
+      const tctx: TemplateContext = {
+        SUBTYPE: stConfig.label.replace(/s$/, ''),
+        SUBTYPE_PLURAL: stConfig.label,
+      }
+      if (stats.count > 0) tctx.COUNT = stats.count.toLocaleString('en-US')
+      if (stats.avg) tctx.AVG_PRICE = formatPrice(stats.avg)
+      if (stats.med) tctx.MEDIAN_PRICE = formatPrice(stats.med)
+      if (stats.min) tctx.MIN_PRICE = formatPrice(stats.min)
+      if (stats.max) tctx.MAX_PRICE = formatPrice(stats.max)
+      const tpl = await renderSeoMeta('property_type', tctx)
+      if (tpl) { title = tpl.title; description = tpl.description }
       const ogImageUrl = `${baseUrl}/api/og/city?slug=${encodeURIComponent(parsed.subType!)}`
       return {
         title,
@@ -120,10 +136,19 @@ export async function generateMetadata(props: CleanPageProps): Promise<Metadata>
       }
     }
     case 'city': {
-      const count = await fetchListingCount(cityName)
+      const stats = await fetchListingStats({ city: cityName })
+      const count = stats.count
       const pageScore = scoreAreaPage({ pageType: 'city', listingCount: count, hasCmsContent })
-      const title = `${count} Homes for Sale in ${cityName}, FL (${new Date().getFullYear()})`
-      const description = `Browse ${count} homes for sale in ${cityName}, FL. View photos, prices, and property details. Updated daily on ${tenant.brand.siteName}.`
+      let title = `${count} Homes for Sale in ${cityName}, FL (${new Date().getFullYear()})`
+      let description = `Browse ${count} homes for sale in ${cityName}, FL. View photos, prices, and property details. Updated daily on ${tenant.brand.siteName}.`
+      const tctx: TemplateContext = { CITY: cityName }
+      if (count > 0) tctx.COUNT = count.toLocaleString('en-US')
+      if (stats.avg) tctx.AVG_PRICE = formatPrice(stats.avg)
+      if (stats.med) tctx.MEDIAN_PRICE = formatPrice(stats.med)
+      if (stats.min) tctx.MIN_PRICE = formatPrice(stats.min)
+      if (stats.max) tctx.MAX_PRICE = formatPrice(stats.max)
+      const tpl = await renderSeoMeta('city', tctx)
+      if (tpl) { title = tpl.title; description = tpl.description }
       const ogImageUrl = `${baseUrl}/api/og/city?slug=${encodeURIComponent(parsed.city)}`
       return {
         title,
@@ -142,10 +167,23 @@ export async function generateMetadata(props: CleanPageProps): Promise<Metadata>
     case 'city-subtype': {
       const stConfig = getSubTypeBySlug(parsed.subType!)
       if (!stConfig) return {}
-      const count = await fetchSubTypeCount(cityName, stConfig)
+      const stats = await fetchListingStats({ city: cityName }, buildSubTypeFilters(stConfig))
+      const count = stats.count
       const pageScore = scoreAreaPage({ pageType: 'subType', listingCount: count, subTypeSlug: stConfig.slug, hasCmsContent })
-      const title = generateMetaTitle(cityName, stConfig.label, count)
-      const description = `Browse ${count} ${stConfig.label} for sale in ${cityName}, FL. View photos, prices, and property details. Updated daily on ${tenant.brand.siteName}.`
+      let title = generateMetaTitle(cityName, stConfig.label, count)
+      let description = `Browse ${count} ${stConfig.label} for sale in ${cityName}, FL. View photos, prices, and property details. Updated daily on ${tenant.brand.siteName}.`
+      const tctx: TemplateContext = {
+        CITY: cityName,
+        SUBTYPE: stConfig.label.replace(/s$/, ''),
+        SUBTYPE_PLURAL: stConfig.label,
+      }
+      if (count > 0) tctx.COUNT = count.toLocaleString('en-US')
+      if (stats.avg) tctx.AVG_PRICE = formatPrice(stats.avg)
+      if (stats.med) tctx.MEDIAN_PRICE = formatPrice(stats.med)
+      if (stats.min) tctx.MIN_PRICE = formatPrice(stats.min)
+      if (stats.max) tctx.MAX_PRICE = formatPrice(stats.max)
+      const tpl = await renderSeoMeta('city_subtype', tctx)
+      if (tpl) { title = tpl.title; description = tpl.description }
       const ogImageUrl = `${baseUrl}/api/og/city?slug=${encodeURIComponent(`${parsed.city}/${parsed.subType}`)}`
       return {
         title,
@@ -180,10 +218,19 @@ export async function generateMetadata(props: CleanPageProps): Promise<Metadata>
       }
     }
     case 'city-zip': {
-      const count = await fetchListingCount(cityName, { zip: parsed.zip })
+      const stats = await fetchListingStats({ city: cityName, zip: parsed.zip })
+      const count = stats.count
       const pageScore = scoreAreaPage({ pageType: 'zip', listingCount: count, hasCmsContent })
-      const title = `${count} Homes for Sale in ${cityName}, FL ${parsed.zip} (${new Date().getFullYear()})`
-      const description = `Browse ${count} homes for sale in ${cityName} zip code ${parsed.zip}, FL. Updated daily.`
+      let title = `${count} Homes for Sale in ${cityName}, FL ${parsed.zip} (${new Date().getFullYear()})`
+      let description = `Browse ${count} homes for sale in ${cityName} zip code ${parsed.zip}, FL. Updated daily.`
+      const tctx: TemplateContext = { CITY: cityName, ZIP: parsed.zip! }
+      if (count > 0) tctx.COUNT = count.toLocaleString('en-US')
+      if (stats.avg) tctx.AVG_PRICE = formatPrice(stats.avg)
+      if (stats.med) tctx.MEDIAN_PRICE = formatPrice(stats.med)
+      if (stats.min) tctx.MIN_PRICE = formatPrice(stats.min)
+      if (stats.max) tctx.MAX_PRICE = formatPrice(stats.max)
+      const tpl = await renderSeoMeta('zipcode', tctx)
+      if (tpl) { title = tpl.title; description = tpl.description }
       const ogImageUrl = `${baseUrl}/api/og/city?slug=${encodeURIComponent(`${parsed.city}/${parsed.zip}`)}`
       return {
         title,
@@ -199,11 +246,20 @@ export async function generateMetadata(props: CleanPageProps): Promise<Metadata>
       }
     }
     case 'city-neighborhood': {
-      const count = await fetchListingCount(cityName)
-      const pageScore = scoreAreaPage({ pageType: 'neighborhood', listingCount: count, hasCmsContent })
       const neighborhoodName = slugToDisplayName(parsed.neighborhood!)
-      const title = `Homes for Sale in ${neighborhoodName}, ${cityName}, FL`
-      const description = `Browse homes for sale in ${neighborhoodName}, ${cityName}, FL. View photos, prices, and property details.`
+      const stats = await fetchListingStats({ city: cityName, neighborhood: neighborhoodName })
+      const count = stats.count
+      const pageScore = scoreAreaPage({ pageType: 'neighborhood', listingCount: count, hasCmsContent })
+      let title = `Homes for Sale in ${neighborhoodName}, ${cityName}, FL`
+      let description = `Browse homes for sale in ${neighborhoodName}, ${cityName}, FL. View photos, prices, and property details.`
+      const tctx: TemplateContext = { CITY: cityName, NEIGHBORHOOD: neighborhoodName, COMMUNITY: neighborhoodName }
+      if (count > 0) tctx.COUNT = count.toLocaleString('en-US')
+      if (stats.avg) tctx.AVG_PRICE = formatPrice(stats.avg)
+      if (stats.med) tctx.MEDIAN_PRICE = formatPrice(stats.med)
+      if (stats.min) tctx.MIN_PRICE = formatPrice(stats.min)
+      if (stats.max) tctx.MAX_PRICE = formatPrice(stats.max)
+      const tpl = await renderSeoMeta('neighborhood', tctx)
+      if (tpl) { title = tpl.title; description = tpl.description }
       const ogImageUrl = `${baseUrl}/api/og/city?slug=${encodeURIComponent(`${parsed.city}/${parsed.neighborhood}`)}`
       return {
         title,

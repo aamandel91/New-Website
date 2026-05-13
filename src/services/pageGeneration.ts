@@ -262,3 +262,68 @@ export async function fetchListingsPreview(
 }
 
 export { buildSubTypeFilters }
+
+export interface ListingStats {
+  count: number
+  avg: number
+  med: number
+  min: number
+  max: number
+}
+
+// Cache stats results for 60 seconds to avoid hammering Repliers on every
+// generateMetadata call. Keyed by the scope identifier.
+const statsCache = new Map<string, { value: ListingStats; expiresAt: number }>()
+const STATS_CACHE_TTL_MS = 60 * 1000
+
+/**
+ * Fetch active-listing stats (count + price aggregates) for a scope. Always
+ * resolves — on failure returns a zeroed object so callers can degrade
+ * gracefully (the renderer skips empty placeholders).
+ */
+export async function fetchListingStats(
+  scope: { city?: string; zip?: string; neighborhood?: string },
+  filters?: Record<string, unknown>
+): Promise<ListingStats> {
+  const cacheKey = JSON.stringify({ ...scope, ...(filters || {}) })
+  const now = Date.now()
+  const hit = statsCache.get(cacheKey)
+  if (hit && hit.expiresAt > now) return hit.value
+
+  const params: Record<string, unknown> = {
+    status: 'A',
+    boardId: defaultBoardId,
+    resultsPerPage: 1,
+    listings: false,
+    statistics: 'avg-listPrice,med-listPrice,min-listPrice,max-listPrice,cnt-listPrice',
+    ...filters,
+  }
+  if (scope.city) params['city'] = scope.city
+  if (scope.zip) params['address.zip'] = scope.zip
+  if (scope.neighborhood) params['neighborhood'] = scope.neighborhood
+
+  try {
+    const response = useCSR
+      ? await APISearchCSR.searchListings(params as any)
+      : await APISearch.fetch({ get: params, post: {} }, undefined)
+
+    const listPrice = (response as any)?.statistics?.listPrice ?? {}
+    const value: ListingStats = {
+      count: Number((response as any)?.count ?? 0) || 0,
+      avg: Number(listPrice?.avg ?? 0) || 0,
+      med: Number(listPrice?.med ?? 0) || 0,
+      min: Number(listPrice?.min ?? 0) || 0,
+      max: Number(listPrice?.max ?? 0) || 0,
+    }
+    statsCache.set(cacheKey, { value, expiresAt: now + STATS_CACHE_TTL_MS })
+    return value
+  } catch (error) {
+    console.error('[pageGeneration] fetchListingStats error', error)
+    return { count: 0, avg: 0, med: 0, min: 0, max: 0 }
+  }
+}
+
+export function formatPrice(n: number | null | undefined): string {
+  if (!n || !isFinite(n) || n <= 0) return ''
+  return '$' + Math.round(n).toLocaleString('en-US')
+}

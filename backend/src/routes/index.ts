@@ -19,6 +19,7 @@ import contentPagesRouter from './contentPages.js';
 import navigationRouter from './navigation.js';
 import aiContentRouter from './aiContent.js';
 import placesRouter from './places.js';
+import seoMetaTemplatesRouter from './seoMetaTemplates.js';
 const router = new Router({
    prefix: "/api"
 });
@@ -42,4 +43,5 @@ router.use(contentPagesRouter.routes(), contentPagesRouter.allowedMethods());
 router.use(navigationRouter.routes(), navigationRouter.allowedMethods());
 router.use(aiContentRouter.routes(), aiContentRouter.allowedMethods());
 router.use(placesRouter.routes(), placesRouter.allowedMethods());
+router.use(seoMetaTemplatesRouter.routes(), seoMetaTemplatesRouter.allowedMethods());
 export default router;
