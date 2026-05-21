@@ -3,7 +3,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 
-import { Box, Pagination, Stack } from '@mui/material'
+import { Box, Pagination, Stack, Typography } from '@mui/material'
 
 import gridConfig from '@configs/cards-grids'
 import searchConfig from '@configs/search'
@@ -71,7 +71,8 @@ const GridContent = ({
     count,
     page,
     multiUnits,
-    keywordFilter
+    keywordFilter,
+    schoolMeta
   } = useSearch()
 
   const pagesCount = Math.ceil(count / searchConfig.pageSize)
@@ -235,6 +236,25 @@ const GridContent = ({
           <MultiUnitHeader unit={multiUnits[0]} count={multiUnits.length} />
         )}
 
+        {schoolMeta?.active &&
+          typeof schoolMeta.totalAfterSchoolFilter === 'number' &&
+          typeof schoolMeta.totalBeforeSchoolFilter === 'number' &&
+          schoolMeta.totalAfterSchoolFilter <
+            schoolMeta.totalBeforeSchoolFilter && (
+            <Typography
+              variant="caption"
+              fontStyle="italic"
+              color="text.secondary"
+              sx={{ px: 1 }}
+            >
+              Showing {schoolMeta.totalAfterSchoolFilter} listings with schools
+              rated {filters.schoolRating}+ (
+              {schoolMeta.totalBeforeSchoolFilter -
+                schoolMeta.totalAfterSchoolFilter}{' '}
+              hidden).
+            </Typography>
+          )}
+
         <Stack
           spacing={gridSpacing}
           flexWrap="wrap"
@@ -252,7 +272,20 @@ const GridContent = ({
               <SkeletonCard key={index} />
             ))
           ) : !loading && !clientProperties.length ? (
-            <EmptyListings />
+            schoolMeta?.active && filters.schoolRating ? (
+              <Box sx={{ p: 3, maxWidth: 480 }}>
+                <Typography variant="body1" color="text.primary" gutterBottom>
+                  No listings found with schools rated{' '}
+                  {filters.schoolRating}+.
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Try lowering the school rating, switching the school level to
+                  &quot;Any&quot;, or broadening other filters.
+                </Typography>
+              </Box>
+            ) : (
+              <EmptyListings />
+            )
           ) : (
             propsOrUnits.map((property) => (
               <PropertyCard

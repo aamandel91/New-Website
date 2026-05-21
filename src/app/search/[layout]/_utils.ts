@@ -131,6 +131,13 @@ export const getFiltersFromParams = (searchParams: SearchParams): Filters => {
   if (searchParams.sortBy) {
     filters['sortBy'] = searchParams.sortBy
   }
+  if (searchParams.schoolRating) {
+    const r = Number(searchParams.schoolRating)
+    if (!Number.isNaN(r) && r > 0) filters['schoolRating'] = r
+  }
+  if (searchParams.schoolLevel) {
+    filters['schoolLevel'] = searchParams.schoolLevel
+  }
 
   return filters as Filters
 }

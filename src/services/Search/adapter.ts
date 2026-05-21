@@ -122,11 +122,22 @@ const clientSideSortValues = new Set([
   'bedsDesc',
   'bathsDesc',
   'sqftDesc',
-  'lotSizeDesc'
+  'lotSizeDesc',
+  // 'schools' only applies to the backend /api/search/with-schools path.
+  // If it leaks into the CSR fast path, drop it so the upstream API doesn't
+  // reject the request.
+  'schools'
 ])
 
 /** Filter keys that are UI-only and should not be sent to the API */
-const clientOnlyFilterKeys = new Set(['priceReduced', 'openHouses'])
+const clientOnlyFilterKeys = new Set([
+  'priceReduced',
+  'openHouses',
+  // School filter keys are handled by the backend /api/search/with-schools
+  // path; the direct csr-api path never sees them.
+  'schoolRating',
+  'schoolLevel'
+])
 
 export const isClientSideSort = (sortBy: string | undefined): boolean =>
   !!sortBy && clientSideSortValues.has(sortBy)

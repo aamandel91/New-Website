@@ -9,6 +9,22 @@ import { type Filters } from 'services/Search'
 import { type KeywordParseResult } from 'utils/keywordSearch'
 import { type PolygonZone } from 'utils/map'
 
+export type SchoolSummary = {
+  elementary?: { name: string; rating?: number }
+  middle?: { name: string; rating?: number }
+  high?: { name: string; rating?: number }
+}
+
+export type SchoolSearchMeta = {
+  // Only meaningful when the school filter is active. When active, the
+  // search routed through the backend /api/search/with-schools endpoint and
+  // the response includes per-listing school data + before/after totals.
+  active: boolean
+  totalBeforeSchoolFilter?: number
+  totalAfterSchoolFilter?: number
+  schoolDataByMlsNumber?: Record<string, SchoolSummary>
+}
+
 export type SavedResponse = {
   count: number
   page: number
@@ -16,6 +32,7 @@ export type SavedResponse = {
   list: Property[]
   clusters: ApiCluster[]
   statistics: { [key: string]: any }
+  schoolMeta?: SchoolSearchMeta
 }
 
 export type SearchContextType = SavedResponse & {

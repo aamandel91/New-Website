@@ -115,6 +115,40 @@ class APISearch extends APIBase {
     )
   }
 
+  // Slow-but-school-aware search path. Hits the backend
+  // /api/search/with-schools, which fetches listings from Repliers and then
+  // filters by nearby school ratings. The shape extends ApiQueryResponse
+  // with totalBeforeSchoolFilter, totalAfterSchoolFilter, and
+  // schoolDataByMlsNumber for the result UI to render badges.
+  async searchWithSchools(payload: {
+    filters: Record<string, unknown>
+    schoolRating: number
+    schoolLevel: 'elementary' | 'middle' | 'high' | 'any'
+    sortBy?: string
+    pageSize: number
+    page: number
+  }): Promise<
+    ApiQueryResponse & {
+      totalBeforeSchoolFilter: number
+      totalAfterSchoolFilter: number
+      schoolDataByMlsNumber: Record<
+        string,
+        Partial<Record<'elementary' | 'middle' | 'high', { name: string; rating?: number }>>
+      >
+    }
+  > {
+    const headers = await this.getHeaders()
+    const response = await fetch(this.getAbsoluteUrl('/search/with-schools'), {
+      method: 'POST',
+      headers,
+      body: JSON.stringify(payload)
+    })
+    if (!response.ok) {
+      throw { status: response.status, data: null }
+    }
+    return response.json()
+  }
+
   async fetchLocations(options?: any) {
     try {
       return await this.fetchJSON<ApiLocations>(

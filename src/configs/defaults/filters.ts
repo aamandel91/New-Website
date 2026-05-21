@@ -95,7 +95,9 @@ export const defaultAdvancedFilters: Filters = {
   kitchenQuality: null,
   bedroomQuality: null,
   bathroomQuality: null,
-  frontOfStructureQuality: null
+  frontOfStructureQuality: null,
+  schoolRating: 0,
+  schoolLevel: 'any'
 }
 
 export const priceBuckets = {

@@ -2,7 +2,13 @@ import { Box, Stack, Typography } from '@mui/material'
 
 import { type Filters } from 'services/Search'
 
-import { DaysSelect, FilterButtonGroup, PricePicker, YearBuiltSelect } from '.'
+import {
+  DaysSelect,
+  FilterButtonGroup,
+  PricePicker,
+  SchoolFilterSection,
+  YearBuiltSelect
+} from '.'
 
 const bedsItems: [string, number][] = [
   ['Any', 0],
@@ -89,6 +95,7 @@ const AdvancedFiltersTab = ({
         to={maxYearBuilt}
         onChange={onChange}
       />
+      <SchoolFilterSection dialogState={dialogState} onChange={onChange} />
     </Stack>
   )
 }

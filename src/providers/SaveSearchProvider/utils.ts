@@ -142,7 +142,9 @@ export const prepareParams = (params: CreateSearchParams, clientId: number) => {
     minBeds,
     minBaths,
     minGarageSpaces,
-    minParkingSpaces
+    minParkingSpaces,
+    schoolRating,
+    schoolLevel
   } = filters || {}
 
   let { minPrice, maxPrice } = filters || {}
@@ -197,6 +199,8 @@ export const prepareParams = (params: CreateSearchParams, clientId: number) => {
     minGarageSpaces,
     minParkingSpaces,
     soldNotifications,
-    notificationFrequency
+    notificationFrequency,
+    schoolRating: schoolRating && schoolRating > 0 ? schoolRating : undefined,
+    schoolLevel: schoolRating && schoolRating > 0 ? schoolLevel || 'any' : undefined
   }) as ApiSavedSearchCreateRequest
 }

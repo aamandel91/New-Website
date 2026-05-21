@@ -24,7 +24,15 @@ import {
 } from 'utils/properties'
 import { getListingBadges } from 'components/listings/ListingBadges'
 
-import { CardContainer, CardContent, FavoritesButton, Tags } from './components'
+import { Box } from '@mui/material'
+
+import {
+  CardContainer,
+  CardContent,
+  FavoritesButton,
+  SchoolBadge,
+  Tags
+} from './components'
 
 type PropertyCardProps = {
   property: Property
@@ -127,6 +135,18 @@ const PropertyCard = React.memo(
             onMouseLeave={() => onGalleryLeave?.()}
           />
           <Tags tags={tags} />
+          {!sizeMap && (
+            <Box
+              sx={{
+                position: 'absolute',
+                bottom: 8,
+                left: 12,
+                zIndex: 1
+              }}
+            >
+              <SchoolBadge mlsNumber={property.mlsNumber} />
+            </Box>
+          )}
           <CardContent size={size} property={property} />
           <TouchRipple ref={rippleRef} center={false} />
         </a>

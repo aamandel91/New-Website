@@ -15,7 +15,9 @@ export const keysToPick: (keyof ApiSavedSearch)[] = [
   'maxPrice',
   'minGarageSpaces',
   'minParkingSpaces',
-  'soldNotifications'
+  'soldNotifications',
+  'schoolRating',
+  'schoolLevel'
 ]
 
 export const places = [

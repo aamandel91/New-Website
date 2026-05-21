@@ -32,6 +32,13 @@ const SortModesSelect = ({
       ]
     : []
 
+  const schoolFilterActive =
+    typeof filters?.schoolRating === 'number' && filters.schoolRating > 0
+
+  const schoolSortModes: SortMode[] = schoolFilterActive
+    ? [{ value: 'schools', label: 'Best schools first' }]
+    : []
+
   const sortModes: SortMode[] = [
     { value: 'createdOnDesc', label: 'Newest to oldest' },
     { value: 'updatedOnDesc', label: 'Recently updated' },
@@ -41,6 +48,7 @@ const SortModesSelect = ({
     { value: 'bathsDesc', label: 'Most Bathrooms' },
     { value: 'sqftDesc', label: 'Largest (sqft)' },
     { value: 'lotSizeDesc', label: 'Largest Lot' },
+    ...schoolSortModes,
     ...qualitySortModes
   ]
 

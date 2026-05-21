@@ -30,6 +30,9 @@ export type ApiSortBy =
   | 'bathsDesc'
   | 'sqftDesc'
   | 'lotSizeDesc'
+  // Backend-only sort: routes through /api/search/with-schools (school
+  // filter must be active for this to be available).
+  | 'schools'
 
 export type ApiSimilarSortBy =
   | 'createdOnAsc'
@@ -839,6 +842,8 @@ export interface ApiSavedSearch {
   heating: string[]
   swimmingPool: string[]
   waterSource: string[]
+  schoolRating?: number
+  schoolLevel?: 'elementary' | 'middle' | 'high' | 'any'
 }
 
 // Saved searches V2 - add extra fields when needed
@@ -866,6 +871,12 @@ export interface ApiSavedSearchCreateRequest {
   minParkingSpaces?: number
   soldNotifications?: boolean
   notificationFrequency?: SavedSearchNotificationFrequency
+  // Custom (non-Repliers) fields persisted on the saved-search payload so
+  // the alert engine in Workstream 3 can apply the school filter when
+  // matching new listings. Repliers' built-in notifications cannot match on
+  // schools server-side; this is captured so we can match client-side.
+  schoolRating?: number
+  schoolLevel?: 'elementary' | 'middle' | 'high' | 'any'
 }
 
 export interface ApiSavedSearchUpdateRequest

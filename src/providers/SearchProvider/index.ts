@@ -1,1 +1,2 @@
-export { default, useSearch } from './SearchProvider'
+export { default, SearchContext, useSearch } from './SearchProvider'
+export type { SchoolSearchMeta, SchoolSummary } from './types'

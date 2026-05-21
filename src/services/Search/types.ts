@@ -73,7 +73,15 @@ export interface Filters {
   priceReduced?: boolean
   openHouses?: boolean
   minOpenHouseDate?: string
+
+  // School filter (opt-in slow path). When schoolRating > 0, the search
+  // routes through the backend /api/search/with-schools endpoint. Otherwise
+  // search uses the direct csr-api fast path.
+  schoolRating?: number
+  schoolLevel?: SchoolLevel
 }
+
+export type SchoolLevel = 'any' | 'elementary' | 'middle' | 'high'
 
 export type FilterKeys = keyof Filters
 

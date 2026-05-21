@@ -10,15 +10,26 @@ import { type Position } from 'geojson'
 
 import { defaultFilters } from '@configs/filters'
 
-import { type ApiQueryResponse, type Property } from 'services/API'
+import { APISearch, type ApiQueryResponse, type Property } from 'services/API'
 import SearchService, { type Filters } from 'services/Search'
 import { type KeywordParseResult } from 'utils/keywordSearch'
 import { type PolygonZone, polygonToZones } from 'utils/map'
 import { sortPropertyScoredImages } from 'utils/properties'
 
-import { type SavedResponse, type SearchContextType } from './types'
+import {
+  type SavedResponse,
+  type SchoolSearchMeta,
+  type SearchContextType
+} from './types'
 
-const SearchContext = createContext<SearchContextType | undefined>(undefined)
+const isSchoolFilterActive = (filters: Record<string, unknown> = {}): boolean => {
+  const r = filters['schoolRating']
+  return typeof r === 'number' && r > 0
+}
+
+export const SearchContext = createContext<SearchContextType | undefined>(
+  undefined
+)
 
 const emptySavedResponse = {
   count: 0,
@@ -104,13 +115,30 @@ const SearchProvider = ({
 
     const { listings, count, page, numPages, aggregates, statistics } = response
 
+    // Capture school metadata if the backend with-schools endpoint replied.
+    const schoolEnriched = response as ApiQueryResponse & {
+      totalBeforeSchoolFilter?: number
+      totalAfterSchoolFilter?: number
+      schoolDataByMlsNumber?: Record<string, any>
+    }
+    const schoolMeta: SchoolSearchMeta | undefined =
+      schoolEnriched.schoolDataByMlsNumber
+        ? {
+            active: true,
+            totalBeforeSchoolFilter: schoolEnriched.totalBeforeSchoolFilter,
+            totalAfterSchoolFilter: schoolEnriched.totalAfterSchoolFilter,
+            schoolDataByMlsNumber: schoolEnriched.schoolDataByMlsNumber
+          }
+        : undefined
+
     const remappedResponse: SavedResponse = {
       page,
       pages: numPages,
       count,
       statistics,
       list: listings.map(sortPropertyScoredImages),
-      clusters: aggregates ? aggregates.map.clusters : []
+      clusters: aggregates ? aggregates.map.clusters : [],
+      ...(schoolMeta ? { schoolMeta } : {})
     }
 
     setSaved(remappedResponse)
@@ -121,7 +149,38 @@ const SearchProvider = ({
     let response
     try {
       setLoading(true)
-      response = await SearchService.fetch(params)
+      if (isSchoolFilterActive(params)) {
+        // Route through the backend so we get per-listing school lookup +
+        // filtering. Strip school-only keys before forwarding the rest to
+        // Repliers.
+        const {
+          schoolRating,
+          schoolLevel = 'any',
+          sortBy,
+          resultsPerPage,
+          pageSize,
+          pageNum,
+          page,
+          ...filters
+        } = params
+        const sizeArg = Number(pageSize ?? resultsPerPage) || 24
+        const pageArg = Number(pageNum ?? page) || 1
+        try {
+          response = (await APISearch.searchWithSchools({
+            filters,
+            schoolRating: Number(schoolRating),
+            schoolLevel,
+            ...(sortBy ? { sortBy } : {}),
+            pageSize: sizeArg,
+            page: pageArg
+          })) as unknown as ApiQueryResponse
+        } catch (err) {
+          console.error('[searchWithSchools] failed', err)
+          response = undefined
+        }
+      } else {
+        response = await SearchService.fetch(params)
+      }
     } finally {
       setLoading(false)
     }
