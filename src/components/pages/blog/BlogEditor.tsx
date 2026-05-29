@@ -30,7 +30,14 @@ import '@uiw/react-markdown-preview/markdown.css'
 const MDEditor = dynamic(() => import('@uiw/react-md-editor'), {
   ssr: false,
   loading: () => (
-    <Box sx={{ height: 400, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+    <Box
+      sx={{
+        height: 400,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center'
+      }}
+    >
       <CircularProgress />
     </Box>
   )
@@ -38,6 +45,7 @@ const MDEditor = dynamic(() => import('@uiw/react-md-editor'), {
 import type { Blog, AISuggestions } from '@/types/blog'
 import APIBlogs from '@/services/API/APIBlogs'
 import ImageUploader from '@/components/admin/ImageUploader'
+import SuggestedTagsPanel from './SuggestedTagsPanel'
 
 interface UploadedImage {
   url: string
@@ -94,7 +102,9 @@ const BlogEditor = ({ blogId, onSave }: BlogEditorProps) => {
 
   const [uploadedImages, setUploadedImages] = useState<UploadedImage[]>([])
 
-  const [autoSaveStatus, setAutoSaveStatus] = useState<'idle' | 'saving' | 'saved'>('idle')
+  const [autoSaveStatus, setAutoSaveStatus] = useState<
+    'idle' | 'saving' | 'saved'
+  >('idle')
   const autoSaveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const lastSavedContentRef = useRef<string>('')
   const savingBlogIdRef = useRef<number | undefined>(blogId)
@@ -102,6 +112,7 @@ const BlogEditor = ({ blogId, onSave }: BlogEditorProps) => {
   const [showAISuggestions, setShowAISuggestions] = useState(false)
   const [aiSuggestions, setAiSuggestions] = useState<AISuggestions | null>(null)
   const [loadingAI, setLoadingAI] = useState(false)
+  const [loadedBlog, setLoadedBlog] = useState<Blog | null>(null)
 
   // Load existing blog if editing
   useEffect(() => {
@@ -123,6 +134,7 @@ const BlogEditor = ({ blogId, onSave }: BlogEditorProps) => {
             featured_image_url: blog.featured_image_url || '',
             status: blog.status
           })
+          setLoadedBlog(blog)
         } catch (err) {
           setError(err instanceof Error ? err.message : 'Failed to load blog')
         } finally {
@@ -135,21 +147,27 @@ const BlogEditor = ({ blogId, onSave }: BlogEditorProps) => {
   }, [blogId])
 
   // Auto-save: debounced 30s after last change, only for existing blogs
-  const performAutoSave = useCallback(async (data: typeof formData, currentBlogId?: number) => {
-    if (!currentBlogId) return
+  const performAutoSave = useCallback(
+    async (data: typeof formData, currentBlogId?: number) => {
+      if (!currentBlogId) return
 
-    const contentSnapshot = JSON.stringify(data)
-    if (contentSnapshot === lastSavedContentRef.current) return
+      const contentSnapshot = JSON.stringify(data)
+      if (contentSnapshot === lastSavedContentRef.current) return
 
-    try {
-      setAutoSaveStatus('saving')
-      await APIBlogs.updateBlog(currentBlogId, { ...data, status: data.status })
-      lastSavedContentRef.current = contentSnapshot
-      setAutoSaveStatus('saved')
-    } catch {
-      setAutoSaveStatus('idle')
-    }
-  }, [])
+      try {
+        setAutoSaveStatus('saving')
+        await APIBlogs.updateBlog(currentBlogId, {
+          ...data,
+          status: data.status
+        })
+        lastSavedContentRef.current = contentSnapshot
+        setAutoSaveStatus('saved')
+      } catch {
+        setAutoSaveStatus('idle')
+      }
+    },
+    []
+  )
 
   // Set initial snapshot when blog loads
   useEffect(() => {
@@ -178,11 +196,13 @@ const BlogEditor = ({ blogId, onSave }: BlogEditorProps) => {
   }, [formData, loading, performAutoSave])
 
   // Word count and read time
-  const wordCount = formData.content.trim() ? formData.content.trim().split(/\s+/).length : 0
+  const wordCount = formData.content.trim()
+    ? formData.content.trim().split(/\s+/).length
+    : 0
   const readTime = Math.max(1, Math.ceil(wordCount / 200))
 
   const handleInputChange = (field: string, value: any) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       [field]: value
     }))
@@ -190,7 +210,7 @@ const BlogEditor = ({ blogId, onSave }: BlogEditorProps) => {
 
   const handleAddKeyword = (keyword: string) => {
     if (keyword && !formData.meta_keywords.includes(keyword)) {
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
         meta_keywords: [...prev.meta_keywords, keyword]
       }))
@@ -198,15 +218,15 @@ const BlogEditor = ({ blogId, onSave }: BlogEditorProps) => {
   }
 
   const handleRemoveKeyword = (keyword: string) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      meta_keywords: prev.meta_keywords.filter(k => k !== keyword)
+      meta_keywords: prev.meta_keywords.filter((k) => k !== keyword)
     }))
   }
 
   const handleAddTag = (tag: string) => {
     if (tag && !formData.tags.includes(tag)) {
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
         tags: [...prev.tags, tag]
       }))
@@ -214,14 +234,14 @@ const BlogEditor = ({ blogId, onSave }: BlogEditorProps) => {
   }
 
   const handleRemoveTag = (tag: string) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      tags: prev.tags.filter(t => t !== tag)
+      tags: prev.tags.filter((t) => t !== tag)
     }))
   }
 
   const handleInsertImage = (markdown: string) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       content: prev.content + '\n' + markdown + '\n'
     }))
@@ -229,7 +249,7 @@ const BlogEditor = ({ blogId, onSave }: BlogEditorProps) => {
 
   const handleFirstUpload = (url: string) => {
     if (!formData.featured_image_url) {
-      setFormData(prev => ({ ...prev, featured_image_url: url }))
+      setFormData((prev) => ({ ...prev, featured_image_url: url }))
     }
   }
 
@@ -250,7 +270,9 @@ const BlogEditor = ({ blogId, onSave }: BlogEditorProps) => {
       setAiSuggestions(response.suggestions)
       setShowAISuggestions(true)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to generate AI suggestions')
+      setError(
+        err instanceof Error ? err.message : 'Failed to generate AI suggestions'
+      )
     } finally {
       setLoadingAI(false)
     }
@@ -258,7 +280,7 @@ const BlogEditor = ({ blogId, onSave }: BlogEditorProps) => {
 
   const handleApplyAISuggestions = () => {
     if (aiSuggestions) {
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
         meta_title: aiSuggestions.meta_title,
         meta_description: aiSuggestions.meta_description,
@@ -312,7 +334,12 @@ const BlogEditor = ({ blogId, onSave }: BlogEditorProps) => {
 
   if (loading) {
     return (
-      <Box display="flex" justifyContent="center" alignItems="center" minHeight="400px">
+      <Box
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        minHeight="400px"
+      >
         <CircularProgress />
       </Box>
     )
@@ -325,7 +352,11 @@ const BlogEditor = ({ blogId, onSave }: BlogEditorProps) => {
           {blogId ? 'Edit Blog' : 'Create New Blog'}
         </Typography>
 
-        {error && <Alert severity="error" sx={{ mb: 3 }}>{error}</Alert>}
+        {error && (
+          <Alert severity="error" sx={{ mb: 3 }}>
+            {error}
+          </Alert>
+        )}
 
         <Stack spacing={3}>
           {/* Title */}
@@ -333,7 +364,7 @@ const BlogEditor = ({ blogId, onSave }: BlogEditorProps) => {
             fullWidth
             label="Blog Title"
             value={formData.title}
-            onChange={e => handleInputChange('title', e.target.value)}
+            onChange={(e) => handleInputChange('title', e.target.value)}
             inputProps={{ maxLength: 200 }}
             helperText={`${formData.title.length}/200`}
           />
@@ -345,7 +376,7 @@ const BlogEditor = ({ blogId, onSave }: BlogEditorProps) => {
             multiline
             rows={3}
             value={formData.description}
-            onChange={e => handleInputChange('description', e.target.value)}
+            onChange={(e) => handleInputChange('description', e.target.value)}
             inputProps={{ maxLength: 500 }}
             helperText={`${formData.description.length}/500`}
           />
@@ -358,7 +389,7 @@ const BlogEditor = ({ blogId, onSave }: BlogEditorProps) => {
             <Paper variant="outlined">
               <MDEditor
                 value={formData.content}
-                onChange={value => handleInputChange('content', value || '')}
+                onChange={(value) => handleInputChange('content', value || '')}
                 preview="edit"
                 hideToolbar={false}
                 visibleDragbar={true}
@@ -408,7 +439,14 @@ const BlogEditor = ({ blogId, onSave }: BlogEditorProps) => {
 
           {/* SEO Section */}
           <Box>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+            <Box
+              sx={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                mb: 2
+              }}
+            >
               <Typography variant="h6">SEO Settings</Typography>
               <Button
                 variant="outlined"
@@ -425,7 +463,9 @@ const BlogEditor = ({ blogId, onSave }: BlogEditorProps) => {
                 fullWidth
                 label="Meta Title"
                 value={formData.meta_title}
-                onChange={e => handleInputChange('meta_title', e.target.value)}
+                onChange={(e) =>
+                  handleInputChange('meta_title', e.target.value)
+                }
                 inputProps={{ maxLength: 60 }}
                 helperText={`${formData.meta_title.length}/60 - Appears in search results`}
               />
@@ -436,7 +476,9 @@ const BlogEditor = ({ blogId, onSave }: BlogEditorProps) => {
                 multiline
                 rows={2}
                 value={formData.meta_description}
-                onChange={e => handleInputChange('meta_description', e.target.value)}
+                onChange={(e) =>
+                  handleInputChange('meta_description', e.target.value)
+                }
                 inputProps={{ maxLength: 160 }}
                 helperText={`${formData.meta_description.length}/160 - Appears in search results`}
               />
@@ -450,15 +492,20 @@ const BlogEditor = ({ blogId, onSave }: BlogEditorProps) => {
                   fullWidth
                   placeholder="Type a keyword and press Enter"
                   size="small"
-                  onKeyDown={e => {
+                  onKeyDown={(e) => {
                     if (e.key === 'Enter') {
                       handleAddKeyword((e.target as HTMLInputElement).value)
                       ;(e.target as HTMLInputElement).value = ''
                     }
                   }}
                 />
-                <Stack direction="row" spacing={1} sx={{ mt: 1, flexWrap: 'wrap' }} useFlexGap>
-                  {formData.meta_keywords.map(keyword => (
+                <Stack
+                  direction="row"
+                  spacing={1}
+                  sx={{ mt: 1, flexWrap: 'wrap' }}
+                  useFlexGap
+                >
+                  {formData.meta_keywords.map((keyword) => (
                     <Chip
                       key={keyword}
                       label={keyword}
@@ -483,15 +530,20 @@ const BlogEditor = ({ blogId, onSave }: BlogEditorProps) => {
                 fullWidth
                 placeholder="Add a tag and press Enter"
                 size="small"
-                onKeyDown={e => {
+                onKeyDown={(e) => {
                   if (e.key === 'Enter') {
                     handleAddTag((e.target as HTMLInputElement).value)
                     ;(e.target as HTMLInputElement).value = ''
                   }
                 }}
               />
-              <Stack direction="row" spacing={1} sx={{ mt: 2, flexWrap: 'wrap' }} useFlexGap>
-                {formData.tags.map(tag => (
+              <Stack
+                direction="row"
+                spacing={1}
+                sx={{ mt: 2, flexWrap: 'wrap' }}
+                useFlexGap
+              >
+                {formData.tags.map((tag) => (
                   <Chip
                     key={tag}
                     label={tag}
@@ -500,6 +552,16 @@ const BlogEditor = ({ blogId, onSave }: BlogEditorProps) => {
                   />
                 ))}
               </Stack>
+              <Box sx={{ mt: 3 }}>
+                <SuggestedTagsPanel
+                  blogId={blogId}
+                  initialBlog={loadedBlog}
+                  onBlogChange={(updated) => {
+                    setLoadedBlog(updated)
+                    setFormData((prev) => ({ ...prev, tags: updated.tags }))
+                  }}
+                />
+              </Box>
             </TabPanel>
 
             <TabPanel value={tabValue} index={1}>
@@ -507,7 +569,7 @@ const BlogEditor = ({ blogId, onSave }: BlogEditorProps) => {
                 fullWidth
                 placeholder="Add a category and press Enter"
                 size="small"
-                onKeyDown={e => {
+                onKeyDown={(e) => {
                   if (e.key === 'Enter') {
                     handleInputChange('categories', [
                       ...formData.categories,
@@ -517,15 +579,20 @@ const BlogEditor = ({ blogId, onSave }: BlogEditorProps) => {
                   }
                 }}
               />
-              <Stack direction="row" spacing={1} sx={{ mt: 2, flexWrap: 'wrap' }} useFlexGap>
-                {formData.categories.map(cat => (
+              <Stack
+                direction="row"
+                spacing={1}
+                sx={{ mt: 2, flexWrap: 'wrap' }}
+                useFlexGap
+              >
+                {formData.categories.map((cat) => (
                   <Chip
                     key={cat}
                     label={cat}
                     onDelete={() =>
                       handleInputChange(
                         'categories',
-                        formData.categories.filter(c => c !== cat)
+                        formData.categories.filter((c) => c !== cat)
                       )
                     }
                     color="primary"
@@ -537,7 +604,8 @@ const BlogEditor = ({ blogId, onSave }: BlogEditorProps) => {
 
             <TabPanel value={tabValue} index={2}>
               <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                All images uploaded for this post. Use copy or insert buttons to add to content.
+                All images uploaded for this post. Use copy or insert buttons to
+                add to content.
               </Typography>
               <ImageUploader
                 images={uploadedImages}
@@ -549,9 +617,17 @@ const BlogEditor = ({ blogId, onSave }: BlogEditorProps) => {
           </Box>
 
           {/* Action Buttons */}
-          <Stack direction="row" spacing={2} sx={{ justifyContent: 'flex-end', alignItems: 'center' }}>
+          <Stack
+            direction="row"
+            spacing={2}
+            sx={{ justifyContent: 'flex-end', alignItems: 'center' }}
+          >
             {autoSaveStatus === 'saving' && (
-              <Typography variant="body2" color="text.secondary" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <Typography
+                variant="body2"
+                color="text.secondary"
+                sx={{ display: 'flex', alignItems: 'center', gap: 1 }}
+              >
                 <CircularProgress size={14} /> Saving...
               </Typography>
             )}
@@ -578,7 +654,12 @@ const BlogEditor = ({ blogId, onSave }: BlogEditorProps) => {
         </Stack>
 
         {/* AI Suggestions Dialog */}
-        <Dialog open={showAISuggestions} onClose={() => setShowAISuggestions(false)} maxWidth="sm" fullWidth>
+        <Dialog
+          open={showAISuggestions}
+          onClose={() => setShowAISuggestions(false)}
+          maxWidth="sm"
+          fullWidth
+        >
           <DialogTitle>AI-Generated Suggestions</DialogTitle>
           <DialogContent>
             {aiSuggestions && (
@@ -587,20 +668,29 @@ const BlogEditor = ({ blogId, onSave }: BlogEditorProps) => {
                   <Typography variant="subtitle2" sx={{ mb: 1 }}>
                     Meta Title
                   </Typography>
-                  <Typography variant="body2">{aiSuggestions.meta_title}</Typography>
+                  <Typography variant="body2">
+                    {aiSuggestions.meta_title}
+                  </Typography>
                 </Box>
                 <Box>
                   <Typography variant="subtitle2" sx={{ mb: 1 }}>
                     Meta Description
                   </Typography>
-                  <Typography variant="body2">{aiSuggestions.meta_description}</Typography>
+                  <Typography variant="body2">
+                    {aiSuggestions.meta_description}
+                  </Typography>
                 </Box>
                 <Box>
                   <Typography variant="subtitle2" sx={{ mb: 1 }}>
                     Keywords
                   </Typography>
-                  <Stack direction="row" spacing={1} sx={{ flexWrap: 'wrap' }} useFlexGap>
-                    {aiSuggestions.meta_keywords.map(kw => (
+                  <Stack
+                    direction="row"
+                    spacing={1}
+                    sx={{ flexWrap: 'wrap' }}
+                    useFlexGap
+                  >
+                    {aiSuggestions.meta_keywords.map((kw) => (
                       <Chip key={kw} label={kw} size="small" />
                     ))}
                   </Stack>
@@ -609,9 +699,19 @@ const BlogEditor = ({ blogId, onSave }: BlogEditorProps) => {
                   <Typography variant="subtitle2" sx={{ mb: 1 }}>
                     Suggested Tags
                   </Typography>
-                  <Stack direction="row" spacing={1} sx={{ flexWrap: 'wrap' }} useFlexGap>
-                    {aiSuggestions.tags.map(tag => (
-                      <Chip key={tag} label={tag} size="small" color="primary" />
+                  <Stack
+                    direction="row"
+                    spacing={1}
+                    sx={{ flexWrap: 'wrap' }}
+                    useFlexGap
+                  >
+                    {aiSuggestions.tags.map((tag) => (
+                      <Chip
+                        key={tag}
+                        label={tag}
+                        size="small"
+                        color="primary"
+                      />
                     ))}
                   </Stack>
                 </Box>

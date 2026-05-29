@@ -288,4 +288,80 @@ router.post('/ai/suggestions', authMiddleware, roleMiddleware([UserRole.Admin, U
   ctx.body = { suggestions }
 })
 
+/**
+ * POST /api/blogs/admin/:id/auto-tag - Manual re-run of AI auto-tagging
+ *   (Track 3). Returns the structured suggestion so the UI can show fresh
+ *   results without re-fetching the blog.
+ */
+router.post(
+  '/admin/:id/auto-tag',
+  authMiddleware,
+  roleMiddleware([UserRole.Admin, UserRole.Root]),
+  async ctx => {
+    const idParam = ctx.params['id']
+    if (!idParam) ctx.throw(new ApiError('Id is required', 400))
+
+    const blogsService = ctx.state['container'].resolve(BlogService)
+    const blog = await blogsService.getBlogById(BigInt(idParam!))
+    if (!blog) {
+      ctx.status = 404
+      ctx.body = { error: 'Blog not found' }
+      return
+    }
+    if (
+      blog.author_email !== ctx.state['user'].email &&
+      ctx.state['user'].role !== UserRole.Root
+    ) {
+      ctx.throw(new ApiError('Insufficient privileges', 403))
+    }
+
+    const result = await blogsService.runAutoTag(blog)
+    const refreshed = await blogsService.getBlogById(blog.id)
+    ctx.body = { result, blog: refreshed }
+  }
+)
+
+/**
+ * POST /api/blogs/admin/:id/auto-tag/apply - Apply admin decisions on the
+ *   latest AI suggestions: merge accepted tags into blog.tags, remember
+ *   rejected tags so the next AI run won't re-propose them.
+ */
+router.post(
+  '/admin/:id/auto-tag/apply',
+  authMiddleware,
+  roleMiddleware([UserRole.Admin, UserRole.Root]),
+  async ctx => {
+    const idParam = ctx.params['id']
+    if (!idParam) ctx.throw(new ApiError('Id is required', 400))
+
+    const body = (ctx.request.body || {}) as { accepted?: unknown; rejected?: unknown }
+    const accepted = Array.isArray(body.accepted)
+      ? body.accepted.filter((t): t is string => typeof t === 'string')
+      : []
+    const rejected = Array.isArray(body.rejected)
+      ? body.rejected.filter((t): t is string => typeof t === 'string')
+      : []
+
+    const blogsService = ctx.state['container'].resolve(BlogService)
+    const existing = await blogsService.getBlogById(BigInt(idParam!))
+    if (!existing) {
+      ctx.status = 404
+      ctx.body = { error: 'Blog not found' }
+      return
+    }
+    if (
+      existing.author_email !== ctx.state['user'].email &&
+      ctx.state['user'].role !== UserRole.Root
+    ) {
+      ctx.throw(new ApiError('Insufficient privileges', 403))
+    }
+
+    const updated = await blogsService.applyAutoTagDecisions(BigInt(idParam!), {
+      accepted,
+      rejected
+    })
+    ctx.body = { blog: updated }
+  }
+)
+
 export default router

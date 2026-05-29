@@ -1,32 +1,151 @@
 import { injectable, inject } from 'tsyringe'
 import { Anthropic } from '@anthropic-ai/sdk'
 import { BlogRepository } from '../repository/blogs.js'
-import type { Blog, CreateBlogInput, BlogFilters, AISuggestions } from '../types/blog.js'
+import type {
+  Blog,
+  BlogSuggestedTags,
+  CreateBlogInput,
+  BlogFilters,
+  AISuggestions
+} from '../types/blog.js'
 import { deleteFromCloudinary } from '../utils/cloudinary.js'
 import { getMarketContext } from '../utils/aiPromptContext.js'
+import { BlogAutoTagService, type AutoTagResult } from './blogAutoTagService.js'
 
 @injectable()
 export class BlogService {
   private anthropic: Anthropic
+  private autoTagService: BlogAutoTagService
 
   constructor(@inject(BlogRepository) private blogRepo: BlogRepository) {
     this.anthropic = new Anthropic({
       apiKey: process.env['ANTHROPIC_API_KEY'] || ''
     })
+    this.autoTagService = new BlogAutoTagService()
   }
 
   /**
-   * Create a new blog post
+   * Create a new blog post and kick off async AI auto-tagging.
+   * Auto-tagging runs in the background — never blocks the response, never
+   * throws back into the caller.
    */
   async createBlog(input: CreateBlogInput): Promise<Blog> {
-    return this.blogRepo.createBlog(input)
+    const blog = await this.blogRepo.createBlog(input)
+    this.runAutoTagAsync(blog).catch(err =>
+      console.error('[BlogService.createBlog] auto-tag scheduling error', err)
+    )
+    return blog
   }
 
   /**
-   * Update a blog post
+   * Update a blog post and kick off async AI auto-tagging if title or content
+   * changed materially.
    */
   async updateBlog(id: bigint, input: Partial<CreateBlogInput>): Promise<Blog> {
-    return this.blogRepo.updateBlog(id, input)
+    const updated = await this.blogRepo.updateBlog(id, input)
+    const shouldRetag = input.title !== undefined || input.content !== undefined
+    if (shouldRetag) {
+      this.runAutoTagAsync(updated).catch(err =>
+        console.error('[BlogService.updateBlog] auto-tag scheduling error', err)
+      )
+    }
+    return updated
+  }
+
+  /**
+   * Trigger AI tagging for an existing blog and return the structured result.
+   * Synchronous wrt the caller — used by the manual re-run endpoint and the
+   * backfill script.
+   */
+  async runAutoTag(blog: Blog): Promise<AutoTagResult> {
+    const result = await this.autoTagService.suggest({
+      title: blog.title,
+      content: blog.content,
+      excerpt: blog.description,
+      rejected: blog.rejected_tags || []
+    })
+
+    if (!result.meta.ok) {
+      // Still persist a record of the failed run so admins know auto-tagging
+      // was attempted. Don't touch tags[] when AI fails.
+      const blob: BlogSuggestedTags = {
+        ...result.structured,
+        model: result.meta.model,
+        ran_at: result.meta.ran_at,
+        input_tokens: result.meta.input_tokens,
+        output_tokens: result.meta.output_tokens,
+        truncated: result.meta.truncated,
+        input_size_bytes: result.meta.input_size_bytes,
+        ok: false,
+        ...(result.meta.error !== undefined ? { error: result.meta.error } : {})
+      }
+      await this.blogRepo.updateAutoTagColumns(blog.id, {
+        suggested_tags: blob,
+        auto_tagged_at: new Date()
+      })
+      return result
+    }
+
+    const blob: BlogSuggestedTags = {
+      ...result.structured,
+      model: result.meta.model,
+      ran_at: result.meta.ran_at,
+      input_tokens: result.meta.input_tokens,
+      output_tokens: result.meta.output_tokens,
+      truncated: result.meta.truncated,
+      input_size_bytes: result.meta.input_size_bytes,
+      ok: true
+    }
+
+    // First-run convenience: if tags[] is empty, auto-apply the suggestions
+    // immediately so the post has SEO tags out of the box. Otherwise, leave
+    // tags[] alone — the admin reviews via the suggested-tags panel.
+    const shouldAutoApply = !blog.tags || blog.tags.length === 0
+    await this.blogRepo.updateAutoTagColumns(blog.id, {
+      suggested_tags: blob,
+      auto_tagged_at: new Date(),
+      ...(shouldAutoApply ? { tags: result.flatTags, ai_suggested_tags: true } : {})
+    })
+
+    return result
+  }
+
+  /** Background-safe wrapper: never throws. */
+  private async runAutoTagAsync(blog: Blog): Promise<void> {
+    try {
+      await this.runAutoTag(blog)
+    } catch (err) {
+      console.error('[BlogService.runAutoTagAsync] failed', err)
+    }
+  }
+
+  /**
+   * Apply admin-accepted/rejected suggestion decisions.
+   * Accepted tags merge into blogs.tags. Rejected tags are stored so the
+   * next AI run won't re-propose them.
+   */
+  async applyAutoTagDecisions(
+    id: bigint,
+    decisions: { accepted: string[]; rejected: string[] }
+  ): Promise<Blog | null> {
+    const blog = await this.blogRepo.getBlogById(id)
+    if (!blog) return null
+
+    const mergedTags = Array.from(new Set([...(blog.tags || []), ...decisions.accepted]))
+    const mergedRejected = Array.from(
+      new Set([...(blog.rejected_tags || []), ...decisions.rejected])
+    )
+
+    const updateFields: Parameters<typeof this.blogRepo.updateAutoTagColumns>[1] = {
+      tags: mergedTags,
+      rejected_tags: mergedRejected
+    }
+    if (decisions.accepted.length > 0) {
+      updateFields.ai_suggested_tags = true
+    }
+    await this.blogRepo.updateAutoTagColumns(id, updateFields)
+
+    return this.blogRepo.getBlogById(id)
   }
 
   /**

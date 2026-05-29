@@ -24,7 +24,14 @@ import '@uiw/react-markdown-preview/markdown.css'
 const MDEditor = dynamic(() => import('@uiw/react-md-editor'), {
   ssr: false,
   loading: () => (
-    <Box sx={{ height: 400, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+    <Box
+      sx={{
+        height: 400,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center'
+      }}
+    >
       <CircularProgress />
     </Box>
   )
@@ -91,7 +98,12 @@ export default function BlogImportPage() {
       if (!result.title) {
         try {
           const parsed = new URL(urlInput.trim())
-          result.title = parsed.pathname.split('/').filter(Boolean).pop()?.replace(/-/g, ' ') || 'Imported Post'
+          result.title =
+            parsed.pathname
+              .split('/')
+              .filter(Boolean)
+              .pop()
+              ?.replace(/-/g, ' ') || 'Imported Post'
         } catch {
           result.title = 'Imported Post'
         }
@@ -113,7 +125,10 @@ export default function BlogImportPage() {
 
     try {
       const title = importData.title || 'Imported Post'
-      const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
+      const slug = title
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-|-$/g, '')
 
       const blogData = {
         title,
@@ -131,6 +146,9 @@ export default function BlogImportPage() {
         meta_keywords: [] as string[],
         ai_suggested_meta: false,
         ai_suggested_tags: false,
+        suggested_tags: null,
+        rejected_tags: [] as string[],
+        auto_tagged_at: null,
         published_at: null
       }
 
@@ -157,15 +175,28 @@ export default function BlogImportPage() {
   return (
     <Container maxWidth="lg">
       <Box sx={{ py: 4 }}>
-        <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 4 }}>
+        <Stack
+          direction="row"
+          justifyContent="space-between"
+          alignItems="center"
+          sx={{ mb: 4 }}
+        >
           <Typography variant="h3">Import Blog Post</Typography>
           <Button variant="outlined" onClick={() => router.push('/admin/blog')}>
             Back to Blog List
           </Button>
         </Stack>
 
-        {error && <Alert severity="error" sx={{ mb: 3 }}>{error}</Alert>}
-        {success && <Alert severity="success" sx={{ mb: 3 }}>{success}</Alert>}
+        {error && (
+          <Alert severity="error" sx={{ mb: 3 }}>
+            {error}
+          </Alert>
+        )}
+        {success && (
+          <Alert severity="success" sx={{ mb: 3 }}>
+            {success}
+          </Alert>
+        )}
 
         {!importData ? (
           <Paper sx={{ p: 3 }}>
@@ -174,8 +205,16 @@ export default function BlogImportPage() {
               onChange={(_, value) => setTabIndex(value)}
               sx={{ mb: 3 }}
             >
-              <Tab label="Paste HTML" id="import-tab-0" aria-controls="import-tabpanel-0" />
-              <Tab label="Import from URL" id="import-tab-1" aria-controls="import-tabpanel-1" />
+              <Tab
+                label="Paste HTML"
+                id="import-tab-0"
+                aria-controls="import-tabpanel-0"
+              />
+              <Tab
+                label="Import from URL"
+                id="import-tab-1"
+                aria-controls="import-tabpanel-1"
+              />
             </Tabs>
 
             {/* Paste HTML Tab */}
@@ -188,7 +227,8 @@ export default function BlogImportPage() {
               {tabIndex === 0 && (
                 <Stack spacing={3}>
                   <Typography variant="body2" color="text.secondary">
-                    Paste the HTML source of a blog post. The converter will extract the content and convert it to markdown.
+                    Paste the HTML source of a blog post. The converter will
+                    extract the content and convert it to markdown.
                   </Typography>
                   <TextField
                     fullWidth
@@ -197,10 +237,12 @@ export default function BlogImportPage() {
                     label="HTML Content"
                     placeholder="<article>&#10;  <h1>My Blog Post</h1>&#10;  <p>Content here...</p>&#10;</article>"
                     value={htmlInput}
-                    onChange={e => setHtmlInput(e.target.value)}
+                    onChange={(e) => setHtmlInput(e.target.value)}
                     sx={{ fontFamily: 'monospace' }}
                     slotProps={{
-                      input: { sx: { fontFamily: 'monospace', fontSize: '0.875rem' } }
+                      input: {
+                        sx: { fontFamily: 'monospace', fontSize: '0.875rem' }
+                      }
                     }}
                   />
                   <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
@@ -226,15 +268,16 @@ export default function BlogImportPage() {
               {tabIndex === 1 && (
                 <Stack spacing={3}>
                   <Typography variant="body2" color="text.secondary">
-                    Enter the URL of a blog post to fetch and convert its content to markdown.
+                    Enter the URL of a blog post to fetch and convert its
+                    content to markdown.
                   </Typography>
                   <TextField
                     fullWidth
                     label="Blog Post URL"
                     placeholder="https://example.com/blog/my-post"
                     value={urlInput}
-                    onChange={e => setUrlInput(e.target.value)}
-                    onKeyDown={e => {
+                    onChange={(e) => setUrlInput(e.target.value)}
+                    onKeyDown={(e) => {
                       if (e.key === 'Enter') handleFetchUrl()
                     }}
                   />
@@ -243,7 +286,9 @@ export default function BlogImportPage() {
                       variant="contained"
                       onClick={handleFetchUrl}
                       disabled={!urlInput.trim() || loading}
-                      startIcon={loading ? <CircularProgress size={20} /> : undefined}
+                      startIcon={
+                        loading ? <CircularProgress size={20} /> : undefined
+                      }
                     >
                       {loading ? 'Fetching...' : 'Fetch & Convert'}
                     </Button>
@@ -256,34 +301,59 @@ export default function BlogImportPage() {
           <Stack spacing={3}>
             {/* Extracted Metadata */}
             <Paper sx={{ p: 3 }}>
-              <Typography variant="h6" sx={{ mb: 2 }}>Extracted Metadata</Typography>
+              <Typography variant="h6" sx={{ mb: 2 }}>
+                Extracted Metadata
+              </Typography>
               <Stack spacing={2}>
                 <Box>
-                  <Typography variant="subtitle2" color="text.secondary">Title</Typography>
-                  <Typography>{importData.title || 'No title found'}</Typography>
+                  <Typography variant="subtitle2" color="text.secondary">
+                    Title
+                  </Typography>
+                  <Typography>
+                    {importData.title || 'No title found'}
+                  </Typography>
                 </Box>
                 {importData.metaDescription && (
                   <Box>
-                    <Typography variant="subtitle2" color="text.secondary">Meta Description</Typography>
-                    <Typography variant="body2">{importData.metaDescription}</Typography>
+                    <Typography variant="subtitle2" color="text.secondary">
+                      Meta Description
+                    </Typography>
+                    <Typography variant="body2">
+                      {importData.metaDescription}
+                    </Typography>
                   </Box>
                 )}
                 {importData.images.length > 0 && (
                   <Box>
-                    <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 1 }}>
+                    <Typography
+                      variant="subtitle2"
+                      color="text.secondary"
+                      sx={{ mb: 1 }}
+                    >
                       Images Found ({importData.images.length})
                     </Typography>
-                    <Stack direction="row" spacing={1} sx={{ flexWrap: 'wrap' }} useFlexGap>
+                    <Stack
+                      direction="row"
+                      spacing={1}
+                      sx={{ flexWrap: 'wrap' }}
+                      useFlexGap
+                    >
                       {importData.images.slice(0, 10).map((img, i) => (
                         <Chip
                           key={i}
-                          label={img.split('/').pop()?.substring(0, 30) || `Image ${i + 1}`}
+                          label={
+                            img.split('/').pop()?.substring(0, 30) ||
+                            `Image ${i + 1}`
+                          }
                           size="small"
                           variant="outlined"
                         />
                       ))}
                       {importData.images.length > 10 && (
-                        <Chip label={`+${importData.images.length - 10} more`} size="small" />
+                        <Chip
+                          label={`+${importData.images.length - 10} more`}
+                          size="small"
+                        />
                       )}
                     </Stack>
                   </Box>
@@ -293,12 +363,16 @@ export default function BlogImportPage() {
 
             {/* Markdown Preview */}
             <Paper sx={{ p: 3 }}>
-              <Typography variant="h6" sx={{ mb: 2 }}>Content Preview</Typography>
+              <Typography variant="h6" sx={{ mb: 2 }}>
+                Content Preview
+              </Typography>
               <MDEditor
                 value={importData.markdown}
-                onChange={value => setImportData(prev =>
-                  prev ? { ...prev, markdown: value || '' } : null
-                )}
+                onChange={(value) =>
+                  setImportData((prev) =>
+                    prev ? { ...prev, markdown: value || '' } : null
+                  )
+                }
                 preview="preview"
                 hideToolbar={false}
                 height={400}

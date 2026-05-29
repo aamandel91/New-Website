@@ -22,9 +22,36 @@ export interface Blog {
   ai_suggested_meta: boolean
   ai_suggested_tags: boolean
 
+  // Auto-tagging (Track 3)
+  suggested_tags: BlogSuggestedTags | null
+  rejected_tags: string[]
+  auto_tagged_at: Date | null
+
   published_at: Date | null
   created_at: Date
   updated_at: Date
+}
+
+/**
+ * Persisted AI suggestion blob (jsonb). Mirrors AutoTagResult but kept here
+ * to avoid coupling the public Blog type to service internals.
+ */
+export interface BlogSuggestedTags {
+  cities: string[]
+  neighborhoods: string[]
+  counties: string[]
+  topics: string[]
+  audience: string[]
+  seasonality: string[]
+  reasoning?: string
+  model: string
+  ran_at: string
+  input_tokens: number
+  output_tokens: number
+  truncated: boolean
+  input_size_bytes: number
+  ok: boolean
+  error?: string
 }
 
 export interface BlogTag {

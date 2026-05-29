@@ -1,6 +1,13 @@
 import { injectable, inject } from 'tsyringe'
 import type { Knex } from 'knex'
-import type { Blog, CreateBlogInput, BlogFilters, BlogTag, BlogCategory } from '../types/blog.js'
+import type {
+  Blog,
+  BlogSuggestedTags,
+  CreateBlogInput,
+  BlogFilters,
+  BlogTag,
+  BlogCategory
+} from '../types/blog.js'
 
 @injectable()
 export class BlogRepository {
@@ -204,15 +211,75 @@ export class BlogRepository {
   }
 
   /**
+   * Update only the auto-tag related columns. Used by the auto-tag pipeline
+   * so blog edits flowing through updateBlog don't accidentally clobber
+   * suggestions (and vice versa).
+   */
+  async updateAutoTagColumns(
+    id: bigint,
+    fields: {
+      suggested_tags?: BlogSuggestedTags | null
+      rejected_tags?: string[]
+      auto_tagged_at?: Date | null
+      tags?: string[]
+      ai_suggested_tags?: boolean
+    }
+  ): Promise<void> {
+    const updateData: Record<string, unknown> = { updated_at: new Date() }
+    if (fields.suggested_tags !== undefined) {
+      updateData['suggested_tags'] =
+        fields.suggested_tags === null ? null : JSON.stringify(fields.suggested_tags)
+    }
+    if (fields.rejected_tags !== undefined) {
+      updateData['rejected_tags'] = JSON.stringify(fields.rejected_tags)
+    }
+    if (fields.auto_tagged_at !== undefined) {
+      updateData['auto_tagged_at'] = fields.auto_tagged_at
+    }
+    if (fields.tags !== undefined) {
+      updateData['tags'] = JSON.stringify(fields.tags)
+    }
+    if (fields.ai_suggested_tags !== undefined) {
+      updateData['ai_suggested_tags'] = fields.ai_suggested_tags
+    }
+    await this.db('blogs').where({ id }).update(updateData)
+  }
+
+  /**
+   * Return blogs missing auto_tagged_at (used by the backfill script).
+   */
+  async getBlogsMissingAutoTags(limit = 500): Promise<Blog[]> {
+    const rows = await this.db('blogs')
+      .whereNull('auto_tagged_at')
+      .orderBy('created_at', 'asc')
+      .limit(limit)
+    return rows.map(b => this.formatBlog(b))
+  }
+
+  /**
    * Format blog from database (parse JSON fields)
    */
   private formatBlog(blog: any): Blog {
+    const parseJsonField = (v: unknown, fallback: unknown) => {
+      if (v === null || v === undefined) return fallback
+      if (typeof v === 'string') {
+        try {
+          return JSON.parse(v)
+        } catch {
+          return fallback
+        }
+      }
+      return v
+    }
     return {
       ...blog,
       id: BigInt(blog.id),
       tags: Array.isArray(blog.tags) ? blog.tags : JSON.parse(blog.tags || '[]'),
       categories: Array.isArray(blog.categories) ? blog.categories : JSON.parse(blog.categories || '[]'),
-      meta_keywords: Array.isArray(blog.meta_keywords) ? blog.meta_keywords : JSON.parse(blog.meta_keywords || '[]')
+      meta_keywords: Array.isArray(blog.meta_keywords) ? blog.meta_keywords : JSON.parse(blog.meta_keywords || '[]'),
+      suggested_tags: parseJsonField(blog.suggested_tags, null) as BlogSuggestedTags | null,
+      rejected_tags: parseJsonField(blog.rejected_tags, []) as string[],
+      auto_tagged_at: blog.auto_tagged_at ? new Date(blog.auto_tagged_at) : null
     }
   }
 
