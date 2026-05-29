@@ -64,7 +64,7 @@ const PropertyNeighborhood: React.FC<PropertyNeighborhoodProps> = ({
           underline="hover"
           sx={{ fontWeight: 500 }}
         >
-          Explore homes in {neighborhood}
+          {neighborhood} Homes for Sale
         </Link>
         {city && cityStateSlug && (
           <Link
@@ -72,7 +72,7 @@ const PropertyNeighborhood: React.FC<PropertyNeighborhoodProps> = ({
             underline="hover"
             sx={{ fontWeight: 500 }}
           >
-            See all {city} homes
+            {city} Homes for Sale
           </Link>
         )}
       </Box>

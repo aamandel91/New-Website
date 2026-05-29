@@ -205,7 +205,7 @@ const RelatedBlogs: React.FC<RelatedBlogsProps> = ({
             }}
           >
             <ArticleIcon fontSize="small" />
-            View all articles →
+            Real Estate Blog &amp; Buying Guides →
           </MuiLink>
         </Link>
       </Box>

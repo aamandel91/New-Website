@@ -112,7 +112,15 @@ export default function ListingsGrid({
         <Box sx={{ mt: 3, textAlign: 'center' }}>
           <Link href={viewAllHref} underline="hover">
             <Typography variant="body1" color="primary" fontWeight="bold">
-              View All {totalCount.toLocaleString()} Listings →
+              {(() => {
+                const parts: string[] = []
+                if (city) parts.push(city)
+                if (neighborhood) parts.push(neighborhood)
+                if (propertyType) parts.push(propertyType)
+                if (zip) parts.push(zip)
+                const scope = parts.length > 0 ? parts.join(' ') : 'Florida'
+                return `Browse All ${totalCount.toLocaleString()} ${scope} Homes for Sale →`
+              })()}
             </Typography>
           </Link>
         </Box>

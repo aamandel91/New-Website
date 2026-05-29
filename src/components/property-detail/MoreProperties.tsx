@@ -182,8 +182,8 @@ const MoreProperties: React.FC<MorePropertiesProps> = ({
             legacyBehavior
           >
             <MuiLink variant="body2" fontWeight="medium">
-              View all {filteredProperties.length} properties in{' '}
-              {neighborhood || city || 'this area'} →
+              {neighborhood || city || 'Florida'} Homes for Sale (
+              {filteredProperties.length} listings) →
             </MuiLink>
           </Link>
         </Box>

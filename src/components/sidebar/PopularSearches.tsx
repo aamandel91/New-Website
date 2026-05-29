@@ -8,16 +8,16 @@ function slugify(text: string): string {
 }
 
 const searches = [
-  { label: 'Just Listed', param: 'sortBy=createdOnDesc' },
+  { label: 'Just Listed Homes', param: 'sortBy=createdOnDesc' },
   { label: 'Open Houses', param: 'minOpenHouseDate=today' },
   { label: 'Pool Homes', slug: 'pool-homes' },
-  { label: '1 Story', slug: 'one-story' },
-  { label: 'Gated', slug: 'gated-communities' },
-  { label: '55+', slug: '55-plus' },
-  { label: 'No HOA', slug: 'no-hoa' },
-  { label: 'Foreclosures', slug: 'foreclosures' },
-  { label: 'Pet Friendly', slug: 'pet-friendly-condos' },
-  { label: 'Price Reduced', param: 'sortBy=priceReducedDate' },
+  { label: '1 Story Homes', slug: 'one-story' },
+  { label: 'Gated Communities', slug: 'gated-communities' },
+  { label: '55+ Communities', slug: '55-plus' },
+  { label: 'No HOA Homes', slug: 'no-hoa' },
+  { label: 'Foreclosure Homes', slug: 'foreclosures' },
+  { label: 'Pet Friendly Condos', slug: 'pet-friendly-condos' },
+  { label: 'Price Reduced Homes', param: 'sortBy=priceReducedDate' },
 ]
 
 interface PopularSearchesProps {

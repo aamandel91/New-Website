@@ -144,7 +144,7 @@ const ExploreLifestyles = () => {
                     '&:hover': { borderColor: '#fff', bgcolor: 'rgba(255,255,255,0.15)' }
                   }}
                 >
-                  View Listings
+                  {tile.label} Homes
                 </Button>
               </Box>
             </Link>

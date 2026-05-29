@@ -114,7 +114,7 @@ const ExploreMore: React.FC<ExploreMoreProps> = ({ property, similarProperties =
               legacyBehavior
             >
               <MuiLink variant="body2" underline="hover" fontWeight="bold">
-                Browse {neighborhood} listings →
+                {neighborhood} Homes for Sale →
               </MuiLink>
             </Link>
             {previewCards.length > 0 && (
@@ -142,7 +142,7 @@ const ExploreMore: React.FC<ExploreMoreProps> = ({ property, similarProperties =
               legacyBehavior
             >
               <MuiLink variant="body2" underline="hover" fontWeight="bold">
-                Search {typeLabel.toLowerCase()} in {city} →
+                {city} {typeLabel} for Sale →
               </MuiLink>
             </Link>
             {previewCards.length > 0 && (
@@ -167,7 +167,7 @@ const ExploreMore: React.FC<ExploreMoreProps> = ({ property, similarProperties =
               legacyBehavior
             >
               <MuiLink variant="body2" underline="hover" fontWeight="bold">
-                See homes under ${formatCompactPrice(nextTier)} →
+                {city} Homes Under ${formatCompactPrice(nextTier)} →
               </MuiLink>
             </Link>
           </Box>

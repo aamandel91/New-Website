@@ -8,14 +8,14 @@ function slugify(text: string): string {
 }
 
 const browseTypes = [
-  { label: 'Single Family', slug: 'single-family-homes' },
-  { label: 'Condos', slug: 'condos' },
-  { label: 'Townhomes', slug: 'townhomes' },
-  { label: 'Luxury', slug: 'luxury' },
-  { label: 'Waterfront', slug: 'waterfront' },
-  { label: 'New Construction', slug: 'new-construction' },
-  { label: '1+ Acre', slug: 'one-acre-plus' },
-  { label: 'Multi-Family', slug: 'multi-family' },
+  { label: 'Single Family Homes', slug: 'single-family-homes' },
+  { label: 'Condos for Sale', slug: 'condos' },
+  { label: 'Townhomes for Sale', slug: 'townhomes' },
+  { label: 'Luxury Homes', slug: 'luxury' },
+  { label: 'Waterfront Homes', slug: 'waterfront' },
+  { label: 'New Construction Homes', slug: 'new-construction' },
+  { label: '1+ Acre Homes', slug: 'one-acre-plus' },
+  { label: 'Multi-Family Homes', slug: 'multi-family' },
 ]
 
 interface BrowseByTypeProps {

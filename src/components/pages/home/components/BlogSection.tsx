@@ -134,7 +134,7 @@ const BlogSection = () => {
                 '&:hover': { borderColor: '#fff', bgcolor: 'rgba(255,255,255,0.1)' },
               }}
             >
-              Read More
+              Read Real Estate Blog
             </Button>
           </Link>
         </Box>

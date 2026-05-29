@@ -206,7 +206,7 @@ export default function SellPage() {
                       '&:hover': { bgcolor: NAVY, color: 'white' },
                     }}
                   >
-                    Learn More
+                    Get Started
                   </Button>
                 </Paper>
               </Grid>

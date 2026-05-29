@@ -118,22 +118,22 @@ const Footer = () => {
           {/* NAVIGATION */}
           <Grid size={{ xs: 12, sm: 6, md: 3 }}>
             <Typography sx={COLUMN_HEADING_SX}>Navigation</Typography>
-            <Link href="/search" sx={FOOTER_LINK_SX}>Search</Link>
-            <Link href={`/${primaryCitySlug}`} sx={FOOTER_LINK_SX}>Cities</Link>
-            <Link href="/search?state=FL" sx={FOOTER_LINK_SX}>Counties</Link>
-            <Link href={`/${primaryCitySlug}/single-family-homes`} sx={FOOTER_LINK_SX}>Property Type</Link>
-            <Link href="/sell" sx={FOOTER_LINK_SX}>Sell</Link>
-            <Link href="/blog" sx={FOOTER_LINK_SX}>Blog</Link>
+            <Link href="/search" sx={FOOTER_LINK_SX}>Search Florida Homes</Link>
+            <Link href={`/${primaryCitySlug}`} sx={FOOTER_LINK_SX}>{primaryCity} Real Estate</Link>
+            <Link href="/search?state=FL" sx={FOOTER_LINK_SX}>Florida Counties</Link>
+            <Link href={`/${primaryCitySlug}/single-family-homes`} sx={FOOTER_LINK_SX}>{primaryCity} Single Family Homes</Link>
+            <Link href="/sell" sx={FOOTER_LINK_SX}>Sell Your Home</Link>
+            <Link href="/blog" sx={FOOTER_LINK_SX}>Real Estate Blog</Link>
           </Grid>
 
           {/* POPULAR SEARCHES */}
           <Grid size={{ xs: 12, sm: 6, md: 3 }}>
             <Typography sx={COLUMN_HEADING_SX}>Popular Searches</Typography>
-            <Link href="/search?sort=createdOnHigh" sx={FOOTER_LINK_SX}>Newest Listings</Link>
-            <Link href={`/${primaryCitySlug}/single-family-homes`} sx={FOOTER_LINK_SX}>Single Family Homes</Link>
-            <Link href={`/${primaryCitySlug}/condos`} sx={FOOTER_LINK_SX}>Condos</Link>
-            <Link href={`/${primaryCitySlug}/luxury`} sx={FOOTER_LINK_SX}>Luxury Homes</Link>
-            <Link href={`/${primaryCitySlug}/waterfront`} sx={FOOTER_LINK_SX}>Waterfront Homes</Link>
+            <Link href="/search?sort=createdOnHigh" sx={FOOTER_LINK_SX}>Newest {primaryCity} Listings</Link>
+            <Link href={`/${primaryCitySlug}/single-family-homes`} sx={FOOTER_LINK_SX}>{primaryCity} Single Family Homes</Link>
+            <Link href={`/${primaryCitySlug}/condos`} sx={FOOTER_LINK_SX}>{primaryCity} Condos for Sale</Link>
+            <Link href={`/${primaryCitySlug}/luxury`} sx={FOOTER_LINK_SX}>{primaryCity} Luxury Homes</Link>
+            <Link href={`/${primaryCitySlug}/waterfront`} sx={FOOTER_LINK_SX}>{primaryCity} Waterfront Homes</Link>
           </Grid>
         </Grid>
       </Container>

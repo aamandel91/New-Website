@@ -168,7 +168,7 @@ const RelatedListings: React.FC<RelatedListingsProps> = ({
         <Box sx={{ mt: 2 }}>
           <Link href={`/search/grid?city=${encodeURIComponent(searchCity)}`} passHref legacyBehavior>
             <MuiLink variant="body2" fontWeight="bold" underline="hover">
-              View all listings in {searchCity} →
+              {searchCity} Homes for Sale →
             </MuiLink>
           </Link>
         </Box>

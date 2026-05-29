@@ -38,7 +38,7 @@ export default async function OfferPage(props: PageProps) {
             <Alert severity="warning">
               The address in this URL could not be parsed.
             </Alert>
-            <Button variant="contained" href="/homes">Browse Homes</Button>
+            <Button variant="contained" href="/homes">Browse Florida Homes for Sale</Button>
           </Stack>
         </Paper>
       </Container>

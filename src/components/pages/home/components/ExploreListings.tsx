@@ -174,7 +174,7 @@ const ExploreListings = () => {
                     '&:hover': { borderColor: '#fff', bgcolor: 'rgba(255,255,255,0.15)' }
                   }}
                 >
-                  View Listings
+                  {area.label} Homes
                 </Button>
               </Box>
             </Link>

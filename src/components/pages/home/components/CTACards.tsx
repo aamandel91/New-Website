@@ -20,7 +20,7 @@ const CTA_ITEMS = [
   {
     title: 'LIST YOUR HOME WITH US',
     description: 'We will sell your home faster and for a better price with our proven marketing strategies.',
-    buttonLabel: 'Learn More',
+    buttonLabel: 'Sell Your Home',
     href: '/sell',
     gradient: 'linear-gradient(135deg, #0F1621 0%, #1a3a4a 100%)'
   }
