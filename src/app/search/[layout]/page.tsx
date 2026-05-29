@@ -2,9 +2,12 @@ import { type Metadata } from 'next'
 import { features } from 'features'
 import { type Position } from 'geojson'
 
+import { Container } from '@mui/material'
+
 import { Page404Template, PageTemplate } from '@templates'
 import MapPageContent from '@pages/search'
 import StructuredData from '@shared/StructuredData'
+import RelatedReading from '@shared/RelatedReading'
 import { breadcrumbSchema } from 'utils/structuredData'
 import { tenant } from '@/configs/tenant.config'
 
@@ -133,6 +136,8 @@ const MapPage = async (props: {
 
   if (!features.map) return <Page404Template />
 
+  const searchLocation = pickStr(searchParams.location)
+
   return (
     <PageTemplate noFooter>
       <StructuredData
@@ -153,6 +158,14 @@ const MapPage = async (props: {
           </AiSearchProvider>
         </SearchProvider>
       </MapOptionsProvider>
+      {/* Slim related-reading footer — SEO-focused, hidden if no matches */}
+      <Container maxWidth="lg" sx={{ pb: 4 }}>
+        <RelatedReading
+          pageType="search"
+          variant="slim"
+          {...(searchLocation ? { city: searchLocation } : {})}
+        />
+      </Container>
     </PageTemplate>
   )
 }

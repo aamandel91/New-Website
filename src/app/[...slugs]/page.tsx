@@ -7,6 +7,7 @@ import ListingsGrid from '@shared/ListingsGrid'
 import AreaValueTrends from '@shared/AreaValueTrends'
 import MarketTimelineGraph from '@shared/MarketTimelineGraph'
 import StructuredData from '@shared/StructuredData'
+import RelatedReading from '@shared/RelatedReading'
 import PageWithSidebar from '@/components/layouts/PageWithSidebar'
 import CitySidebar from '@/components/sidebar/CitySidebar'
 
@@ -418,6 +419,14 @@ async function renderPropertyTypePage(parsed: ParsedCleanSlug, baseUrl: string) 
               ))}
           </Box>
         </Box>
+
+        {/* Related Reading — blog cross-linking via tag match */}
+        <RelatedReading
+          pageType="property_type"
+          subtype={parsed.subType}
+          propertyType={parsed.subType}
+          propertyTypeLabel={stConfig.label}
+        />
       </Container>
 
       <StructuredData
@@ -698,6 +707,13 @@ async function renderCityPage(
               </Link>
             </Box>
           </Box>
+
+          {/* Related Reading — blog cross-linking via tag match */}
+          <RelatedReading
+            pageType="city"
+            city={cityName}
+            citySlug={parsed.city}
+          />
         </PageWithSidebar>
       </Container>
       {process.env.NODE_ENV === 'development' && (
@@ -787,6 +803,15 @@ async function renderSubTypePage(
               ))}
             </Box>
           </Box>
+
+          {/* Related Reading — blog cross-linking via tag match */}
+          <RelatedReading
+            pageType="city_subtype"
+            city={cityName}
+            citySlug={parsed.city}
+            subtype={parsed.subType}
+            subtypeLabel={stConfig.label}
+          />
         </PageWithSidebar>
       </Container>
       {process.env.NODE_ENV === 'development' && (
@@ -865,6 +890,14 @@ async function renderNeighborhoodPage(
               </Link>
             </Box>
           </Box>
+
+          {/* Related Reading — blog cross-linking via tag match */}
+          <RelatedReading
+            pageType="neighborhood"
+            city={cityName}
+            citySlug={parsed.city}
+            neighborhood={neighborhoodName}
+          />
         </PageWithSidebar>
       </Container>
       {process.env.NODE_ENV === 'development' && (
@@ -922,6 +955,14 @@ async function renderZipPage(
               </Link>
             </Box>
           </Box>
+
+          {/* Related Reading — blog cross-linking via tag match */}
+          <RelatedReading
+            pageType="zip"
+            city={cityName}
+            citySlug={parsed.city}
+            zip={zip}
+          />
         </PageWithSidebar>
       </Container>
       {process.env.NODE_ENV === 'development' && (

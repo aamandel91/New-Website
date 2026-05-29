@@ -21,6 +21,7 @@ import aiContentRouter from './aiContent.js';
 import placesRouter from './places.js';
 import searchWithSchoolsRouter from './searchWithSchools.js';
 import seoMetaTemplatesRouter from './seoMetaTemplates.js';
+import relatedBlogPostsRouter from './relatedBlogPosts.js';
 const router = new Router({
    prefix: "/api"
 });
@@ -46,4 +47,5 @@ router.use(aiContentRouter.routes(), aiContentRouter.allowedMethods());
 router.use(placesRouter.routes(), placesRouter.allowedMethods());
 router.use(searchWithSchoolsRouter.routes(), searchWithSchoolsRouter.allowedMethods());
 router.use(seoMetaTemplatesRouter.routes(), seoMetaTemplatesRouter.allowedMethods());
+router.use(relatedBlogPostsRouter.routes(), relatedBlogPostsRouter.allowedMethods());
 export default router;
