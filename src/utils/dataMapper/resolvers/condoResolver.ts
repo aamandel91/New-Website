@@ -3,8 +3,12 @@ import { type Property } from 'services/API'
 import { exteriorResolver, featuresResolver, homeResolver } from './condo'
 import {
   appliancesResolver,
+  expensesResolver,
+  hoaLocationSchoolsResolver,
   neighborhoodResolver,
-  roomsResolver
+  propertyUnitInfoResolver,
+  roomsResolver,
+  utilitiesResolver
 } from './residential'
 
 const resolver = (property: Property) => {
@@ -14,7 +18,11 @@ const resolver = (property: Property) => {
     appliances: appliancesResolver(property),
     neighborhood: neighborhoodResolver(property),
     exterior: exteriorResolver(property),
-    rooms: roomsResolver(property)
+    rooms: roomsResolver(property),
+    propertyUnitInfo: propertyUnitInfoResolver(property),
+    hoaLocationSchools: hoaLocationSchoolsResolver(property),
+    expenses: expensesResolver(property),
+    utilities: utilitiesResolver(property)
   }
 }
 

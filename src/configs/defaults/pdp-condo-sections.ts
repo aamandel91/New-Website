@@ -161,13 +161,6 @@ const condoSections = {
         ]
       },
       {
-        title: 'pdp.sections.exterior.groups.waterAndSewer',
-        items: [
-          { label: 'pdp.fields.waterSupply', path: 'details.waterSource' },
-          { label: 'pdp.fields.sewer', path: 'details.sewer' }
-        ]
-      },
-      {
         title: 'pdp.sections.exterior.groups.condoDetails',
         items: [
           {
@@ -186,7 +179,6 @@ const condoSections = {
       {
         title: 'pdp.sections.exterior.groups.legal',
         items: [
-          { label: 'pdp.fields.brokerage', path: 'office.brokerageName' },
           { label: 'pdp.fields.legalDescription', path: 'lot.legalDescription' }
         ]
       }
@@ -208,18 +200,7 @@ const condoSections = {
             fn: mapperBaths
             // path: '{details.numBathrooms} + {details.numBathroomsPlus}'
           },
-          { label: 'pdp.fields.totalEnsuites', path: 'raw.EnsuiteBathrooms' }
-        ]
-      },
-      {
-        title: 'pdp.sections.features.groups.heatingAndCooling',
-        items: [
-          { label: 'pdp.fields.heatingType', path: 'details.heating' },
-          { label: 'pdp.fields.heatingFuel', path: 'raw.HeatingFuel' },
-          {
-            label: 'pdp.fields.airConditioning',
-            path: 'details.airConditioning'
-          },
+          { label: 'pdp.fields.totalEnsuites', path: 'raw.EnsuiteBathrooms' },
           {
             label: 'pdp.fields.fireplaces',
             fn: (property: Property) => {

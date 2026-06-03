@@ -86,10 +86,47 @@
         }
       },
       "neighborhood": {
-        "name": "Neighborhood"
+        "name": "Neighborhood Influences"
       },
       "rooms": {
         "name": "Rooms"
+      },
+      "propertyUnitInfo": {
+        "name": "Property / Unit Information",
+        "groups": {
+          "propertyInfo": "Property Info",
+          "buildingInfo": "Building Information",
+          "bedroomDetails": "Bedroom Details",
+          "bathroomDetails": "Bathroom Details",
+          "kitchenDetails": "Kitchen Details",
+          "interiorFeatures": "Interior Features"
+        }
+      },
+      "hoaLocationSchools": {
+        "name": "Association / Location / Schools",
+        "groups": {
+          "locationInfo": "Location Info",
+          "hoa": "Homeowner Association",
+          "schoolInfo": "School Info"
+        }
+      },
+      "expenses": {
+        "name": "Expenses / Taxes",
+        "groups": {
+          "taxesFinancesTerms": "Taxes, Finances & Terms"
+        }
+      },
+      "utilities": {
+        "name": "Utilities",
+        "groups": {
+          "utilityHeatingCooling": "Utility, Heating & Cooling Info"
+        }
+      },
+      "nearbySchools": {
+        "name": "Nearby Schools",
+        "distance": "{distance} away",
+        "stateRank": "State rank #{rank}",
+        "disclaimer": "Ratings provided by third-party sources and subject to change. Verify school district prior to making a decision."
       }
     },
     "fields": {
@@ -152,7 +189,59 @@
       "ccpName": "CCP# / Name",
       "restrictions": "Restrictions",
       "laundry": "Laundry",
-      "storageLocker": "Storage Locker"
+      "storageLocker": "Storage Locker",
+      "furnished": "Furnished",
+      "propertyCondition": "Property Condition",
+      "securityFeatures": "Security Features",
+      "petsAllowed": "Pets Allowed",
+      "view": "View",
+      "accessibilityFeatures": "Accessibility Features",
+      "levels": "Levels",
+      "subType": "Sub Type",
+      "stories": "Stories",
+      "constructionMaterials": "Construction Materials",
+      "bedroomsTotal": "Bedrooms Total",
+      "fullBathrooms": "Full Bathrooms",
+      "halfBathrooms": "Half Bathrooms",
+      "bathroomsTotal": "Bathrooms Total",
+      "interiorFeatures": "Interior Features",
+      "laundryFeatures": "Laundry Features",
+      "exteriorFeatures": "Exterior Features",
+      "patioAndPorchFeatures": "Patio And Porch Features",
+      "poolFeatures": "Pool Features",
+      "poolPrivate": "Pool (Private)",
+      "parcelNumber": "Parcel Number",
+      "lotFeatures": "Lot Features",
+      "county": "County",
+      "area": "Area",
+      "subdivision": "Subdivision",
+      "waterfrontFeatures": "Waterfront Features",
+      "associationFee": "Association Fee",
+      "associationFeeFrequency": "Frequency",
+      "associationName": "Association Name",
+      "associationFeeIncludes": "Fee Includes",
+      "associationAmenities": "Association Amenities",
+      "communityFeatures": "Community Features",
+      "elementarySchool": "Elementary School",
+      "middleSchool": "Middle/Junior School",
+      "highSchool": "High School",
+      "taxYear": "Tax Year",
+      "taxAnnualAmount": "Tax Annual Amount",
+      "listingTerms": "Listing Terms",
+      "utilities": "Utilities"
+    },
+    "mlsSource": {
+      "source": "MLS Source",
+      "brokerage": "Listing Brokerage"
+    },
+    "mlsDisclaimer": {
+      "offeredBy": "Listing Offered By",
+      "listingId": "Listing ID / MLS #",
+      "source": "MLS Source",
+      "contentUpdated": "Content Last Updated",
+      "listingUpdated": "Listing Last Updated",
+      "equalHousing": "Equal Housing Opportunity",
+      "disclosure": "Listing information is provided in part by the BeachesMLS / Southeast Florida MLS IDX program. All listings are deemed reliable but not guaranteed. Information should be independently verified. © 2026 BeachesMLS / SE Florida MLS. All rights reserved. Equal Housing Opportunity."
     }
   },
   "property": {

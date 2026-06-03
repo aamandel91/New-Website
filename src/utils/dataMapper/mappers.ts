@@ -256,3 +256,162 @@ export function mapperCondoFees(property: Property) {
 
 export const mapperBasementDevelopment = (property: Property) =>
   property.details.basement2 === 'W/O' ? 'Walk-Out' : property.details.basement2
+
+/**
+ * Generic helper: read a `raw.*` field that may be a comma/semicolon-delimited
+ * list and return a clean, comma-joined string. Returns null when empty so the
+ * row is hidden by `filterEmptyGroups`.
+ */
+export function mapperRawList(property: Property, key: string) {
+  const value = property.raw?.[key]
+  const items = sanitizeStringWithDelimiter(value, /[,;]/)
+  return items && items.length ? items.join(', ') : null
+}
+
+/**
+ * Generic helper for boolean-ish `raw.*` Y/N or 1/0 fields.
+ */
+export function mapperYesNo(property: Property, key: string) {
+  const value = property.raw?.[key]
+  if (value === undefined || value === null || value === '') return null
+  const s = String(value).trim().toLowerCase()
+  if (s === '1' || s === 'y' || s === 'yes' || s === 'true') return 'Yes'
+  if (s === '0' || s === 'n' || s === 'no' || s === 'false') return 'No'
+  return String(value)
+}
+
+export function mapperInteriorFeatures(property: Property) {
+  return mapperRawList(property, 'InteriorFeatures')
+}
+
+export function mapperLaundryFeatures(property: Property) {
+  return mapperRawList(property, 'LaundryFeatures')
+}
+
+export function mapperExteriorFeatures(property: Property) {
+  return mapperRawList(property, 'ExteriorFeatures')
+}
+
+export function mapperPatioAndPorchFeatures(property: Property) {
+  return mapperRawList(property, 'PatioAndPorchFeatures')
+}
+
+export function mapperPoolFeatures(property: Property) {
+  return mapperRawList(property, 'PoolFeatures')
+}
+
+export function mapperPoolPrivate(property: Property) {
+  return mapperYesNo(property, 'PoolPrivateYN')
+}
+
+export function mapperLotFeatures(property: Property) {
+  return mapperRawList(property, 'LotFeatures')
+}
+
+export function mapperSecurityFeatures(property: Property) {
+  return mapperRawList(property, 'SecurityFeatures')
+}
+
+export function mapperAccessibilityFeatures(property: Property) {
+  return mapperRawList(property, 'AccessibilityFeatures')
+}
+
+export function mapperAssociationAmenities(property: Property) {
+  return mapperRawList(property, 'AssociationAmenities')
+}
+
+export function mapperCommunityFeatures(property: Property) {
+  return mapperRawList(property, 'CommunityFeatures')
+}
+
+export function mapperAssociationFeeIncludes(property: Property) {
+  return mapperRawList(property, 'AssociationFeeIncludes')
+}
+
+export function mapperUtilities(property: Property) {
+  return mapperRawList(property, 'Utilities')
+}
+
+export function mapperListingTerms(property: Property) {
+  return mapperRawList(property, 'ListingTerms')
+}
+
+export function mapperView(property: Property) {
+  const view =
+    (property.details as { viewType?: string })?.viewType ||
+    property.raw?.View
+  return view ? addSpaceAfterComma(String(view)) : null
+}
+
+export function mapperConstructionMaterials(property: Property) {
+  const raw = property.raw?.ConstructionMaterials
+  if (raw) return addSpaceAfterComma(raw)
+  return mapperExterior(property)
+}
+
+export function mapperLevels(property: Property) {
+  const levels = property.raw?.Levels
+  if (levels) return String(levels)
+  return mapperStories(property)
+}
+
+export function mapperStories(property: Property) {
+  const stories =
+    property.raw?.Stories ||
+    (property.details as { numStories?: string })?.numStories ||
+    property.condominium?.stories
+  return stories ? String(stories) : null
+}
+
+export function mapperBathroomsTotal(property: Property) {
+  const { numBathrooms, numBathroomsPlus } = property.details || {}
+  const total = (+numBathrooms || 0) + (+numBathroomsPlus || 0)
+  return total > 0 ? String(total) : null
+}
+
+/**
+ * HOA association fee. Prefers the normalized condominium maintenance fee,
+ * falls back to the raw AssocFee field. Frequency is rendered as a separate
+ * row by mapperAssocFeeFrequency.
+ */
+export function mapperAssociationFee(property: Property) {
+  const maintenance = property.condominium?.fees?.maintenance
+  const assocFee = property.raw?.AssocFee
+  const amount = maintenance || assocFee
+  if (!amount) return null
+  const num = parseFloat(String(amount))
+  if (Number.isNaN(num) || num === 0) return null
+  return formatEnglishPrice(num)
+}
+
+/**
+ * Parcel number from the raw feed, falling back to the normalized lot field
+ * when present.
+ */
+export function mapperParcelNumber(property: Property) {
+  const parcel =
+    property.raw?.ParcelNumber ||
+    (property.lot as { parcelNumber?: string })?.parcelNumber
+  return parcel ? String(parcel) : null
+}
+
+/**
+ * Subdivision name: prefer the normalized neighborhood, fall back to the raw
+ * SubdivisionName.
+ */
+export function mapperSubdivision(property: Property) {
+  const neighborhood = property.address?.neighborhood
+  const subdivision = property.raw?.SubdivisionName
+  return neighborhood || subdivision || null
+}
+
+/**
+ * Waterfront features. Prefer the raw list, fall back to the normalized
+ * `details.waterfront` flag.
+ */
+export function mapperWaterfrontFeatures(property: Property) {
+  const raw = mapperRawList(property, 'WaterfrontFeatures')
+  if (raw) return raw
+  const waterfront = (property.details as { waterfront?: string })?.waterfront
+  return waterfront ? String(waterfront) : null
+}

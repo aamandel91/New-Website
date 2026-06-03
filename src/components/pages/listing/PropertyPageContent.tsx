@@ -21,18 +21,25 @@ import useAnalytics from 'hooks/useAnalytics'
 
 import {
   AppliancesDetails,
+  ExpensesDetails,
   ExteriorDetails,
   FeaturesDetails,
   HistoryDetails,
+  HoaLocationSchoolsDetails,
   HomeDescription,
   HomeHeaderInfo,
+  MlsDisclaimer,
+  MlsSourceAttribution,
   NavigationBar,
+  NearbySchoolsCard,
   NeighborhoodDetails,
   PropertyGallery,
+  PropertyUnitInfoDetails,
   RoomsDetails,
   Sidebar,
   SimilarPropertyCarousel,
-  SummaryDetails
+  SummaryDetails,
+  UtilitiesDetails
 } from './components'
 
 const HomeMap = dynamic(() => import('./components/HomeMap'), {
@@ -89,6 +96,8 @@ const PropertyPageContent = ({
               <Stack spacing={{ xs: 4, sm: 6 }}>
                 <HomeDescription />
 
+                <MlsSourceAttribution />
+
                 {mapType === 'static' ? (
                   <HomeMap type={mapType} />
                 ) : (
@@ -100,17 +109,29 @@ const PropertyPageContent = ({
               </Stack>
             </DetailsContainer>
 
+            <PropertyUnitInfoDetails />
+
             <FeaturesDetails />
 
             <AppliancesDetails />
 
             <ExteriorDetails />
 
+            <HoaLocationSchoolsDetails />
+
+            <ExpensesDetails />
+
+            <UtilitiesDetails />
+
             <RoomsDetails />
 
             <NeighborhoodDetails />
 
+            <NearbySchoolsCard />
+
             <HistoryDetails />
+
+            <MlsDisclaimer />
           </Stack>
 
           {features.pdpSidebar && !agentRole && (

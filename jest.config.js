@@ -10,12 +10,14 @@ const { compilerOptions } = tsconfig
 const config = {
   preset: 'ts-jest/presets/default-esm',
   transform: {
-    '^.+\\.tsx?$': [
+    '^.+\\.(t|j)sx?$': [
       'ts-jest',
       {
         useESM: true,
         tsconfig: {
           ...compilerOptions,
+          allowJs: true,
+          isolatedModules: true,
           verbatimModuleSyntax: false // disable it for tests
         }
       }
@@ -30,6 +32,10 @@ const config = {
   testEnvironment: 'jsdom',
   roots: ['<rootDir>'],
   moduleDirectories: ['node_modules', '<rootDir>/src'],
+  // query-string (and its deps) ship as ESM-only; allow them through the transform
+  transformIgnorePatterns: [
+    'node_modules/(?!(query-string|decode-uri-component|split-on-first|filter-obj)/)'
+  ],
   testPathIgnorePatterns: [
     '<rootDir>/node_modules/',
     '<rootDir>/public/',

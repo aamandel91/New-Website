@@ -16,6 +16,10 @@ type DetailsSection =
   | 'neighborhood'
   | 'exterior'
   | 'rooms'
+  | 'propertyUnitInfo'
+  | 'hoaLocationSchools'
+  | 'expenses'
+  | 'utilities'
 
 type ResolverSections = {
   [key in DetailsSection]: DetailsGroupType[]

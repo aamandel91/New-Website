@@ -1,9 +1,16 @@
 import { type Property } from 'services/API'
 
 import {
+  mapperAccessibilityFeatures,
   mapperAcres,
   mapperAppliancesIncluded,
+  mapperAssociationAmenities,
+  mapperAssociationFee,
   mapperAssociationFeePOTL,
+  mapperInteriorFeatures,
+  mapperListingTerms,
+  mapperPoolPrivate,
+  mapperYesNo,
   mapperBaths,
   mapperBuilderModel,
   mapperCategory,
@@ -827,6 +834,143 @@ describe('mapperParkingType', () => {
 
     const result = mapperParkingType(property)
     expect(result).toBeNull()
+  })
+})
+
+describe('mapperInteriorFeatures', () => {
+  it('should return comma-joined list from InteriorFeatures', () => {
+    const property = {
+      raw: { InteriorFeatures: 'Walk-In Closet(s),Pantry; Crown Molding' }
+    } as unknown as Property
+
+    const result = mapperInteriorFeatures(property)
+    expect(result).toBe('Walk-In Closet(s), Pantry, Crown Molding')
+  })
+
+  it('should return null if InteriorFeatures is not present', () => {
+    const property = { raw: {} } as unknown as Property
+
+    expect(mapperInteriorFeatures(property)).toBeNull()
+  })
+
+  it('should return null if InteriorFeatures is empty', () => {
+    const property = { raw: { InteriorFeatures: '' } } as unknown as Property
+
+    expect(mapperInteriorFeatures(property)).toBeNull()
+  })
+})
+
+describe('mapperAssociationAmenities', () => {
+  it('should return comma-joined list from AssociationAmenities', () => {
+    const property = {
+      raw: { AssociationAmenities: 'Pool,Clubhouse,Gym' }
+    } as unknown as Property
+
+    const result = mapperAssociationAmenities(property)
+    expect(result).toBe('Pool, Clubhouse, Gym')
+  })
+
+  it('should trim and drop empty entries', () => {
+    const property = {
+      raw: { AssociationAmenities: ' Pool , , Tennis ' }
+    } as unknown as Property
+
+    const result = mapperAssociationAmenities(property)
+    expect(result).toBe('Pool, Tennis')
+  })
+
+  it('should return null if AssociationAmenities is not present', () => {
+    const property = { raw: {} } as unknown as Property
+
+    expect(mapperAssociationAmenities(property)).toBeNull()
+  })
+})
+
+describe('mapperYesNo', () => {
+  it('should map truthy variants to Yes', () => {
+    expect(
+      mapperYesNo({ raw: { PetsAllowed: 'Y' } } as unknown as Property, 'PetsAllowed')
+    ).toBe('Yes')
+    expect(
+      mapperYesNo({ raw: { PetsAllowed: '1' } } as unknown as Property, 'PetsAllowed')
+    ).toBe('Yes')
+  })
+
+  it('should map falsy variants to No', () => {
+    expect(
+      mapperYesNo({ raw: { PetsAllowed: 'No' } } as unknown as Property, 'PetsAllowed')
+    ).toBe('No')
+  })
+
+  it('should pass through unknown values', () => {
+    expect(
+      mapperYesNo(
+        { raw: { PetsAllowed: 'Cats Only' } } as unknown as Property,
+        'PetsAllowed'
+      )
+    ).toBe('Cats Only')
+  })
+
+  it('should return null when absent', () => {
+    expect(mapperYesNo({ raw: {} } as unknown as Property, 'PetsAllowed')).toBeNull()
+  })
+})
+
+describe('mapperPoolPrivate', () => {
+  it('should map PoolPrivateYN to Yes/No', () => {
+    expect(
+      mapperPoolPrivate({ raw: { PoolPrivateYN: '1' } } as unknown as Property)
+    ).toBe('Yes')
+    expect(
+      mapperPoolPrivate({ raw: { PoolPrivateYN: '0' } } as unknown as Property)
+    ).toBe('No')
+  })
+})
+
+describe('mapperListingTerms', () => {
+  it('should return comma-joined listing terms', () => {
+    const property = {
+      raw: { ListingTerms: 'Cash,Conventional,FHA' }
+    } as unknown as Property
+
+    expect(mapperListingTerms(property)).toBe('Cash, Conventional, FHA')
+  })
+})
+
+describe('mapperAccessibilityFeatures', () => {
+  it('should return null when absent', () => {
+    expect(
+      mapperAccessibilityFeatures({ raw: {} } as unknown as Property)
+    ).toBeNull()
+  })
+})
+
+describe('mapperAssociationFee', () => {
+  it('should format condominium maintenance fee', () => {
+    const property = {
+      condominium: { fees: { maintenance: '350' } },
+      raw: {}
+    } as unknown as Property
+
+    expect(mapperAssociationFee(property)).toContain('350')
+  })
+
+  it('should fall back to raw AssocFee', () => {
+    const property = {
+      condominium: { fees: {} },
+      raw: { AssocFee: '200' }
+    } as unknown as Property
+
+    expect(mapperAssociationFee(property)).toContain('200')
+  })
+
+  it('should return null when no fee present', () => {
+    const property = {
+      condominium: { fees: {} },
+      raw: {}
+    } as unknown as Property
+
+    expect(mapperAssociationFee(property)).toBeNull()
   })
 })
 
