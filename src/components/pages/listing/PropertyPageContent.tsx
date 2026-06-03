@@ -13,6 +13,7 @@ import {
   SlideshowDialog
 } from '@shared/Dialogs'
 
+import { type HistoryItemType } from 'services/API'
 import { useFeatures } from 'providers/FeaturesProvider'
 import MapOptionsProvider from 'providers/MapOptionsProvider'
 import { useProperty } from 'providers/PropertyProvider'
@@ -24,16 +25,15 @@ import {
   ExpensesDetails,
   ExteriorDetails,
   FeaturesDetails,
-  HistoryDetails,
   HoaLocationSchoolsDetails,
   HomeDescription,
   HomeHeaderInfo,
   MlsDisclaimer,
   MlsSourceAttribution,
   NavigationBar,
-  NearbySchoolsCard,
   NeighborhoodDetails,
   PropertyGallery,
+  PropertyHistoryCard,
   PropertyUnitInfoDetails,
   RoomsDetails,
   Sidebar,
@@ -49,10 +49,12 @@ const HomeMap = dynamic(() => import('./components/HomeMap'), {
 
 const PropertyPageContent = ({
   embedded = false,
-  mapType = 'interactive'
+  mapType = 'interactive',
+  transactionHistory
 }: {
   embedded?: boolean
   mapType?: 'interactive' | 'static'
+  transactionHistory?: HistoryItemType[]
 }) => {
   const trackEvent = useAnalytics()
   const { agentRole } = useUser()
@@ -127,9 +129,7 @@ const PropertyPageContent = ({
 
             <NeighborhoodDetails />
 
-            <NearbySchoolsCard />
-
-            <HistoryDetails />
+            <PropertyHistoryCard transactionHistory={transactionHistory} />
 
             <MlsDisclaimer />
           </Stack>

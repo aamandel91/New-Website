@@ -6,7 +6,7 @@ import { Box } from '@mui/material'
 
 import { PropertyDetailLayout } from '@/components/property-detail'
 
-import { type Property } from 'services/API'
+import { type HistoryItemType, type Property } from 'services/API'
 import { useFeatures } from 'providers/FeaturesProvider'
 import PropertyDetailsProvider from 'providers/PropertyDetailsProvider'
 import PropertyProvider from 'providers/PropertyProvider'
@@ -20,12 +20,14 @@ interface PropertyPageTemplateProps {
   property: Property
   similarProperties?: Property[]
   marketStats?: any
+  transactionHistory?: HistoryItemType[]
 }
 
 const PropertyPageTemplate = ({
   property,
   similarProperties,
-  marketStats
+  marketStats,
+  transactionHistory
 }: PropertyPageTemplateProps) => {
   const features = useFeatures()
   const noHeader = !features.pdpHeader
@@ -57,6 +59,7 @@ const PropertyPageTemplate = ({
             property={property}
             similarProperties={similarProperties}
             marketStats={marketStats}
+            transactionHistory={transactionHistory}
           />
         </PropertyDetailsProvider>
       </PropertyProvider>

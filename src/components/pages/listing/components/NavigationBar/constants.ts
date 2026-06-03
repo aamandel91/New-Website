@@ -10,8 +10,8 @@ export const navigationItems = [
   { label: 'Utilities', id: 'utilities' },
   { label: 'Rooms', id: 'rooms' },
   { label: 'Neighborhood', id: 'neighborhood' },
-  { label: 'Schools', id: 'nearby-schools' },
-  { label: 'Sale History', id: 'history' },
+  { label: 'Property History', id: 'history' },
+  { label: 'About the Area', id: 'about-the-area' },
   { label: 'Disclaimer', id: 'mls-disclaimer' }
 ]
 

@@ -237,6 +237,7 @@ export default async function HomesPage(props: HomesPageProps) {
           property={active}
           similarProperties={similarProperties}
           marketStats={marketStats}
+          transactionHistory={history}
         />
         <Container maxWidth="xl" sx={{ pb: 4, display: 'flex', flexDirection: 'column', gap: 3 }}>
           <AboutTheArea
@@ -248,7 +249,6 @@ export default async function HomesPage(props: HomesPageProps) {
             }
             variant="pdp"
           />
-          <PropertyTransactionHistory history={history} />
         </Container>
         {process.env.NODE_ENV === 'development' && pageScore && (
           <Box sx={{ position: 'fixed', bottom: 80, right: 10, bgcolor: 'rgba(0,0,0,0.7)', color: '#fff', p: 1, borderRadius: 1, fontSize: 11, zIndex: 9999 }}>
@@ -295,6 +295,7 @@ export default async function HomesPage(props: HomesPageProps) {
           property={pending}
           similarProperties={similarProperties}
           marketStats={marketStats}
+          transactionHistory={history}
         />
         <Container maxWidth="xl" sx={{ pb: 4, display: 'flex', flexDirection: 'column', gap: 3 }}>
           <NotifyWhenListed propertyAddress={fullAddress} />
@@ -307,7 +308,6 @@ export default async function HomesPage(props: HomesPageProps) {
             }
             variant="pdp"
           />
-          <PropertyTransactionHistory history={history} />
         </Container>
         {process.env.NODE_ENV === 'development' && pageScore && (
           <Box sx={{ position: 'fixed', bottom: 80, right: 10, bgcolor: 'rgba(0,0,0,0.7)', color: '#fff', p: 1, borderRadius: 1, fontSize: 11, zIndex: 9999 }}>

@@ -7,8 +7,9 @@ import { Box, Container, Grid, Snackbar } from '@mui/material'
 import { useRecentlyViewed } from '@/hooks/useRecentlyViewed'
 import { trackPropertyView } from '@/utils/analytics'
 import { ssTrackPropertyView, ssTrackSavedProperty } from '@/utils/suresendTracking'
+import { PropertyHistoryCard } from '@pages/listing/components'
 
-import { APIContact, type Property } from 'services/API'
+import { APIContact, type HistoryItemType, type Property } from 'services/API'
 import { useFavorites } from 'providers/FavoritesProvider'
 import { useFeatures } from 'providers/FeaturesProvider'
 import useSnackbar from 'hooks/useSnackbar'
@@ -37,13 +38,15 @@ interface PropertyDetailLayoutProps {
   similarProperties?: Property[]
   marketStats?: any
   defaultInterestRate?: number
+  transactionHistory?: HistoryItemType[]
 }
 
 const PropertyDetailLayout: React.FC<PropertyDetailLayoutProps> = ({
   property,
   similarProperties = [],
   marketStats,
-  defaultInterestRate = 7.0
+  defaultInterestRate = 7.0,
+  transactionHistory
 }) => {
   const { toggle: toggleFavorite, find: findFavorite } = useFavorites()
   const { addProperty: addToRecentlyViewed } = useRecentlyViewed()
@@ -262,6 +265,9 @@ const PropertyDetailLayout: React.FC<PropertyDetailLayoutProps> = ({
                 marketStats={marketStats}
                 defaultInterestRate={defaultInterestRate}
               />
+
+              {/* Unified Property History (Timeline / Transactions) */}
+              <PropertyHistoryCard transactionHistory={transactionHistory} />
 
               {/* Community Information Link */}
               <CommunityLink

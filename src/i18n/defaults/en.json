@@ -122,11 +122,12 @@
           "utilityHeatingCooling": "Utility, Heating & Cooling Info"
         }
       },
-      "nearbySchools": {
-        "name": "Nearby Schools",
-        "distance": "{distance} away",
-        "stateRank": "State rank #{rank}",
-        "disclaimer": "Ratings provided by third-party sources and subject to change. Verify school district prior to making a decision."
+      "history": {
+        "name": "Property History",
+        "tabs": {
+          "timeline": "Timeline",
+          "transactions": "Transactions"
+        }
       }
     },
     "fields": {
