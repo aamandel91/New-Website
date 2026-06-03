@@ -13,6 +13,7 @@ import PropertyNarrative from './PropertyNarrative'
 import PropertyHistory from './PropertyHistory'
 import PropertyTaxHistory from './PropertyTaxHistory'
 import PropertyNeighborhood from './PropertyNeighborhood'
+import PropertyMarketStats from './PropertyMarketStats'
 import SimilarProperties from './SimilarProperties'
 import RelatedPages from './RelatedPages'
 import MoreProperties from './MoreProperties'
@@ -369,6 +370,14 @@ const PropertyTabs: React.FC<PropertyTabsProps> = ({
             state={property.address?.state}
             zip={property.address?.zip}
           />
+          {marketStats && (
+            <PropertyMarketStats
+              neighborhood={property.address?.neighborhood}
+              city={property.address?.city}
+              state={property.address?.state}
+              stats={marketStats}
+            />
+          )}
         </Box>
 
         {/* ── Mortgage ── */}
