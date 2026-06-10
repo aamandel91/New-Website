@@ -32,7 +32,7 @@ export default class AdminSettingsService {
   constructor(
     @inject('logger') private logger: Logger,
     @inject('config') private config: AppConfig,
-    @inject('knex') private knex: Knex
+    @inject('db') private knex: Knex
   ) {}
 
   /**
