@@ -1,7 +1,14 @@
 import mapConfig from '@configs/map'
 
 import { type ApiBounds, type ApiQueryParams, APISearch } from 'services/API'
-import MapService, { MapSearch } from 'services/Map'
+// Do not import the 'services/Map' barrel statically: it chains to
+// MarkerExtension -> mapbox-gl runtime (~1.5MB) and this service is pulled
+// into the site-wide Header. MapSearch is HTTP-only; the live map singleton
+// is loaded lazily (instant on map pages where mapbox is already in memory).
+import MapSearch from 'services/Map/MapSearch'
+
+const getLiveMap = async () =>
+  (await import('services/Map')).default.map
 import { processParams } from 'services/Search/adapter'
 import { calcBoundsAtZoom, calcZoomLevel } from 'utils/map'
 
@@ -62,7 +69,7 @@ class SearchService {
     // get bounds and center point of the area from API
     const { bounds, location } = aggregates?.map?.clusters?.[0] || {}
 
-    const { map } = MapService
+    const map = await getLiveMap()
     if (map && bounds && location) {
       const areaZoom = calcZoomLevel(map, bounds)
 
@@ -78,7 +85,7 @@ class SearchService {
   }
 
   async fetchBoundsForAddress(query: string): Promise<ApiBounds | undefined> {
-    const { map } = MapService
+    const map = await getLiveMap()
     if (!map) return undefined
 
     const address = await MapSearch.fetchMapboxSuggestion(query)

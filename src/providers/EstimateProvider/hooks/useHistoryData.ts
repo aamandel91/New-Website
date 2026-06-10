@@ -15,7 +15,8 @@ import {
 } from '@configs/filter-types'
 
 import { type ApiAddress, APIEstimate } from 'services/API'
-import { MapSearch } from 'services/Map'
+// Direct import: the 'services/Map' barrel chains to the mapbox-gl runtime
+import MapSearch from 'services/Map/MapSearch'
 import { useFeatures } from 'providers/FeaturesProvider'
 
 import { cleanApiData, setApiValues } from '../utils'

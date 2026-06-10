@@ -51,38 +51,40 @@ export default function HowsTheMarket({
         const [activeRes, soldRes] = await Promise.all([
           apiSearchCSR.searchListings({
             ...locationParams,
-            statistics: 'listPrice',
+            // Repliers statistics format: metric-field pairs (see MarketTrends/utils)
+            statistics: 'med-listPrice,avg-daysOnMarket',
             status: 'A',
-            listings: false
+            listings: false,
+            resultsPerPage: 1
           } as any),
           apiSearchCSR.searchListings({
             ...locationParams,
-            statistics: 'soldPrice',
+            statistics: 'med-soldPrice,avg-daysOnMarket,grp-mth',
             status: 'U',
             lastStatus: 'Sld',
-            listings: false
+            listings: false,
+            resultsPerPage: 1
           } as any)
         ])
 
         if (cancelled) return
 
         // CSR API statistics response has richer types than TS definitions
-        const activeStats: any = (activeRes as any)?.statistics?.listPrice
-        const soldStats: any = (soldRes as any)?.statistics?.soldPrice
+        const activeStats: any = (activeRes as any)?.statistics
+        const soldStats: any = (soldRes as any)?.statistics
         const activeCount: number | null = activeRes?.count ?? null
         const medianPrice: number | null =
-          activeStats?.median ?? activeStats?.med ?? null
+          activeStats?.listPrice?.med ?? null
         const avgDom: number | null =
-          activeStats?.avg?.dom ?? soldStats?.avg?.dom ?? null
+          activeStats?.daysOnMarket?.avg ??
+          soldStats?.daysOnMarket?.avg ??
+          null
 
-        // YoY price change from monthly data
+        // YoY price change from monthly sold-price data (grp-mth buckets)
         let yoyChange: number | null = null
-        const mthData = soldStats?.mth
-        const months: any[] = Array.isArray(mthData)
-          ? mthData
-          : mthData
-            ? Object.values(mthData)
-            : []
+        const mthData = soldStats?.soldPrice?.mth
+        const monthKeys: string[] = mthData ? Object.keys(mthData).sort() : []
+        const months: any[] = monthKeys.map((k) => mthData[k])
         if (months.length >= 12) {
           const current =
             months[months.length - 1]?.median ?? months[months.length - 1]?.med

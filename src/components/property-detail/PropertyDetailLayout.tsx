@@ -10,7 +10,9 @@ import {
   ssTrackPropertyView,
   ssTrackSavedProperty
 } from '@/utils/suresendTracking'
-import { PropertyHistoryCard } from '@pages/listing/components'
+// Direct import: the listing/components barrel re-exports HomeMap, which
+// statically imports the mapbox-gl runtime (~1.5MB)
+import PropertyHistoryCard from '@pages/listing/components/PropertyHistoryCard'
 
 import { APIContact, type HistoryItemType, type Property } from 'services/API'
 import { useFavorites } from 'providers/FavoritesProvider'

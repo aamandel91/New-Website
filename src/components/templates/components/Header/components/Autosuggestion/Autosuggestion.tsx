@@ -24,7 +24,16 @@ import {
   type MapboxAddress,
   type Property
 } from 'services/API'
-import MapService, { MapSearch } from 'services/Map'
+// IMPORTANT: do not import the 'services/Map' barrel here. The Header renders
+// on every page, and the barrel chains to MarkerExtension -> mapbox-gl runtime
+// (~700KB), which would ship the map library site-wide. MapSearch is HTTP-only.
+import MapSearch from 'services/Map/MapSearch'
+
+// Lazy accessor for the live map singleton. On map pages mapbox is already
+// loaded so this resolves instantly; on every other page it stays out of the
+// bundle and `map` is undefined (same behavior as before).
+const getLiveMap = async () =>
+  (await import('services/Map')).default.map
 import SearchService from 'services/Search'
 import { useLocations } from 'providers/LocationsProvider'
 import { type MapPosition } from 'providers/MapOptionsProvider'
@@ -130,9 +139,9 @@ const Autosuggestion = ({
 
   const abortRef = useRef<AbortController | null>(null)
 
-  const { map } = MapService
 
-  const handleButtonClick = () => {
+  const handleButtonClick = async () => {
+    const map = await getLiveMap()
     if (map && position.center) {
       map.flyTo({
         center: position.center,
@@ -363,13 +372,14 @@ const Autosuggestion = ({
     }
   }
 
-  const clearOptions = () => {
+  const clearOptions = async () => {
     setOpen(false)
     setAddress([])
     setListings([])
     setLocations([])
     setSearchString('')
     setPosition({ center: null, zoom: defaultAddressZoom })
+    const map = await getLiveMap()
     if (map) {
       const strippedUrl = removeQueryParam()
       router.replace(strippedUrl)
@@ -390,6 +400,7 @@ const Autosuggestion = ({
     const center = toMapboxPoint(point)
     const query = getAddressLabel(option)
 
+    const map = await getLiveMap()
     if (map) {
       const apiBounds = calcBoundsAtZoom(map, point, zoom)
       const mapboxBounds = toMapboxBounds(apiBounds)
@@ -433,6 +444,7 @@ const Autosuggestion = ({
 
     const center = getCenter(bounds)
 
+    const map = await getLiveMap()
     if (map) {
       const zoom = calcZoomLevel(map, bounds)
       const mapboxBounds = toMapboxBounds(bounds)

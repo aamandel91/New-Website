@@ -7,7 +7,9 @@ export { default as HistoryDetails } from './HistoryDetails'
 export { default as HoaLocationSchoolsDetails } from './HoaLocationSchoolsDetails'
 export { default as HomeDescription } from './HomeDescription'
 export { default as HomeHeaderInfo } from './HomeHeaderInfo'
-export { default as HomeMap } from './HomeMap'
+// HomeMap intentionally NOT re-exported: it statically imports the mapbox-gl
+// runtime (~1.5MB). Consumers must lazy-load it directly:
+//   dynamic(() => import('./components/HomeMap'))
 export { default as MlsDisclaimer } from './MlsDisclaimer'
 export { default as MlsSourceAttribution } from './MlsSourceAttribution'
 export { default as NavigationBar } from './NavigationBar'
