@@ -1,4 +1,6 @@
 import { NextResponse } from 'next/server'
+
+import { enqueueFailedLead } from '@/services/leadQueue'
 import crypto from 'crypto'
 import path from 'path'
 
@@ -99,6 +101,22 @@ async function syncVisitorToSureSend(
     )
   } catch (err) {
     console.error('[SureSend] Open house visitor sync failed:', err)
+    // Durable fallback: park the visitor in the retry queue so the lead is
+    // never lost (admin: /admin/lead-queue)
+    await enqueueFailedLead(
+      {
+        name: visitor.name,
+        email: visitor.email,
+        phone: visitor.phone,
+        message: `Open House Sign-In at ${propertyAddress}. Working with agent: ${visitor.workingWithAgent}. Heard about: ${visitor.hearAbout}. Pre-approved: ${visitor.preApproved}.`,
+        formType: 'open_house',
+        propertyAddress,
+        mlsNumber,
+        source: 'open_house_qr'
+      },
+      'open_house_session',
+      err
+    )
   }
 }
 

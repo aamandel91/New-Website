@@ -10,6 +10,8 @@ import BarChartIcon from '@mui/icons-material/BarChart'
 import CampaignIcon from '@mui/icons-material/Campaign'
 import CrmIcon from '@mui/icons-material/ContactPhone'
 import DashboardIcon from '@mui/icons-material/Dashboard'
+import LayersIcon from '@mui/icons-material/Layers'
+import ReplayIcon from '@mui/icons-material/Replay'
 import DescriptionIcon from '@mui/icons-material/Description'
 import PageGenIcon from '@mui/icons-material/DynamicFeed'
 import ExpandLess from '@mui/icons-material/ExpandLess'
@@ -59,6 +61,11 @@ const navItems: NavItem[] = [
     path: '/admin/page-generator',
     icon: <PageGenIcon />
   },
+  {
+    title: 'Bulk Pages',
+    path: '/admin/bulk-pages',
+    icon: <LayersIcon />
+  },
   { title: 'Blog', path: '/admin/blog', icon: <ArticleIcon /> },
   {
     title: 'Blog Import',
@@ -66,6 +73,7 @@ const navItems: NavItem[] = [
     icon: <ImportExportIcon />
   },
   { title: 'Leads', path: '/admin/leads', icon: <PeopleIcon /> },
+  { title: 'Lead Queue', path: '/admin/lead-queue', icon: <ReplayIcon /> },
   { title: 'Open House', path: '/admin/open-house', icon: <HouseIcon /> },
   { title: 'CRM', path: '/admin/crm', icon: <CrmIcon /> },
   { title: 'Navigation', path: '/admin/navigation', icon: <NavigationIcon /> },

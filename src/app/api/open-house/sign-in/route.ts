@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server'
 
+import { enqueueFailedLead } from '@/services/leadQueue'
+
 import {
   applyTags,
   createEvent,
@@ -218,6 +220,22 @@ export async function POST(request: Request) {
         )
       } catch (err) {
         console.error('[SureSend] Open house sign-in sync failed:', err)
+        // Durable fallback: park the sign-in in the retry queue so the lead
+        // is never lost (admin: /admin/lead-queue)
+        await enqueueFailedLead(
+          {
+            name: `${signInData.firstName} ${signInData.lastName}`.trim(),
+            email: signInData.email,
+            phone: signInData.phone,
+            message: `Open House Sign-In at ${signInData.propertyAddress}. Buying timeline: ${signInData.buyingTimeline}. Working with agent: ${signInData.hasAgent ? signInData.agentName : 'No'}.`,
+            formType: 'open_house',
+            propertyAddress: signInData.propertyAddress,
+            mlsNumber: signInData.propertyMls,
+            source: 'open_house_form'
+          },
+          'open_house_form',
+          err
+        )
       }
     })()
 
