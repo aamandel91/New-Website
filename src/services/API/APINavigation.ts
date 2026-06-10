@@ -83,7 +83,8 @@ class APINavigation extends APIBase {
     const queryString = params.toString()
     const url = queryString ? `/navigation?${queryString}` : '/navigation'
 
-    return this.fetchJSON<NavigationItemsResponse>(url)
+    // Public read rendered on every page - cookie-free + cached
+    return this.publicFetchJSON<NavigationItemsResponse>(url, 3600)
   }
 
   /**

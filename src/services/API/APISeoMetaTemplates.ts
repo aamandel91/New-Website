@@ -63,8 +63,10 @@ class APISeoMetaTemplates extends APIBase {
 
   async getByPageType(pageType: SeoPageType): Promise<SeoMetaTemplate | null> {
     try {
-      const r = await this.fetchJSON<{ template: SeoMetaTemplate }>(
-        `/seo-meta-templates/page-type/${pageType}`
+      // Public read used to render SEO titles/descriptions - cookie-free + cached
+      const r = await this.publicFetchJSON<{ template: SeoMetaTemplate }>(
+        `/seo-meta-templates/page-type/${pageType}`,
+        3600
       )
       return r.template
     } catch {

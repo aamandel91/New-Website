@@ -114,8 +114,10 @@ class APIContentPages extends APIBase {
    * Get page by slug
    */
   async getPageBySlug(slug: string): Promise<ContentPage> {
-    const response = await this.fetchJSON<{ page: ContentPage }>(
-      `/content-pages/slug/${slug}`
+    // Public read used by SEO pages - cookie-free + cached so routes stay ISR-able
+    const response = await this.publicFetchJSON<{ page: ContentPage }>(
+      `/content-pages/slug/${slug}`,
+      3600
     )
     return response.page
   }

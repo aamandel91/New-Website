@@ -95,7 +95,10 @@ class APIClientSide {
         headers: {
           'REPLIERS-API-KEY': CSR_API_KEY,
           'Content-Type': 'application/json'
-        }
+        },
+        // Cache listing stats server-side for 15 min - keeps SEO pages
+        // ISR-compatible and cuts Repliers API usage. Ignored in the browser.
+        next: { revalidate: 900 }
       })
 
       if (!response.ok) {

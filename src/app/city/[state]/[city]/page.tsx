@@ -6,13 +6,43 @@ import searchConfig from '@configs/search'
 import { PageTemplate } from '@templates'
 import { MarketTrendsWidget } from '@shared/MarketTrends'
 
+// ISR: serve cached HTML to crawlers/visitors, refresh hourly.
+// Do not read cookies()/headers()/searchParams here or the page goes dynamic.
+export const revalidate = 3600
+
+// Prebuild the core Broward & Palm Beach market pages at deploy time so the
+// highest-value SEO pages are instantly served from cache. Any other city
+// still renders on first request and is then cached (on-demand ISR).
+export async function generateStaticParams() {
+  const coreCities = [
+    'boca-raton',
+    'coral-springs',
+    'parkland',
+    'delray-beach',
+    'boynton-beach',
+    'fort-lauderdale',
+    'pompano-beach',
+    'deerfield-beach',
+    'coconut-creek',
+    'margate',
+    'tamarac',
+    'plantation',
+    'davie',
+    'pembroke-pines',
+    'hollywood',
+    'west-palm-beach',
+    'wellington',
+    'royal-palm-beach',
+    'lake-worth',
+    'jupiter'
+  ]
+  return coreCities.map((city) => ({ state: 'fl', city }))
+}
+
 interface CityPageProps {
   params: Promise<{
     state: string
     city: string
-  }>
-  searchParams: Promise<{
-    boardId?: string
   }>
 }
 
@@ -37,9 +67,7 @@ export async function generateMetadata(
 
 export default async function CityPage(props: CityPageProps) {
   const params = await props.params
-  const searchParams = await props.searchParams
   const { city, state } = params
-  const { boardId } = searchParams
 
   // Format city name for display
   const cityName = city
@@ -48,8 +76,9 @@ export default async function CityPage(props: CityPageProps) {
     .join(' ')
   const stateName = state.toUpperCase()
 
-  // Parse boardId or use default
-  const board = boardId ? parseInt(boardId) : searchConfig.defaultBoardId
+  // Board is fixed to the configured default so the page stays static/ISR.
+  // (The old ?boardId= override forced per-request rendering.)
+  const board = searchConfig.defaultBoardId
 
   return (
     <PageTemplate>

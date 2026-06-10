@@ -14,14 +14,15 @@ import searchConfig from '@configs/search'
 import { PageTemplate } from '@templates'
 import { MarketTrendsWidget } from '@shared/MarketTrends'
 
+// ISR: serve cached HTML to crawlers/visitors, refresh hourly.
+// Do not read cookies()/headers()/searchParams here or the page goes dynamic.
+export const revalidate = 3600
+
 interface NeighborhoodPageProps {
   params: Promise<{
     state: string
     city: string
     neighborhood: string
-  }>
-  searchParams: Promise<{
-    boardId?: string
   }>
 }
 
@@ -50,9 +51,7 @@ export async function generateMetadata(
 
 export default async function NeighborhoodPage(props: NeighborhoodPageProps) {
   const params = await props.params
-  const searchParams = await props.searchParams
   const { city, state, neighborhood } = params
-  const { boardId } = searchParams
 
   // Format names for display
   const neighborhoodName = neighborhood
@@ -65,8 +64,9 @@ export default async function NeighborhoodPage(props: NeighborhoodPageProps) {
     .join(' ')
   const stateName = state.toUpperCase()
 
-  // Parse boardId or use default
-  const board = boardId ? parseInt(boardId) : searchConfig.defaultBoardId
+  // Board is fixed to the configured default so the page stays static/ISR.
+  // (The old ?boardId= override forced per-request rendering.)
+  const board = searchConfig.defaultBoardId
 
   return (
     <PageTemplate>

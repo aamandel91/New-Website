@@ -96,6 +96,40 @@ class APIBase {
       })
     }
   }
+
+  /**
+   * Cookie-free fetch for PUBLIC, read-only data (CMS pages, SEO templates,
+   * navigation, locations). Regular fetchJSON reads the auth cookie via
+   * getHeaders() -> cookies(), which opts the entire route into dynamic
+   * rendering and disables ISR. This method skips cookies/headers entirely
+   * and applies Next.js fetch-level caching so SEO pages can be served from
+   * cache instead of hitting the backend on every crawl.
+   *
+   * Only use for endpoints that never vary by user.
+   */
+  async publicFetchJSON<T>(
+    request: string,
+    revalidateSeconds: number = 3600
+  ): Promise<T> {
+    const response = await fetch(this.getAbsoluteUrl(request), {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' },
+      next: { revalidate: revalidateSeconds }
+    }).catch(() => new Response(null, { status: 503 }))
+
+    let data: any = null
+    let parseError: unknown = null
+    try {
+      data = await response.json()
+    } catch (error) {
+      parseError = error
+    }
+
+    if (response.ok) {
+      return data as T
+    }
+    return Promise.reject({ status: response.status, data, parseError })
+  }
 }
 
 export default APIBase
