@@ -1,5 +1,14 @@
 import { NextResponse } from 'next/server'
 
+import {
+  applyTags,
+  createEvent,
+  createNote,
+  createPerson,
+  searchPeople,
+  updatePerson
+} from '@/services/suresend/client'
+
 interface OpenHouseSignInRequest {
   firstName: string
   lastName: string
@@ -157,48 +166,60 @@ export async function POST(request: Request) {
         request.headers.get('x-real-ip')
     }
 
-    // NOTE: Open-house sign-in workflow is scaffolding only — feature is not
-    // yet prioritized. When wired up, integration points are: Repliers API
-    // lead capture, eventsCollection record, agent email notification, and
-    // CRM (Follow Up Boss) push. Tracked in docs/cleanup/deferred-items.md.
-    console.log('Open House Sign-In:', JSON.stringify(signInData, null, 2))
+    // Sync to SureSend CRM. Same pattern as /api/suresend/lead and the
+    // session-based open house flow. Fire-and-forget so a CRM hiccup never
+    // blocks the visitor standing at the door - failures are logged for
+    // follow-up instead of shown to the guest.
+    void (async () => {
+      try {
+        let personId: string
+        const existing = await searchPeople(signInData.email)
+        if (existing.data.length > 0) {
+          personId = existing.data[0].id
+          await updatePerson(personId, {
+            firstName: signInData.firstName,
+            lastName: signInData.lastName,
+            phone: signInData.phone
+          })
+        } else {
+          const created = await createPerson({
+            firstName: signInData.firstName,
+            lastName: signInData.lastName,
+            email: signInData.email,
+            phone: signInData.phone,
+            source: 'open_house'
+          })
+          personId = created.data.id
+        }
 
-    // Example: Send to backend API (uncomment and configure when ready)
-    /*
-    try {
-      const backendResponse = await fetch(`${process.env.BACKEND_URL}/api/open-house/sign-in`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${process.env.BACKEND_API_KEY}`,
-        },
-        body: JSON.stringify(signInData),
-      })
+        await applyTags(personId, ['website_lead', 'open_house', 'in_person'])
 
-      if (!backendResponse.ok) {
-        throw new Error('Failed to send to backend')
+        await createEvent({
+          type: 'form_submission',
+          personId,
+          property: {
+            address: signInData.propertyAddress,
+            mlsNumber: signInData.propertyMls
+          },
+          metadata: { formType: 'open_house' }
+        })
+
+        const noteLines = [
+          `Open House Sign-In at ${signInData.propertyAddress}`,
+          `Buying timeline: ${signInData.buyingTimeline}`,
+          `Working with agent: ${signInData.hasAgent ? signInData.agentName : 'No'}`,
+          `Wants market updates: ${signInData.wantsMarketUpdates ? 'Yes' : 'No'}`,
+          `Wants property updates: ${signInData.wantsPropertyUpdates ? 'Yes' : 'No'}`
+        ]
+        await createNote(
+          personId,
+          `Open House Sign-In - ${signInData.propertyAddress}`,
+          noteLines.join('\n')
+        )
+      } catch (err) {
+        console.error('[SureSend] Open house sign-in sync failed:', err)
       }
-    } catch (error) {
-      console.error('Backend integration error:', error)
-      // Continue even if backend fails, to not block user
-    }
-    */
-
-    // Example: Send email notification to agent (uncomment when SMTP is configured)
-    /*
-    try {
-      await fetch(`${process.env.NEXT_PUBLIC_SITE_URL}/api/email/notify-agent`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          type: 'open_house_signin',
-          data: signInData,
-        }),
-      })
-    } catch (error) {
-      console.error('Email notification error:', error)
-    }
-    */
+    })()
 
     return NextResponse.json(
       {

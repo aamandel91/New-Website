@@ -1,1 +1,36 @@
-[]
+[
+  {
+    "id": "449efdfe-ee78-45fc-b003-dc0b69b81439",
+    "mlsNumber": "TEST-MLS-001",
+    "agentName": "Andy Mandel",
+    "agentEmail": "",
+    "propertyAddress": "123 Test St, Boca Raton, FL 33432",
+    "propertyImage": "",
+    "propertyPrice": "",
+    "createdAt": "2026-06-10T12:22:47.773Z",
+    "visitors": [
+      {
+        "id": "831d602f-81ea-4911-99f7-9cb93f8625a1",
+        "name": "Test Visitor",
+        "email": "testvisitor@example.com",
+        "phone": "9545551234",
+        "workingWithAgent": "No",
+        "hearAbout": "Zillow",
+        "preApproved": "Yes",
+        "customAnswers": {},
+        "signedInAt": "2026-06-10T12:23:47.013Z"
+      },
+      {
+        "id": "5852427f-cc8d-4b2f-a297-4d383c19359a",
+        "name": "Test Two",
+        "email": "test2@example.com",
+        "phone": "9545555678",
+        "workingWithAgent": "No",
+        "hearAbout": "Sign",
+        "preApproved": "No",
+        "customAnswers": {},
+        "signedInAt": "2026-06-10T12:24:10.661Z"
+      }
+    ]
+  }
+]
