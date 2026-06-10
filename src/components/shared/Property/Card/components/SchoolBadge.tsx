@@ -1,6 +1,7 @@
 'use client'
 
 import { useContext } from 'react'
+
 import { Box, Typography } from '@mui/material'
 
 import { SearchContext } from 'providers/SearchProvider'

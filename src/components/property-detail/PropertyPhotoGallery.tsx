@@ -1,25 +1,26 @@
 'use client'
 
 import React, { useState } from 'react'
-import {
-  Box,
-  Dialog,
-  IconButton,
-  Typography,
-  Grid,
-  useTheme,
-  useMediaQuery,
-  Chip,
-} from '@mui/material'
-import CloseIcon from '@mui/icons-material/Close'
-import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
-import ChevronRightIcon from '@mui/icons-material/ChevronRight'
-import PhotoLibraryIcon from '@mui/icons-material/PhotoLibrary'
-import StarIcon from '@mui/icons-material/Star'
 import Image from 'next/image'
 
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
+import ChevronRightIcon from '@mui/icons-material/ChevronRight'
+import CloseIcon from '@mui/icons-material/Close'
+import PhotoLibraryIcon from '@mui/icons-material/PhotoLibrary'
+import StarIcon from '@mui/icons-material/Star'
+import {
+  Box,
+  Chip,
+  Dialog,
+  Grid,
+  IconButton,
+  Typography,
+  useMediaQuery,
+  useTheme
+} from '@mui/material'
+
 import { type Property } from 'services/API'
-import { sortImagesByQuality, type EnhancedPhoto } from 'utils/imageQuality'
+import { type EnhancedPhoto, sortImagesByQuality } from 'utils/imageQuality'
 
 interface PropertyPhoto {
   url: string
@@ -36,7 +37,7 @@ interface PropertyPhotoGalleryProps {
 const PropertyPhotoGallery: React.FC<PropertyPhotoGalleryProps> = ({
   photos,
   property,
-  propertyAddress,
+  propertyAddress
 }) => {
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down('md'))
@@ -51,8 +52,8 @@ const PropertyPhotoGallery: React.FC<PropertyPhotoGalleryProps> = ({
         property.imageInsights
       )
     : photos
-    ? [...photos].sort((a, b) => (a.order || 0) - (b.order || 0))
-    : []
+      ? [...photos].sort((a, b) => (a.order || 0) - (b.order || 0))
+      : []
 
   const heroPhoto = sortedPhotos[0]
   const thumbnailPhotos = sortedPhotos.slice(1, isMobile ? 4 : 5)
@@ -84,7 +85,9 @@ const PropertyPhotoGallery: React.FC<PropertyPhotoGalleryProps> = ({
   }
 
   const handlePrevPhoto = () => {
-    setCurrentPhotoIndex((prev) => (prev - 1 + sortedPhotos.length) % sortedPhotos.length)
+    setCurrentPhotoIndex(
+      (prev) => (prev - 1 + sortedPhotos.length) % sortedPhotos.length
+    )
   }
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -101,7 +104,7 @@ const PropertyPhotoGallery: React.FC<PropertyPhotoGalleryProps> = ({
           bgcolor: 'grey.200',
           display: 'flex',
           alignItems: 'center',
-          justifyContent: 'center',
+          justifyContent: 'center'
         }}
       >
         <Typography color="text.secondary">No photos available</Typography>
@@ -126,9 +129,9 @@ const PropertyPhotoGallery: React.FC<PropertyPhotoGalleryProps> = ({
                 cursor: 'pointer',
                 '&:hover': {
                   '& .photo-overlay': {
-                    opacity: 1,
-                  },
-                },
+                    opacity: 1
+                  }
+                }
               }}
             >
               <Image
@@ -153,7 +156,7 @@ const PropertyPhotoGallery: React.FC<PropertyPhotoGalleryProps> = ({
                     color: 'white',
                     fontWeight: 'bold',
                     fontSize: '0.75rem',
-                    boxShadow: '0 2px 4px rgba(0,0,0,0.3)',
+                    boxShadow: '0 2px 4px rgba(0,0,0,0.3)'
                   }}
                 />
               )}
@@ -169,7 +172,7 @@ const PropertyPhotoGallery: React.FC<PropertyPhotoGalleryProps> = ({
                   flexDirection: 'column',
                   gap: 0.5,
                   opacity: { xs: 1, md: 0 },
-                  transition: 'opacity 0.2s',
+                  transition: 'opacity 0.2s'
                 }}
               >
                 <Box
@@ -181,7 +184,7 @@ const PropertyPhotoGallery: React.FC<PropertyPhotoGalleryProps> = ({
                     color: 'white',
                     px: 2,
                     py: 1,
-                    borderRadius: 2,
+                    borderRadius: 2
                   }}
                 >
                   <PhotoLibraryIcon fontSize="small" />
@@ -197,7 +200,7 @@ const PropertyPhotoGallery: React.FC<PropertyPhotoGalleryProps> = ({
                     sx={{
                       bgcolor: 'rgba(0, 0, 0, 0.7)',
                       color: 'white',
-                      '& .MuiChip-icon': { color: 'gold' },
+                      '& .MuiChip-icon': { color: 'gold' }
                     }}
                   />
                 )}
@@ -206,7 +209,12 @@ const PropertyPhotoGallery: React.FC<PropertyPhotoGalleryProps> = ({
           </Grid>
 
           {/* Thumbnail Grid - 1/3 on desktop, hidden on mobile initially */}
-          <Grid item xs={12} md={4} sx={{ display: { xs: 'none', md: 'block' } }}>
+          <Grid
+            item
+            xs={12}
+            md={4}
+            sx={{ display: { xs: 'none', md: 'block' } }}
+          >
             <Grid container spacing={1}>
               {thumbnailPhotos.map((photo, index) => (
                 <Grid item xs={6} key={index}>
@@ -220,8 +228,8 @@ const PropertyPhotoGallery: React.FC<PropertyPhotoGalleryProps> = ({
                       cursor: 'pointer',
                       '&:hover': {
                         transform: 'scale(1.02)',
-                        transition: 'transform 0.2s',
-                      },
+                        transition: 'transform 0.2s'
+                      }
                     }}
                   >
                     <Image
@@ -232,28 +240,35 @@ const PropertyPhotoGallery: React.FC<PropertyPhotoGalleryProps> = ({
                       sizes="(max-width: 768px) 50vw, 16vw"
                     />
                     {/* View All Photos button on last thumbnail */}
-                    {index === thumbnailPhotos.length - 1 && sortedPhotos.length > 5 && (
-                      <Box
-                        sx={{
-                          position: 'absolute',
-                          inset: 0,
-                          bgcolor: 'rgba(0, 0, 0, 0.5)',
-                          display: 'flex',
-                          flexDirection: 'column',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          gap: 1,
-                        }}
-                      >
-                        <PhotoLibraryIcon sx={{ fontSize: 40, color: 'white' }} />
-                        <Typography variant="h6" color="white" fontWeight="bold">
-                          View All
-                        </Typography>
-                        <Typography variant="body2" color="white">
-                          {sortedPhotos.length} Photos
-                        </Typography>
-                      </Box>
-                    )}
+                    {index === thumbnailPhotos.length - 1 &&
+                      sortedPhotos.length > 5 && (
+                        <Box
+                          sx={{
+                            position: 'absolute',
+                            inset: 0,
+                            bgcolor: 'rgba(0, 0, 0, 0.5)',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            gap: 1
+                          }}
+                        >
+                          <PhotoLibraryIcon
+                            sx={{ fontSize: 40, color: 'white' }}
+                          />
+                          <Typography
+                            variant="h6"
+                            color="white"
+                            fontWeight="bold"
+                          >
+                            View All
+                          </Typography>
+                          <Typography variant="body2" color="white">
+                            {sortedPhotos.length} Photos
+                          </Typography>
+                        </Box>
+                      )}
                   </Box>
                 </Grid>
               ))}
@@ -273,7 +288,7 @@ const PropertyPhotoGallery: React.FC<PropertyPhotoGalleryProps> = ({
                     height: 80,
                     borderRadius: 1,
                     overflow: 'hidden',
-                    cursor: 'pointer',
+                    cursor: 'pointer'
                   }}
                 >
                   <Image
@@ -298,7 +313,7 @@ const PropertyPhotoGallery: React.FC<PropertyPhotoGalleryProps> = ({
                     bgcolor: 'grey.800',
                     display: 'flex',
                     alignItems: 'center',
-                    justifyContent: 'center',
+                    justifyContent: 'center'
                   }}
                 >
                   <Typography color="white" fontWeight="bold">
@@ -319,8 +334,8 @@ const PropertyPhotoGallery: React.FC<PropertyPhotoGalleryProps> = ({
         fullScreen
         PaperProps={{
           sx: {
-            bgcolor: 'black',
-          },
+            bgcolor: 'black'
+          }
         }}
       >
         <Box
@@ -333,7 +348,7 @@ const PropertyPhotoGallery: React.FC<PropertyPhotoGalleryProps> = ({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            outline: 'none',
+            outline: 'none'
           }}
         >
           {/* Close button */}
@@ -346,9 +361,9 @@ const PropertyPhotoGallery: React.FC<PropertyPhotoGalleryProps> = ({
               color: 'white',
               bgcolor: 'rgba(0, 0, 0, 0.5)',
               '&:hover': {
-                bgcolor: 'rgba(0, 0, 0, 0.7)',
+                bgcolor: 'rgba(0, 0, 0, 0.7)'
               },
-              zIndex: 2,
+              zIndex: 2
             }}
           >
             <CloseIcon />
@@ -370,7 +385,7 @@ const PropertyPhotoGallery: React.FC<PropertyPhotoGalleryProps> = ({
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'center',
-              gap: 0.5,
+              gap: 0.5
             }}
           >
             <Typography variant="body2">
@@ -391,7 +406,7 @@ const PropertyPhotoGallery: React.FC<PropertyPhotoGalleryProps> = ({
                   fontSize: '0.7rem',
                   bgcolor: 'rgba(255, 255, 255, 0.2)',
                   color: 'white',
-                  '& .MuiChip-icon': { color: 'gold', fontSize: 14 },
+                  '& .MuiChip-icon': { color: 'gold', fontSize: 14 }
                 }}
               />
             )}
@@ -407,9 +422,9 @@ const PropertyPhotoGallery: React.FC<PropertyPhotoGalleryProps> = ({
                 color: 'white',
                 bgcolor: 'rgba(0, 0, 0, 0.5)',
                 '&:hover': {
-                  bgcolor: 'rgba(0, 0, 0, 0.7)',
+                  bgcolor: 'rgba(0, 0, 0, 0.7)'
                 },
-                zIndex: 2,
+                zIndex: 2
               }}
             >
               <ChevronLeftIcon fontSize="large" />
@@ -424,7 +439,7 @@ const PropertyPhotoGallery: React.FC<PropertyPhotoGalleryProps> = ({
               height: '90%',
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'center',
+              justifyContent: 'center'
             }}
           >
             <Image
@@ -446,9 +461,9 @@ const PropertyPhotoGallery: React.FC<PropertyPhotoGalleryProps> = ({
                 color: 'white',
                 bgcolor: 'rgba(0, 0, 0, 0.5)',
                 '&:hover': {
-                  bgcolor: 'rgba(0, 0, 0, 0.7)',
+                  bgcolor: 'rgba(0, 0, 0, 0.7)'
                 },
-                zIndex: 2,
+                zIndex: 2
               }}
             >
               <ChevronRightIcon fontSize="large" />

@@ -1,28 +1,31 @@
 'use client'
 
 import React, { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
+
+import AddIcon from '@mui/icons-material/Add'
+import ArticleIcon from '@mui/icons-material/Article'
+import DescriptionIcon from '@mui/icons-material/Description'
+import PageGenIcon from '@mui/icons-material/DynamicFeed'
+import EditIcon from '@mui/icons-material/Edit'
+import HouseIcon from '@mui/icons-material/House'
+import PeopleIcon from '@mui/icons-material/People'
 import {
   Box,
   Card,
   CardActionArea,
   CardContent,
   Grid,
-  Paper,
-  Typography,
   List,
   ListItem,
   ListItemIcon,
-  ListItemText
+  ListItemText,
+  Paper,
+  Typography
 } from '@mui/material'
-import DescriptionIcon from '@mui/icons-material/Description'
-import ArticleIcon from '@mui/icons-material/Article'
-import PeopleIcon from '@mui/icons-material/People'
-import HouseIcon from '@mui/icons-material/House'
-import AddIcon from '@mui/icons-material/Add'
-import EditIcon from '@mui/icons-material/Edit'
-import PageGenIcon from '@mui/icons-material/DynamicFeed'
-import { useRouter } from 'next/navigation'
+
 import { useOrganization } from '@/providers/OrganizationProvider'
+
 import { getTokenSync } from 'utils/tokens'
 
 const GOLD = '#C4A96E'
@@ -37,7 +40,13 @@ interface StatCardProps {
 function StatCard({ title, value, icon, color }: StatCardProps) {
   return (
     <Paper sx={{ p: 3 }}>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'flex-start'
+        }}
+      >
         <Box>
           <Typography variant="body2" color="text.secondary" gutterBottom>
             {title}
@@ -76,7 +85,15 @@ function QuickAction({ title, description, icon, href }: QuickActionProps) {
   return (
     <Card variant="outlined">
       <CardActionArea onClick={() => router.push(href)} sx={{ p: 2 }}>
-        <CardContent sx={{ display: 'flex', alignItems: 'center', gap: 2, p: 0, '&:last-child': { pb: 0 } }}>
+        <CardContent
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 2,
+            p: 0,
+            '&:last-child': { pb: 0 }
+          }}
+        >
           <Box
             sx={{
               bgcolor: `${GOLD}15`,
@@ -103,11 +120,31 @@ function QuickAction({ title, description, icon, href }: QuickActionProps) {
 }
 
 const recentActivity = [
-  { text: 'Homepage content updated', time: '2 hours ago', icon: <EditIcon fontSize="small" /> },
-  { text: 'New blog post published: "Market Trends 2026"', time: '5 hours ago', icon: <ArticleIcon fontSize="small" /> },
-  { text: 'New lead received from contact form', time: '1 day ago', icon: <PeopleIcon fontSize="small" /> },
-  { text: '3 neighborhood pages generated', time: '2 days ago', icon: <PageGenIcon fontSize="small" /> },
-  { text: 'Open house listing added for 123 Main St', time: '3 days ago', icon: <HouseIcon fontSize="small" /> }
+  {
+    text: 'Homepage content updated',
+    time: '2 hours ago',
+    icon: <EditIcon fontSize="small" />
+  },
+  {
+    text: 'New blog post published: "Market Trends 2026"',
+    time: '5 hours ago',
+    icon: <ArticleIcon fontSize="small" />
+  },
+  {
+    text: 'New lead received from contact form',
+    time: '1 day ago',
+    icon: <PeopleIcon fontSize="small" />
+  },
+  {
+    text: '3 neighborhood pages generated',
+    time: '2 days ago',
+    icon: <PageGenIcon fontSize="small" />
+  },
+  {
+    text: 'Open house listing added for 123 Main St',
+    time: '3 days ago',
+    icon: <HouseIcon fontSize="small" />
+  }
 ]
 
 const API_URL = `${process.env.NEXT_PUBLIC_API_URL}/api`
@@ -130,31 +167,49 @@ interface DashboardStats {
 
 export default function AdminDashboard() {
   const { organization } = useOrganization()
-  const [stats, setStats] = useState<DashboardStats>({ pages: null, blogs: null, leads: null, users: null })
+  const [stats, setStats] = useState<DashboardStats>({
+    pages: null,
+    blogs: null,
+    leads: null,
+    users: null
+  })
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     async function loadStats() {
-      const results: DashboardStats = { pages: null, blogs: null, leads: null, users: null }
+      const results: DashboardStats = {
+        pages: null,
+        blogs: null,
+        leads: null,
+        users: null
+      }
 
-      const [pagesRes, blogsRes, leadsRes, usersRes] = await Promise.allSettled([
-        fetchWithAuth('/content-pages'),
-        fetchWithAuth('/blogs/admin/all'),
-        fetchWithAuth('/leads'),
-        fetchWithAuth('/admin/users')
-      ])
+      const [pagesRes, blogsRes, leadsRes, usersRes] = await Promise.allSettled(
+        [
+          fetchWithAuth('/content-pages'),
+          fetchWithAuth('/blogs/admin/all'),
+          fetchWithAuth('/leads'),
+          fetchWithAuth('/admin/users')
+        ]
+      )
 
       if (pagesRes.status === 'fulfilled') {
         const data = pagesRes.value
-        results.pages = Array.isArray(data) ? data.length : (data?.pages?.length ?? data?.total ?? 0)
+        results.pages = Array.isArray(data)
+          ? data.length
+          : (data?.pages?.length ?? data?.total ?? 0)
       }
       if (blogsRes.status === 'fulfilled') {
         const data = blogsRes.value
-        results.blogs = Array.isArray(data) ? data.length : (data?.blogs?.length ?? data?.total ?? 0)
+        results.blogs = Array.isArray(data)
+          ? data.length
+          : (data?.blogs?.length ?? data?.total ?? 0)
       }
       if (leadsRes.status === 'fulfilled') {
         const data = leadsRes.value
-        results.leads = Array.isArray(data) ? data.length : (data?.leads?.length ?? data?.total ?? 0)
+        results.leads = Array.isArray(data)
+          ? data.length
+          : (data?.leads?.length ?? data?.total ?? 0)
       }
       if (usersRes.status === 'fulfilled') {
         const data = usersRes.value
@@ -186,16 +241,36 @@ export default function AdminDashboard() {
       {/* Stats Row */}
       <Grid container spacing={3} sx={{ mb: 4 }}>
         <Grid item xs={12} sm={6} md={3}>
-          <StatCard title="Total Pages" value={formatStat(stats.pages)} icon={<DescriptionIcon />} color={GOLD} />
+          <StatCard
+            title="Total Pages"
+            value={formatStat(stats.pages)}
+            icon={<DescriptionIcon />}
+            color={GOLD}
+          />
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
-          <StatCard title="Total Blog Posts" value={formatStat(stats.blogs)} icon={<ArticleIcon />} color={GOLD} />
+          <StatCard
+            title="Total Blog Posts"
+            value={formatStat(stats.blogs)}
+            icon={<ArticleIcon />}
+            color={GOLD}
+          />
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
-          <StatCard title="Total Leads" value={formatStat(stats.leads)} icon={<PeopleIcon />} color={GOLD} />
+          <StatCard
+            title="Total Leads"
+            value={formatStat(stats.leads)}
+            icon={<PeopleIcon />}
+            color={GOLD}
+          />
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
-          <StatCard title="Admin Users" value={formatStat(stats.users)} icon={<HouseIcon />} color={GOLD} />
+          <StatCard
+            title="Admin Users"
+            value={formatStat(stats.users)}
+            icon={<HouseIcon />}
+            color={GOLD}
+          />
         </Grid>
       </Grid>
 
@@ -245,17 +320,11 @@ export default function AdminDashboard() {
       <Paper variant="outlined">
         <List>
           {recentActivity.map((item, index) => (
-            <ListItem
-              key={index}
-              divider={index < recentActivity.length - 1}
-            >
+            <ListItem key={index} divider={index < recentActivity.length - 1}>
               <ListItemIcon sx={{ minWidth: 40, color: 'text.secondary' }}>
                 {item.icon}
               </ListItemIcon>
-              <ListItemText
-                primary={item.text}
-                secondary={item.time}
-              />
+              <ListItemText primary={item.text} secondary={item.time} />
             </ListItem>
           ))}
         </List>

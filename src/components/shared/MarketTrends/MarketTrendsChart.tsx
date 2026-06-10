@@ -8,22 +8,22 @@ import {
   ResponsiveContainer,
   Tooltip,
   XAxis,
-  YAxis,
+  YAxis
 } from 'recharts'
 
 import { divider } from '@configs/colors'
 import {
   ChartTooltip,
-  getMinMaxPrice,
   getMinMaxDays,
+  getMinMaxPrice,
   getTickInterval,
   lineProps,
   tooltipProps,
   xAxisProps,
-  yAxisProps,
+  yAxisProps
 } from '@shared/Stats'
 
-import { formatPrice, formatEnglishPrice } from 'utils/formatters'
+import { formatEnglishPrice, formatPrice } from 'utils/formatters'
 import { pluralize } from 'utils/strings'
 
 import { type MarketTrendsData } from './utils'
@@ -37,18 +37,22 @@ interface MarketTrendsChartProps {
 const MarketTrendsChart: React.FC<MarketTrendsChartProps> = ({
   data,
   showDaysOnMarket = true,
-  height = 400,
+  height = 400
 }) => {
   if (!data || data.length === 0) {
     return null
   }
 
   // Calculate domain for price axis
-  const prices = data.map((d) => d.medianPrice).filter((p): p is number => p !== null)
+  const prices = data
+    .map((d) => d.medianPrice)
+    .filter((p): p is number => p !== null)
   const minMaxPrice = getMinMaxPrice(prices, 20000)
 
   // Calculate domain for days on market axis if shown
-  const days = data.map((d) => d.daysOnMarket).filter((d): d is number => d !== null)
+  const days = data
+    .map((d) => d.daysOnMarket)
+    .filter((d): d is number => d !== null)
   const minMaxDays = showDaysOnMarket ? getMinMaxDays(days, 10) : [0, 0]
 
   const interval = getTickInterval(data.length)
@@ -58,16 +62,16 @@ const MarketTrendsChart: React.FC<MarketTrendsChartProps> = ({
     medianPrice: {
       color: '#1976d2',
       label: 'Median Price',
-      formatter: (value: number) => formatEnglishPrice(value),
+      formatter: (value: number) => formatEnglishPrice(value)
     },
     ...(showDaysOnMarket && {
       daysOnMarket: {
         color: '#f57c00',
         label: 'Days on Market',
         formatter: (value: number) =>
-          pluralize(value, { one: '$ day', many: '$ days' }),
-      },
-    }),
+          pluralize(value, { one: '$ day', many: '$ days' })
+      }
+    })
   }
 
   return (
@@ -95,7 +99,7 @@ const MarketTrendsChart: React.FC<MarketTrendsChartProps> = ({
                 ? ''
                 : pluralize(value, {
                     one: '$ day',
-                    many: '$ days',
+                    many: '$ days'
                   })
             }
             {...yAxisProps}

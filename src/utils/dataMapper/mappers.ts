@@ -338,8 +338,7 @@ export function mapperListingTerms(property: Property) {
 
 export function mapperView(property: Property) {
   const view =
-    (property.details as { viewType?: string })?.viewType ||
-    property.raw?.View
+    (property.details as { viewType?: string })?.viewType || property.raw?.View
   return view ? addSpaceAfterComma(String(view)) : null
 }
 

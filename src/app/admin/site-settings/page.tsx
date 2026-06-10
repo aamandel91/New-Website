@@ -1,17 +1,19 @@
 'use client'
 
 import React, { useEffect, useState } from 'react'
+
 import {
+  Alert,
   Box,
+  Button,
+  CircularProgress,
   Container,
   Paper,
-  Typography,
-  TextField,
-  Button,
   Stack,
-  Alert,
-  CircularProgress,
+  TextField,
+  Typography
 } from '@mui/material'
+
 import type { SiteSettings } from '@/configs/defaults/site-settings'
 
 interface TileImages {
@@ -23,11 +25,11 @@ const EXPLORE_LABELS: Record<string, string> = {
   'miami-metro': 'Miami Metro',
   'broward-palm-beach': 'Broward / Palm Beach',
   'port-st-lucie': 'Port St Lucie',
-  'orlando': 'Orlando',
+  orlando: 'Orlando',
   'tampa-st-pete': 'Tampa / St Pete',
-  'sarasota': 'Sarasota',
+  sarasota: 'Sarasota',
   'sw-florida': 'SW Florida',
-  'florida-keys': 'Florida Keys',
+  'florida-keys': 'Florida Keys'
 }
 
 const LIFESTYLE_LABELS: Record<string, string> = {
@@ -35,12 +37,12 @@ const LIFESTYLE_LABELS: Record<string, string> = {
   '1-acres': '1+ Acres',
   '2-story': '2 Story',
   '55-communities': '55+ Communities',
-  'condo': 'Condo',
-  'foreclosures': 'Foreclosures',
-  'gated': 'Gated',
+  condo: 'Condo',
+  foreclosures: 'Foreclosures',
+  gated: 'Gated',
   'country-club': 'Country Club',
-  'luxury': 'Luxury',
-  'multifamily': 'Multifamily',
+  luxury: 'Luxury',
+  multifamily: 'Multifamily',
   'new-construction': 'New Construction',
   'no-hoa': 'No HOA',
   'ocean-access': 'Ocean Access',
@@ -49,8 +51,8 @@ const LIFESTYLE_LABELS: Record<string, string> = {
   'single-family': 'Single Family',
   'fha-approved': 'FHA Approved',
   'va-approved': 'VA Approved',
-  'townhomes': 'Townhomes',
-  'waterfront': 'Waterfront',
+  townhomes: 'Townhomes',
+  waterfront: 'Waterfront'
 }
 
 const AdminSiteSettingsPage = () => {
@@ -64,7 +66,7 @@ const AdminSiteSettingsPage = () => {
   useEffect(() => {
     Promise.all([
       fetch('/api/admin/site-settings').then((res) => res.json()),
-      fetch('/api/admin/tile-images').then((res) => res.json()),
+      fetch('/api/admin/tile-images').then((res) => res.json())
     ])
       .then(([settingsData, tileData]) => {
         setSettings(settingsData)
@@ -74,31 +76,39 @@ const AdminSiteSettingsPage = () => {
       .finally(() => setLoading(false))
   }, [])
 
-  const handleChange = (field: keyof SiteSettings) => (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!settings) return
-    setSettings({ ...settings, [field]: e.target.value })
-  }
+  const handleChange =
+    (field: keyof SiteSettings) => (e: React.ChangeEvent<HTMLInputElement>) => {
+      if (!settings) return
+      setSettings({ ...settings, [field]: e.target.value })
+    }
 
-  const handleSocialChange = (field: keyof SiteSettings['social']) => (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!settings) return
-    setSettings({ ...settings, social: { ...settings.social, [field]: e.target.value } })
-  }
+  const handleSocialChange =
+    (field: keyof SiteSettings['social']) =>
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      if (!settings) return
+      setSettings({
+        ...settings,
+        social: { ...settings.social, [field]: e.target.value }
+      })
+    }
 
-  const handleExploreTileChange = (key: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!tileImages) return
-    setTileImages({
-      ...tileImages,
-      explore: { ...tileImages.explore, [key]: e.target.value },
-    })
-  }
+  const handleExploreTileChange =
+    (key: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
+      if (!tileImages) return
+      setTileImages({
+        ...tileImages,
+        explore: { ...tileImages.explore, [key]: e.target.value }
+      })
+    }
 
-  const handleLifestyleTileChange = (key: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!tileImages) return
-    setTileImages({
-      ...tileImages,
-      lifestyle: { ...tileImages.lifestyle, [key]: e.target.value },
-    })
-  }
+  const handleLifestyleTileChange =
+    (key: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
+      if (!tileImages) return
+      setTileImages({
+        ...tileImages,
+        lifestyle: { ...tileImages.lifestyle, [key]: e.target.value }
+      })
+    }
 
   const handleSave = async () => {
     if (!settings) return
@@ -110,18 +120,19 @@ const AdminSiteSettingsPage = () => {
         fetch('/api/admin/site-settings', {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(settings),
+          body: JSON.stringify(settings)
         }),
         tileImages
           ? fetch('/api/admin/tile-images', {
               method: 'PUT',
               headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify(tileImages),
+              body: JSON.stringify(tileImages)
             })
-          : Promise.resolve({ ok: true }),
+          : Promise.resolve({ ok: true })
       ])
       if (!settingsRes.ok) throw new Error('Save failed')
-      if (tileRes && !(tileRes as Response).ok) throw new Error('Tile images save failed')
+      if (tileRes && !(tileRes as Response).ok)
+        throw new Error('Tile images save failed')
       setSuccess(true)
       setTimeout(() => setSuccess(false), 3000)
     } catch {
@@ -134,7 +145,12 @@ const AdminSiteSettingsPage = () => {
   if (loading) {
     return (
       <Container maxWidth="md" sx={{ py: 8 }}>
-        <Box display="flex" justifyContent="center" alignItems="center" minHeight="400px">
+        <Box
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+          minHeight="400px"
+        >
           <CircularProgress />
         </Box>
       </Container>
@@ -149,7 +165,8 @@ const AdminSiteSettingsPage = () => {
         Site Settings
       </Typography>
       <Typography variant="body1" color="text.secondary" sx={{ mb: 4 }}>
-        Manage your website&apos;s contact info, social links, images, and SEO metadata.
+        Manage your website&apos;s contact info, social links, images, and SEO
+        metadata.
       </Typography>
 
       {error && (
@@ -169,11 +186,41 @@ const AdminSiteSettingsPage = () => {
             General
           </Typography>
           <Stack spacing={2}>
-            <TextField label="Site Name" fullWidth size="small" value={settings.siteName} onChange={handleChange('siteName')} />
-            <TextField label="Brokerage" fullWidth size="small" value={settings.brokerage} onChange={handleChange('brokerage')} />
-            <TextField label="Phone" fullWidth size="small" value={settings.phone} onChange={handleChange('phone')} />
-            <TextField label="Email" fullWidth size="small" value={settings.email} onChange={handleChange('email')} />
-            <TextField label="Address" fullWidth size="small" value={settings.address} onChange={handleChange('address')} />
+            <TextField
+              label="Site Name"
+              fullWidth
+              size="small"
+              value={settings.siteName}
+              onChange={handleChange('siteName')}
+            />
+            <TextField
+              label="Brokerage"
+              fullWidth
+              size="small"
+              value={settings.brokerage}
+              onChange={handleChange('brokerage')}
+            />
+            <TextField
+              label="Phone"
+              fullWidth
+              size="small"
+              value={settings.phone}
+              onChange={handleChange('phone')}
+            />
+            <TextField
+              label="Email"
+              fullWidth
+              size="small"
+              value={settings.email}
+              onChange={handleChange('email')}
+            />
+            <TextField
+              label="Address"
+              fullWidth
+              size="small"
+              value={settings.address}
+              onChange={handleChange('address')}
+            />
           </Stack>
         </Paper>
 
@@ -182,7 +229,8 @@ const AdminSiteSettingsPage = () => {
             Hero Image
           </Typography>
           <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-            Set a background image URL for the homepage hero section. Leave empty for the default gradient.
+            Set a background image URL for the homepage hero section. Leave
+            empty for the default gradient.
           </Typography>
           <TextField
             label="Hero Image URL"
@@ -200,11 +248,41 @@ const AdminSiteSettingsPage = () => {
             Social Links
           </Typography>
           <Stack spacing={2}>
-            <TextField label="Facebook" fullWidth size="small" value={settings.social.facebook} onChange={handleSocialChange('facebook')} />
-            <TextField label="Instagram" fullWidth size="small" value={settings.social.instagram} onChange={handleSocialChange('instagram')} />
-            <TextField label="LinkedIn" fullWidth size="small" value={settings.social.linkedin} onChange={handleSocialChange('linkedin')} />
-            <TextField label="YouTube" fullWidth size="small" value={settings.social.youtube} onChange={handleSocialChange('youtube')} />
-            <TextField label="Zillow" fullWidth size="small" value={settings.social.zillow} onChange={handleSocialChange('zillow')} />
+            <TextField
+              label="Facebook"
+              fullWidth
+              size="small"
+              value={settings.social.facebook}
+              onChange={handleSocialChange('facebook')}
+            />
+            <TextField
+              label="Instagram"
+              fullWidth
+              size="small"
+              value={settings.social.instagram}
+              onChange={handleSocialChange('instagram')}
+            />
+            <TextField
+              label="LinkedIn"
+              fullWidth
+              size="small"
+              value={settings.social.linkedin}
+              onChange={handleSocialChange('linkedin')}
+            />
+            <TextField
+              label="YouTube"
+              fullWidth
+              size="small"
+              value={settings.social.youtube}
+              onChange={handleSocialChange('youtube')}
+            />
+            <TextField
+              label="Zillow"
+              fullWidth
+              size="small"
+              value={settings.social.zillow}
+              onChange={handleSocialChange('zillow')}
+            />
           </Stack>
         </Paper>
 
@@ -213,9 +291,32 @@ const AdminSiteSettingsPage = () => {
             SEO / Meta
           </Typography>
           <Stack spacing={2}>
-            <TextField label="Meta Title" fullWidth size="small" value={settings.metaTitle} onChange={handleChange('metaTitle')} />
-            <TextField label="Meta Description" fullWidth size="small" multiline rows={3} value={settings.metaDescription} onChange={handleChange('metaDescription')} />
-            <TextField label="Meta Keywords" fullWidth size="small" multiline rows={2} value={settings.metaKeywords} onChange={handleChange('metaKeywords')} helperText="Comma-separated keywords" />
+            <TextField
+              label="Meta Title"
+              fullWidth
+              size="small"
+              value={settings.metaTitle}
+              onChange={handleChange('metaTitle')}
+            />
+            <TextField
+              label="Meta Description"
+              fullWidth
+              size="small"
+              multiline
+              rows={3}
+              value={settings.metaDescription}
+              onChange={handleChange('metaDescription')}
+            />
+            <TextField
+              label="Meta Keywords"
+              fullWidth
+              size="small"
+              multiline
+              rows={2}
+              value={settings.metaKeywords}
+              onChange={handleChange('metaKeywords')}
+              helperText="Comma-separated keywords"
+            />
           </Stack>
         </Paper>
 
@@ -226,7 +327,8 @@ const AdminSiteSettingsPage = () => {
                 Explore Listings Tile Images
               </Typography>
               <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                Set background image URLs for metro area tiles. Leave empty for the default gradient.
+                Set background image URLs for metro area tiles. Leave empty for
+                the default gradient.
               </Typography>
               <Stack spacing={2}>
                 {Object.entries(tileImages.explore).map(([key, url]) => (
@@ -248,7 +350,8 @@ const AdminSiteSettingsPage = () => {
                 Lifestyle Tile Images
               </Typography>
               <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                Set background image URLs for lifestyle category tiles. Leave empty for the default gradient.
+                Set background image URLs for lifestyle category tiles. Leave
+                empty for the default gradient.
               </Typography>
               <Stack spacing={2}>
                 {Object.entries(tileImages.lifestyle).map(([key, url]) => (
@@ -268,7 +371,12 @@ const AdminSiteSettingsPage = () => {
         )}
 
         <Box display="flex" justifyContent="flex-end">
-          <Button variant="contained" size="large" onClick={handleSave} disabled={saving}>
+          <Button
+            variant="contained"
+            size="large"
+            onClick={handleSave}
+            disabled={saving}
+          >
             {saving ? 'Saving...' : 'Save Settings'}
           </Button>
         </Box>

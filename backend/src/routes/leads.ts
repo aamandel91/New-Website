@@ -12,10 +12,14 @@ const router = new Router({
 })
 
 const authMiddleware = container.resolve<Middleware>('middleware.jwt')
-const roleMiddleware = container.resolve<RoleMiddlewareCreator>('middleware.role')
+const roleMiddleware =
+  container.resolve<RoleMiddlewareCreator>('middleware.role')
 
 // All routes require authentication and admin/agent role
-router.use(authMiddleware, roleMiddleware([UserRole.Admin, UserRole.Agent, UserRole.Root]))
+router.use(
+  authMiddleware,
+  roleMiddleware([UserRole.Admin, UserRole.Agent, UserRole.Root])
+)
 
 function requireId(ctx: any): string | null {
   const id = ctx.params['id']
@@ -55,7 +59,8 @@ router.get('/', async (ctx) => {
   if (source) filters.source = source as string
   if (assigned_to) filters.assigned_to = assigned_to as string
   if (search) filters.search = search as string
-  if (tags) filters.tags = (typeof tags === 'string' ? [tags] : tags) as string[]
+  if (tags)
+    filters.tags = (typeof tags === 'string' ? [tags] : tags) as string[]
 
   const result = await leadsService.getLeads(orgId, filters)
 
@@ -194,7 +199,11 @@ router.post('/:id/activities', async (ctx) => {
   }
 
   const leadsService = ctx.state['container'].resolve(LeadsService)
-  const activityInput: { activity_type: string; description?: string; metadata?: any } = {
+  const activityInput: {
+    activity_type: string
+    description?: string
+    metadata?: any
+  } = {
     activity_type
   }
   if (description !== undefined) activityInput.description = description

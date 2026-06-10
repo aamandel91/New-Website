@@ -1,20 +1,21 @@
 'use client'
 
 import React from 'react'
+import Link from 'next/link'
+
+import ArticleIcon from '@mui/icons-material/Article'
+import DateIcon from '@mui/icons-material/CalendarToday'
 import {
   Box,
-  Typography,
-  Paper,
-  Link as MuiLink,
-  Stack,
-  Chip,
   Card,
   CardContent,
   CardMedia,
+  Chip,
+  Link as MuiLink,
+  Paper,
+  Stack,
+  Typography
 } from '@mui/material'
-import Link from 'next/link'
-import ArticleIcon from '@mui/icons-material/Article'
-import DateIcon from '@mui/icons-material/CalendarToday'
 
 interface BlogPost {
   id: string
@@ -40,7 +41,7 @@ const RelatedBlogs: React.FC<RelatedBlogsProps> = ({
   city,
   state,
   propertyType,
-  maxPosts = 3,
+  maxPosts = 3
 }) => {
   if (posts.length === 0) {
     return null
@@ -68,7 +69,7 @@ const RelatedBlogs: React.FC<RelatedBlogsProps> = ({
     return new Date(dateString).toLocaleDateString('en-US', {
       month: 'short',
       day: 'numeric',
-      year: 'numeric',
+      year: 'numeric'
     })
   }
 
@@ -94,9 +95,9 @@ const RelatedBlogs: React.FC<RelatedBlogsProps> = ({
               borderColor: 'divider',
               '&:hover': {
                 borderColor: 'primary.main',
-                bgcolor: 'action.hover',
+                bgcolor: 'action.hover'
               },
-              transition: 'all 0.2s',
+              transition: 'all 0.2s'
             }}
           >
             {/* Blog Post Image */}
@@ -107,7 +108,7 @@ const RelatedBlogs: React.FC<RelatedBlogsProps> = ({
                   width: 120,
                   height: 120,
                   objectFit: 'cover',
-                  display: { xs: 'none', sm: 'block' },
+                  display: { xs: 'none', sm: 'block' }
                 }}
                 image={post.imageUrl}
                 alt={post.title}
@@ -121,8 +122,8 @@ const RelatedBlogs: React.FC<RelatedBlogsProps> = ({
                   underline="hover"
                   sx={{
                     '&:hover h6': {
-                      color: 'primary.main',
-                    },
+                      color: 'primary.main'
+                    }
                   }}
                 >
                   <Typography
@@ -146,7 +147,7 @@ const RelatedBlogs: React.FC<RelatedBlogsProps> = ({
                     display: '-webkit-box',
                     WebkitLineClamp: 2,
                     WebkitBoxOrient: 'vertical',
-                    overflow: 'hidden',
+                    overflow: 'hidden'
                   }}
                 >
                   {post.excerpt}
@@ -170,9 +171,7 @@ const RelatedBlogs: React.FC<RelatedBlogsProps> = ({
                   </Stack>
                 )}
 
-                {post.category && (
-                  <Chip label={post.category} size="small" />
-                )}
+                {post.category && <Chip label={post.category} size="small" />}
 
                 {post.tags && post.tags.length > 0 && (
                   <>
@@ -193,7 +192,9 @@ const RelatedBlogs: React.FC<RelatedBlogsProps> = ({
       </Stack>
 
       {/* Footer link to all blog posts */}
-      <Box sx={{ mt: 3, pt: 2, borderTop: '1px solid', borderColor: 'divider' }}>
+      <Box
+        sx={{ mt: 3, pt: 2, borderTop: '1px solid', borderColor: 'divider' }}
+      >
         <Link href="/blog" passHref legacyBehavior>
           <MuiLink
             variant="body2"
@@ -201,7 +202,7 @@ const RelatedBlogs: React.FC<RelatedBlogsProps> = ({
             sx={{
               display: 'inline-flex',
               alignItems: 'center',
-              gap: 0.5,
+              gap: 0.5
             }}
           >
             <ArticleIcon fontSize="small" />

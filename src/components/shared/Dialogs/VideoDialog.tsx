@@ -1,8 +1,9 @@
 'use client'
 
 import React from 'react'
-import { Box, Dialog, DialogContent, IconButton } from '@mui/material'
+
 import CloseIcon from '@mui/icons-material/Close'
+import { Box, Dialog, DialogContent, IconButton } from '@mui/material'
 
 interface VideoDialogProps {
   open: boolean
@@ -39,7 +40,7 @@ const VideoDialog = ({ open, videoUrl, onClose }: VideoDialogProps) => {
           color: 'white',
           zIndex: 1,
           bgcolor: 'rgba(0,0,0,0.5)',
-          '&:hover': { bgcolor: 'rgba(0,0,0,0.7)' },
+          '&:hover': { bgcolor: 'rgba(0,0,0,0.7)' }
         }}
       >
         <CloseIcon />
@@ -55,7 +56,7 @@ const VideoDialog = ({ open, videoUrl, onClose }: VideoDialogProps) => {
             sx={{
               width: '100%',
               height: '100%',
-              border: 'none',
+              border: 'none'
             }}
           />
         )}

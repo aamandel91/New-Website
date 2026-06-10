@@ -3,6 +3,8 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 
+import SearchIcon from '@mui/icons-material/Search'
+import type { SelectChangeEvent } from '@mui/material'
 import {
   Box,
   Button,
@@ -22,11 +24,9 @@ import {
   TextField,
   Typography
 } from '@mui/material'
-import type { SelectChangeEvent } from '@mui/material'
-import SearchIcon from '@mui/icons-material/Search'
 
-import LocationAutocomplete from '@shared/LocationAutocomplete'
 import type { LocationResult } from '@shared/LocationAutocomplete'
+import LocationAutocomplete from '@shared/LocationAutocomplete'
 
 const CITIES = [
   'Boca Raton',
@@ -49,13 +49,7 @@ const CITIES = [
   'Weston'
 ]
 
-const COUNTIES = [
-  'Broward',
-  'Miami-Dade',
-  'Palm Beach',
-  'Martin',
-  'St. Lucie'
-]
+const COUNTIES = ['Broward', 'Miami-Dade', 'Palm Beach', 'Martin', 'St. Lucie']
 
 const PROPERTY_TYPES = [
   'Single Family',
@@ -113,7 +107,8 @@ export default function AdvancedSearchPage() {
   const [cities, setCities] = useState<string[]>([])
   const [county, setCounty] = useState('')
   const [neighborhood, setNeighborhood] = useState('')
-  const [selectedLocation, setSelectedLocation] = useState<LocationResult | null>(null)
+  const [selectedLocation, setSelectedLocation] =
+    useState<LocationResult | null>(null)
   const [zip, setZip] = useState('')
 
   const [propertyTypes, setPropertyTypes] = useState<string[]>([])
@@ -175,7 +170,8 @@ export default function AdvancedSearchPage() {
     }
     if (zip) params.set('location', zip)
 
-    if (propertyTypes.length) params.set('propertyType', propertyTypes.join(','))
+    if (propertyTypes.length)
+      params.set('propertyType', propertyTypes.join(','))
 
     if (status === 'Active') params.set('listingStatus', 'active')
     else if (status === 'Sold') params.set('listingStatus', 'sold')

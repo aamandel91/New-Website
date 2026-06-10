@@ -34,7 +34,10 @@ const MapFilters = () => {
 
   const handleFilterChange = (newFilters: Partial<Filters>) => {
     // When switching to rent, reset prices
-    if (newFilters.listingStatus === 'rent' && filters.listingStatus !== 'rent') {
+    if (
+      newFilters.listingStatus === 'rent' &&
+      filters.listingStatus !== 'rent'
+    ) {
       addFilters({
         ...newFilters,
         minPrice: 0,

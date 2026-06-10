@@ -11,9 +11,13 @@ const router = new Router({
   prefix: '/seo-meta-templates'
 })
 const authMiddleware = container.resolve<Middleware>('middleware.jwt')
-const roleMiddleware = container.resolve<RoleMiddlewareCreator>('middleware.role')
+const roleMiddleware =
+  container.resolve<RoleMiddlewareCreator>('middleware.role')
 
-const adminOnly = [authMiddleware, roleMiddleware([UserRole.Admin, UserRole.Root])]
+const adminOnly = [
+  authMiddleware,
+  roleMiddleware([UserRole.Admin, UserRole.Root])
+]
 
 const upsertSchema = joi.object({
   pageType: joi
@@ -26,14 +30,16 @@ const upsertSchema = joi.object({
 })
 
 function isValidPageType(value: unknown): value is SeoPageType {
-  return typeof value === 'string' && (SEO_PAGE_TYPES as string[]).includes(value)
+  return (
+    typeof value === 'string' && (SEO_PAGE_TYPES as string[]).includes(value)
+  )
 }
 
 /**
  * GET /api/seo-meta-templates
  * Admin: list all templates (one row per page type).
  */
-router.get('/', ...adminOnly, async ctx => {
+router.get('/', ...adminOnly, async (ctx) => {
   const service = ctx.state['container'].resolve(SeoMetaTemplatesService)
   const templates = await service.getAll()
   ctx.body = { templates }
@@ -43,7 +49,7 @@ router.get('/', ...adminOnly, async ctx => {
  * GET /api/seo-meta-templates/page-type/:pageType
  * Public: needed by the metadata generation pipeline. Reads only.
  */
-router.get('/page-type/:pageType', async ctx => {
+router.get('/page-type/:pageType', async (ctx) => {
   const { pageType } = ctx.params
   if (!isValidPageType(pageType)) {
     ctx.status = 400
@@ -64,7 +70,7 @@ router.get('/page-type/:pageType', async ctx => {
  * POST /api/seo-meta-templates
  * Admin: create or update a page-type template.
  */
-router.post('/', ...adminOnly, async ctx => {
+router.post('/', ...adminOnly, async (ctx) => {
   const { error, value } = upsertSchema.validate(ctx.request.body)
   if (error) {
     ctx.status = 400
@@ -91,7 +97,7 @@ router.post('/', ...adminOnly, async ctx => {
  * delete the row — we overwrite it with the original defaults so the API
  * shape stays consistent for the rendering pipeline.
  */
-router.delete('/:pageType', ...adminOnly, async ctx => {
+router.delete('/:pageType', ...adminOnly, async (ctx) => {
   const { pageType } = ctx.params
   if (!isValidPageType(pageType)) {
     ctx.status = 400
@@ -108,7 +114,7 @@ router.delete('/:pageType', ...adminOnly, async ctx => {
  * Admin: returns the currently saved template rendered against the page-type
  * sample data. Used by the admin preview pane.
  */
-router.get('/preview/:pageType', ...adminOnly, async ctx => {
+router.get('/preview/:pageType', ...adminOnly, async (ctx) => {
   const { pageType } = ctx.params
   if (!isValidPageType(pageType)) {
     ctx.status = 400
@@ -130,7 +136,7 @@ const livePreviewSchema = joi.object({
   descriptionTemplate: joi.string().allow('').max(2000).required()
 })
 
-router.post('/preview/:pageType', ...adminOnly, async ctx => {
+router.post('/preview/:pageType', ...adminOnly, async (ctx) => {
   const { pageType } = ctx.params
   if (!isValidPageType(pageType)) {
     ctx.status = 400
@@ -146,7 +152,10 @@ router.post('/preview/:pageType', ...adminOnly, async ctx => {
   const service = ctx.state['container'].resolve(SeoMetaTemplatesService)
   const context = await service.getSampleContextForPageType(pageType)
   const title = service.resolveTemplate(value.titleTemplate, context)
-  const description = service.resolveTemplate(value.descriptionTemplate, context)
+  const description = service.resolveTemplate(
+    value.descriptionTemplate,
+    context
+  )
   ctx.body = { preview: { title, description, context } }
 })
 

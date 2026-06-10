@@ -1,6 +1,7 @@
-import 'server-only'
 import { promises as fs } from 'fs'
 import path from 'path'
+
+import 'server-only'
 
 export interface PropertyIndexEntry {
   slug: string
@@ -24,13 +25,17 @@ export async function loadPropertyIndex(): Promise<PropertyIndexEntry[]> {
   }
 }
 
-export async function savePropertyIndex(entries: PropertyIndexEntry[]): Promise<void> {
+export async function savePropertyIndex(
+  entries: PropertyIndexEntry[]
+): Promise<void> {
   const dir = path.dirname(INDEX_PATH)
   await fs.mkdir(dir, { recursive: true })
   await fs.writeFile(INDEX_PATH, JSON.stringify(entries, null, 2), 'utf-8')
 }
 
-export async function addToPropertyIndex(entry: PropertyIndexEntry): Promise<void> {
+export async function addToPropertyIndex(
+  entry: PropertyIndexEntry
+): Promise<void> {
   const entries = await loadPropertyIndex()
   const existing = entries.findIndex((e) => e.slug === entry.slug)
   if (existing >= 0) {

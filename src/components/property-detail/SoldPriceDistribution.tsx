@@ -1,9 +1,11 @@
 'use client'
 
-import React, { useState, useEffect, useRef, useMemo } from 'react'
-import { Box, Card, CardContent, Typography, Skeleton } from '@mui/material'
-import apiSearchCSRInstance from '@/services/API/APISearchCSR'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
+
+import { Box, Card, CardContent, Skeleton, Typography } from '@mui/material'
+
 import type { CSRSearchParams } from '@/services/API/APISearchCSR'
+import apiSearchCSRInstance from '@/services/API/APISearchCSR'
 
 interface SoldPriceDistributionProps {
   city: string
@@ -26,7 +28,7 @@ const BUCKETS_CONFIG: { label: string; min: number; max: number }[] = [
   { label: '$800K–1M', min: 800_000, max: 1_000_000 },
   { label: '$1–1.5M', min: 1_000_000, max: 1_500_000 },
   { label: '$1.5–2M', min: 1_500_000, max: 2_000_000 },
-  { label: '$2M+', min: 2_000_000, max: Infinity },
+  { label: '$2M+', min: 2_000_000, max: Infinity }
 ]
 
 const CHART_PADDING = { top: 10, right: 20, bottom: 10, left: 100 }
@@ -124,7 +126,7 @@ function BarChart({ buckets }: { buckets: Bucket[] }) {
 const SoldPriceDistribution: React.FC<SoldPriceDistributionProps> = ({
   city,
   neighborhood,
-  propertyType,
+  propertyType
 }) => {
   const [buckets, setBuckets] = useState<Bucket[] | null>(null)
   const [totalCount, setTotalCount] = useState(0)
@@ -143,7 +145,7 @@ const SoldPriceDistribution: React.FC<SoldPriceDistributionProps> = ({
         lastStatus: 'Sld',
         resultsPerPage: 100,
         listings: true,
-        fields: 'soldPrice',
+        fields: 'soldPrice'
       }
       if (neighborhood) params.neighborhood = neighborhood
       if (propertyType) params.propertyType = propertyType
@@ -166,7 +168,7 @@ const SoldPriceDistribution: React.FC<SoldPriceDistributionProps> = ({
 
       const counted: Bucket[] = BUCKETS_CONFIG.map((cfg) => ({
         ...cfg,
-        count: prices.filter((p) => p >= cfg.min && p < cfg.max).length,
+        count: prices.filter((p) => p >= cfg.min && p < cfg.max).length
       }))
 
       setTotalCount(prices.length)
@@ -199,7 +201,11 @@ const SoldPriceDistribution: React.FC<SoldPriceDistributionProps> = ({
       <Card variant="outlined">
         <CardContent>
           <Skeleton width={250} height={28} sx={{ mb: 1 }} />
-          <Skeleton variant="rectangular" height={260} sx={{ borderRadius: 1 }} />
+          <Skeleton
+            variant="rectangular"
+            height={260}
+            sx={{ borderRadius: 1 }}
+          />
         </CardContent>
       </Card>
     )

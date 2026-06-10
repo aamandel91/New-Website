@@ -1,6 +1,7 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useCallback, useState } from 'react'
+
 import { Box } from '@mui/material'
 
 interface YouTubeFacadeProps {
@@ -8,7 +9,10 @@ interface YouTubeFacadeProps {
   title?: string
 }
 
-const YouTubeFacade = ({ videoId, title = 'YouTube video' }: YouTubeFacadeProps) => {
+const YouTubeFacade = ({
+  videoId,
+  title = 'YouTube video'
+}: YouTubeFacadeProps) => {
   const [loaded, setLoaded] = useState(false)
 
   const handleClick = useCallback(() => {
@@ -53,7 +57,7 @@ const YouTubeFacade = ({ videoId, title = 'YouTube video' }: YouTubeFacadeProps)
       role="button"
       tabIndex={0}
       aria-label={`Play ${title}`}
-      onKeyDown={e => {
+      onKeyDown={(e) => {
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault()
           handleClick()

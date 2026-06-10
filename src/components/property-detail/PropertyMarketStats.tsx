@@ -2,31 +2,37 @@
 
 import React, { useState } from 'react'
 import dynamic from 'next/dynamic'
+
+import MoneyIcon from '@mui/icons-material/AttachMoney'
+import BarChartIcon from '@mui/icons-material/BarChart'
+import CalendarIcon from '@mui/icons-material/CalendarToday'
+import ExpandLessIcon from '@mui/icons-material/ExpandLess'
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
+import HomeIcon from '@mui/icons-material/Home'
+import TrendingDownIcon from '@mui/icons-material/TrendingDown'
+import TrendingUpIcon from '@mui/icons-material/TrendingUp'
 import {
   Box,
-  Typography,
-  Paper,
-  Grid,
-  Stack,
-  Chip,
-  Divider,
-  Collapse,
   Button,
+  Chip,
+  Collapse,
+  Divider,
+  Grid,
+  Paper,
   Skeleton,
+  Stack,
+  Typography
 } from '@mui/material'
-import TrendingUpIcon from '@mui/icons-material/TrendingUp'
-import TrendingDownIcon from '@mui/icons-material/TrendingDown'
-import HomeIcon from '@mui/icons-material/Home'
-import CalendarIcon from '@mui/icons-material/CalendarToday'
-import MoneyIcon from '@mui/icons-material/AttachMoney'
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
-import ExpandLessIcon from '@mui/icons-material/ExpandLess'
-import BarChartIcon from '@mui/icons-material/BarChart'
 
-const MarketTimelineGraph = dynamic(() => import('@shared/MarketTimelineGraph'), {
-  ssr: false,
-  loading: () => <Skeleton variant="rectangular" height={300} sx={{ borderRadius: 1 }} />,
-})
+const MarketTimelineGraph = dynamic(
+  () => import('@shared/MarketTimelineGraph'),
+  {
+    ssr: false,
+    loading: () => (
+      <Skeleton variant="rectangular" height={300} sx={{ borderRadius: 1 }} />
+    )
+  }
+)
 
 interface MarketStats {
   averagePrice?: number
@@ -52,7 +58,7 @@ const PropertyMarketStats: React.FC<PropertyMarketStatsProps> = ({
   city,
   state,
   stats,
-  listToSaleRatio,
+  listToSaleRatio
 }) => {
   const [showExplanation, setShowExplanation] = useState(false)
   const location = neighborhood || `${city}, ${state}` || 'this area'
@@ -66,7 +72,7 @@ const PropertyMarketStats: React.FC<PropertyMarketStatsProps> = ({
     pricePerSqft: undefined,
     monthOverMonthChange: undefined,
     yearOverYearChange: undefined,
-    inventoryMonths: undefined,
+    inventoryMonths: undefined
   }
 
   const marketStats = { ...defaultStats, ...stats }
@@ -77,7 +83,7 @@ const PropertyMarketStats: React.FC<PropertyMarketStatsProps> = ({
       style: 'currency',
       currency: 'USD',
       minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
+      maximumFractionDigits: 0
     }).format(price)
   }
 
@@ -94,7 +100,7 @@ const PropertyMarketStats: React.FC<PropertyMarketStatsProps> = ({
             width: 24,
             height: 24,
             borderRadius: '50%',
-            bgcolor: isPositive ? 'success.light' : 'error.light',
+            bgcolor: isPositive ? 'success.light' : 'error.light'
           }}
         >
           {isPositive ? (
@@ -118,15 +124,19 @@ const PropertyMarketStats: React.FC<PropertyMarketStatsProps> = ({
   // Market condition helpers
   const getMarketCondition = (months: number | undefined) => {
     if (months === undefined) return null
-    if (months < 4) return { label: "Seller's Market", color: '#ef5350', position: 15 }
-    if (months <= 6) return { label: 'Balanced Market', color: '#ff9800', position: 50 }
+    if (months < 4)
+      return { label: "Seller's Market", color: '#ef5350', position: 15 }
+    if (months <= 6)
+      return { label: 'Balanced Market', color: '#ff9800', position: 50 }
     return { label: "Buyer's Market", color: '#42a5f5', position: 85 }
   }
 
   const marketCondition = getMarketCondition(marketStats.inventoryMonths)
 
   // If no stats provided, show placeholder
-  const hasStats = Object.values(marketStats).some((val) => val !== undefined) || listToSaleRatio !== undefined
+  const hasStats =
+    Object.values(marketStats).some((val) => val !== undefined) ||
+    listToSaleRatio !== undefined
 
   if (!hasStats) {
     return (
@@ -145,7 +155,12 @@ const PropertyMarketStats: React.FC<PropertyMarketStatsProps> = ({
 
   return (
     <Paper elevation={2} sx={{ p: 3, mb: 3 }}>
-      <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
+      <Stack
+        direction="row"
+        justifyContent="space-between"
+        alignItems="center"
+        sx={{ mb: 2 }}
+      >
         <Typography variant="h6">Market Statistics for {location}</Typography>
         <Chip label="Last 30 days" size="small" />
       </Stack>
@@ -153,8 +168,17 @@ const PropertyMarketStats: React.FC<PropertyMarketStatsProps> = ({
       {/* Market Condition Indicator */}
       {marketCondition && (
         <Box sx={{ mb: 3 }}>
-          <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 1 }}>
-            <Typography variant="body2" fontWeight="medium" color="text.secondary">
+          <Stack
+            direction="row"
+            justifyContent="space-between"
+            alignItems="center"
+            sx={{ mb: 1 }}
+          >
+            <Typography
+              variant="body2"
+              fontWeight="medium"
+              color="text.secondary"
+            >
               Market Condition
             </Typography>
             <Chip
@@ -164,18 +188,26 @@ const PropertyMarketStats: React.FC<PropertyMarketStatsProps> = ({
                 bgcolor: marketCondition.color,
                 color: '#fff',
                 fontWeight: 'bold',
-                fontSize: '0.75rem',
+                fontSize: '0.75rem'
               }}
             />
           </Stack>
-          <Box sx={{ position: 'relative', height: 12, borderRadius: 6, overflow: 'hidden' }}>
+          <Box
+            sx={{
+              position: 'relative',
+              height: 12,
+              borderRadius: 6,
+              overflow: 'hidden'
+            }}
+          >
             {/* Gradient bar */}
             <Box
               sx={{
                 position: 'absolute',
                 inset: 0,
-                background: 'linear-gradient(to right, #ef5350, #ff9800 50%, #42a5f5)',
-                borderRadius: 6,
+                background:
+                  'linear-gradient(to right, #ef5350, #ff9800 50%, #42a5f5)',
+                borderRadius: 6
               }}
             />
             {/* Indicator dot */}
@@ -191,14 +223,24 @@ const PropertyMarketStats: React.FC<PropertyMarketStatsProps> = ({
                 bgcolor: '#fff',
                 border: `3px solid ${marketCondition.color}`,
                 boxShadow: '0 1px 4px rgba(0,0,0,0.3)',
-                zIndex: 1,
+                zIndex: 1
               }}
             />
           </Box>
-          <Stack direction="row" justifyContent="space-between" sx={{ mt: 0.5 }}>
-            <Typography variant="caption" color="text.secondary">Seller&apos;s Market</Typography>
-            <Typography variant="caption" color="text.secondary">Balanced</Typography>
-            <Typography variant="caption" color="text.secondary">Buyer&apos;s Market</Typography>
+          <Stack
+            direction="row"
+            justifyContent="space-between"
+            sx={{ mt: 0.5 }}
+          >
+            <Typography variant="caption" color="text.secondary">
+              Seller&apos;s Market
+            </Typography>
+            <Typography variant="caption" color="text.secondary">
+              Balanced
+            </Typography>
+            <Typography variant="caption" color="text.secondary">
+              Buyer&apos;s Market
+            </Typography>
           </Stack>
         </Box>
       )}
@@ -321,8 +363,8 @@ const PropertyMarketStats: React.FC<PropertyMarketStatsProps> = ({
                   {listToSaleRatio >= 100
                     ? 'Homes selling at or above asking'
                     : listToSaleRatio >= 97
-                    ? 'Homes selling close to asking'
-                    : 'Homes selling below asking price'}
+                      ? 'Homes selling close to asking'
+                      : 'Homes selling below asking price'}
                 </Typography>
               </Stack>
             </Paper>
@@ -347,8 +389,8 @@ const PropertyMarketStats: React.FC<PropertyMarketStatsProps> = ({
                   {marketStats.inventoryMonths < 4
                     ? "Seller's market"
                     : marketStats.inventoryMonths > 6
-                    ? "Buyer's market"
-                    : 'Balanced market'}
+                      ? "Buyer's market"
+                      : 'Balanced market'}
                 </Typography>
               </Stack>
             </Paper>
@@ -360,7 +402,11 @@ const PropertyMarketStats: React.FC<PropertyMarketStatsProps> = ({
       {marketStats.yearOverYearChange !== undefined && (
         <>
           <Divider sx={{ my: 2 }} />
-          <Stack direction="row" justifyContent="space-between" alignItems="center">
+          <Stack
+            direction="row"
+            justifyContent="space-between"
+            alignItems="center"
+          >
             <Typography variant="body2" color="text.secondary">
               Year-over-year change
             </Typography>
@@ -380,22 +426,36 @@ const PropertyMarketStats: React.FC<PropertyMarketStatsProps> = ({
         What does this mean?
       </Button>
       <Collapse in={showExplanation}>
-        <Box sx={{ mt: 1.5, pl: 1, borderLeft: '3px solid', borderColor: 'divider' }}>
+        <Box
+          sx={{
+            mt: 1.5,
+            pl: 1,
+            borderLeft: '3px solid',
+            borderColor: 'divider'
+          }}
+        >
           <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-            <strong>For Buyers:</strong> In a buyer&apos;s market (high inventory), you have more negotiating
-            power and can take your time. In a seller&apos;s market (low inventory), expect competition
-            and be prepared to act quickly with strong offers.
+            <strong>For Buyers:</strong> In a buyer&apos;s market (high
+            inventory), you have more negotiating power and can take your time.
+            In a seller&apos;s market (low inventory), expect competition and be
+            prepared to act quickly with strong offers.
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            <strong>For Sellers:</strong> In a seller&apos;s market, you can price more aggressively and
-            expect multiple offers. In a buyer&apos;s market, competitive pricing and home preparation
-            become more important to attract buyers.
+            <strong>For Sellers:</strong> In a seller&apos;s market, you can
+            price more aggressively and expect multiple offers. In a
+            buyer&apos;s market, competitive pricing and home preparation become
+            more important to attract buyers.
           </Typography>
         </Box>
       </Collapse>
 
-      <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 2 }}>
-        * Market statistics are estimates based on recent sales and active listings in the area.
+      <Typography
+        variant="caption"
+        color="text.secondary"
+        sx={{ display: 'block', mt: 2 }}
+      >
+        * Market statistics are estimates based on recent sales and active
+        listings in the area.
       </Typography>
 
       {/* Market Timeline Graph */}

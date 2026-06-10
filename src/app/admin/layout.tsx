@@ -2,12 +2,15 @@
 
 import React, { useEffect, useState } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
-import { Box, IconButton, useMediaQuery, useTheme } from '@mui/material'
+
 import MenuIcon from '@mui/icons-material/Menu'
-import { useUser } from '@/providers/UserProvider'
-import { getTokenSync, expired } from 'utils/tokens'
-import AdminSidebar, { DRAWER_WIDTH } from '@/components/admin/AdminSidebar'
+import { Box, IconButton, useMediaQuery, useTheme } from '@mui/material'
+
 import AdminHeader from '@/components/admin/AdminHeader'
+import AdminSidebar, { DRAWER_WIDTH } from '@/components/admin/AdminSidebar'
+import { useUser } from '@/providers/UserProvider'
+
+import { expired, getTokenSync } from 'utils/tokens'
 
 function useAdminAuth() {
   const { logged, adminRole, loading } = useUser()
@@ -19,7 +22,8 @@ function useAdminAuth() {
     if (token && !expired(token)) {
       try {
         const payload = JSON.parse(atob(token.split('.')[1]))
-        if (payload.role === 3) { // UserRole.Admin = 3
+        if (payload.role === 3) {
+          // UserRole.Admin = 3
           setHasAdminToken(true)
         }
       } catch {
@@ -32,11 +36,15 @@ function useAdminAuth() {
   return {
     isAuthenticated: logged || hasAdminToken,
     isAdmin: adminRole || hasAdminToken,
-    loading: loading || checking,
+    loading: loading || checking
   }
 }
 
-export default function AdminLayout({ children }: { children: React.ReactNode }) {
+export default function AdminLayout({
+  children
+}: {
+  children: React.ReactNode
+}) {
   const { isAuthenticated, isAdmin, loading } = useAdminAuth()
   const router = useRouter()
   const pathname = usePathname()
@@ -78,7 +86,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   return (
     <Box sx={{ display: 'flex', minHeight: '100vh' }}>
-      <AdminSidebar mobileOpen={mobileOpen} onMobileClose={() => setMobileOpen(false)} />
+      <AdminSidebar
+        mobileOpen={mobileOpen}
+        onMobileClose={() => setMobileOpen(false)}
+      />
       <Box
         sx={{
           flexGrow: 1,

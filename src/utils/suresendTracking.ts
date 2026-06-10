@@ -8,7 +8,11 @@ declare global {
  * Identify a known user — call after login or form submission
  * Links all anonymous activity to the identified user
  */
-export function ssIdentify(data: { email: string; name?: string; phone?: string }) {
+export function ssIdentify(data: {
+  email: string
+  name?: string
+  phone?: string
+}) {
   window.ssPixel?.('identify', data)
 }
 
@@ -50,6 +54,9 @@ export function ssTrackSavedProperty(data: {
 /**
  * Track a custom event
  */
-export function ssTrackEvent(eventType: string, eventData: Record<string, any>) {
+export function ssTrackEvent(
+  eventType: string,
+  eventData: Record<string, any>
+) {
   window.ssPixel?.('track', eventType, eventData)
 }

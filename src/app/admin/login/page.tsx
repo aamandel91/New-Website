@@ -1,16 +1,20 @@
 'use client'
 
+import React from 'react'
+
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+
 import {
+  Alert,
   Box,
   Button,
   CircularProgress,
   Container,
   TextField,
-  Typography,
-  Alert
+  Typography
 } from '@mui/material'
+
 import { setToken } from 'utils/tokens'
 
 const API_URL = `${process.env.NEXT_PUBLIC_API_URL}/api`
@@ -164,7 +168,11 @@ export default function AdminLoginPage() {
               }
             }}
           >
-            {loading ? <CircularProgress size={22} sx={{ color: '#0F1621' }} /> : 'Sign In'}
+            {loading ? (
+              <CircularProgress size={22} sx={{ color: '#0F1621' }} />
+            ) : (
+              'Sign In'
+            )}
           </Button>
         </Box>
       </Container>

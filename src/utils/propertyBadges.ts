@@ -118,7 +118,8 @@ function isSignificantPriceReduction(property: Property): boolean {
 
   const currentPrice = price.current || price.list || 0
   const originalPrice = price.original || price.list || 0
-  const reductionPercent = ((originalPrice - currentPrice) / originalPrice) * 100
+  const reductionPercent =
+    ((originalPrice - currentPrice) / originalPrice) * 100
 
   return reductionPercent >= 5
 }
@@ -135,13 +136,13 @@ export function getPropertyBadges(property: Property): PropertyBadge[] {
     badges.push({
       label: 'Sold',
       color: 'secondary',
-      priority: 100,
+      priority: 100
     })
   } else if (isPending(property)) {
     badges.push({
       label: 'Pending',
       color: 'warning',
-      priority: 95,
+      priority: 95
     })
   }
 
@@ -156,7 +157,7 @@ export function getPropertyBadges(property: Property): PropertyBadge[] {
     badges.push({
       label: reductionLabel,
       color: 'success',
-      priority: 90,
+      priority: 90
     })
   }
 
@@ -165,7 +166,7 @@ export function getPropertyBadges(property: Property): PropertyBadge[] {
     badges.push({
       label: 'Hot Property',
       color: 'error',
-      priority: 85,
+      priority: 85
     })
   }
 
@@ -174,7 +175,7 @@ export function getPropertyBadges(property: Property): PropertyBadge[] {
     badges.push({
       label: 'New Listing',
       color: 'primary',
-      priority: 80,
+      priority: 80
     })
   }
 
@@ -183,7 +184,7 @@ export function getPropertyBadges(property: Property): PropertyBadge[] {
     badges.push({
       label: 'Open House',
       color: 'info',
-      priority: 75,
+      priority: 75
     })
   }
 
@@ -192,7 +193,7 @@ export function getPropertyBadges(property: Property): PropertyBadge[] {
     badges.push({
       label: 'Foreclosure',
       color: 'warning',
-      priority: 70,
+      priority: 70
     })
   }
 

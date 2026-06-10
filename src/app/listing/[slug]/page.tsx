@@ -6,12 +6,12 @@ import searchConfig from '@configs/search'
 import { Property404Template } from '@templates'
 
 import { formatMetadata } from 'utils/properties'
-import { getProtocolHost } from 'utils/urls'
 import {
   extractMlsFromSlug,
   generatePropertyUrl,
-  generateStaticPropertyUrl,
+  generateStaticPropertyUrl
 } from 'utils/propertyUrls'
+import { getProtocolHost } from 'utils/urls'
 
 import { fetchNearbies, fetchProperty } from './utils'
 
@@ -46,7 +46,7 @@ export const generateMetadata = async (props: LegacyListingPageProps) => {
       : undefined
     return {
       ...meta,
-      ...(canonical && { alternates: { canonical } }),
+      ...(canonical && { alternates: { canonical } })
     }
   } catch {
     return content.missingPropertyMetadata

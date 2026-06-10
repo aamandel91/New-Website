@@ -24,7 +24,7 @@ class APIPlaces {
   async getPlaces(lat: number, lng: number): Promise<PlacesResponse> {
     const params = new URLSearchParams({
       lat: String(lat),
-      long: String(lng),
+      long: String(lng)
     })
     try {
       const response = await fetch(`${PLACES_API_URL}?${params.toString()}`)
@@ -47,7 +47,7 @@ class APIPlaces {
         distance: this.formatDistance(s.distance || s.distanceKm),
         distanceKm: s.distance || s.distanceKm,
         rating: s.rating,
-        level: s.level || s.type || s.grade || '',
+        level: s.level || s.type || s.grade || ''
       }))
     }
 
@@ -56,7 +56,7 @@ class APIPlaces {
         name: p.name || '',
         type: 'park',
         distance: this.formatDistance(p.distance || p.distanceKm),
-        distanceKm: p.distance || p.distanceKm,
+        distanceKm: p.distance || p.distanceKm
       }))
     }
 
@@ -65,7 +65,7 @@ class APIPlaces {
         name: t.name || '',
         type: 'transit',
         distance: this.formatDistance(t.distance || t.distanceKm),
-        distanceKm: t.distance || t.distanceKm,
+        distanceKm: t.distance || t.distanceKm
       }))
     }
 
@@ -75,7 +75,7 @@ class APIPlaces {
         type: 'shopping',
         distance: this.formatDistance(s.distance || s.distanceKm),
         distanceKm: s.distance || s.distanceKm,
-        rating: s.rating,
+        rating: s.rating
       }))
     }
 
@@ -85,7 +85,7 @@ class APIPlaces {
         type: 'restaurant',
         distance: this.formatDistance(d.distance || d.distanceKm),
         distanceKm: d.distance || d.distanceKm,
-        rating: d.rating,
+        rating: d.rating
       }))
     }
 
@@ -95,7 +95,7 @@ class APIPlaces {
         type: 'hospital',
         distance: this.formatDistance(h.distance || h.distanceKm),
         distanceKm: h.distance || h.distanceKm,
-        rating: h.rating,
+        rating: h.rating
       }))
     }
 

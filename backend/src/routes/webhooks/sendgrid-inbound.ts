@@ -101,8 +101,8 @@ router.post('/', async (ctx) => {
         subject,
         assignment,
         routedToAssigned,
-        forwardingTo: agentEmail,
-      },
+        forwardingTo: agentEmail
+      }
     },
     '[webhook:sendgrid-inbound] received'
   )
@@ -110,21 +110,24 @@ router.post('/', async (ctx) => {
   try {
     await sendgrid.forwardReplyToAgent({
       agentEmail,
-      fromClient: { email: fromParsed.email, ...(fromParsed.name ? { name: fromParsed.name } : {}) },
+      fromClient: {
+        email: fromParsed.email,
+        ...(fromParsed.name ? { name: fromParsed.name } : {})
+      },
       subject,
       bodyText: text,
-      ...(html ? { bodyHtml: html } : {}),
+      ...(html ? { bodyHtml: html } : {})
     })
   } catch (err) {
-    logger.error(
-      { err },
-      '[webhook:sendgrid-inbound] forward failed'
-    )
+    logger.error({ err }, '[webhook:sendgrid-inbound] forward failed')
     // Still return 200 so SendGrid doesn't retry indefinitely.
   }
 
   ctx.status = 200
-  ctx.body = { ok: true, routed: routedToAssigned ? 'assigned-agent' : 'fallback' }
+  ctx.body = {
+    ok: true,
+    routed: routedToAssigned ? 'assigned-agent' : 'fallback'
+  }
 })
 
 function parseEmailAddress(raw: string): { email: string; name?: string } {

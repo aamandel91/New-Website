@@ -7,10 +7,6 @@ import {
   mapperAssociationAmenities,
   mapperAssociationFee,
   mapperAssociationFeePOTL,
-  mapperInteriorFeatures,
-  mapperListingTerms,
-  mapperPoolPrivate,
-  mapperYesNo,
   mapperBaths,
   mapperBuilderModel,
   mapperCategory,
@@ -25,14 +21,17 @@ import {
   mapperFeeIncludes,
   mapperFloorCovering,
   mapperFrontageFt,
+  mapperInteriorFeatures,
   mapperLaundry,
   mapperLevelsUnit,
   mapperListDate,
+  mapperListingTerms,
   mapperListingUpdatedOn,
   mapperLotSize,
   mapperNeighborhoodInfluences,
   mapperParkingDescription,
   mapperParkingType,
+  mapperPoolPrivate,
   mapperRentalEquipment,
   mapperSecondaryDwellingUnit,
   mapperSoldDate,
@@ -40,7 +39,8 @@ import {
   mapperSpecialAssessment,
   mapperTaxesYear,
   mapperTotalBeds,
-  mapperTotalParking
+  mapperTotalParking,
+  mapperYesNo
 } from './mappers'
 
 describe('mapperCategory', () => {
@@ -889,16 +889,25 @@ describe('mapperAssociationAmenities', () => {
 describe('mapperYesNo', () => {
   it('should map truthy variants to Yes', () => {
     expect(
-      mapperYesNo({ raw: { PetsAllowed: 'Y' } } as unknown as Property, 'PetsAllowed')
+      mapperYesNo(
+        { raw: { PetsAllowed: 'Y' } } as unknown as Property,
+        'PetsAllowed'
+      )
     ).toBe('Yes')
     expect(
-      mapperYesNo({ raw: { PetsAllowed: '1' } } as unknown as Property, 'PetsAllowed')
+      mapperYesNo(
+        { raw: { PetsAllowed: '1' } } as unknown as Property,
+        'PetsAllowed'
+      )
     ).toBe('Yes')
   })
 
   it('should map falsy variants to No', () => {
     expect(
-      mapperYesNo({ raw: { PetsAllowed: 'No' } } as unknown as Property, 'PetsAllowed')
+      mapperYesNo(
+        { raw: { PetsAllowed: 'No' } } as unknown as Property,
+        'PetsAllowed'
+      )
     ).toBe('No')
   })
 
@@ -912,7 +921,9 @@ describe('mapperYesNo', () => {
   })
 
   it('should return null when absent', () => {
-    expect(mapperYesNo({ raw: {} } as unknown as Property, 'PetsAllowed')).toBeNull()
+    expect(
+      mapperYesNo({ raw: {} } as unknown as Property, 'PetsAllowed')
+    ).toBeNull()
   })
 })
 

@@ -55,26 +55,52 @@ type SiteUserContextType = {
   loading: boolean
   user: SiteUser | null
   savedSearches: SavedSearch[]
-  register: (email: string, password: string, name?: string, phone?: string) => Promise<boolean>
+  register: (
+    email: string,
+    password: string,
+    name?: string,
+    phone?: string
+  ) => Promise<boolean>
   login: (email: string, password: string) => Promise<boolean>
   logout: () => void
-  updateProfile: (data: { name?: string; email?: string; phone?: string; password?: string }) => Promise<boolean>
+  updateProfile: (data: {
+    name?: string
+    email?: string
+    phone?: string
+    password?: string
+  }) => Promise<boolean>
   deleteAccount: () => Promise<boolean>
   // Favorites
   addFavorite: (fav: Omit<SiteFavorite, 'savedAt'>) => Promise<void>
   removeFavorite: (mlsNumber: string) => Promise<void>
   isFavorite: (mlsNumber: string) => boolean
   // Saved searches
-  createSavedSearch: (name: string, filters: Record<string, any>, alertFrequency?: string) => Promise<void>
-  updateSavedSearch: (id: number, data: { name?: string; filters?: Record<string, any>; alertFrequency?: string }) => Promise<void>
+  createSavedSearch: (
+    name: string,
+    filters: Record<string, any>,
+    alertFrequency?: string
+  ) => Promise<void>
+  updateSavedSearch: (
+    id: number,
+    data: {
+      name?: string
+      filters?: Record<string, any>
+      alertFrequency?: string
+    }
+  ) => Promise<void>
   deleteSavedSearch: (id: number) => Promise<void>
   refreshSavedSearches: () => Promise<void>
   // Search history
-  addSearchHistory: (filters: Record<string, any>, label?: string) => Promise<void>
+  addSearchHistory: (
+    filters: Record<string, any>,
+    label?: string
+  ) => Promise<void>
   refreshProfile: () => Promise<void>
 }
 
-const SiteUserContext = createContext<SiteUserContextType | undefined>(undefined)
+const SiteUserContext = createContext<SiteUserContextType | undefined>(
+  undefined
+)
 
 function getSiteToken(): string | null {
   if (typeof window === 'undefined') return null
@@ -110,7 +136,7 @@ function storeUser(user: SiteUser | null) {
 
 async function apiFetch<T>(path: string, options?: RequestInit): Promise<T> {
   const headers: Record<string, string> = {
-    'Content-Type': 'application/json',
+    'Content-Type': 'application/json'
   }
   const token = getSiteToken()
   if (token) {
@@ -119,12 +145,14 @@ async function apiFetch<T>(path: string, options?: RequestInit): Promise<T> {
 
   const res = await fetch(`${API_URL}/api/auth${path}`, {
     ...options,
-    headers: { ...headers, ...(options?.headers as Record<string, string>) },
+    headers: { ...headers, ...(options?.headers as Record<string, string>) }
   })
 
   if (!res.ok) {
     const data = await res.json().catch(() => ({}))
-    throw new Error(data.userMessage || data.message || `Request failed: ${res.status}`)
+    throw new Error(
+      data.userMessage || data.message || `Request failed: ${res.status}`
+    )
   }
 
   return res.json() as Promise<T>
@@ -167,7 +195,9 @@ const SiteUserProvider = ({ children }: { children: ReactNode }) => {
   const refreshSavedSearches = useCallback(async () => {
     if (!getSiteToken()) return
     try {
-      const data = await apiFetch<{ searches: SavedSearch[] }>('/site-saved-searches')
+      const data = await apiFetch<{ searches: SavedSearch[] }>(
+        '/site-saved-searches'
+      )
       setSavedSearches(data.searches)
     } catch {
       // ignore
@@ -187,41 +217,57 @@ const SiteUserProvider = ({ children }: { children: ReactNode }) => {
     }
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
-  const register = useCallback(async (email: string, password: string, name?: string, phone?: string) => {
-    setLoading(true)
-    try {
-      const data = await apiFetch<{ token: string; user: SiteUser }>('/register', {
-        method: 'POST',
-        body: JSON.stringify({ email, password, name, phone }),
-      })
-      setSiteToken(data.token)
-      saveUser({ ...data.user, favorites: [], search_history: [] })
-      return true
-    } catch {
-      return false
-    } finally {
-      setLoading(false)
-    }
-  }, [saveUser])
+  const register = useCallback(
+    async (email: string, password: string, name?: string, phone?: string) => {
+      setLoading(true)
+      try {
+        const data = await apiFetch<{ token: string; user: SiteUser }>(
+          '/register',
+          {
+            method: 'POST',
+            body: JSON.stringify({ email, password, name, phone })
+          }
+        )
+        setSiteToken(data.token)
+        saveUser({ ...data.user, favorites: [], search_history: [] })
+        return true
+      } catch {
+        return false
+      } finally {
+        setLoading(false)
+      }
+    },
+    [saveUser]
+  )
 
-  const login = useCallback(async (email: string, password: string) => {
-    setLoading(true)
-    try {
-      const data = await apiFetch<{ token: string; user: SiteUser }>('/site-login', {
-        method: 'POST',
-        body: JSON.stringify({ email, password }),
-      })
-      setSiteToken(data.token)
-      saveUser({ ...data.user, favorites: data.user.favorites || [], search_history: data.user.search_history || [] })
-      // Load saved searches after login
-      setTimeout(() => refreshSavedSearches(), 100)
-      return true
-    } catch {
-      return false
-    } finally {
-      setLoading(false)
-    }
-  }, [saveUser, refreshSavedSearches])
+  const login = useCallback(
+    async (email: string, password: string) => {
+      setLoading(true)
+      try {
+        const data = await apiFetch<{ token: string; user: SiteUser }>(
+          '/site-login',
+          {
+            method: 'POST',
+            body: JSON.stringify({ email, password })
+          }
+        )
+        setSiteToken(data.token)
+        saveUser({
+          ...data.user,
+          favorites: data.user.favorites || [],
+          search_history: data.user.search_history || []
+        })
+        // Load saved searches after login
+        setTimeout(() => refreshSavedSearches(), 100)
+        return true
+      } catch {
+        return false
+      } finally {
+        setLoading(false)
+      }
+    },
+    [saveUser, refreshSavedSearches]
+  )
 
   const logout = useCallback(() => {
     clearSiteToken()
@@ -229,18 +275,31 @@ const SiteUserProvider = ({ children }: { children: ReactNode }) => {
     setSavedSearches([])
   }, [saveUser])
 
-  const updateProfile = useCallback(async (data: { name?: string; email?: string; phone?: string; password?: string }) => {
-    try {
-      const updated = await apiFetch<SiteUser>('/site-user/me', {
-        method: 'PATCH',
-        body: JSON.stringify(data),
-      })
-      saveUser({ ...user!, ...updated, favorites: user?.favorites || [], search_history: user?.search_history || [] })
-      return true
-    } catch {
-      return false
-    }
-  }, [user, saveUser])
+  const updateProfile = useCallback(
+    async (data: {
+      name?: string
+      email?: string
+      phone?: string
+      password?: string
+    }) => {
+      try {
+        const updated = await apiFetch<SiteUser>('/site-user/me', {
+          method: 'PATCH',
+          body: JSON.stringify(data)
+        })
+        saveUser({
+          ...user!,
+          ...updated,
+          favorites: user?.favorites || [],
+          search_history: user?.search_history || []
+        })
+        return true
+      } catch {
+        return false
+      }
+    },
+    [user, saveUser]
+  )
 
   const deleteAccount = useCallback(async () => {
     try {
@@ -255,112 +314,169 @@ const SiteUserProvider = ({ children }: { children: ReactNode }) => {
   }, [saveUser])
 
   // Favorites
-  const addFavorite = useCallback(async (fav: Omit<SiteFavorite, 'savedAt'>) => {
-    try {
-      const data = await apiFetch<{ favorites: SiteFavorite[] }>('/site-favorites', {
-        method: 'POST',
-        body: JSON.stringify(fav),
-      })
-      if (user) {
-        saveUser({ ...user, favorites: data.favorites })
+  const addFavorite = useCallback(
+    async (fav: Omit<SiteFavorite, 'savedAt'>) => {
+      try {
+        const data = await apiFetch<{ favorites: SiteFavorite[] }>(
+          '/site-favorites',
+          {
+            method: 'POST',
+            body: JSON.stringify(fav)
+          }
+        )
+        if (user) {
+          saveUser({ ...user, favorites: data.favorites })
+        }
+      } catch {
+        // ignore
       }
-    } catch {
-      // ignore
-    }
-  }, [user, saveUser])
+    },
+    [user, saveUser]
+  )
 
-  const removeFavorite = useCallback(async (mlsNumber: string) => {
-    try {
-      const data = await apiFetch<{ favorites: SiteFavorite[] }>(`/site-favorites/${mlsNumber}`, {
-        method: 'DELETE',
-      })
-      if (user) {
-        saveUser({ ...user, favorites: data.favorites })
+  const removeFavorite = useCallback(
+    async (mlsNumber: string) => {
+      try {
+        const data = await apiFetch<{ favorites: SiteFavorite[] }>(
+          `/site-favorites/${mlsNumber}`,
+          {
+            method: 'DELETE'
+          }
+        )
+        if (user) {
+          saveUser({ ...user, favorites: data.favorites })
+        }
+      } catch {
+        // ignore
       }
-    } catch {
-      // ignore
-    }
-  }, [user, saveUser])
+    },
+    [user, saveUser]
+  )
 
-  const isFavorite = useCallback((mlsNumber: string) => {
-    return (user?.favorites || []).some(f => f.mlsNumber === mlsNumber)
-  }, [user])
+  const isFavorite = useCallback(
+    (mlsNumber: string) => {
+      return (user?.favorites || []).some((f) => f.mlsNumber === mlsNumber)
+    },
+    [user]
+  )
 
   // Saved searches
-  const createSavedSearch = useCallback(async (name: string, filters: Record<string, any>, alertFrequency?: string) => {
-    try {
-      await apiFetch('/site-saved-searches', {
-        method: 'POST',
-        body: JSON.stringify({ name, filters, alertFrequency }),
-      })
-      await refreshSavedSearches()
-    } catch {
-      // ignore
-    }
-  }, [refreshSavedSearches])
+  const createSavedSearch = useCallback(
+    async (
+      name: string,
+      filters: Record<string, any>,
+      alertFrequency?: string
+    ) => {
+      try {
+        await apiFetch('/site-saved-searches', {
+          method: 'POST',
+          body: JSON.stringify({ name, filters, alertFrequency })
+        })
+        await refreshSavedSearches()
+      } catch {
+        // ignore
+      }
+    },
+    [refreshSavedSearches]
+  )
 
-  const updateSavedSearch = useCallback(async (id: number, data: { name?: string; filters?: Record<string, any>; alertFrequency?: string }) => {
-    try {
-      await apiFetch(`/site-saved-searches/${id}`, {
-        method: 'PATCH',
-        body: JSON.stringify(data),
-      })
-      await refreshSavedSearches()
-    } catch {
-      // ignore
-    }
-  }, [refreshSavedSearches])
+  const updateSavedSearch = useCallback(
+    async (
+      id: number,
+      data: {
+        name?: string
+        filters?: Record<string, any>
+        alertFrequency?: string
+      }
+    ) => {
+      try {
+        await apiFetch(`/site-saved-searches/${id}`, {
+          method: 'PATCH',
+          body: JSON.stringify(data)
+        })
+        await refreshSavedSearches()
+      } catch {
+        // ignore
+      }
+    },
+    [refreshSavedSearches]
+  )
 
-  const deleteSavedSearch = useCallback(async (id: number) => {
-    try {
-      await apiFetch(`/site-saved-searches/${id}`, { method: 'DELETE' })
-      await refreshSavedSearches()
-    } catch {
-      // ignore
-    }
-  }, [refreshSavedSearches])
+  const deleteSavedSearch = useCallback(
+    async (id: number) => {
+      try {
+        await apiFetch(`/site-saved-searches/${id}`, { method: 'DELETE' })
+        await refreshSavedSearches()
+      } catch {
+        // ignore
+      }
+    },
+    [refreshSavedSearches]
+  )
 
   // Search history
-  const addSearchHistory = useCallback(async (filters: Record<string, any>, label?: string) => {
-    try {
-      const data = await apiFetch<{ search_history: SearchHistoryEntry[] }>('/site-search-history', {
-        method: 'POST',
-        body: JSON.stringify({ filters, label }),
-      })
-      if (user) {
-        saveUser({ ...user, search_history: data.search_history })
+  const addSearchHistory = useCallback(
+    async (filters: Record<string, any>, label?: string) => {
+      try {
+        const data = await apiFetch<{ search_history: SearchHistoryEntry[] }>(
+          '/site-search-history',
+          {
+            method: 'POST',
+            body: JSON.stringify({ filters, label })
+          }
+        )
+        if (user) {
+          saveUser({ ...user, search_history: data.search_history })
+        }
+      } catch {
+        // ignore
       }
-    } catch {
-      // ignore
-    }
-  }, [user, saveUser])
+    },
+    [user, saveUser]
+  )
 
-  const contextValue = useMemo(() => ({
-    isLoggedIn,
-    loading,
-    user,
-    savedSearches,
-    register,
-    login,
-    logout,
-    updateProfile,
-    deleteAccount,
-    addFavorite,
-    removeFavorite,
-    isFavorite,
-    createSavedSearch,
-    updateSavedSearch,
-    deleteSavedSearch,
-    refreshSavedSearches,
-    addSearchHistory,
-    refreshProfile,
-  }), [
-    isLoggedIn, loading, user, savedSearches,
-    register, login, logout, updateProfile, deleteAccount,
-    addFavorite, removeFavorite, isFavorite,
-    createSavedSearch, updateSavedSearch, deleteSavedSearch, refreshSavedSearches,
-    addSearchHistory, refreshProfile,
-  ])
+  const contextValue = useMemo(
+    () => ({
+      isLoggedIn,
+      loading,
+      user,
+      savedSearches,
+      register,
+      login,
+      logout,
+      updateProfile,
+      deleteAccount,
+      addFavorite,
+      removeFavorite,
+      isFavorite,
+      createSavedSearch,
+      updateSavedSearch,
+      deleteSavedSearch,
+      refreshSavedSearches,
+      addSearchHistory,
+      refreshProfile
+    }),
+    [
+      isLoggedIn,
+      loading,
+      user,
+      savedSearches,
+      register,
+      login,
+      logout,
+      updateProfile,
+      deleteAccount,
+      addFavorite,
+      removeFavorite,
+      isFavorite,
+      createSavedSearch,
+      updateSavedSearch,
+      deleteSavedSearch,
+      refreshSavedSearches,
+      addSearchHistory,
+      refreshProfile
+    ]
+  )
 
   return (
     <SiteUserContext.Provider value={contextValue}>

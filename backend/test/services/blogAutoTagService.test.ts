@@ -7,7 +7,12 @@ describe('BlogAutoTagService.validate', function () {
 
   it('keeps cities, counties, topics, audience, seasonality that match the allow-lists', function () {
     const out = svc.validate({
-      cities: ['Fort Lauderdale', 'fort-lauderdale', 'boca-raton', 'unknown-city'],
+      cities: [
+        'Fort Lauderdale',
+        'fort-lauderdale',
+        'boca-raton',
+        'unknown-city'
+      ],
       counties: ['Broward', 'palm-beach', 'made-up-county'],
       neighborhoods: ['nonexistent'],
       topics: ['waterfront', 'luxury', 'not-a-topic'],
@@ -99,7 +104,7 @@ describe('BlogAutoTagService.flatten', function () {
       audience: [],
       seasonality: []
     })
-    assert.equal(flat.filter(t => t === 'design').length, 1)
+    assert.equal(flat.filter((t) => t === 'design').length, 1)
   })
 
   it('returns empty array when all dimensions are empty', function () {

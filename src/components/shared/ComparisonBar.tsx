@@ -1,23 +1,25 @@
 'use client'
 
 import React from 'react'
-import {
-  Box,
-  Paper,
-  IconButton,
-  Typography,
-  Button,
-  Chip,
-  Stack,
-  useTheme,
-  Slide,
-} from '@mui/material'
-import CloseIcon from '@mui/icons-material/Close'
-import CompareArrowsIcon from '@mui/icons-material/CompareArrows'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 
+import CloseIcon from '@mui/icons-material/Close'
+import CompareArrowsIcon from '@mui/icons-material/CompareArrows'
+import {
+  Box,
+  Button,
+  Chip,
+  IconButton,
+  Paper,
+  Slide,
+  Stack,
+  Typography,
+  useTheme
+} from '@mui/material'
+
 import { usePropertyComparison } from '@/hooks/usePropertyComparison'
+
 import { generatePropertyUrl } from 'utils/propertyUrls'
 
 const ComparisonBar: React.FC = () => {
@@ -41,7 +43,7 @@ const ComparisonBar: React.FC = () => {
       style: 'currency',
       currency: 'USD',
       minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
+      maximumFractionDigits: 0
     }).format(price)
   }
 
@@ -56,11 +58,15 @@ const ComparisonBar: React.FC = () => {
           right: 0,
           zIndex: 1200,
           borderRadius: 0,
-          borderTop: `3px solid ${theme.palette.primary.main}`,
+          borderTop: `3px solid ${theme.palette.primary.main}`
         }}
       >
         <Box sx={{ px: 3, py: 2 }}>
-          <Stack direction="row" alignItems="center" justifyContent="space-between">
+          <Stack
+            direction="row"
+            alignItems="center"
+            justifyContent="space-between"
+          >
             <Stack direction="row" alignItems="center" spacing={2}>
               <CompareArrowsIcon color="primary" fontSize="large" />
               <Box>
@@ -72,7 +78,11 @@ const ComparisonBar: React.FC = () => {
             </Stack>
 
             {/* Property Cards */}
-            <Stack direction="row" spacing={2} sx={{ flex: 1, mx: 3, overflowX: 'auto' }}>
+            <Stack
+              direction="row"
+              spacing={2}
+              sx={{ flex: 1, mx: 3, overflowX: 'auto' }}
+            >
               {properties.map((property: any) => (
                 <Paper
                   key={property.mlsNumber}
@@ -81,7 +91,7 @@ const ComparisonBar: React.FC = () => {
                     position: 'relative',
                     width: 200,
                     flex: '0 0 auto',
-                    overflow: 'hidden',
+                    overflow: 'hidden'
                   }}
                 >
                   <IconButton
@@ -93,19 +103,29 @@ const ComparisonBar: React.FC = () => {
                       right: 4,
                       bgcolor: 'rgba(255,255,255,0.9)',
                       '&:hover': {
-                        bgcolor: 'rgba(255,255,255,1)',
+                        bgcolor: 'rgba(255,255,255,1)'
                       },
-                      zIndex: 1,
+                      zIndex: 1
                     }}
                   >
                     <CloseIcon fontSize="small" />
                   </IconButton>
 
                   {/* Property Image */}
-                  <Box sx={{ position: 'relative', height: 100, bgcolor: 'grey.200' }}>
+                  <Box
+                    sx={{
+                      position: 'relative',
+                      height: 100,
+                      bgcolor: 'grey.200'
+                    }}
+                  >
                     {property.images?.[0] ? (
                       <Image
-                        src={typeof property.images[0] === "string" ? property.images[0] : ""}
+                        src={
+                          typeof property.images[0] === 'string'
+                            ? property.images[0]
+                            : ''
+                        }
                         alt={`Property ${property.mlsNumber}`}
                         fill
                         style={{ objectFit: 'cover' }}
@@ -116,7 +136,7 @@ const ComparisonBar: React.FC = () => {
                           height: '100%',
                           display: 'flex',
                           alignItems: 'center',
-                          justifyContent: 'center',
+                          justifyContent: 'center'
                         }}
                       >
                         <Typography variant="caption" color="text.secondary">
@@ -128,7 +148,12 @@ const ComparisonBar: React.FC = () => {
 
                   {/* Property Info */}
                   <Box sx={{ p: 1.5 }}>
-                    <Typography variant="h6" fontSize="1rem" fontWeight="bold" gutterBottom>
+                    <Typography
+                      variant="h6"
+                      fontSize="1rem"
+                      fontWeight="bold"
+                      gutterBottom
+                    >
                       {formatPrice(property.price)}
                     </Typography>
                     <Typography variant="caption" color="text.secondary" noWrap>
@@ -136,7 +161,10 @@ const ComparisonBar: React.FC = () => {
                     </Typography>
                     <Stack direction="row" spacing={1} sx={{ mt: 0.5 }}>
                       <Chip label={`${property.beds || 0} beds`} size="small" />
-                      <Chip label={`${property.baths || 0} baths`} size="small" />
+                      <Chip
+                        label={`${property.baths || 0} baths`}
+                        size="small"
+                      />
                     </Stack>
                   </Box>
                 </Paper>
@@ -155,7 +183,7 @@ const ComparisonBar: React.FC = () => {
                     borderColor: 'divider',
                     display: 'flex',
                     alignItems: 'center',
-                    justifyContent: 'center',
+                    justifyContent: 'center'
                   }}
                 >
                   <Typography variant="caption" color="text.secondary">
@@ -167,11 +195,7 @@ const ComparisonBar: React.FC = () => {
 
             {/* Actions */}
             <Stack direction="row" spacing={1}>
-              <Button
-                variant="outlined"
-                onClick={clearAll}
-                size="small"
-              >
+              <Button variant="outlined" onClick={clearAll} size="small">
                 Clear All
               </Button>
               <Button

@@ -1,7 +1,7 @@
 import type { Knex } from 'knex'
 
 export async function up(knex: Knex): Promise<void> {
-  await knex.schema.createTable('blogs', table => {
+  await knex.schema.createTable('blogs', (table) => {
     table.bigIncrements('id').primary()
     table.string('slug').unique().notNullable() // SEO URL slug
     table.string('title').notNullable()
@@ -34,7 +34,7 @@ export async function up(knex: Knex): Promise<void> {
   })
 
   // Create tags table for tag management
-  await knex.schema.createTable('blog_tags', table => {
+  await knex.schema.createTable('blog_tags', (table) => {
     table.increments('id').primary()
     table.string('name').unique().notNullable()
     table.string('slug').unique().notNullable()
@@ -45,7 +45,7 @@ export async function up(knex: Knex): Promise<void> {
   })
 
   // Create categories table
-  await knex.schema.createTable('blog_categories', table => {
+  await knex.schema.createTable('blog_categories', (table) => {
     table.increments('id').primary()
     table.string('name').unique().notNullable()
     table.string('slug').unique().notNullable()

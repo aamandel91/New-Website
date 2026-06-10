@@ -49,18 +49,26 @@ function slugify(value: string): string {
  * Build a tag preference list from page-context options, ordered by specificity.
  * Earliest entries score highest.
  */
-function buildPreferenceList(opts: RelatedFetchOpts): { tag: string; weight: number }[] {
+function buildPreferenceList(
+  opts: RelatedFetchOpts
+): { tag: string; weight: number }[] {
   const prefs: { tag: string; weight: number }[] = []
   const city = opts.citySlug || (opts.city ? slugify(opts.city) : undefined)
   const subtype = opts.subtype ? slugify(opts.subtype) : undefined
-  const propertyType = opts.propertyType ? slugify(opts.propertyType) : undefined
-  const neighborhood = opts.neighborhood ? slugify(opts.neighborhood) : undefined
+  const propertyType = opts.propertyType
+    ? slugify(opts.propertyType)
+    : undefined
+  const neighborhood = opts.neighborhood
+    ? slugify(opts.neighborhood)
+    : undefined
   const zip = opts.zip
-  const county = opts.countySlug || (opts.county ? slugify(opts.county) : undefined)
+  const county =
+    opts.countySlug || (opts.county ? slugify(opts.county) : undefined)
 
   // Highest specificity: city + subtype joint
   if (city && subtype) prefs.push({ tag: `${city}-${subtype}`, weight: 100 })
-  if (city && propertyType) prefs.push({ tag: `${city}-${propertyType}`, weight: 100 })
+  if (city && propertyType)
+    prefs.push({ tag: `${city}-${propertyType}`, weight: 100 })
 
   // Neighborhood (rare but very specific)
   if (neighborhood) prefs.push({ tag: neighborhood, weight: 90 })
@@ -85,7 +93,10 @@ function buildPreferenceList(opts: RelatedFetchOpts): { tag: string; weight: num
 
 @injectable()
 export class RelatedBlogPostsService {
-  private cache = new Map<string, { expires: number; data: BlogPostSummary[] }>()
+  private cache = new Map<
+    string,
+    { expires: number; data: BlogPostSummary[] }
+  >()
 
   constructor(@inject(BlogRepository) private blogRepo: BlogRepository) {}
 
@@ -97,18 +108,18 @@ export class RelatedBlogPostsService {
     if (cached && cached.expires > now) return cached.data
 
     const prefs = buildPreferenceList(opts)
-    const prefTags = new Set(prefs.map(p => p.tag.toLowerCase()))
+    const prefTags = new Set(prefs.map((p) => p.tag.toLowerCase()))
 
     // Fetch a generous batch of recent published posts; filter and score in-memory.
     // Blog catalog is small in this app — full table scan is fine.
     const { blogs } = await this.blogRepo.getBlogs({
       status: 'published',
       limit: 200,
-      offset: 0,
+      offset: 0
     })
 
     const scored = blogs
-      .map(blog => ({ blog, score: this.scoreBlog(blog, prefs) }))
+      .map((blog) => ({ blog, score: this.scoreBlog(blog, prefs) }))
       .filter(({ score }) => score > 0)
       .sort((a, b) => {
         if (b.score !== a.score) return b.score - a.score
@@ -132,8 +143,11 @@ export class RelatedBlogPostsService {
    * Multi-tag conjunctions (e.g. 'boca-raton-condos') are checked first; if
    * matched, that high-specificity weight dominates.
    */
-  private scoreBlog(blog: Blog, prefs: { tag: string; weight: number }[]): number {
-    const lowerTags = blog.tags.map(t => t.toLowerCase())
+  private scoreBlog(
+    blog: Blog,
+    prefs: { tag: string; weight: number }[]
+  ): number {
+    const lowerTags = blog.tags.map((t) => t.toLowerCase())
     if (lowerTags.length === 0) return 0
     let score = 0
     for (const { tag, weight } of prefs) {
@@ -166,7 +180,7 @@ export class RelatedBlogPostsService {
       featured_image_url: blog.featured_image_url,
       tags: blog.tags,
       published_at: blog.published_at,
-      score,
+      score
     }
   }
 

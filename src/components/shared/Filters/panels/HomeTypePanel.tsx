@@ -13,19 +13,20 @@ import {
 } from '@mui/material'
 
 import type { ListingType } from '@configs/filters'
-import { APIAggregates } from 'services/API'
+
 import type { AggregateItem } from 'services/API'
+import { APIAggregates } from 'services/API'
 
 const PROPERTY_TYPE_MAP: Record<string, ListingType> = {
-  'detached': 'residential',
+  detached: 'residential',
   'semi-detached': 'residential',
   'att/row/twnhouse': 'townhome',
   'condo apt': 'condo',
   'condo townhouse': 'condo',
-  'multiplex': 'multiFamily',
+  multiplex: 'multiFamily',
   'vacant land': 'land',
-  'farm': 'land',
-  'link': 'townhome',
+  farm: 'land',
+  link: 'townhome'
 }
 
 const TYPE_LABELS: Record<ListingType, string> = {
@@ -37,7 +38,7 @@ const TYPE_LABELS: Record<ListingType, string> = {
   land: 'Lots/Land',
   semiDetached: 'Semi-Detached',
   business: 'Business',
-  commercial: 'Commercial',
+  commercial: 'Commercial'
 }
 
 const STATIC_TYPES: Array<{ value: ListingType; label: string }> = [
@@ -48,9 +49,15 @@ const STATIC_TYPES: Array<{ value: ListingType; label: string }> = [
   { value: 'land', label: 'Lots/Land' }
 ]
 
-let cachedTypes: Array<{ value: ListingType; label: string; count: number }> | null = null
+let cachedTypes: Array<{
+  value: ListingType
+  label: string
+  count: number
+}> | null = null
 
-function mapAggregateToTypes(items: AggregateItem[]): Array<{ value: ListingType; label: string; count: number }> {
+function mapAggregateToTypes(
+  items: AggregateItem[]
+): Array<{ value: ListingType; label: string; count: number }> {
   const counts: Record<string, number> = {}
 
   for (const item of items) {
@@ -61,7 +68,9 @@ function mapAggregateToTypes(items: AggregateItem[]): Array<{ value: ListingType
     } else {
       // Try direct match against known ListingType values
       const direct = Object.keys(TYPE_LABELS).find(
-        (t) => t.toLowerCase() === key || TYPE_LABELS[t as ListingType]?.toLowerCase() === key
+        (t) =>
+          t.toLowerCase() === key ||
+          TYPE_LABELS[t as ListingType]?.toLowerCase() === key
       ) as ListingType | undefined
       if (direct && direct !== 'allListings') {
         counts[direct] = (counts[direct] || 0) + item.count
@@ -71,7 +80,7 @@ function mapAggregateToTypes(items: AggregateItem[]): Array<{ value: ListingType
 
   return STATIC_TYPES.map((t) => ({
     ...t,
-    count: counts[t.value] || 0,
+    count: counts[t.value] || 0
   }))
 }
 
@@ -83,22 +92,28 @@ const HomeTypePanel = ({
   onApply: (types: ListingType[]) => void
 }) => {
   const [selected, setSelected] = useState<ListingType[]>(value)
-  const [homeTypes, setHomeTypes] = useState(cachedTypes || STATIC_TYPES.map((t) => ({ ...t, count: 0 })))
+  const [homeTypes, setHomeTypes] = useState(
+    cachedTypes || STATIC_TYPES.map((t) => ({ ...t, count: 0 }))
+  )
   const [loading, setLoading] = useState(!cachedTypes)
 
   useEffect(() => {
     if (cachedTypes) return
     let cancelled = false
-    APIAggregates.getPropertyTypes().then((items) => {
-      if (cancelled) return
-      const mapped = mapAggregateToTypes(items)
-      cachedTypes = mapped
-      setHomeTypes(mapped)
-      setLoading(false)
-    }).catch(() => {
-      if (!cancelled) setLoading(false)
-    })
-    return () => { cancelled = true }
+    APIAggregates.getPropertyTypes()
+      .then((items) => {
+        if (cancelled) return
+        const mapped = mapAggregateToTypes(items)
+        cachedTypes = mapped
+        setHomeTypes(mapped)
+        setLoading(false)
+      })
+      .catch(() => {
+        if (!cancelled) setLoading(false)
+      })
+    return () => {
+      cancelled = true
+    }
   }, [])
 
   const allSelected = selected.length === homeTypes.length

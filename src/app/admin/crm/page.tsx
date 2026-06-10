@@ -1,33 +1,34 @@
 'use client'
 
-import React, { useEffect, useState, useCallback } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
+
+import AddTaskIcon from '@mui/icons-material/AddTask'
+import NoteAddIcon from '@mui/icons-material/NoteAdd'
+import OpenInNewIcon from '@mui/icons-material/OpenInNew'
+import RefreshIcon from '@mui/icons-material/Refresh'
 import {
+  Alert,
   Box,
-  Typography,
+  Button,
+  Card,
+  CardContent,
+  Chip,
+  CircularProgress,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
   Paper,
+  Stack,
   Table,
   TableBody,
   TableCell,
   TableContainer,
   TableHead,
   TableRow,
-  Chip,
-  Button,
-  Stack,
-  CircularProgress,
-  Alert,
   TextField,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Card,
-  CardContent,
+  Typography
 } from '@mui/material'
-import RefreshIcon from '@mui/icons-material/Refresh'
-import OpenInNewIcon from '@mui/icons-material/OpenInNew'
-import NoteAddIcon from '@mui/icons-material/NoteAdd'
-import AddTaskIcon from '@mui/icons-material/AddTask'
 
 interface CrmPerson {
   id: string
@@ -51,23 +52,35 @@ export default function AdminCrmPage() {
   const [people, setPeople] = useState<CrmPerson[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [stats, setStats] = useState<LeadStats>({ total: 0, thisWeek: 0, bySource: {} })
+  const [stats, setStats] = useState<LeadStats>({
+    total: 0,
+    thisWeek: 0,
+    bySource: {}
+  })
 
   // Note dialog state
-  const [noteDialog, setNoteDialog] = useState<{ open: boolean; personId: string; personName: string }>({
+  const [noteDialog, setNoteDialog] = useState<{
+    open: boolean
+    personId: string
+    personName: string
+  }>({
     open: false,
     personId: '',
-    personName: '',
+    personName: ''
   })
   const [noteSubject, setNoteSubject] = useState('')
   const [noteBody, setNoteBody] = useState('')
   const [noteSubmitting, setNoteSubmitting] = useState(false)
 
   // Task dialog state
-  const [taskDialog, setTaskDialog] = useState<{ open: boolean; personId: string; personName: string }>({
+  const [taskDialog, setTaskDialog] = useState<{
+    open: boolean
+    personId: string
+    personName: string
+  }>({
     open: false,
     personId: '',
-    personName: '',
+    personName: ''
   })
   const [taskName, setTaskName] = useState('')
   const [taskSubmitting, setTaskSubmitting] = useState(false)
@@ -102,8 +115,8 @@ export default function AdminCrmPage() {
         body: JSON.stringify({
           personId: noteDialog.personId,
           subject: noteSubject,
-          body: noteBody,
-        }),
+          body: noteBody
+        })
       })
       setNoteDialog({ open: false, personId: '', personName: '' })
       setNoteSubject('')
@@ -125,8 +138,8 @@ export default function AdminCrmPage() {
         body: JSON.stringify({
           personId: taskDialog.personId,
           name: taskName,
-          type: 'follow_up',
-        }),
+          type: 'follow_up'
+        })
       })
       setTaskDialog({ open: false, personId: '', personName: '' })
       setTaskName('')
@@ -142,7 +155,12 @@ export default function AdminCrmPage() {
 
   return (
     <Box sx={{ p: 3 }}>
-      <Stack direction="row" justifyContent="space-between" alignItems="center" mb={3}>
+      <Stack
+        direction="row"
+        justifyContent="space-between"
+        alignItems="center"
+        mb={3}
+      >
         <Typography variant="h4" fontWeight="bold">
           CRM — Leads
         </Typography>
@@ -160,14 +178,22 @@ export default function AdminCrmPage() {
       <Stack direction="row" spacing={2} mb={3} flexWrap="wrap" useFlexGap>
         <Card sx={{ minWidth: 160, flex: 1 }}>
           <CardContent>
-            <Typography variant="subtitle2" color="text.secondary">Total Leads</Typography>
-            <Typography variant="h4" fontWeight="bold">{stats.total}</Typography>
+            <Typography variant="subtitle2" color="text.secondary">
+              Total Leads
+            </Typography>
+            <Typography variant="h4" fontWeight="bold">
+              {stats.total}
+            </Typography>
           </CardContent>
         </Card>
         <Card sx={{ minWidth: 160, flex: 1 }}>
           <CardContent>
-            <Typography variant="subtitle2" color="text.secondary">This Week</Typography>
-            <Typography variant="h4" fontWeight="bold">{stats.thisWeek}</Typography>
+            <Typography variant="subtitle2" color="text.secondary">
+              This Week
+            </Typography>
+            <Typography variant="h4" fontWeight="bold">
+              {stats.thisWeek}
+            </Typography>
           </CardContent>
         </Card>
         {Object.entries(stats.bySource).map(([source, count]) => (
@@ -176,7 +202,9 @@ export default function AdminCrmPage() {
               <Typography variant="subtitle2" color="text.secondary">
                 {source.replace(/_/g, ' ')}
               </Typography>
-              <Typography variant="h4" fontWeight="bold">{count}</Typography>
+              <Typography variant="h4" fontWeight="bold">
+                {count}
+              </Typography>
             </CardContent>
           </Card>
         ))}
@@ -197,13 +225,27 @@ export default function AdminCrmPage() {
           <Table size="small">
             <TableHead>
               <TableRow>
-                <TableCell><strong>Name</strong></TableCell>
-                <TableCell><strong>Email</strong></TableCell>
-                <TableCell><strong>Phone</strong></TableCell>
-                <TableCell><strong>Tags</strong></TableCell>
-                <TableCell><strong>Source</strong></TableCell>
-                <TableCell><strong>Date</strong></TableCell>
-                <TableCell><strong>Actions</strong></TableCell>
+                <TableCell>
+                  <strong>Name</strong>
+                </TableCell>
+                <TableCell>
+                  <strong>Email</strong>
+                </TableCell>
+                <TableCell>
+                  <strong>Phone</strong>
+                </TableCell>
+                <TableCell>
+                  <strong>Tags</strong>
+                </TableCell>
+                <TableCell>
+                  <strong>Source</strong>
+                </TableCell>
+                <TableCell>
+                  <strong>Date</strong>
+                </TableCell>
+                <TableCell>
+                  <strong>Actions</strong>
+                </TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -211,23 +253,39 @@ export default function AdminCrmPage() {
                 <TableRow>
                   <TableCell colSpan={7} align="center" sx={{ py: 4 }}>
                     <Typography color="text.secondary">
-                      No leads yet. Leads will appear here once forms are submitted.
+                      No leads yet. Leads will appear here once forms are
+                      submitted.
                     </Typography>
                   </TableCell>
                 </TableRow>
               ) : (
                 people.map((person) => (
                   <TableRow key={person.id} hover>
-                    <TableCell>{person.firstName} {person.lastName}</TableCell>
+                    <TableCell>
+                      {person.firstName} {person.lastName}
+                    </TableCell>
                     <TableCell>{person.email || '—'}</TableCell>
                     <TableCell>{person.phone || '—'}</TableCell>
                     <TableCell>
-                      <Stack direction="row" spacing={0.5} flexWrap="wrap" useFlexGap>
+                      <Stack
+                        direction="row"
+                        spacing={0.5}
+                        flexWrap="wrap"
+                        useFlexGap
+                      >
                         {(person.tags || []).slice(0, 3).map((tag) => (
-                          <Chip key={tag} label={tag} size="small" variant="outlined" />
+                          <Chip
+                            key={tag}
+                            label={tag}
+                            size="small"
+                            variant="outlined"
+                          />
                         ))}
                         {(person.tags || []).length > 3 && (
-                          <Chip label={`+${person.tags!.length - 3}`} size="small" />
+                          <Chip
+                            label={`+${person.tags!.length - 3}`}
+                            size="small"
+                          />
                         )}
                       </Stack>
                     </TableCell>
@@ -255,7 +313,7 @@ export default function AdminCrmPage() {
                             setNoteDialog({
                               open: true,
                               personId: person.id,
-                              personName: `${person.firstName} ${person.lastName}`,
+                              personName: `${person.firstName} ${person.lastName}`
                             })
                           }
                         >
@@ -268,7 +326,7 @@ export default function AdminCrmPage() {
                             setTaskDialog({
                               open: true,
                               personId: person.id,
-                              personName: `${person.firstName} ${person.lastName}`,
+                              personName: `${person.firstName} ${person.lastName}`
                             })
                           }
                         >
@@ -285,7 +343,14 @@ export default function AdminCrmPage() {
       )}
 
       {/* Add Note Dialog */}
-      <Dialog open={noteDialog.open} onClose={() => setNoteDialog({ open: false, personId: '', personName: '' })} maxWidth="sm" fullWidth>
+      <Dialog
+        open={noteDialog.open}
+        onClose={() =>
+          setNoteDialog({ open: false, personId: '', personName: '' })
+        }
+        maxWidth="sm"
+        fullWidth
+      >
         <DialogTitle>Add Note — {noteDialog.personName}</DialogTitle>
         <DialogContent>
           <Stack spacing={2} sx={{ mt: 1 }}>
@@ -308,17 +373,32 @@ export default function AdminCrmPage() {
           </Stack>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setNoteDialog({ open: false, personId: '', personName: '' })}>
+          <Button
+            onClick={() =>
+              setNoteDialog({ open: false, personId: '', personName: '' })
+            }
+          >
             Cancel
           </Button>
-          <Button variant="contained" onClick={handleAddNote} disabled={noteSubmitting}>
+          <Button
+            variant="contained"
+            onClick={handleAddNote}
+            disabled={noteSubmitting}
+          >
             {noteSubmitting ? 'Saving...' : 'Save Note'}
           </Button>
         </DialogActions>
       </Dialog>
 
       {/* Add Task Dialog */}
-      <Dialog open={taskDialog.open} onClose={() => setTaskDialog({ open: false, personId: '', personName: '' })} maxWidth="sm" fullWidth>
+      <Dialog
+        open={taskDialog.open}
+        onClose={() =>
+          setTaskDialog({ open: false, personId: '', personName: '' })
+        }
+        maxWidth="sm"
+        fullWidth
+      >
         <DialogTitle>Create Task — {taskDialog.personName}</DialogTitle>
         <DialogContent>
           <TextField
@@ -331,10 +411,18 @@ export default function AdminCrmPage() {
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setTaskDialog({ open: false, personId: '', personName: '' })}>
+          <Button
+            onClick={() =>
+              setTaskDialog({ open: false, personId: '', personName: '' })
+            }
+          >
             Cancel
           </Button>
-          <Button variant="contained" onClick={handleAddTask} disabled={taskSubmitting}>
+          <Button
+            variant="contained"
+            onClick={handleAddTask}
+            disabled={taskSubmitting}
+          >
             {taskSubmitting ? 'Creating...' : 'Create Task'}
           </Button>
         </DialogActions>

@@ -1,20 +1,22 @@
 import React from 'react'
 import dynamic from 'next/dynamic'
+
 import { Box, Skeleton, Typography } from '@mui/material'
 
-import StructuredData from '@shared/StructuredData'
 import { tenant } from '@/configs/tenant.config'
 import {
   educationalOrganizationSchema,
-  placeSchema,
+  placeSchema
 } from '@/utils/structuredData'
+import StructuredData from '@shared/StructuredData'
+
 import {
-  fetchAreaDemographics,
-  fetchAreaMarketStats,
-  fetchAreaSchools,
   type AreaDemographics,
   type AreaMarketStats,
   type AreaSchool,
+  fetchAreaDemographics,
+  fetchAreaMarketStats,
+  fetchAreaSchools
 } from './areaDataFetch'
 
 // Lazy-loaded client components so they don't block the initial PDP render.
@@ -22,21 +24,33 @@ const NeighborhoodDemographics = dynamic(
   () => import('./NeighborhoodDemographics'),
   {
     loading: () => (
-      <Skeleton variant="rectangular" height={180} sx={{ mb: 3, borderRadius: 1 }} />
-    ),
+      <Skeleton
+        variant="rectangular"
+        height={180}
+        sx={{ mb: 3, borderRadius: 1 }}
+      />
+    )
   }
 )
 
 const LocalSchools = dynamic(() => import('./LocalSchools'), {
   loading: () => (
-    <Skeleton variant="rectangular" height={240} sx={{ mb: 3, borderRadius: 1 }} />
-  ),
+    <Skeleton
+      variant="rectangular"
+      height={240}
+      sx={{ mb: 3, borderRadius: 1 }}
+    />
+  )
 })
 
 const MarketStatistics = dynamic(() => import('./MarketStatistics'), {
   loading: () => (
-    <Skeleton variant="rectangular" height={320} sx={{ mb: 3, borderRadius: 1 }} />
-  ),
+    <Skeleton
+      variant="rectangular"
+      height={320}
+      sx={{ mb: 3, borderRadius: 1 }}
+    />
+  )
 })
 
 interface AboutTheAreaProps {
@@ -55,7 +69,7 @@ const AboutTheArea = async ({
   cityName,
   coordinates,
   variant = 'pdp',
-  id = 'about-the-area',
+  id = 'about-the-area'
 }: AboutTheAreaProps) => {
   const hasCoords = Boolean(coordinates?.lat && coordinates?.lng)
   const [demographics, schools, marketStats] = await Promise.all([
@@ -67,7 +81,7 @@ const AboutTheArea = async ({
       : Promise.resolve<AreaSchool[] | null>(null),
     cityName
       ? fetchAreaMarketStats(cityName)
-      : Promise.resolve<AreaMarketStats | null>(null),
+      : Promise.resolve<AreaMarketStats | null>(null)
   ])
 
   const hasAny =
@@ -94,7 +108,7 @@ const AboutTheArea = async ({
           ratingValue:
             topRated.reduce((sum, s) => sum + (s.rating ?? 0), 0) /
             topRated.length,
-          reviewCount: topRated.length,
+          reviewCount: topRated.length
         }
       : undefined
 
@@ -107,7 +121,7 @@ const AboutTheArea = async ({
             name: school.name,
             cityName,
             level: school.level,
-            rating: school.rating,
+            rating: school.rating
           })}
         />
       ))}
@@ -121,16 +135,11 @@ const AboutTheArea = async ({
             url: `${tenant.brand.siteUrl}/${cityName
               .toLowerCase()
               .replace(/\s+/g, '-')}`,
-            aggregateRating,
+            aggregateRating
           })}
         />
       )}
-      <Typography
-        variant="h4"
-        component="h2"
-        fontWeight={700}
-        sx={{ mb: 2 }}
-      >
+      <Typography variant="h4" component="h2" fontWeight={700} sx={{ mb: 2 }}>
         {heading}
       </Typography>
       {demographics && (

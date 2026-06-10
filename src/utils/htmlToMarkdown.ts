@@ -13,7 +13,16 @@ interface ConversionResult {
 
 /** Strip tags that should not appear in output */
 function stripUnwantedTags(html: string): string {
-  const tagsToStrip = ['script', 'style', 'nav', 'footer', 'header', 'noscript', 'iframe', 'svg']
+  const tagsToStrip = [
+    'script',
+    'style',
+    'nav',
+    'footer',
+    'header',
+    'noscript',
+    'iframe',
+    'svg'
+  ]
   let result = html
   for (const tag of tagsToStrip) {
     const regex = new RegExp(`<${tag}[^>]*>[\\s\\S]*?<\\/${tag}>`, 'gi')
@@ -46,14 +55,21 @@ function decodeEntities(text: string): string {
     result = result.split(entity).join(char)
   }
   // Handle numeric entities
-  result = result.replace(/&#(\d+);/g, (_, code) => String.fromCharCode(parseInt(code, 10)))
-  result = result.replace(/&#x([0-9a-fA-F]+);/g, (_, code) => String.fromCharCode(parseInt(code, 16)))
+  result = result.replace(/&#(\d+);/g, (_, code) =>
+    String.fromCharCode(parseInt(code, 10))
+  )
+  result = result.replace(/&#x([0-9a-fA-F]+);/g, (_, code) =>
+    String.fromCharCode(parseInt(code, 16))
+  )
   return result
 }
 
 /** Get attribute value from a tag */
 function getAttr(tag: string, attr: string): string {
-  const regex = new RegExp(`${attr}\\s*=\\s*(?:"([^"]*)"|'([^']*)'|([^\\s>]+))`, 'i')
+  const regex = new RegExp(
+    `${attr}\\s*=\\s*(?:"([^"]*)"|'([^']*)'|([^\\s>]+))`,
+    'i'
+  )
   const match = tag.match(regex)
   return match ? (match[1] ?? match[2] ?? match[3] ?? '') : ''
 }
@@ -70,16 +86,23 @@ function convertInline(text: string): string {
   let result = text
 
   // Bold: <strong> and <b>
-  result = result.replace(/<(?:strong|b)(?:\s[^>]*)?>([^<]*?)<\/(?:strong|b)>/gi, '**$1**')
+  result = result.replace(
+    /<(?:strong|b)(?:\s[^>]*)?>([^<]*?)<\/(?:strong|b)>/gi,
+    '**$1**'
+  )
 
   // Italic: <em> and <i>
-  result = result.replace(/<(?:em|i)(?:\s[^>]*)?>([^<]*?)<\/(?:em|i)>/gi, '*$1*')
+  result = result.replace(
+    /<(?:em|i)(?:\s[^>]*)?>([^<]*?)<\/(?:em|i)>/gi,
+    '*$1*'
+  )
 
   // Inline code
   result = result.replace(/<code(?:\s[^>]*)?>([^<]*?)<\/code>/gi, '`$1`')
 
   // Links
-  result = result.replace(/<a\s[^>]*href\s*=\s*(?:"([^"]*)"|'([^']*)')(?:[^>]*)>([\s\S]*?)<\/a>/gi,
+  result = result.replace(
+    /<a\s[^>]*href\s*=\s*(?:"([^"]*)"|'([^']*)')(?:[^>]*)>([\s\S]*?)<\/a>/gi,
     (_, href1, href2, text) => {
       const href = href1 ?? href2 ?? ''
       const linkText = text.replace(/<[^>]+>/g, '').trim()
@@ -129,12 +152,24 @@ function convertNestedLists(html: string): string {
 
   // Convert nested unordered lists
   result = result.replace(/<ul[^>]*>([\s\S]*?)<\/ul>/gi, (_, inner) => {
-    return '\n' + convertList(inner, false).split('\n').map(line => '  ' + line).join('\n')
+    return (
+      '\n' +
+      convertList(inner, false)
+        .split('\n')
+        .map((line) => '  ' + line)
+        .join('\n')
+    )
   })
 
   // Convert nested ordered lists
   result = result.replace(/<ol[^>]*>([\s\S]*?)<\/ol>/gi, (_, inner) => {
-    return '\n' + convertList(inner, true).split('\n').map(line => '  ' + line).join('\n')
+    return (
+      '\n' +
+      convertList(inner, true)
+        .split('\n')
+        .map((line) => '  ' + line)
+        .join('\n')
+    )
   })
 
   return result
@@ -165,7 +200,7 @@ function convertTable(html: string): string {
 
   if (rows.length === 0) return ''
 
-  const colCount = Math.max(...rows.map(r => r.length))
+  const colCount = Math.max(...rows.map((r) => r.length))
   const lines: string[] = []
 
   for (let i = 0; i < rows.length; i++) {
@@ -191,13 +226,16 @@ function convertBlocks(html: string): string {
     const regex = new RegExp(`<h${level}[^>]*>([\\s\\S]*?)<\\/h${level}>`, 'gi')
     const hashes = '#'.repeat(level)
     result = result.replace(regex, (_, content) => {
-      const text = convertInline(content).replace(/<[^>]+>/g, '').trim()
+      const text = convertInline(content)
+        .replace(/<[^>]+>/g, '')
+        .trim()
       return `\n\n${hashes} ${text}\n\n`
     })
   }
 
   // Pre/code blocks
-  result = result.replace(/<pre[^>]*>\s*<code[^>]*(?:\s+class\s*=\s*(?:"[^"]*language-(\w+)[^"]*"|'[^']*language-(\w+)[^']*'))?[^>]*>([\s\S]*?)<\/code>\s*<\/pre>/gi,
+  result = result.replace(
+    /<pre[^>]*>\s*<code[^>]*(?:\s+class\s*=\s*(?:"[^"]*language-(\w+)[^"]*"|'[^']*language-(\w+)[^']*'))?[^>]*>([\s\S]*?)<\/code>\s*<\/pre>/gi,
     (_, lang1, lang2, code) => {
       const lang = lang1 ?? lang2 ?? ''
       const decoded = decodeEntities(code).trim()
@@ -211,11 +249,19 @@ function convertBlocks(html: string): string {
   })
 
   // Blockquotes
-  result = result.replace(/<blockquote[^>]*>([\s\S]*?)<\/blockquote>/gi, (_, content) => {
-    const text = convertInline(content).replace(/<[^>]+>/g, '').trim()
-    const lines = text.split('\n').map(line => `> ${line.trim()}`).join('\n')
-    return `\n\n${lines}\n\n`
-  })
+  result = result.replace(
+    /<blockquote[^>]*>([\s\S]*?)<\/blockquote>/gi,
+    (_, content) => {
+      const text = convertInline(content)
+        .replace(/<[^>]+>/g, '')
+        .trim()
+      const lines = text
+        .split('\n')
+        .map((line) => `> ${line.trim()}`)
+        .join('\n')
+      return `\n\n${lines}\n\n`
+    }
+  )
 
   // Tables
   result = result.replace(/<table[^>]*>([\s\S]*?)<\/table>/gi, (_, inner) => {
@@ -234,7 +280,9 @@ function convertBlocks(html: string): string {
 
   // Paragraphs
   result = result.replace(/<p[^>]*>([\s\S]*?)<\/p>/gi, (_, content) => {
-    const text = convertInline(content).replace(/<[^>]+>/g, '').trim()
+    const text = convertInline(content)
+      .replace(/<[^>]+>/g, '')
+      .trim()
     return text ? `\n\n${text}\n\n` : ''
   })
 
@@ -242,7 +290,10 @@ function convertBlocks(html: string): string {
   result = result.replace(/<hr\s*\/?>/gi, '\n\n---\n\n')
 
   // Divs and sections — just unwrap
-  result = result.replace(/<\/?(?:div|section|article|main|aside|figure|figcaption|span)[^>]*>/gi, '')
+  result = result.replace(
+    /<\/?(?:div|section|article|main|aside|figure|figcaption|span)[^>]*>/gi,
+    ''
+  )
 
   // Convert remaining inline elements
   result = convertInline(result)
@@ -279,11 +330,15 @@ function extractTitle(html: string): string {
 
 /** Extract meta description */
 function extractMetaDescription(html: string): string {
-  const match = html.match(/<meta\s[^>]*name\s*=\s*(?:"description"|'description')[^>]*content\s*=\s*(?:"([^"]*)"|'([^']*)')(?:[^>]*)>/i)
+  const match = html.match(
+    /<meta\s[^>]*name\s*=\s*(?:"description"|'description')[^>]*content\s*=\s*(?:"([^"]*)"|'([^']*)')(?:[^>]*)>/i
+  )
   if (match) return match[1] ?? match[2] ?? ''
 
   // Try reversed attribute order
-  const match2 = html.match(/<meta\s[^>]*content\s*=\s*(?:"([^"]*)"|'([^']*)')(?:[^>]*)name\s*=\s*(?:"description"|'description')(?:[^>]*)>/i)
+  const match2 = html.match(
+    /<meta\s[^>]*content\s*=\s*(?:"([^"]*)"|'([^']*)')(?:[^>]*)name\s*=\s*(?:"description"|'description')(?:[^>]*)>/i
+  )
   if (match2) return match2[1] ?? match2[2] ?? ''
 
   return ''

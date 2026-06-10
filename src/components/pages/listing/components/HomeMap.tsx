@@ -3,7 +3,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import mapboxgl, { Map as MapboxMap, Marker as MapboxMarker } from 'mapbox-gl'
-import 'mapbox-gl/dist/mapbox-gl.css'
 
 import ExploreIcon from '@mui/icons-material/Explore'
 import GpsFixedIcon from '@mui/icons-material/GpsFixed'
@@ -35,6 +34,8 @@ import {
   getMapUrl
 } from 'utils/map'
 import { formatShortAddress } from 'utils/properties'
+
+import 'mapbox-gl/dist/mapbox-gl.css'
 
 const { mapboxDefaults, propertyPageAddressZoom } = mapConfig
 

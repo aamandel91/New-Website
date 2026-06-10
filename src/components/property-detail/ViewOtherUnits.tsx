@@ -1,12 +1,13 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
-import { Box, Button, Typography, CircularProgress } from '@mui/material'
-import ApartmentIcon from '@mui/icons-material/Apartment'
+import React, { useEffect, useState } from 'react'
 import Link from 'next/link'
 
-import apiSearchCSR from 'services/API/APISearchCSR'
+import ApartmentIcon from '@mui/icons-material/Apartment'
+import { Box, Button, CircularProgress, Typography } from '@mui/material'
+
 import type { Property } from 'services/API'
+import apiSearchCSR from 'services/API/APISearchCSR'
 
 interface ViewOtherUnitsProps {
   streetName: string
@@ -29,13 +30,14 @@ const ViewOtherUnits: React.FC<ViewOtherUnitsProps> = ({
   streetNumber,
   city,
   currentMls,
-  propertyType,
+  propertyType
 }) => {
   const [unitCount, setUnitCount] = useState<number | null>(null)
   const [loading, setLoading] = useState(false)
 
   useEffect(() => {
-    if (!isCondoType(propertyType) || !streetName || !streetNumber || !city) return
+    if (!isCondoType(propertyType) || !streetName || !streetNumber || !city)
+      return
 
     let cancelled = false
     const fetchUnits = async () => {
@@ -46,7 +48,7 @@ const ViewOtherUnits: React.FC<ViewOtherUnitsProps> = ({
           search: `${streetNumber} ${streetName}`,
           status: 'A',
           resultsPerPage: 50,
-          fields: 'mlsNumber',
+          fields: 'mlsNumber'
         })
 
         if (cancelled) return
@@ -100,10 +102,11 @@ const ViewOtherUnits: React.FC<ViewOtherUnitsProps> = ({
             sx={{
               textTransform: 'none',
               fontWeight: 600,
-              color: 'primary.main',
+              color: 'primary.main'
             }}
           >
-            View {unitCount} other unit{unitCount !== 1 ? 's' : ''} at {streetNumber} {streetName}
+            View {unitCount} other unit{unitCount !== 1 ? 's' : ''} at{' '}
+            {streetNumber} {streetName}
           </Button>
         )
       )}

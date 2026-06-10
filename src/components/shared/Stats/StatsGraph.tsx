@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react'
 import dynamic from 'next/dynamic'
 import { useTranslations } from 'next-intl'
+
 import { Skeleton } from '@mui/material'
 
 import { chartColors } from '@configs/colors'
@@ -32,7 +33,9 @@ const StatsChart = dynamic(
   () => import('./StatsChart').then((mod) => mod.StatsChart),
   {
     ssr: false,
-    loading: () => <Skeleton variant="rectangular" height={300} sx={{ borderRadius: 1 }} />,
+    loading: () => (
+      <Skeleton variant="rectangular" height={300} sx={{ borderRadius: 1 }} />
+    )
   }
 )
 

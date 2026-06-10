@@ -1,7 +1,8 @@
 'use client'
 
-import { Chip, Stack } from '@mui/material'
 import dayjs from 'dayjs'
+
+import { Chip, Stack } from '@mui/material'
 
 import type { Property } from 'services/API'
 import { active, sold } from 'utils/properties'

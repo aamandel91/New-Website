@@ -11,7 +11,14 @@ export const residentialValues = [
   'residential'
 ]
 export const priceFilterPrefixes = ['below-', 'above-']
-export const compoundPrefixes = ['below', 'above', 'for', 'sort', 'price', 'open']
+export const compoundPrefixes = [
+  'below',
+  'above',
+  'for',
+  'sort',
+  'price',
+  'open'
+]
 
 export const typePrefixes = ['luxury', 'premium', 'open', 'sold', 'all', 'any']
 

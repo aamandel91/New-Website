@@ -1,4 +1,4 @@
-import type { Knex } from "knex";
+import type { Knex } from 'knex'
 
 export async function up(knex: Knex): Promise<void> {
   // Add traffic source tracking fields to support PPC vs organic differentiation
@@ -17,13 +17,17 @@ export async function up(knex: Knex): Promise<void> {
     referer text,
     landing_page text,
     created_at TIMESTAMP without time zone not null default CURRENT_TIMESTAMP
-  )`);
+  )`)
 
   // Create index for efficient lookups
-  await knex.schema.raw(`create index idx_client_traffic_sources_client_id on client_traffic_sources(client_id)`);
-  await knex.schema.raw(`create index idx_client_traffic_sources_traffic_type on client_traffic_sources(traffic_type)`);
+  await knex.schema.raw(
+    `create index idx_client_traffic_sources_client_id on client_traffic_sources(client_id)`
+  )
+  await knex.schema.raw(
+    `create index idx_client_traffic_sources_traffic_type on client_traffic_sources(traffic_type)`
+  )
 }
 
 export async function down(knex: Knex): Promise<void> {
-  await knex.schema.dropTable("client_traffic_sources");
+  await knex.schema.dropTable('client_traffic_sources')
 }

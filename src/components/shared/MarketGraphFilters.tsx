@@ -1,16 +1,17 @@
 'use client'
 
 import React from 'react'
+
+import type { SelectChangeEvent } from '@mui/material'
 import {
   Box,
   FormControl,
   InputLabel,
   MenuItem,
   Select,
-  TextField,
   Stack,
+  TextField
 } from '@mui/material'
-import type { SelectChangeEvent } from '@mui/material'
 
 export interface MarketGraphFilterValues {
   beds?: string
@@ -33,30 +34,31 @@ const PROPERTY_TYPES = [
   { value: 'Condo Apt', label: 'Condo' },
   { value: 'Townhouse', label: 'Townhouse' },
   { value: 'Villa', label: 'Villa' },
-  { value: 'Multi-Family', label: 'Multi-Family' },
+  { value: 'Multi-Family', label: 'Multi-Family' }
 ]
 
 const MarketGraphFilters: React.FC<MarketGraphFiltersProps> = ({
   filters,
-  onFilterChange,
+  onFilterChange
 }) => {
-  const handleSelect = (field: keyof MarketGraphFilterValues) => (e: SelectChangeEvent) => {
-    const val = e.target.value
-    onFilterChange({
-      ...filters,
-      [field]: val === 'Any' || val === '' ? undefined : val.replace('+', ''),
-    })
-  }
+  const handleSelect =
+    (field: keyof MarketGraphFilterValues) => (e: SelectChangeEvent) => {
+      const val = e.target.value
+      onFilterChange({
+        ...filters,
+        [field]: val === 'Any' || val === '' ? undefined : val.replace('+', '')
+      })
+    }
 
-  const handlePrice = (field: 'minPrice' | 'maxPrice') => (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const val = e.target.value.replace(/\D/g, '')
-    onFilterChange({
-      ...filters,
-      [field]: val || undefined,
-    })
-  }
+  const handlePrice =
+    (field: 'minPrice' | 'maxPrice') =>
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const val = e.target.value.replace(/\D/g, '')
+      onFilterChange({
+        ...filters,
+        [field]: val || undefined
+      })
+    }
 
   return (
     <Box sx={{ mb: 2 }}>
@@ -66,7 +68,7 @@ const MarketGraphFilters: React.FC<MarketGraphFiltersProps> = ({
         sx={{
           flexWrap: 'wrap',
           gap: 1.5,
-          '& > *': { minWidth: 100, flex: '1 1 100px', maxWidth: 160 },
+          '& > *': { minWidth: 100, flex: '1 1 100px', maxWidth: 160 }
         }}
       >
         <FormControl size="small">

@@ -90,10 +90,7 @@ const PolygonsPanel = ({ onHighlight }: Props) => {
               >
                 {idx + 1}
               </Box>
-              <Typography
-                variant="body2"
-                sx={{ flex: 1, fontSize: 13 }}
-              >
+              <Typography variant="body2" sx={{ flex: 1, fontSize: 13 }}>
                 {labelPrefix} zone {idx + 1}
               </Typography>
               <Tooltip title="Remove" arrow>

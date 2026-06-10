@@ -5,7 +5,11 @@ import { useRouter } from 'next/navigation'
 import { Box, Stack } from '@mui/material'
 
 import type { ListingStatus, ListingType } from '@configs/filters'
-import { ListingsCounter, SortModesSelect, ZillowFilterBar } from '@shared/Filters'
+import {
+  ListingsCounter,
+  SortModesSelect,
+  ZillowFilterBar
+} from '@shared/Filters'
 
 import type { ApiSortBy } from 'services/API'
 import type { Filters } from 'services/Search'
@@ -56,7 +60,8 @@ const CatalogFilters = ({
 
   const handleFilterChange = (newFilters: Partial<Filters>) => {
     const status = newFilters.listingStatus || searchFilters.listingStatus
-    const type = newFilters.listingType || searchFilters.listingType || 'allListings'
+    const type =
+      newFilters.listingType || searchFilters.listingType || 'allListings'
     const filters = createFiltersArray({
       type,
       status,

@@ -57,13 +57,16 @@ export function processYouTubeUrls(content: string): {
   const lineRegex =
     /^(https?:\/\/(?:www\.)?(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([\w-]{11})(?:[&?][\w=&-]*)?)$/gm
 
-  const processedContent = content.replace(lineRegex, (_match, _url, videoId) => {
-    if (!seen.has(videoId)) {
-      seen.add(videoId)
-      videoIds.push(videoId)
+  const processedContent = content.replace(
+    lineRegex,
+    (_match, _url, videoId) => {
+      if (!seen.has(videoId)) {
+        seen.add(videoId)
+        videoIds.push(videoId)
+      }
+      return `%%YOUTUBE:${videoId}%%`
     }
-    return `%%YOUTUBE:${videoId}%%`
-  })
+  )
 
   return { processedContent, videoIds }
 }
@@ -75,7 +78,9 @@ export function processYouTubeUrls(content: string): {
  */
 export function splitContentByYouTube(
   processedContent: string
-): Array<{ type: 'text'; content: string } | { type: 'youtube'; videoId: string }> {
+): Array<
+  { type: 'text'; content: string } | { type: 'youtube'; videoId: string }
+> {
   const parts = processedContent.split(/(%%YOUTUBE:[\w-]{11}%%)/)
   const segments: Array<
     { type: 'text'; content: string } | { type: 'youtube'; videoId: string }

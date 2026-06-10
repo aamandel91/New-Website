@@ -1,24 +1,27 @@
 'use client'
 
-import { useEffect, useState, useCallback } from 'react'
+import React from 'react'
+
+import { useCallback, useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
+
+import type { SelectChangeEvent } from '@mui/material'
 import {
   Box,
-  Typography,
-  TextField,
   Button,
-  Stack,
   CircularProgress,
-  RadioGroup,
-  Radio,
-  FormControlLabel,
   FormControl,
+  FormControlLabel,
   FormLabel,
+  InputLabel,
   MenuItem,
+  Radio,
+  RadioGroup,
   Select,
-  InputLabel
+  Stack,
+  TextField,
+  Typography
 } from '@mui/material'
-import type { SelectChangeEvent } from '@mui/material'
 
 interface SessionData {
   id: string
@@ -96,7 +99,7 @@ export default function OpenHouseSignInPage() {
       return
     }
 
-    const timer = setTimeout(() => setCountdown(c => c - 1), 1000)
+    const timer = setTimeout(() => setCountdown((c) => c - 1), 1000)
     return () => clearTimeout(timer)
   }, [submitted, countdown, resetForm])
 
@@ -130,7 +133,14 @@ export default function OpenHouseSignInPage() {
 
   if (loading) {
     return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}>
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          minHeight: '100vh'
+        }}
+      >
         <CircularProgress size={48} />
       </Box>
     )
@@ -138,7 +148,15 @@ export default function OpenHouseSignInPage() {
 
   if (error) {
     return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh', px: 3 }}>
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          minHeight: '100vh',
+          px: 3
+        }}
+      >
         <Typography variant="h5" color="error" textAlign="center">
           {error}
         </Typography>
@@ -160,7 +178,10 @@ export default function OpenHouseSignInPage() {
           textAlign: 'center'
         }}
       >
-        <Typography variant="h2" sx={{ mb: 2, fontSize: { xs: '2.5rem', md: '3.5rem' } }}>
+        <Typography
+          variant="h2"
+          sx={{ mb: 2, fontSize: { xs: '2.5rem', md: '3.5rem' } }}
+        >
           Thank you for visiting!
         </Typography>
         <Typography variant="h4" color="text.secondary" sx={{ mb: 4 }}>
@@ -170,7 +191,11 @@ export default function OpenHouseSignInPage() {
           Next visitor in {countdown}s...
         </Typography>
         <Box sx={{ mt: 2 }}>
-          <CircularProgress variant="determinate" value={(countdown / COUNTDOWN_SECONDS) * 100} size={48} />
+          <CircularProgress
+            variant="determinate"
+            value={(countdown / COUNTDOWN_SECONDS) * 100}
+            size={48}
+          />
         </Box>
       </Box>
     )
@@ -217,7 +242,11 @@ export default function OpenHouseSignInPage() {
               />
             )}
             <Box>
-              <Typography variant="subtitle1" fontWeight={600} sx={{ fontSize: { xs: '0.9rem', sm: '1rem' } }}>
+              <Typography
+                variant="subtitle1"
+                fontWeight={600}
+                sx={{ fontSize: { xs: '0.9rem', sm: '1rem' } }}
+              >
                 {session.propertyAddress}
               </Typography>
               {session.propertyPrice && (
@@ -299,20 +328,26 @@ export default function OpenHouseSignInPage() {
             >
               <FormControlLabel
                 value="yes"
-                control={<Radio sx={{ '& .MuiSvgIcon-root': { fontSize: 28 } }} />}
+                control={
+                  <Radio sx={{ '& .MuiSvgIcon-root': { fontSize: 28 } }} />
+                }
                 label={<Typography sx={{ fontSize: 16 }}>Yes</Typography>}
                 sx={{ mr: 4 }}
               />
               <FormControlLabel
                 value="no"
-                control={<Radio sx={{ '& .MuiSvgIcon-root': { fontSize: 28 } }} />}
+                control={
+                  <Radio sx={{ '& .MuiSvgIcon-root': { fontSize: 28 } }} />
+                }
                 label={<Typography sx={{ fontSize: 16 }}>No</Typography>}
               />
             </RadioGroup>
           </FormControl>
 
           <FormControl fullWidth>
-            <InputLabel sx={{ fontSize: 16 }}>How did you hear about this open house?</InputLabel>
+            <InputLabel sx={{ fontSize: 16 }}>
+              How did you hear about this open house?
+            </InputLabel>
             <Select
               value={hearAbout}
               label="How did you hear about this open house?"
@@ -338,19 +373,25 @@ export default function OpenHouseSignInPage() {
             >
               <FormControlLabel
                 value="yes"
-                control={<Radio sx={{ '& .MuiSvgIcon-root': { fontSize: 28 } }} />}
+                control={
+                  <Radio sx={{ '& .MuiSvgIcon-root': { fontSize: 28 } }} />
+                }
                 label={<Typography sx={{ fontSize: 16 }}>Yes</Typography>}
                 sx={{ mr: 3 }}
               />
               <FormControlLabel
                 value="no"
-                control={<Radio sx={{ '& .MuiSvgIcon-root': { fontSize: 28 } }} />}
+                control={
+                  <Radio sx={{ '& .MuiSvgIcon-root': { fontSize: 28 } }} />
+                }
                 label={<Typography sx={{ fontSize: 16 }}>No</Typography>}
                 sx={{ mr: 3 }}
               />
               <FormControlLabel
                 value="not_yet"
-                control={<Radio sx={{ '& .MuiSvgIcon-root': { fontSize: 28 } }} />}
+                control={
+                  <Radio sx={{ '& .MuiSvgIcon-root': { fontSize: 28 } }} />
+                }
                 label={<Typography sx={{ fontSize: 16 }}>Not Yet</Typography>}
               />
             </RadioGroup>

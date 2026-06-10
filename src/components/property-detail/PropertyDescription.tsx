@@ -1,9 +1,10 @@
 'use client'
 
 import React, { useState } from 'react'
-import { Box, Typography, Button, Paper } from '@mui/material'
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
+
 import ExpandLessIcon from '@mui/icons-material/ExpandLess'
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
+import { Box, Button, Paper, Typography } from '@mui/material'
 
 interface PropertyDescriptionProps {
   description: string
@@ -14,14 +15,15 @@ interface PropertyDescriptionProps {
 const PropertyDescription: React.FC<PropertyDescriptionProps> = ({
   description,
   expandThreshold = 500,
-  address,
+  address
 }) => {
   const [isExpanded, setIsExpanded] = useState(false)
   const shouldShowReadMore = description.length > expandThreshold
 
-  const displayText = shouldShowReadMore && !isExpanded
-    ? `${description.substring(0, expandThreshold)}...`
-    : description
+  const displayText =
+    shouldShowReadMore && !isExpanded
+      ? `${description.substring(0, expandThreshold)}...`
+      : description
 
   return (
     <Paper elevation={0} sx={{ p: 3, bgcolor: 'background.paper' }}>
@@ -35,7 +37,7 @@ const PropertyDescription: React.FC<PropertyDescriptionProps> = ({
           whiteSpace: 'pre-wrap',
           lineHeight: 1.8,
           color: 'text.secondary',
-          mb: shouldShowReadMore ? 2 : 0,
+          mb: shouldShowReadMore ? 2 : 0
         }}
       >
         {displayText}

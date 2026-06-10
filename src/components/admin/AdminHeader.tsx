@@ -1,12 +1,14 @@
 'use client'
 
 import React from 'react'
-import { AppBar, Toolbar, Typography, Button, Box, Chip } from '@mui/material'
+import { useRouter } from 'next/navigation'
+
 import LogoutIcon from '@mui/icons-material/Logout'
 import OpenInNewIcon from '@mui/icons-material/OpenInNew'
-import { useUser } from '@/providers/UserProvider'
+import { AppBar, Box, Button, Chip, Toolbar, Typography } from '@mui/material'
+
 import { useOrganization } from '@/providers/OrganizationProvider'
-import { useRouter } from 'next/navigation'
+import { useUser } from '@/providers/UserProvider'
 
 export default function AdminHeader() {
   const { profile, logout } = useUser()
@@ -34,7 +36,9 @@ export default function AdminHeader() {
       }}
     >
       <Toolbar>
-        <Box sx={{ flexGrow: 1, display: 'flex', alignItems: 'center', gap: 2 }}>
+        <Box
+          sx={{ flexGrow: 1, display: 'flex', alignItems: 'center', gap: 2 }}
+        >
           {organization && (
             <>
               <Typography variant="body2" color="text.secondary">

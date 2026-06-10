@@ -1,8 +1,10 @@
-import 'server-only'
 import { promises as fs } from 'fs'
 import path from 'path'
-import { siteSettings as defaults } from '@/configs/defaults/site-settings'
+
 import type { SiteSettings } from '@/configs/defaults/site-settings'
+import { siteSettings as defaults } from '@/configs/defaults/site-settings'
+
+import 'server-only'
 
 const SETTINGS_PATH = path.join(process.cwd(), 'data', 'site-settings.json')
 

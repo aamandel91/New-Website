@@ -1,6 +1,12 @@
 import { tenant } from '../config/tenant.config.js'
 
-const { teamName, leaderName, leaderYearsExperience, brokerageLuxury, domainDisplay } = tenant.brand
+const {
+  teamName,
+  leaderName,
+  leaderYearsExperience,
+  brokerageLuxury,
+  domainDisplay
+} = tenant.brand
 
 const SOUTH_FLORIDA_CONTEXT = `You are writing content for ${domainDisplay}, the website of ${teamName} at ${brokerageLuxury}.
 
@@ -92,8 +98,8 @@ const MARKET_CONTEXTS: Record<string, string> = {
   'south-florida': SOUTH_FLORIDA_CONTEXT,
   'naples-swfl': NAPLES_SWFL_CONTEXT,
   'tampa-bay': TAMPA_BAY_CONTEXT,
-  'orlando': ORLANDO_CONTEXT,
-  'sarasota': SARASOTA_CONTEXT
+  orlando: ORLANDO_CONTEXT,
+  sarasota: SARASOTA_CONTEXT
 }
 
 export function getMarketContext(marketId: string): string {

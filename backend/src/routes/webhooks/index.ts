@@ -6,6 +6,12 @@ const router = new Router({
   prefix: '/webhooks'
 })
 router.use(bossWebhooksRouter.routes(), bossWebhooksRouter.allowedMethods())
-router.use(repliersWebhooksRouter.routes(), repliersWebhooksRouter.allowedMethods())
-router.use(sendgridInboundRouter.routes(), sendgridInboundRouter.allowedMethods())
+router.use(
+  repliersWebhooksRouter.routes(),
+  repliersWebhooksRouter.allowedMethods()
+)
+router.use(
+  sendgridInboundRouter.routes(),
+  sendgridInboundRouter.allowedMethods()
+)
 export default router

@@ -28,8 +28,9 @@
  * PPC minimum price is $750,000. Do not lower this for any market.
  */
 
-import type { ApiLastStatus } from 'services/API'
 import { haversineMiles } from '@/utils/distance'
+
+import type { ApiLastStatus } from 'services/API'
 
 /**
  * Page generation configuration for Florida county/city/sub-type pages.
@@ -65,7 +66,7 @@ export const markets: MarketConfig[] = [
     citiesByCounty: {
       'Miami-Dade': [
         { name: 'Miami', lat: 25.7617, lng: -80.1918 },
-        { name: 'Miami Beach', lat: 25.7907, lng: -80.1300 },
+        { name: 'Miami Beach', lat: 25.7907, lng: -80.13 },
         { name: 'Coral Gables', lat: 25.7215, lng: -80.2684 },
         { name: 'Aventura', lat: 25.9565, lng: -80.1392 },
         { name: 'Sunny Isles Beach', lat: 25.9434, lng: -80.1228 },
@@ -82,14 +83,14 @@ export const markets: MarketConfig[] = [
         { name: 'Key Biscayne', lat: 25.6938, lng: -80.1626 },
         { name: 'Coconut Grove', lat: 25.7282, lng: -80.2434 },
         { name: 'Brickell', lat: 25.7605, lng: -80.1939 },
-        { name: 'Wynwood', lat: 25.8010, lng: -80.1995 },
+        { name: 'Wynwood', lat: 25.801, lng: -80.1995 },
         { name: 'Miami Lakes', lat: 25.9087, lng: -80.3084 },
         { name: 'North Miami Beach', lat: 25.9331, lng: -80.1625 },
-        { name: 'Palmetto Bay', lat: 25.6220, lng: -80.3242 }
+        { name: 'Palmetto Bay', lat: 25.622, lng: -80.3242 }
       ],
-      'Broward': [
+      Broward: [
         { name: 'Fort Lauderdale', lat: 26.1224, lng: -80.1373 },
-        { name: 'Coral Springs', lat: 26.2710, lng: -80.2706 },
+        { name: 'Coral Springs', lat: 26.271, lng: -80.2706 },
         { name: 'Pompano Beach', lat: 26.2378, lng: -80.1248 },
         { name: 'Deerfield Beach', lat: 26.3184, lng: -80.0998 },
         { name: 'Hollywood', lat: 26.0112, lng: -80.1495 },
@@ -97,8 +98,8 @@ export const markets: MarketConfig[] = [
         { name: 'Davie', lat: 26.0628, lng: -80.2331 },
         { name: 'Weston', lat: 26.1003, lng: -80.3998 },
         { name: 'Coconut Creek', lat: 26.2515, lng: -80.1789 },
-        { name: 'Parkland', lat: 26.3104, lng: -80.2370 },
-        { name: 'Sunrise', lat: 26.1339, lng: -80.2670 },
+        { name: 'Parkland', lat: 26.3104, lng: -80.237 },
+        { name: 'Sunrise', lat: 26.1339, lng: -80.267 },
         { name: 'Tamarac', lat: 26.2129, lng: -80.2497 },
         { name: 'Lighthouse Point', lat: 26.2756, lng: -80.0876 },
         { name: 'Hallandale Beach', lat: 25.9812, lng: -80.1484 },
@@ -122,9 +123,9 @@ export const markets: MarketConfig[] = [
         { name: 'Palm Beach', lat: 26.7056, lng: -80.0364 },
         { name: 'Juno Beach', lat: 26.8784, lng: -80.0534 },
         { name: 'Tequesta', lat: 26.9659, lng: -80.1253 },
-        { name: 'Loxahatchee', lat: 26.6840, lng: -80.2625 }
+        { name: 'Loxahatchee', lat: 26.684, lng: -80.2625 }
       ],
-      'Martin': [
+      Martin: [
         { name: 'Stuart', lat: 27.1973, lng: -80.2528 },
         { name: 'Palm City', lat: 27.1689, lng: -80.2664 },
         { name: 'Hobe Sound', lat: 27.0639, lng: -80.1378 },
@@ -153,8 +154,8 @@ export const markets: MarketConfig[] = [
     boardIds: [],
     active: false,
     citiesByCounty: {
-      'Collier': [
-        { name: 'Naples', lat: 26.1420, lng: -81.7948 },
+      Collier: [
+        { name: 'Naples', lat: 26.142, lng: -81.7948 },
         { name: 'Marco Island', lat: 25.9412, lng: -81.7184 },
         { name: 'Bonita Springs', lat: 26.3398, lng: -81.7787 },
         { name: 'Estero', lat: 26.4382, lng: -81.8068 },
@@ -168,14 +169,14 @@ export const markets: MarketConfig[] = [
         { name: 'Golden Gate', lat: 26.1875, lng: -81.6953 },
         { name: 'Ave Maria', lat: 26.3409, lng: -81.4259 }
       ],
-      'Lee': [
+      Lee: [
         { name: 'Fort Myers', lat: 26.6406, lng: -81.8723 },
         { name: 'Cape Coral', lat: 26.5629, lng: -81.9495 },
-        { name: 'Sanibel', lat: 26.4481, lng: -82.0120 },
+        { name: 'Sanibel', lat: 26.4481, lng: -82.012 },
         // Miromar Lakes: small CDP, coords uncertain
         { name: 'Miromar Lakes' }
       ],
-      'Charlotte': [
+      Charlotte: [
         { name: 'Port Charlotte', lat: 26.9762, lng: -82.0907 },
         { name: 'Punta Gorda', lat: 26.9298, lng: -82.0454 }
       ]
@@ -189,7 +190,7 @@ export const markets: MarketConfig[] = [
     boardIds: [],
     active: false,
     citiesByCounty: {
-      'Hillsborough': [
+      Hillsborough: [
         { name: 'Tampa', lat: 27.9506, lng: -82.4572 },
         { name: 'Brandon', lat: 27.9378, lng: -82.2859 },
         { name: 'Riverview', lat: 27.8661, lng: -82.3265 },
@@ -207,15 +208,15 @@ export const markets: MarketConfig[] = [
         { name: 'Carrollwood', lat: 28.0509, lng: -82.5089 },
         { name: 'Seminole Heights' }
       ],
-      'Pinellas': [
+      Pinellas: [
         { name: 'St. Petersburg', lat: 27.7676, lng: -82.6403 },
         { name: 'Clearwater', lat: 27.9659, lng: -82.8001 },
         { name: 'Palm Harbor', lat: 28.0781, lng: -82.7637 },
         { name: 'Dunedin', lat: 28.0199, lng: -82.7717 },
         { name: 'Safety Harbor', lat: 28.0014, lng: -82.6929 },
-        { name: 'Tarpon Springs', lat: 28.1461, lng: -82.7570 }
+        { name: 'Tarpon Springs', lat: 28.1461, lng: -82.757 }
       ],
-      'Pasco': [
+      Pasco: [
         { name: 'Wesley Chapel', lat: 28.2391, lng: -82.3268 },
         { name: 'Odessa', lat: 28.1808, lng: -82.5895 },
         { name: 'Land O Lakes', lat: 28.2197, lng: -82.4617 },
@@ -225,7 +226,7 @@ export const markets: MarketConfig[] = [
       // since the original flat list included it under tampa-bay. Sarasota is in
       // its own market, so kept under Manatee here loosely as an inactive-market
       // best-guess until tampa-bay is activated.
-      'Manatee': [
+      Manatee: [
         { name: 'Bradenton', lat: 27.4989, lng: -82.5748 },
         { name: 'Sarasota', lat: 27.3364, lng: -82.5307 },
         { name: 'Lakeland', lat: 28.0395, lng: -81.9498 }
@@ -240,35 +241,35 @@ export const markets: MarketConfig[] = [
     boardIds: [],
     active: false,
     citiesByCounty: {
-      'Orange': [
+      Orange: [
         { name: 'Orlando', lat: 28.5383, lng: -81.3792 },
         { name: 'Winter Park', lat: 28.5999, lng: -81.3392 },
-        { name: 'Windermere', lat: 28.4953, lng: -81.5350 },
+        { name: 'Windermere', lat: 28.4953, lng: -81.535 },
         // Dr. Phillips, Lake Nona: neighborhoods/CDPs — left uncoded
         { name: 'Dr. Phillips' },
         { name: 'Lake Nona' },
         { name: 'Maitland', lat: 28.6278, lng: -81.3631 },
         { name: 'Apopka', lat: 28.6934, lng: -81.5322 },
-        { name: 'Ocoee', lat: 28.5694, lng: -81.5440 }
+        { name: 'Ocoee', lat: 28.5694, lng: -81.544 }
       ],
-      'Seminole': [
+      Seminole: [
         { name: 'Altamonte Springs', lat: 28.6611, lng: -81.3656 },
         { name: 'Longwood', lat: 28.7031, lng: -81.3384 },
         { name: 'Winter Springs', lat: 28.6986, lng: -81.2731 },
         { name: 'Sanford', lat: 28.8005, lng: -81.2731 },
         { name: 'Casselberry', lat: 28.6778, lng: -81.3281 },
-        { name: 'Oviedo', lat: 28.6700, lng: -81.2081 },
+        { name: 'Oviedo', lat: 28.67, lng: -81.2081 },
         { name: 'Lake Mary', lat: 28.7589, lng: -81.3178 },
         // Heathrow: CDP, coords uncertain
         { name: 'Heathrow' }
       ],
-      'Osceola': [
-        { name: 'Kissimmee', lat: 28.2920, lng: -81.4076 },
+      Osceola: [
+        { name: 'Kissimmee', lat: 28.292, lng: -81.4076 },
         { name: 'Celebration', lat: 28.3247, lng: -81.5364 }
       ],
-      'Lake': [
+      Lake: [
         { name: 'Clermont', lat: 28.5494, lng: -81.7729 },
-        { name: 'Davenport', lat: 28.1611, lng: -81.6020 }
+        { name: 'Davenport', lat: 28.1611, lng: -81.602 }
       ]
     }
   },
@@ -280,13 +281,13 @@ export const markets: MarketConfig[] = [
     boardIds: [],
     active: false,
     citiesByCounty: {
-      'Sarasota': [
+      Sarasota: [
         { name: 'Sarasota', lat: 27.3364, lng: -82.5307 },
         { name: 'Venice', lat: 27.0998, lng: -82.4543 },
-        { name: 'Nokomis', lat: 27.1198, lng: -82.4440 },
+        { name: 'Nokomis', lat: 27.1198, lng: -82.444 },
         { name: 'Osprey', lat: 27.1953, lng: -82.4904 },
-        { name: 'North Port', lat: 27.0440, lng: -82.2359 },
-        { name: 'Englewood', lat: 26.9620, lng: -82.3526 },
+        { name: 'North Port', lat: 27.044, lng: -82.2359 },
+        { name: 'Englewood', lat: 26.962, lng: -82.3526 },
         { name: 'Longboat Key', lat: 27.3984, lng: -82.6448 },
         { name: 'Siesta Key', lat: 27.2659, lng: -82.5462 },
         // Casey Key, Palmer Ranch, The Meadows, Bird Key, Lido Key, Gulf Gate
@@ -304,10 +305,14 @@ export const markets: MarketConfig[] = [
 ]
 
 // Derived exports - update automatically when markets are activated
-export const activeMarkets = markets.filter(m => m.active)
-export const targetCounties = activeMarkets.flatMap(m => m.counties) as readonly string[]
+export const activeMarkets = markets.filter((m) => m.active)
+export const targetCounties = activeMarkets.flatMap(
+  (m) => m.counties
+) as readonly string[]
 export type TargetCounty = string
-export const allActiveBoardIds = [...new Set(activeMarkets.flatMap(m => m.boardIds))]
+export const allActiveBoardIds = [
+  ...new Set(activeMarkets.flatMap((m) => m.boardIds))
+]
 export const primaryCity = activeMarkets[0]?.primaryCity ?? 'Coral Springs'
 
 // nearbyCities lookup keyed by county - kept for backward compat with any
@@ -315,7 +320,9 @@ export const primaryCity = activeMarkets[0]?.primaryCity ?? 'Coral Springs'
 export const nearbyCitiesByCounty: Record<string, string[]> = {}
 for (const market of activeMarkets) {
   for (const county of market.counties) {
-    nearbyCitiesByCounty[county] = (market.citiesByCounty[county] ?? []).map(c => c.name)
+    nearbyCitiesByCounty[county] = (market.citiesByCounty[county] ?? []).map(
+      (c) => c.name
+    )
   }
 }
 
@@ -333,7 +340,11 @@ export function findCountyForCity(cityName: string): string | undefined {
   return cityToCounty[cityName.toLowerCase()]
 }
 
-interface CityCoord { name: string; lat: number; lng: number }
+interface CityCoord {
+  name: string
+  lat: number
+  lng: number
+}
 
 // Flat list of all active-market cities that have lat/lng. Cities without
 // coordinates are excluded from radius queries but still exist in the
@@ -362,7 +373,7 @@ export function findNearbyCities(
 ): string[] {
   const { minResults = 12, maxResults = 12 } = options
   const cityLower = cityName.toLowerCase()
-  const center = allActiveCities.find(c => c.name.toLowerCase() === cityLower)
+  const center = allActiveCities.find((c) => c.name.toLowerCase() === cityLower)
   if (!center) return []
 
   const radii = [20, 30, 40, 50]
@@ -370,15 +381,15 @@ export function findNearbyCities(
   for (let i = 0; i < radii.length; i += 1) {
     const radius = radii[i]
     const matches = allActiveCities
-      .filter(c => c.name.toLowerCase() !== cityLower)
-      .map(c => ({
+      .filter((c) => c.name.toLowerCase() !== cityLower)
+      .map((c) => ({
         name: c.name,
         distance: haversineMiles(center.lat, center.lng, c.lat, c.lng)
       }))
-      .filter(m => m.distance <= radius)
+      .filter((m) => m.distance <= radius)
       .sort((a, b) => a.distance - b.distance)
       .slice(0, maxResults)
-      .map(m => m.name)
+      .map((m) => m.name)
 
     lastMatches = matches
     if (matches.length >= minResults || i === radii.length - 1) {
@@ -401,28 +412,128 @@ export interface SubTypeConfig {
 }
 
 export const subTypes: SubTypeConfig[] = [
-  { slug: 'single-family-homes', label: 'Single Family Homes', filterType: 'residential', propertyType: 'Detached' },
-  { slug: 'condos', label: 'Condos', filterType: 'condo', propertyType: 'Apartment' },
-  { slug: 'townhomes', label: 'Townhomes', filterType: 'residential', propertyType: 'Att/Row/Twnhouse' },
-  { slug: 'multi-family', label: 'Multi-Family Homes', filterType: 'residential', propertyType: 'Multi-Family' },
-  { slug: 'luxury', label: 'Luxury Homes', filterType: 'residential', minPrice: 1000000 },
-  { slug: 'waterfront', label: 'Waterfront Homes', filterType: 'residential', keywords: 'waterfront' },
-  { slug: 'pool-homes', label: 'Pool Homes', filterType: 'residential', keywords: 'pool' },
-  { slug: 'new-construction', label: 'New Construction', filterType: 'residential', keywords: 'new construction' },
-  { slug: '55-plus', label: '55+ Communities', filterType: 'residential', keywords: '55+' },
-  { slug: 'gated-communities', label: 'Gated Communities', filterType: 'residential', keywords: 'gated' },
-  { slug: 'no-hoa', label: 'No HOA Homes', filterType: 'residential', keywords: 'no hoa' },
-  { slug: 'ocean-access', label: 'Ocean Access Homes', filterType: 'residential', keywords: 'ocean access' },
-  { slug: 'country-club', label: 'Country Club Homes', filterType: 'residential', keywords: 'country club' },
-  { slug: 'one-story', label: '1 Story Homes', filterType: 'residential', stories: 1 },
-  { slug: 'two-story', label: '2 Story Homes', filterType: 'residential', stories: 2 },
-  { slug: 'foreclosures', label: 'Foreclosures', filterType: 'residential', lastStatus: 'Lc' },
-  { slug: 'one-acre-plus', label: '1+ Acre Properties', filterType: 'residential', minLotSize: 43560 },
-  { slug: 'fha-approved', label: 'FHA Approved', filterType: 'condo', keywords: 'fha' },
-  { slug: 'va-approved', label: 'VA Approved', filterType: 'residential', keywords: 'va approved' },
-  { slug: 'pet-friendly-condos', label: 'Pet Friendly Condos', filterType: 'condo', keywords: 'pet' },
+  {
+    slug: 'single-family-homes',
+    label: 'Single Family Homes',
+    filterType: 'residential',
+    propertyType: 'Detached'
+  },
+  {
+    slug: 'condos',
+    label: 'Condos',
+    filterType: 'condo',
+    propertyType: 'Apartment'
+  },
+  {
+    slug: 'townhomes',
+    label: 'Townhomes',
+    filterType: 'residential',
+    propertyType: 'Att/Row/Twnhouse'
+  },
+  {
+    slug: 'multi-family',
+    label: 'Multi-Family Homes',
+    filterType: 'residential',
+    propertyType: 'Multi-Family'
+  },
+  {
+    slug: 'luxury',
+    label: 'Luxury Homes',
+    filterType: 'residential',
+    minPrice: 1000000
+  },
+  {
+    slug: 'waterfront',
+    label: 'Waterfront Homes',
+    filterType: 'residential',
+    keywords: 'waterfront'
+  },
+  {
+    slug: 'pool-homes',
+    label: 'Pool Homes',
+    filterType: 'residential',
+    keywords: 'pool'
+  },
+  {
+    slug: 'new-construction',
+    label: 'New Construction',
+    filterType: 'residential',
+    keywords: 'new construction'
+  },
+  {
+    slug: '55-plus',
+    label: '55+ Communities',
+    filterType: 'residential',
+    keywords: '55+'
+  },
+  {
+    slug: 'gated-communities',
+    label: 'Gated Communities',
+    filterType: 'residential',
+    keywords: 'gated'
+  },
+  {
+    slug: 'no-hoa',
+    label: 'No HOA Homes',
+    filterType: 'residential',
+    keywords: 'no hoa'
+  },
+  {
+    slug: 'ocean-access',
+    label: 'Ocean Access Homes',
+    filterType: 'residential',
+    keywords: 'ocean access'
+  },
+  {
+    slug: 'country-club',
+    label: 'Country Club Homes',
+    filterType: 'residential',
+    keywords: 'country club'
+  },
+  {
+    slug: 'one-story',
+    label: '1 Story Homes',
+    filterType: 'residential',
+    stories: 1
+  },
+  {
+    slug: 'two-story',
+    label: '2 Story Homes',
+    filterType: 'residential',
+    stories: 2
+  },
+  {
+    slug: 'foreclosures',
+    label: 'Foreclosures',
+    filterType: 'residential',
+    lastStatus: 'Lc'
+  },
+  {
+    slug: 'one-acre-plus',
+    label: '1+ Acre Properties',
+    filterType: 'residential',
+    minLotSize: 43560
+  },
+  {
+    slug: 'fha-approved',
+    label: 'FHA Approved',
+    filterType: 'condo',
+    keywords: 'fha'
+  },
+  {
+    slug: 'va-approved',
+    label: 'VA Approved',
+    filterType: 'residential',
+    keywords: 'va approved'
+  },
+  {
+    slug: 'pet-friendly-condos',
+    label: 'Pet Friendly Condos',
+    filterType: 'condo',
+    keywords: 'pet'
+  },
   { slug: 'rentals', label: 'Rentals', filterType: 'rental' },
-  { slug: 'land', label: 'Lots & Land', filterType: 'land' },
+  { slug: 'land', label: 'Lots & Land', filterType: 'land' }
 ]
 
 export interface TemplateVariables {

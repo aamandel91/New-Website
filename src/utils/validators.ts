@@ -1,9 +1,10 @@
 'use client'
 
 import Joi from 'joi'
-import { isValidPhoneNumber } from 'libphonenumber-js/min'
 
 import i18nConfig from '@configs/i18n'
+
+import { isValidPhoneNumber } from 'libphonenumber-js/min'
 
 export const validateEmail = (email: string, maxLen = 70): boolean => {
   // Check if email is empty or exceeds the maximum length

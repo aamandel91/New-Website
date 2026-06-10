@@ -17,44 +17,49 @@
  */
 
 import React, { useEffect, useState } from 'react'
+
+import AddIcon from '@mui/icons-material/Add'
+import CopyIcon from '@mui/icons-material/ContentCopy'
+import DeleteIcon from '@mui/icons-material/Delete'
+import DragIcon from '@mui/icons-material/DragIndicator'
+import EditIcon from '@mui/icons-material/Edit'
+import VisibilityIcon from '@mui/icons-material/Visibility'
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff'
 import {
+  Alert,
   Box,
-  Container,
-  Paper,
-  Typography,
   Button,
-  TextField,
-  Select,
-  MenuItem,
+  Chip,
+  CircularProgress,
+  Container,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
   FormControl,
+  FormControlLabel,
+  Grid,
+  IconButton,
   InputLabel,
+  MenuItem,
+  Paper,
+  Select,
+  Stack,
+  Switch,
   Table,
   TableBody,
   TableCell,
   TableContainer,
   TableHead,
   TableRow,
-  Chip,
-  IconButton,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Stack,
-  Alert,
-  CircularProgress,
-  Grid,
-  Switch,
-  FormControlLabel
+  TextField,
+  Typography
 } from '@mui/material'
-import AddIcon from '@mui/icons-material/Add'
-import EditIcon from '@mui/icons-material/Edit'
-import DeleteIcon from '@mui/icons-material/Delete'
-import CopyIcon from '@mui/icons-material/ContentCopy'
-import VisibilityIcon from '@mui/icons-material/Visibility'
-import VisibilityOffIcon from '@mui/icons-material/VisibilityOff'
-import DragIcon from '@mui/icons-material/DragIndicator'
-import APINavigation, { type NavigationItem, type CreateNavigationItemInput } from '@/services/API/APINavigation'
+
+import APINavigation, {
+  type CreateNavigationItemInput,
+  type NavigationItem
+} from '@/services/API/APINavigation'
 
 const POSITIONS = ['left', 'right', 'mobile', 'footer']
 const NAV_TYPES = ['internal', 'external', 'dropdown', 'mega_menu']
@@ -180,7 +185,12 @@ export default function NavigationPage() {
   return (
     <Container maxWidth="xl">
       <Box sx={{ mb: 4 }}>
-        <Stack direction="row" justifyContent="space-between" alignItems="center" mb={3}>
+        <Stack
+          direction="row"
+          justifyContent="space-between"
+          alignItems="center"
+          mb={3}
+        >
           <Typography variant="h4" component="h1">
             Navigation Builder
           </Typography>
@@ -253,7 +263,9 @@ export default function NavigationPage() {
                   items.map((item) => (
                     <TableRow key={item.id} hover>
                       <TableCell>
-                        <DragIcon sx={{ cursor: 'move', color: 'text.secondary' }} />
+                        <DragIcon
+                          sx={{ cursor: 'move', color: 'text.secondary' }}
+                        />
                       </TableCell>
                       <TableCell>
                         <Typography variant="body2" fontWeight="medium">
@@ -261,7 +273,11 @@ export default function NavigationPage() {
                         </Typography>
                       </TableCell>
                       <TableCell>
-                        <Chip label={item.type.toUpperCase()} size="small" variant="outlined" />
+                        <Chip
+                          label={item.type.toUpperCase()}
+                          size="small"
+                          variant="outlined"
+                        />
                       </TableCell>
                       <TableCell>
                         <Typography variant="body2" color="text.secondary">
@@ -276,7 +292,10 @@ export default function NavigationPage() {
                         )}
                       </TableCell>
                       <TableCell align="right">
-                        <IconButton size="small" onClick={() => handleOpenDialog(item)}>
+                        <IconButton
+                          size="small"
+                          onClick={() => handleOpenDialog(item)}
+                        >
                           <EditIcon fontSize="small" />
                         </IconButton>
                         <IconButton
@@ -289,7 +308,10 @@ export default function NavigationPage() {
                             <VisibilityIcon fontSize="small" />
                           )}
                         </IconButton>
-                        <IconButton size="small" onClick={() => handleDuplicateItem(item.id)}>
+                        <IconButton
+                          size="small"
+                          onClick={() => handleDuplicateItem(item.id)}
+                        >
                           <CopyIcon fontSize="small" />
                         </IconButton>
                         <IconButton
@@ -310,15 +332,24 @@ export default function NavigationPage() {
       </Box>
 
       {/* Create/Edit Dialog */}
-      <Dialog open={dialogOpen} onClose={handleCloseDialog} maxWidth="sm" fullWidth>
-        <DialogTitle>{editingItem ? 'Edit Navigation Item' : 'Add Navigation Item'}</DialogTitle>
+      <Dialog
+        open={dialogOpen}
+        onClose={handleCloseDialog}
+        maxWidth="sm"
+        fullWidth
+      >
+        <DialogTitle>
+          {editingItem ? 'Edit Navigation Item' : 'Add Navigation Item'}
+        </DialogTitle>
         <DialogContent>
           <Stack spacing={3} sx={{ mt: 2 }}>
             <TextField
               label="Label"
               fullWidth
               value={formData.label}
-              onChange={(e) => setFormData({ ...formData, label: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, label: e.target.value })
+              }
             />
 
             <FormControl fullWidth>
@@ -326,7 +357,9 @@ export default function NavigationPage() {
               <Select
                 value={formData.type}
                 label="Type"
-                onChange={(e) => setFormData({ ...formData, type: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, type: e.target.value })
+                }
               >
                 {NAV_TYPES.map((type) => (
                   <MenuItem key={type} value={type}>
@@ -341,7 +374,9 @@ export default function NavigationPage() {
                 label="URL"
                 fullWidth
                 value={formData.url}
-                onChange={(e) => setFormData({ ...formData, url: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, url: e.target.value })
+                }
                 placeholder="/page-slug or https://example.com"
               />
             )}
@@ -351,7 +386,9 @@ export default function NavigationPage() {
               <Select
                 value={formData.position}
                 label="Position"
-                onChange={(e) => setFormData({ ...formData, position: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, position: e.target.value })
+                }
               >
                 {POSITIONS.map((pos) => (
                   <MenuItem key={pos} value={pos}>
@@ -368,7 +405,10 @@ export default function NavigationPage() {
                     <Switch
                       checked={formData.is_visible}
                       onChange={(e) =>
-                        setFormData({ ...formData, is_visible: e.target.checked })
+                        setFormData({
+                          ...formData,
+                          is_visible: e.target.checked
+                        })
                       }
                     />
                   }
@@ -381,7 +421,10 @@ export default function NavigationPage() {
                     <Switch
                       checked={formData.open_new_tab}
                       onChange={(e) =>
-                        setFormData({ ...formData, open_new_tab: e.target.checked })
+                        setFormData({
+                          ...formData,
+                          open_new_tab: e.target.checked
+                        })
                       }
                     />
                   }

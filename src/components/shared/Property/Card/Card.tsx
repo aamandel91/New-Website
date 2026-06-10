@@ -2,6 +2,7 @@
 
 import React, { useRef } from 'react'
 
+import { Box } from '@mui/material'
 import TouchRippleOriginal, {
   type TouchRippleActions,
   type TouchRippleProps
@@ -9,6 +10,8 @@ import TouchRippleOriginal, {
 
 import { type PropertyCardSize } from '@configs/cards-grids'
 import { Gallery } from '@shared/Photos'
+
+import { getListingBadges } from 'components/listings/ListingBadges'
 
 import { type Property } from 'services/API'
 import { useFeatures } from 'providers/FeaturesProvider'
@@ -22,9 +25,6 @@ import {
   restricted,
   sold
 } from 'utils/properties'
-import { getListingBadges } from 'components/listings/ListingBadges'
-
-import { Box } from '@mui/material'
 
 import {
   CardContainer,

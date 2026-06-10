@@ -1,9 +1,10 @@
 'use client'
 
 import React from 'react'
-import { Breadcrumbs, Link, Typography, Box } from '@mui/material'
-import NavigateNextIcon from '@mui/icons-material/NavigateNext'
+
 import HomeIcon from '@mui/icons-material/Home'
+import NavigateNextIcon from '@mui/icons-material/NavigateNext'
+import { Box, Breadcrumbs, Link, Typography } from '@mui/material'
 
 interface PropertyBreadcrumbsProps {
   state?: string
@@ -45,7 +46,7 @@ const PropertyBreadcrumbs: React.FC<PropertyBreadcrumbsProps> = ({
       sx={{
         display: 'flex',
         alignItems: 'center',
-        ...linkSx,
+        ...linkSx
       }}
       href={baseUrl || '/'}
     >
@@ -66,7 +67,12 @@ const PropertyBreadcrumbs: React.FC<PropertyBreadcrumbsProps> = ({
   // County (breadcrumb TEXT shows county, link goes to search)
   if (county) {
     items.push(
-      <Link key="county" underline="hover" sx={linkSx} href={`/search?county=${encodeURIComponent(county)}`}>
+      <Link
+        key="county"
+        underline="hover"
+        sx={linkSx}
+        href={`/search?county=${encodeURIComponent(county)}`}
+      >
         {county}
       </Link>
     )
@@ -75,12 +81,7 @@ const PropertyBreadcrumbs: React.FC<PropertyBreadcrumbsProps> = ({
   // City (clean URL)
   if (city) {
     items.push(
-      <Link
-        key="city"
-        underline="hover"
-        sx={linkSx}
-        href={`/${slugify(city)}`}
-      >
+      <Link key="city" underline="hover" sx={linkSx} href={`/${slugify(city)}`}>
         {city}
       </Link>
     )
@@ -89,7 +90,12 @@ const PropertyBreadcrumbs: React.FC<PropertyBreadcrumbsProps> = ({
   // Zip (clean URL: /city/zip)
   if (zip && city) {
     items.push(
-      <Link key="zip" underline="hover" sx={linkSx} href={`/${slugify(city)}/${zip}`}>
+      <Link
+        key="zip"
+        underline="hover"
+        sx={linkSx}
+        href={`/${slugify(city)}/${zip}`}
+      >
         {zip}
       </Link>
     )
@@ -104,13 +110,23 @@ const PropertyBreadcrumbs: React.FC<PropertyBreadcrumbsProps> = ({
   // Neighborhood (clean URL: /city/neighborhood)
   if (neighborhood && city) {
     items.push(
-      <Link key="neighborhood" underline="hover" sx={linkSx} href={`/${slugify(city)}/${slugify(neighborhood)}`}>
+      <Link
+        key="neighborhood"
+        underline="hover"
+        sx={linkSx}
+        href={`/${slugify(city)}/${slugify(neighborhood)}`}
+      >
         {neighborhood}
       </Link>
     )
   } else if (neighborhood) {
     items.push(
-      <Link key="neighborhood" underline="hover" sx={linkSx} href={`/search?neighborhood=${encodeURIComponent(neighborhood)}`}>
+      <Link
+        key="neighborhood"
+        underline="hover"
+        sx={linkSx}
+        href={`/search?neighborhood=${encodeURIComponent(neighborhood)}`}
+      >
         {neighborhood}
       </Link>
     )

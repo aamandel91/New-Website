@@ -8,13 +8,11 @@ import {
   useRef,
   useState
 } from 'react'
+import dynamic from 'next/dynamic'
+import { useRouter } from 'next/navigation'
 import { type Position } from 'geojson'
 import { Map as MapboxMap } from 'mapbox-gl'
-import { type LngLat, type LngLatBounds } from 'utils/lngLat'
-import 'mapbox-gl/dist/mapbox-gl.css'
-import dynamic from 'next/dynamic'
 import { useLocale, useMessages } from 'next-intl'
-import { useRouter } from 'next/navigation'
 
 import { Skeleton, Stack } from '@mui/material'
 
@@ -32,10 +30,19 @@ import { useSearch } from 'providers/SearchProvider'
 import { useUser } from 'providers/UserProvider'
 import useBreakpoints from 'hooks/useBreakpoints'
 import useIntersectionObserver from 'hooks/useIntersectionObserver'
+import { type LngLat, type LngLatBounds } from 'utils/lngLat'
 import { getDefaultBounds, getMapStyleUrl } from 'utils/map'
-import { addPolygon, removePolygon, removeZonesLayers, renderZones } from 'utils/map'
+import {
+  addPolygon,
+  removePolygon,
+  removeZonesLayers,
+  renderZones
+} from 'utils/map'
 import { getSeoUrl } from 'utils/properties'
 
+import 'mapbox-gl/dist/mapbox-gl.css'
+
+import PolygonsPanel from './components/PolygonsPanel'
 import {
   GridContent,
   GridDesktopContainer,
@@ -49,11 +56,17 @@ import {
   SaveSearchCanvas,
   TableContent
 } from './components'
-import PolygonsPanel from './components/PolygonsPanel'
 
 const MapDrawButton = dynamic(() => import('./components/MapDrawButton'), {
   ssr: false,
-  loading: () => <Skeleton variant="rectangular" width={40} height={40} sx={{ borderRadius: 1 }} />,
+  loading: () => (
+    <Skeleton
+      variant="rectangular"
+      width={40}
+      height={40}
+      sx={{ borderRadius: 1 }}
+    />
+  )
 })
 
 type MapRootProps = {

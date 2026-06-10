@@ -52,13 +52,20 @@ export class BulkPageGenerationService {
     const items = await this.getItemsData(request.pageType, request.selectedIds)
 
     if (items.length === 0) {
-      throw new ApiError('No valid items found for the selected IDs', { status: 400 })
+      throw new ApiError('No valid items found for the selected IDs', {
+        status: 400
+      })
     }
 
     // Generate pages for each item
     for (const item of items) {
       try {
-        const page = await this.generateSinglePage(orgId, request.pageType, item, request)
+        const page = await this.generateSinglePage(
+          orgId,
+          request.pageType,
+          item,
+          request
+        )
         created.push(page)
       } catch (error: any) {
         console.error(`Error generating page for ${item.name}:`, error)
@@ -114,7 +121,7 @@ export class BulkPageGenerationService {
       id: c.id,
       name: c.name,
       type: 'city' as const,
-      county: c.county,
+      county: c.county
     }))
   }
 
@@ -128,7 +135,7 @@ export class BulkPageGenerationService {
       name: z.zip,
       type: 'zipcode' as const,
       state: z.city, // parent city (existing field name reused)
-      county: z.county,
+      county: z.county
     }))
   }
 
@@ -142,14 +149,16 @@ export class BulkPageGenerationService {
       name: n.name,
       type: 'neighborhood' as const,
       state: n.city,
-      county: n.county,
+      county: n.county
     }))
   }
 
   /**
    * Get property types data
    */
-  private async getPropertyTypesData(ids: number[]): Promise<PropertyTypeData[]> {
+  private async getPropertyTypesData(
+    ids: number[]
+  ): Promise<PropertyTypeData[]> {
     // Common property types
     const propertyTypes = [
       { id: 1, name: 'Single Family Homes', slug: 'single-family' },
@@ -224,10 +233,11 @@ export class BulkPageGenerationService {
       // we stay compatible with `exactOptionalPropertyTypes: true`.
       const aiRequest: import('../types/aiContent.js').AIPageContentRequest = {
         pageType,
-        keyword,
+        keyword
       }
       if ('type' in item) aiRequest.location = (item as LocationData).name
-      if ('slug' in item) aiRequest.propertyType = (item as PropertyTypeData).name
+      if ('slug' in item)
+        aiRequest.propertyType = (item as PropertyTypeData).name
       const aiContent = await this.aiService.generatePageContent(aiRequest)
 
       content = aiContent.content
@@ -238,7 +248,9 @@ export class BulkPageGenerationService {
     // Check if page already exists
     const existingPage = await this.pagesRepo.getPageBySlug(orgId, slug)
     if (existingPage) {
-      throw new ApiError(`Page with slug "${slug}" already exists`, { status: 409 })
+      throw new ApiError(`Page with slug "${slug}" already exists`, {
+        status: 409
+      })
     }
 
     // Create the page
@@ -278,7 +290,9 @@ export class BulkPageGenerationService {
   ): Promise<CrossProductGenerationResult> {
     const combinations = request.combinations || []
     if (combinations.length === 0) {
-      throw new ApiError('At least one combination is required', { status: 400 })
+      throw new ApiError('At least one combination is required', {
+        status: 400
+      })
     }
 
     const result: CrossProductGenerationResult = {
@@ -323,7 +337,9 @@ export class BulkPageGenerationService {
         const aiContent = await this.aiService.generatePageContent({
           pageType: 'city_subtype',
           keyword: `${subtypeLabel} in ${city}, FL`,
-          location: combo.county ? `${city}, ${combo.county} County, FL` : `${city}, FL`,
+          location: combo.county
+            ? `${city}, ${combo.county} County, FL`
+            : `${city}, FL`,
           propertyType: subtypeLabel
         })
 
@@ -381,7 +397,10 @@ export class BulkPageGenerationService {
   /**
    * Apply template to item data
    */
-  private applyTemplate(template: string, item: LocationData | PropertyTypeData): any {
+  private applyTemplate(
+    template: string,
+    item: LocationData | PropertyTypeData
+  ): any {
     // Replace template variables like {{name}}, {{city}}, etc.
     let processedTemplate = template
 

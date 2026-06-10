@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useEffect, useState } from 'react'
+import Link from 'next/link'
 
 import CloseIcon from '@mui/icons-material/Close'
 import HomeWorkIcon from '@mui/icons-material/HomeWork'
@@ -17,10 +18,9 @@ import {
   TextField,
   Typography
 } from '@mui/material'
-import Link from 'next/link'
 
-import type { PropertyEstimate } from 'services/API/types'
 import APISearchCSR from 'services/API/APISearchCSR'
+import type { PropertyEstimate } from 'services/API/types'
 import { ssIdentify } from 'utils/suresendTracking'
 
 interface PropertyValueEstimateProps {
@@ -226,16 +226,20 @@ function EstimateUnavailable() {
           flexDirection: 'column',
           alignItems: 'center',
           textAlign: 'center',
-          py: 4,
+          py: 4
         }}
       >
         <HomeWorkIcon sx={{ fontSize: 48, color: 'grey.400', mb: 2 }} />
         <Typography variant="h6" fontWeight={600} gutterBottom>
           Estimate Not Available
         </Typography>
-        <Typography variant="body2" color="text.secondary" sx={{ mb: 3, maxWidth: 360 }}>
-          A value estimate is not currently available for this property.
-          Get a personalized home value report instead.
+        <Typography
+          variant="body2"
+          color="text.secondary"
+          sx={{ mb: 3, maxWidth: 360 }}
+        >
+          A value estimate is not currently available for this property. Get a
+          personalized home value report instead.
         </Typography>
         <Button
           component={Link}
@@ -258,9 +262,11 @@ const PropertyValueEstimate: React.FC<PropertyValueEstimateProps> = ({
   estimate: initialEstimate,
   listPrice,
   mlsNumber,
-  boardId = 110,
+  boardId = 110
 }) => {
-  const [estimate, setEstimate] = useState<PropertyEstimate | undefined>(initialEstimate)
+  const [estimate, setEstimate] = useState<PropertyEstimate | undefined>(
+    initialEstimate
+  )
   const [fetched, setFetched] = useState(false)
   const [trackModalOpen, setTrackModalOpen] = useState(false)
   const [trackEmail, setTrackEmail] = useState('')

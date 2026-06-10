@@ -198,7 +198,7 @@ const DesktopGallery = ({
                       opacity: showControls ? 1 : 0.7,
                       transition: 'opacity 0.2s linear',
                       pointerEvents: 'none',
-                      zIndex: 1,
+                      zIndex: 1
                     }}
                   >
                     <CameraAltOutlinedIcon sx={{ fontSize: 16 }} />

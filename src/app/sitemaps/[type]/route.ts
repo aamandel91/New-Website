@@ -7,7 +7,8 @@
 
 import { NextResponse } from 'next/server'
 
-import { targetCounties, subTypes } from '@configs/page-generation'
+import { subTypes, targetCounties } from '@configs/page-generation'
+
 import { fetchCountyCities, fetchSubTypeCount } from 'services/pageGeneration'
 import { scoreAreaPage } from 'utils/areaPageScoring'
 
@@ -36,9 +37,9 @@ async function generateActive(): Promise<SitemapEntry[]> {
           resultsPerPage: 500,
           sortBy: 'createdOnDesc',
           listings: true,
-          fields: 'mlsNumber,address,updatedOn',
+          fields: 'mlsNumber,address,updatedOn'
         },
-        post: {},
+        post: {}
       },
       undefined
     )
@@ -51,7 +52,7 @@ async function generateActive(): Promise<SitemapEntry[]> {
         ? new Date(listing.updatedOn).toISOString()
         : new Date().toISOString(),
       changefreq: 'daily',
-      priority: 0.8,
+      priority: 0.8
     }))
   } catch {
     return []
@@ -73,7 +74,7 @@ async function generateSold(): Promise<SitemapEntry[]> {
             ? new Date(entry.lastUpdated).toISOString()
             : new Date().toISOString(),
           changefreq: entry.score >= 3 ? 'monthly' : 'yearly',
-          priority: entry.score >= 3 ? 0.6 : 0.3,
+          priority: entry.score >= 3 ? 0.6 : 0.3
         }))
     }
 
@@ -88,7 +89,7 @@ async function generateSold(): Promise<SitemapEntry[]> {
       resultsPerPage: 500,
       sortBy: 'updatedOnDesc',
       fields:
-        'mlsNumber,status,lastStatus,soldDate,soldPrice,images[1],updatedOn,address,details.description,history,estimate.value',
+        'mlsNumber,status,lastStatus,soldDate,soldPrice,images[1],updatedOn,address,details.description,history,estimate.value'
     })
 
     if (!result?.listings) return []
@@ -108,7 +109,7 @@ async function generateSold(): Promise<SitemapEntry[]> {
           : null,
         address: listing.address
           ? { city: listing.address.city, area: listing.address.area }
-          : null,
+          : null
       })
 
       if (pageScore.score >= 1) {
@@ -118,7 +119,7 @@ async function generateSold(): Promise<SitemapEntry[]> {
             ? new Date(listing.updatedOn).toISOString()
             : new Date().toISOString(),
           changefreq: pageScore.score >= 3 ? 'monthly' : 'yearly',
-          priority: pageScore.score >= 3 ? 0.6 : 0.3,
+          priority: pageScore.score >= 3 ? 0.6 : 0.3
         })
       }
     }
@@ -139,7 +140,7 @@ async function generatePages(): Promise<SitemapEntry[]> {
       url: `${BASE_URL}/${st.slug}`,
       lastmod: now,
       changefreq: 'monthly',
-      priority: 0.7,
+      priority: 0.7
     })
   }
 
@@ -151,32 +152,41 @@ async function generatePages(): Promise<SitemapEntry[]> {
 
         // Score city page
         const cityCount = city.activeCount ?? 0
-        const cityScore = scoreAreaPage({ pageType: 'city', listingCount: cityCount })
+        const cityScore = scoreAreaPage({
+          pageType: 'city',
+          listingCount: cityCount
+        })
         if (cityScore.score >= 1) {
           entries.push({
             url: `${BASE_URL}/${citySlug}`,
             lastmod: new Date().toISOString(),
             changefreq: cityScore.score >= 3 ? 'weekly' : 'monthly',
-            priority: cityScore.score >= 3 ? 0.7 : 0.3,
+            priority: cityScore.score >= 3 ? 0.7 : 0.3
           })
         }
 
         // Score each sub-type page
         for (const st of subTypes) {
           const stCount = await fetchSubTypeCount(city.name, st)
-          const stScore = scoreAreaPage({ pageType: 'subType', listingCount: stCount, subTypeSlug: st.slug })
+          const stScore = scoreAreaPage({
+            pageType: 'subType',
+            listingCount: stCount,
+            subTypeSlug: st.slug
+          })
           if (stScore.score >= 1) {
             entries.push({
               url: `${BASE_URL}/${citySlug}/${st.slug}`,
               lastmod: new Date().toISOString(),
               changefreq: stScore.score >= 3 ? 'weekly' : 'monthly',
-              priority: stScore.score >= 3 ? 0.7 : 0.3,
+              priority: stScore.score >= 3 ? 0.7 : 0.3
             })
           }
         }
       }
     }
-  } catch { /* API not available */ }
+  } catch {
+    /* API not available */
+  }
 
   const cmsEntries = await fetchCmsSitemapPages()
   return mergePreferringCms(entries, cmsEntries)
@@ -188,14 +198,20 @@ async function fetchCmsSitemapPages(): Promise<SitemapEntry[]> {
 
   try {
     const res = await fetch(`${apiUrl}/api/content-pages/sitemap`, {
-      next: { tags: ['sitemap-pages'], revalidate: 3600 },
+      next: { tags: ['sitemap-pages'], revalidate: 3600 }
     })
     if (!res.ok) {
-      console.error(`[sitemap] CMS fetch failed: ${res.status} ${res.statusText}`)
+      console.error(
+        `[sitemap] CMS fetch failed: ${res.status} ${res.statusText}`
+      )
       return []
     }
     const data = (await res.json()) as {
-      pages?: Array<{ slug: string; updated_at: string; published_at: string | null }>
+      pages?: Array<{
+        slug: string
+        updated_at: string
+        published_at: string | null
+      }>
     }
     if (!data.pages) return []
 
@@ -206,7 +222,7 @@ async function fetchCmsSitemapPages(): Promise<SitemapEntry[]> {
         url: `${BASE_URL}/${slug}`,
         lastmod: new Date(ts).toISOString(),
         changefreq: 'monthly',
-        priority: 0.7,
+        priority: 0.7
       }
     })
   } catch (err) {
@@ -228,16 +244,23 @@ function mergePreferringCms(
 async function generateBlog(): Promise<SitemapEntry[]> {
   try {
     const APIBlogs = (await import('services/API/APIBlogs')).default
-    const { blogs } = await APIBlogs.getBlogs({ status: 'published', limit: 1000 })
+    const { blogs } = await APIBlogs.getBlogs({
+      status: 'published',
+      limit: 1000
+    })
 
     return blogs.map(
-      (blog: { slug: string; updated_at: Date; published_at: Date | null }) => ({
+      (blog: {
+        slug: string
+        updated_at: Date
+        published_at: Date | null
+      }) => ({
         url: `${BASE_URL}/blog/${blog.slug}`,
         lastmod: new Date(
           blog.updated_at || blog.published_at || new Date()
         ).toISOString(),
         changefreq: 'monthly',
-        priority: 0.6,
+        priority: 0.6
       })
     )
   } catch {
@@ -249,28 +272,86 @@ function generateStatic(): SitemapEntry[] {
   const now = new Date().toISOString()
   return [
     { url: BASE_URL, lastmod: now, changefreq: 'weekly', priority: 1.0 },
-    { url: `${BASE_URL}/about`, lastmod: now, changefreq: 'monthly', priority: 0.8 },
-    { url: `${BASE_URL}/blog`, lastmod: now, changefreq: 'daily', priority: 0.8 },
-    { url: `${BASE_URL}/contact`, lastmod: now, changefreq: 'monthly', priority: 0.7 },
-    { url: `${BASE_URL}/listings`, lastmod: now, changefreq: 'daily', priority: 0.9 },
-    { url: `${BASE_URL}/agents`, lastmod: now, changefreq: 'weekly', priority: 0.8 },
-    { url: `${BASE_URL}/home-value`, lastmod: now, changefreq: 'monthly', priority: 0.7 },
-    { url: `${BASE_URL}/search/gallery`, lastmod: now, changefreq: 'daily', priority: 0.9 },
-    { url: `${BASE_URL}/search/advanced`, lastmod: now, changefreq: 'daily', priority: 0.8 },
-    { url: `${BASE_URL}/ai-search`, lastmod: now, changefreq: 'weekly', priority: 0.8 },
-    { url: `${BASE_URL}/privacy`, lastmod: now, changefreq: 'yearly', priority: 0.5 },
-    { url: `${BASE_URL}/terms`, lastmod: now, changefreq: 'yearly', priority: 0.5 },
+    {
+      url: `${BASE_URL}/about`,
+      lastmod: now,
+      changefreq: 'monthly',
+      priority: 0.8
+    },
+    {
+      url: `${BASE_URL}/blog`,
+      lastmod: now,
+      changefreq: 'daily',
+      priority: 0.8
+    },
+    {
+      url: `${BASE_URL}/contact`,
+      lastmod: now,
+      changefreq: 'monthly',
+      priority: 0.7
+    },
+    {
+      url: `${BASE_URL}/listings`,
+      lastmod: now,
+      changefreq: 'daily',
+      priority: 0.9
+    },
+    {
+      url: `${BASE_URL}/agents`,
+      lastmod: now,
+      changefreq: 'weekly',
+      priority: 0.8
+    },
+    {
+      url: `${BASE_URL}/home-value`,
+      lastmod: now,
+      changefreq: 'monthly',
+      priority: 0.7
+    },
+    {
+      url: `${BASE_URL}/search/gallery`,
+      lastmod: now,
+      changefreq: 'daily',
+      priority: 0.9
+    },
+    {
+      url: `${BASE_URL}/search/advanced`,
+      lastmod: now,
+      changefreq: 'daily',
+      priority: 0.8
+    },
+    {
+      url: `${BASE_URL}/ai-search`,
+      lastmod: now,
+      changefreq: 'weekly',
+      priority: 0.8
+    },
+    {
+      url: `${BASE_URL}/privacy`,
+      lastmod: now,
+      changefreq: 'yearly',
+      priority: 0.5
+    },
+    {
+      url: `${BASE_URL}/terms`,
+      lastmod: now,
+      changefreq: 'yearly',
+      priority: 0.5
+    }
   ]
 }
 
 // ─── Route handler ────────────────────────────────────────────────
 
-const generators: Record<SitemapType, () => Promise<SitemapEntry[]> | SitemapEntry[]> = {
+const generators: Record<
+  SitemapType,
+  () => Promise<SitemapEntry[]> | SitemapEntry[]
+> = {
   active: generateActive,
   sold: generateSold,
   pages: generatePages,
   blog: generateBlog,
-  static: generateStatic,
+  static: generateStatic
 }
 
 export async function GET(
@@ -295,14 +376,14 @@ export async function GET(
     '<?xml version="1.0" encoding="UTF-8"?>',
     '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
     ...urlEntries,
-    '</urlset>',
+    '</urlset>'
   ].join('\n')
 
   return new Response(xml, {
     headers: {
       'Content-Type': 'application/xml',
-      'Cache-Control': 'public, max-age=3600, s-maxage=3600',
-    },
+      'Cache-Control': 'public, max-age=3600, s-maxage=3600'
+    }
   })
 }
 

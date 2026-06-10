@@ -1,21 +1,22 @@
 'use client'
 
-import React, { useState, useMemo, useRef, useEffect } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
+
+import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward'
+import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward'
 import {
   Box,
   Card,
   CardContent,
-  Typography,
   Table,
   TableBody,
   TableCell,
   TableContainer,
   TableHead,
-  TableRow,
   TablePagination,
+  TableRow,
+  Typography
 } from '@mui/material'
-import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward'
-import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward'
 
 interface EstimateHistoryTableProps {
   history?: { mth: Record<string, { value: number }> }
@@ -34,7 +35,7 @@ const formatCurrency = (value: number): string =>
     style: 'currency',
     currency: 'USD',
     minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
+    maximumFractionDigits: 0
   }).format(value)
 
 function formatMonthLabel(yyyymm: string): string {
@@ -202,7 +203,7 @@ function EstimateLineChart({ data }: { data: MonthRow[] }) {
 
 const EstimateHistoryTable: React.FC<EstimateHistoryTableProps> = ({
   history,
-  currentEstimate,
+  currentEstimate
 }) => {
   const [page, setPage] = useState(0)
 
@@ -219,7 +220,7 @@ const EstimateHistoryTable: React.FC<EstimateHistoryTableProps> = ({
         month,
         label: formatMonthLabel(month),
         value: v.value,
-        change,
+        change
       }
     })
   }, [history])
@@ -228,7 +229,7 @@ const EstimateHistoryTable: React.FC<EstimateHistoryTableProps> = ({
 
   const paginatedRows = rows.slice(
     page * ROWS_PER_PAGE,
-    page * ROWS_PER_PAGE + ROWS_PER_PAGE,
+    page * ROWS_PER_PAGE + ROWS_PER_PAGE
   )
 
   return (
@@ -288,7 +289,7 @@ const EstimateHistoryTable: React.FC<EstimateHistoryTableProps> = ({
                           display: 'inline-flex',
                           alignItems: 'center',
                           gap: 0.5,
-                          color: row.change >= 0 ? 'success.main' : 'error.main',
+                          color: row.change >= 0 ? 'success.main' : 'error.main'
                         }}
                       >
                         {row.change >= 0 ? (

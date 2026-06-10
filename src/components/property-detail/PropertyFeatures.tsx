@@ -1,8 +1,9 @@
 'use client'
 
 import React from 'react'
-import { Box, Typography, Paper, Grid, Chip } from '@mui/material'
+
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
+import { Box, Chip, Grid, Paper, Typography } from '@mui/material'
 
 interface Feature {
   name: string
@@ -16,12 +17,15 @@ interface PropertyFeaturesProps {
 const PropertyFeatures: React.FC<PropertyFeaturesProps> = ({ features }) => {
   // Normalize features to categorized format
   const categorizedFeatures: Record<string, string[]> = Array.isArray(features)
-    ? features.reduce((acc, feature) => {
-        const category = feature.category || 'Features'
-        if (!acc[category]) acc[category] = []
-        acc[category].push(feature.name)
-        return acc
-      }, {} as Record<string, string[]>)
+    ? features.reduce(
+        (acc, feature) => {
+          const category = feature.category || 'Features'
+          if (!acc[category]) acc[category] = []
+          acc[category].push(feature.name)
+          return acc
+        },
+        {} as Record<string, string[]>
+      )
     : features
 
   const categories = Object.keys(categorizedFeatures)

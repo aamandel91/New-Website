@@ -1,4 +1,4 @@
-import type { Knex } from "knex";
+import type { Knex } from 'knex'
 
 export async function up(knex: Knex): Promise<void> {
   // Create organizations table (SAAS customers - real estate brokerages)
@@ -23,7 +23,7 @@ export async function up(knex: Knex): Promise<void> {
       created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
       updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
     )
-  `);
+  `)
 
   // Create organization members table
   await knex.schema.raw(`
@@ -38,7 +38,7 @@ export async function up(knex: Knex): Promise<void> {
       created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
       UNIQUE(org_id, email)
     )
-  `);
+  `)
 
   // Create invitations table
   await knex.schema.raw(`
@@ -53,7 +53,7 @@ export async function up(knex: Knex): Promise<void> {
       accepted_at TIMESTAMP,
       created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
     )
-  `);
+  `)
 
   // Create organization usage tracking table (for billing)
   await knex.schema.raw(`
@@ -66,7 +66,7 @@ export async function up(knex: Knex): Promise<void> {
       period_end TIMESTAMP NOT NULL,
       created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
     )
-  `);
+  `)
 
   // Create indexes
   await knex.schema.raw(`
@@ -75,16 +75,16 @@ export async function up(knex: Knex): Promise<void> {
     CREATE INDEX idx_invitations_org_id ON invitations(org_id);
     CREATE INDEX idx_invitations_token ON invitations(token);
     CREATE INDEX idx_org_usage_org_id ON organization_usage(org_id, period_start);
-  `);
+  `)
 
   // Add org_id to existing ACL table
   await knex.schema.raw(`
     ALTER TABLE acl ADD COLUMN org_id BIGINT REFERENCES organizations(id);
     CREATE INDEX idx_acl_org_id ON acl(org_id);
-  `);
+  `)
 
   // Enhance agents table with subdomain support (if table doesn't exist, create it)
-  const hasAgentsTable = await knex.schema.hasTable('agents');
+  const hasAgentsTable = await knex.schema.hasTable('agents')
 
   if (!hasAgentsTable) {
     await knex.schema.raw(`
@@ -114,13 +114,13 @@ export async function up(knex: Knex): Promise<void> {
         UNIQUE(org_id, email),
         UNIQUE(org_id, subdomain)
       )
-    `);
+    `)
 
     await knex.schema.raw(`
       CREATE INDEX idx_agents_org_id ON agents(org_id);
       CREATE INDEX idx_agents_email ON agents(email);
       CREATE INDEX idx_agents_subdomain ON agents(org_id, subdomain);
-    `);
+    `)
   } else {
     // If agents table exists, add new columns
     await knex.schema.raw(`
@@ -134,24 +134,24 @@ export async function up(knex: Knex): Promise<void> {
 
       CREATE INDEX IF NOT EXISTS idx_agents_org_id ON agents(org_id);
       CREATE INDEX IF NOT EXISTS idx_agents_subdomain ON agents(org_id, subdomain);
-    `);
+    `)
   }
 
   // Add org_id to existing tables
   await knex.schema.raw(`
     ALTER TABLE blogs ADD COLUMN IF NOT EXISTS org_id BIGINT REFERENCES organizations(id);
     CREATE INDEX IF NOT EXISTS idx_blogs_org_id ON blogs(org_id);
-  `);
+  `)
 
   await knex.schema.raw(`
     ALTER TABLE admin_settings ADD COLUMN IF NOT EXISTS org_id BIGINT REFERENCES organizations(id);
     CREATE INDEX IF NOT EXISTS idx_admin_settings_org_id ON admin_settings(org_id);
-  `);
+  `)
 
   await knex.schema.raw(`
     ALTER TABLE assets ADD COLUMN IF NOT EXISTS org_id BIGINT REFERENCES organizations(id);
     CREATE INDEX IF NOT EXISTS idx_assets_org_id ON assets(org_id);
-  `);
+  `)
 
   // Create default organization
   await knex.schema.raw(`
@@ -171,7 +171,7 @@ export async function up(knex: Knex): Promise<void> {
       NULL
     )
     ON CONFLICT DO NOTHING
-  `);
+  `)
 
   // Get the default org ID and update existing data
   await knex.schema.raw(`
@@ -179,28 +179,28 @@ export async function up(knex: Knex): Promise<void> {
       SELECT id FROM organizations WHERE slug = 'default' LIMIT 1
     )
     UPDATE acl SET org_id = (SELECT id FROM default_org) WHERE org_id IS NULL;
-  `);
+  `)
 
   await knex.schema.raw(`
     WITH default_org AS (
       SELECT id FROM organizations WHERE slug = 'default' LIMIT 1
     )
     UPDATE blogs SET org_id = (SELECT id FROM default_org) WHERE org_id IS NULL;
-  `);
+  `)
 
   await knex.schema.raw(`
     WITH default_org AS (
       SELECT id FROM organizations WHERE slug = 'default' LIMIT 1
     )
     UPDATE admin_settings SET org_id = (SELECT id FROM default_org) WHERE org_id IS NULL;
-  `);
+  `)
 
   await knex.schema.raw(`
     WITH default_org AS (
       SELECT id FROM organizations WHERE slug = 'default' LIMIT 1
     )
     UPDATE assets SET org_id = (SELECT id FROM default_org) WHERE org_id IS NULL;
-  `);
+  `)
 
   // Create organization members from existing ACL
   await knex.schema.raw(`
@@ -220,7 +220,7 @@ export async function up(knex: Knex): Promise<void> {
       created_at
     FROM acl
     ON CONFLICT (org_id, email) DO NOTHING;
-  `);
+  `)
 }
 
 export async function down(knex: Knex): Promise<void> {
@@ -228,17 +228,17 @@ export async function down(knex: Knex): Promise<void> {
   await knex.schema.raw(`
     DROP INDEX IF EXISTS idx_assets_org_id;
     ALTER TABLE assets DROP COLUMN IF EXISTS org_id;
-  `);
+  `)
 
   await knex.schema.raw(`
     DROP INDEX IF EXISTS idx_admin_settings_org_id;
     ALTER TABLE admin_settings DROP COLUMN IF EXISTS org_id;
-  `);
+  `)
 
   await knex.schema.raw(`
     DROP INDEX IF EXISTS idx_blogs_org_id;
     ALTER TABLE blogs DROP COLUMN IF EXISTS org_id;
-  `);
+  `)
 
   await knex.schema.raw(`
     DROP INDEX IF EXISTS idx_agents_subdomain;
@@ -249,16 +249,16 @@ export async function down(knex: Knex): Promise<void> {
     ALTER TABLE agents DROP COLUMN IF EXISTS profile_image_cloudinary_id;
     ALTER TABLE agents DROP COLUMN IF EXISTS subdomain;
     ALTER TABLE agents DROP COLUMN IF EXISTS org_id;
-  `);
+  `)
 
   await knex.schema.raw(`
     DROP INDEX IF EXISTS idx_acl_org_id;
     ALTER TABLE acl DROP COLUMN IF EXISTS org_id;
-  `);
+  `)
 
   // Drop new tables
-  await knex.schema.dropTableIfExists('organization_usage');
-  await knex.schema.dropTableIfExists('invitations');
-  await knex.schema.dropTableIfExists('organization_members');
-  await knex.schema.dropTableIfExists('organizations');
+  await knex.schema.dropTableIfExists('organization_usage')
+  await knex.schema.dropTableIfExists('invitations')
+  await knex.schema.dropTableIfExists('organization_members')
+  await knex.schema.dropTableIfExists('organizations')
 }

@@ -1,36 +1,39 @@
 'use client'
 
 import React, { useState } from 'react'
+import { useRouter } from 'next/navigation'
+
+import ArticleIcon from '@mui/icons-material/Article'
+import AIIcon from '@mui/icons-material/AutoAwesome'
+import QueueIcon from '@mui/icons-material/Queue'
+import SearchIcon from '@mui/icons-material/Search'
 import {
-  Box,
-  Container,
-  Paper,
-  Typography,
-  Button,
-  TextField,
-  Select,
-  MenuItem,
-  FormControl,
-  InputLabel,
-  Tabs,
-  Tab,
-  Stack,
   Alert,
-  CircularProgress,
+  Box,
+  Button,
   Card,
   CardContent,
   Chip,
-  Grid
+  CircularProgress,
+  Container,
+  FormControl,
+  Grid,
+  InputLabel,
+  MenuItem,
+  Paper,
+  Select,
+  Stack,
+  Tab,
+  Tabs,
+  TextField,
+  Typography
 } from '@mui/material'
-import AIIcon from '@mui/icons-material/AutoAwesome'
-import ArticleIcon from '@mui/icons-material/Article'
-import SearchIcon from '@mui/icons-material/Search'
-import QueueIcon from '@mui/icons-material/Queue'
+
 import APIAIContent, {
   type AIBlogPostResponse,
   type AIKeywordSuggestion
 } from '@/services/API/APIAIContent'
-import { useRouter } from 'next/navigation'
+
 import KeywordQueueTab from './components/KeywordQueueTab'
 
 interface TabPanelProps {
@@ -65,12 +68,16 @@ export default function AIContentPage() {
   const [blogCity, setBlogCity] = useState('')
   const [blogTone, setBlogTone] = useState('professional')
   const [blogLength, setBlogLength] = useState(800)
-  const [generatedBlog, setGeneratedBlog] = useState<AIBlogPostResponse | null>(null)
+  const [generatedBlog, setGeneratedBlog] = useState<AIBlogPostResponse | null>(
+    null
+  )
 
   // Keyword Research
   const [keywordTopic, setKeywordTopic] = useState('')
   const [keywordCity, setKeywordCity] = useState('')
-  const [suggestedKeywords, setSuggestedKeywords] = useState<AIKeywordSuggestion[]>([])
+  const [suggestedKeywords, setSuggestedKeywords] = useState<
+    AIKeywordSuggestion[]
+  >([])
 
   const handleGenerateBlog = async () => {
     if (!blogKeyword) {
@@ -158,9 +165,21 @@ export default function AIContentPage() {
             onChange={(e, newValue) => setActiveTab(newValue)}
             sx={{ borderBottom: 1, borderColor: 'divider' }}
           >
-            <Tab icon={<ArticleIcon />} label="Generate Blog Post" iconPosition="start" />
-            <Tab icon={<SearchIcon />} label="Keyword Research" iconPosition="start" />
-            <Tab icon={<QueueIcon />} label="Keyword Queue" iconPosition="start" />
+            <Tab
+              icon={<ArticleIcon />}
+              label="Generate Blog Post"
+              iconPosition="start"
+            />
+            <Tab
+              icon={<SearchIcon />}
+              label="Keyword Research"
+              iconPosition="start"
+            />
+            <Tab
+              icon={<QueueIcon />}
+              label="Keyword Queue"
+              iconPosition="start"
+            />
           </Tabs>
 
           {/* Blog Generation Tab */}
@@ -187,7 +206,11 @@ export default function AIContentPage() {
 
                   <FormControl fullWidth>
                     <InputLabel>Tone</InputLabel>
-                    <Select value={blogTone} label="Tone" onChange={(e) => setBlogTone(e.target.value)}>
+                    <Select
+                      value={blogTone}
+                      label="Tone"
+                      onChange={(e) => setBlogTone(e.target.value)}
+                    >
                       <MenuItem value="professional">Professional</MenuItem>
                       <MenuItem value="casual">Casual</MenuItem>
                       <MenuItem value="friendly">Friendly</MenuItem>
@@ -212,7 +235,9 @@ export default function AIContentPage() {
                   <Button
                     variant="contained"
                     size="large"
-                    startIcon={loading ? <CircularProgress size={20} /> : <AIIcon />}
+                    startIcon={
+                      loading ? <CircularProgress size={20} /> : <AIIcon />
+                    }
                     onClick={handleGenerateBlog}
                     disabled={loading || !blogKeyword}
                     fullWidth
@@ -231,7 +256,11 @@ export default function AIContentPage() {
                           <Typography variant="h5" gutterBottom>
                             {generatedBlog.title}
                           </Typography>
-                          <Typography variant="body2" color="text.secondary" paragraph>
+                          <Typography
+                            variant="body2"
+                            color="text.secondary"
+                            paragraph
+                          >
                             {generatedBlog.excerpt}
                           </Typography>
                         </Box>
@@ -277,11 +306,19 @@ export default function AIContentPage() {
                               bgcolor: 'grey.50'
                             }}
                           >
-                            <div dangerouslySetInnerHTML={{ __html: generatedBlog.content }} />
+                            <div
+                              dangerouslySetInnerHTML={{
+                                __html: generatedBlog.content
+                              }}
+                            />
                           </Paper>
                         </Box>
 
-                        <Button variant="contained" onClick={handleUseBlogPost} fullWidth>
+                        <Button
+                          variant="contained"
+                          onClick={handleUseBlogPost}
+                          fullWidth
+                        >
                           Use This Blog Post
                         </Button>
                       </Stack>
@@ -301,7 +338,9 @@ export default function AIContentPage() {
                       bgcolor: 'grey.50'
                     }}
                   >
-                    <AIIcon sx={{ fontSize: 64, color: 'text.secondary', mb: 2 }} />
+                    <AIIcon
+                      sx={{ fontSize: 64, color: 'text.secondary', mb: 2 }}
+                    />
                     <Typography variant="h6" color="text.secondary">
                       Generated content will appear here
                     </Typography>
@@ -336,7 +375,9 @@ export default function AIContentPage() {
                   <Button
                     variant="contained"
                     size="large"
-                    startIcon={loading ? <CircularProgress size={20} /> : <SearchIcon />}
+                    startIcon={
+                      loading ? <CircularProgress size={20} /> : <SearchIcon />
+                    }
                     onClick={handleKeywordResearch}
                     disabled={loading || !keywordTopic}
                     fullWidth
@@ -354,21 +395,35 @@ export default function AIContentPage() {
                         <CardContent>
                           <Grid container spacing={2} alignItems="center">
                             <Grid item xs={12} sm={6}>
-                              <Typography variant="subtitle1" fontWeight="medium">
+                              <Typography
+                                variant="subtitle1"
+                                fontWeight="medium"
+                              >
                                 {keyword.keyword}
                               </Typography>
-                              <Typography variant="body2" color="text.secondary">
+                              <Typography
+                                variant="body2"
+                                color="text.secondary"
+                              >
                                 {keyword.intent}
                               </Typography>
                             </Grid>
                             <Grid item xs={4} sm={2}>
-                              <Typography variant="caption" color="text.secondary">
+                              <Typography
+                                variant="caption"
+                                color="text.secondary"
+                              >
                                 Volume
                               </Typography>
-                              <Typography variant="body2">{keyword.searchVolume}</Typography>
+                              <Typography variant="body2">
+                                {keyword.searchVolume}
+                              </Typography>
                             </Grid>
                             <Grid item xs={4} sm={2}>
-                              <Typography variant="caption" color="text.secondary">
+                              <Typography
+                                variant="caption"
+                                color="text.secondary"
+                              >
                                 Difficulty
                               </Typography>
                               <Chip
@@ -414,7 +469,9 @@ export default function AIContentPage() {
                       bgcolor: 'grey.50'
                     }}
                   >
-                    <SearchIcon sx={{ fontSize: 64, color: 'text.secondary', mb: 2 }} />
+                    <SearchIcon
+                      sx={{ fontSize: 64, color: 'text.secondary', mb: 2 }}
+                    />
                     <Typography variant="h6" color="text.secondary">
                       Keyword suggestions will appear here
                     </Typography>

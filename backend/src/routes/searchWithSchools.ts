@@ -144,8 +144,9 @@ router.post('/with-schools', async (ctx) => {
   } = value
 
   const repliers = ctx.state.container.resolve(RepliersService)
-  const schoolsLookup =
-    ctx.state.container.resolve(SchoolsLookupService) as SchoolsLookupService
+  const schoolsLookup = ctx.state.container.resolve(
+    SchoolsLookupService
+  ) as SchoolsLookupService
 
   // Inflate page size to give us headroom after school filtering.
   // For the user's page N, we fetch the first N inflated pages of unfiltered
@@ -160,7 +161,12 @@ router.post('/with-schools', async (ctx) => {
   delete repliersParams['schoolRating']
   delete repliersParams['schoolLevel']
 
-  debug('searchWithSchools rating=%d level=%s page=%d', schoolRating, schoolLevel, page)
+  debug(
+    'searchWithSchools rating=%d level=%s page=%d',
+    schoolRating,
+    schoolLevel,
+    page
+  )
 
   let listingsResponse
   try {
@@ -171,9 +177,8 @@ router.post('/with-schools', async (ctx) => {
     return
   }
 
-  const rawListings = (listingsResponse.listings as Array<
-    Record<string, unknown>
-  >) || []
+  const rawListings =
+    (listingsResponse.listings as Array<Record<string, unknown>>) || []
 
   // Per-listing school lookup, in parallel.
   const evaluated = await Promise.all(
@@ -201,8 +206,7 @@ router.post('/with-schools', async (ctx) => {
   // Optional sort
   if (sortBy === 'schools') {
     filtered.sort(
-      (a, b) =>
-        ratingFor(b.best, schoolLevel) - ratingFor(a.best, schoolLevel)
+      (a, b) => ratingFor(b.best, schoolLevel) - ratingFor(a.best, schoolLevel)
     )
   }
 

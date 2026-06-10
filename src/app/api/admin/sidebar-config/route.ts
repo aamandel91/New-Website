@@ -1,6 +1,9 @@
 import { NextResponse } from 'next/server'
-import { readFile, writeFile } from 'fs/promises'
 import { join } from 'path'
+
+import { requireAdmin } from '@/utils/adminAuth'
+
+import { readFile, writeFile } from 'fs/promises'
 
 const CONFIG_PATH = join(process.cwd(), 'data', 'sidebar-config.json')
 
@@ -13,7 +16,10 @@ async function readConfig() {
   }
 }
 
-export async function GET() {
+export async function GET(request: Request) {
+  const denied = await requireAdmin(request)
+  if (denied) return denied
+
   const config = await readConfig()
   if (!config) {
     return NextResponse.json({ error: 'Config not found' }, { status: 404 })
@@ -22,11 +28,17 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
+  const denied = await requireAdmin(request)
+  if (denied) return denied
+
   try {
     const body = await request.json()
     await writeFile(CONFIG_PATH, JSON.stringify(body, null, 2), 'utf-8')
     return NextResponse.json({ success: true })
   } catch {
-    return NextResponse.json({ error: 'Failed to save config' }, { status: 500 })
+    return NextResponse.json(
+      { error: 'Failed to save config' },
+      { status: 500 }
+    )
   }
 }

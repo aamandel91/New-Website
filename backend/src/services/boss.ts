@@ -428,8 +428,9 @@ export default class BossService {
       throw new ApiError(
         'Boss API error',
         (e as { response?: { status?: number } })?.response?.status,
-        (e as { response?: { data?: Record<string, string | string[]> } })
-          ?.response?.data
+        (
+          e as { response?: { data?: Record<string, string | string[]> } }
+        )?.response?.data
       )
     }
   }

@@ -55,13 +55,17 @@ export interface PreviewResponse {
 
 class APISeoMetaTemplates extends APIBase {
   async getAll(): Promise<SeoMetaTemplate[]> {
-    const r = await this.fetchJSON<{ templates: SeoMetaTemplate[] }>('/seo-meta-templates')
+    const r = await this.fetchJSON<{ templates: SeoMetaTemplate[] }>(
+      '/seo-meta-templates'
+    )
     return r.templates
   }
 
   async getByPageType(pageType: SeoPageType): Promise<SeoMetaTemplate | null> {
     try {
-      const r = await this.fetchJSON<{ template: SeoMetaTemplate }>(`/seo-meta-templates/page-type/${pageType}`)
+      const r = await this.fetchJSON<{ template: SeoMetaTemplate }>(
+        `/seo-meta-templates/page-type/${pageType}`
+      )
       return r.template
     } catch {
       return null
@@ -74,22 +78,32 @@ class APISeoMetaTemplates extends APIBase {
     descriptionTemplate: string
     enabled?: boolean
   }): Promise<SeoMetaTemplate> {
-    const r = await this.fetchJSON<{ template: SeoMetaTemplate }>('/seo-meta-templates', {
-      method: 'POST',
-      body: JSON.stringify(input)
-    })
+    const r = await this.fetchJSON<{ template: SeoMetaTemplate }>(
+      '/seo-meta-templates',
+      {
+        method: 'POST',
+        body: JSON.stringify(input)
+      }
+    )
     return r.template
   }
 
   async resetToDefault(pageType: SeoPageType): Promise<SeoMetaTemplate> {
-    const r = await this.fetchJSON<{ template: SeoMetaTemplate }>(`/seo-meta-templates/${pageType}`, {
-      method: 'DELETE'
-    })
+    const r = await this.fetchJSON<{ template: SeoMetaTemplate }>(
+      `/seo-meta-templates/${pageType}`,
+      {
+        method: 'DELETE'
+      }
+    )
     return r.template
   }
 
-  async previewSaved(pageType: SeoPageType): Promise<PreviewResponse['preview']> {
-    const r = await this.fetchJSON<PreviewResponse>(`/seo-meta-templates/preview/${pageType}`)
+  async previewSaved(
+    pageType: SeoPageType
+  ): Promise<PreviewResponse['preview']> {
+    const r = await this.fetchJSON<PreviewResponse>(
+      `/seo-meta-templates/preview/${pageType}`
+    )
     return r.preview
   }
 
@@ -98,10 +112,13 @@ class APISeoMetaTemplates extends APIBase {
     titleTemplate: string,
     descriptionTemplate: string
   ): Promise<PreviewResponse['preview']> {
-    const r = await this.fetchJSON<PreviewResponse>(`/seo-meta-templates/preview/${pageType}`, {
-      method: 'POST',
-      body: JSON.stringify({ titleTemplate, descriptionTemplate })
-    })
+    const r = await this.fetchJSON<PreviewResponse>(
+      `/seo-meta-templates/preview/${pageType}`,
+      {
+        method: 'POST',
+        body: JSON.stringify({ titleTemplate, descriptionTemplate })
+      }
+    )
     return r.preview
   }
 }

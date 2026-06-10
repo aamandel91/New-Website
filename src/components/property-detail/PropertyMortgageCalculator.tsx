@@ -1,17 +1,18 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
+
 import {
   Box,
+  Button,
+  Divider,
+  Grid,
+  InputAdornment,
   Paper,
-  Typography,
-  TextField,
   Slider,
   Stack,
-  Divider,
-  InputAdornment,
-  Grid,
-  Button,
+  TextField,
+  Typography
 } from '@mui/material'
 
 interface PropertyMortgageCalculatorProps {
@@ -35,7 +36,15 @@ const DonutChart: React.FC<{
   let cumulativeOffset = 0
 
   return (
-    <Box sx={{ display: 'flex', alignItems: 'center', gap: 3, flexWrap: 'wrap', justifyContent: 'center' }}>
+    <Box
+      sx={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: 3,
+        flexWrap: 'wrap',
+        justifyContent: 'center'
+      }}
+    >
       <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
         {segments
           .filter((s) => s.value > 0)
@@ -71,7 +80,7 @@ const DonutChart: React.FC<{
                   height: 12,
                   borderRadius: '50%',
                   bgcolor: segment.color,
-                  flexShrink: 0,
+                  flexShrink: 0
                 }}
               />
               <Typography variant="caption" color="text.secondary">
@@ -88,12 +97,14 @@ const PropertyMortgageCalculator: React.FC<PropertyMortgageCalculatorProps> = ({
   price,
   defaultInterestRate = 7.0,
   propertyTaxes = 0,
-  hoaMonthly = 0,
+  hoaMonthly = 0
 }) => {
   const [downPaymentPercent, setDownPaymentPercent] = useState(20)
   const [interestRate, setInterestRate] = useState(defaultInterestRate)
   const [loanTerm, setLoanTerm] = useState(30)
-  const [annualInsurance, setAnnualInsurance] = useState(Math.round(price * 0.005))
+  const [annualInsurance, setAnnualInsurance] = useState(
+    Math.round(price * 0.005)
+  )
   const [annualTaxes, setAnnualTaxes] = useState(propertyTaxes)
   const [monthlyHOA, setMonthlyHOA] = useState(hoaMonthly)
 
@@ -119,9 +130,9 @@ const PropertyMortgageCalculator: React.FC<PropertyMortgageCalculatorProps> = ({
   // Monthly principal & interest payment formula
   const monthlyPI =
     monthlyInterestRate > 0
-      ? loanAmount *
-        (monthlyInterestRate *
-          Math.pow(1 + monthlyInterestRate, numberOfPayments)) /
+      ? (loanAmount *
+          (monthlyInterestRate *
+            Math.pow(1 + monthlyInterestRate, numberOfPayments))) /
         (Math.pow(1 + monthlyInterestRate, numberOfPayments) - 1)
       : loanAmount / numberOfPayments
 
@@ -130,7 +141,8 @@ const PropertyMortgageCalculator: React.FC<PropertyMortgageCalculatorProps> = ({
   const monthlyInsurance = annualInsurance / 12
 
   // Total monthly payment
-  const totalMonthlyPayment = monthlyPI + monthlyPropertyTax + monthlyInsurance + monthlyHOA
+  const totalMonthlyPayment =
+    monthlyPI + monthlyPropertyTax + monthlyInsurance + monthlyHOA
 
   const needsPMI = downPaymentPercent < 20
 
@@ -140,15 +152,20 @@ const PropertyMortgageCalculator: React.FC<PropertyMortgageCalculatorProps> = ({
       style: 'currency',
       currency: 'USD',
       minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
+      maximumFractionDigits: 0
     }).format(value)
   }
 
-  const handleDownPaymentChange = (_event: Event, newValue: number | number[]) => {
+  const handleDownPaymentChange = (
+    _event: Event,
+    newValue: number | number[]
+  ) => {
     setDownPaymentPercent(newValue as number)
   }
 
-  const handleInterestRateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInterestRateChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const value = parseFloat(event.target.value)
     if (!isNaN(value) && value >= 0 && value <= 20) {
       setInterestRate(value)
@@ -164,11 +181,14 @@ const PropertyMortgageCalculator: React.FC<PropertyMortgageCalculatorProps> = ({
     { label: 'Principal & Interest', value: monthlyPI, color: '#1976d2' },
     { label: 'Property Taxes', value: monthlyPropertyTax, color: '#2e7d32' },
     { label: 'Home Insurance', value: monthlyInsurance, color: '#ed6c02' },
-    { label: 'HOA', value: monthlyHOA, color: '#9c27b0' },
+    { label: 'HOA', value: monthlyHOA, color: '#9c27b0' }
   ]
 
   return (
-    <Paper elevation={0} sx={{ p: 3, border: '1px solid', borderColor: 'divider' }}>
+    <Paper
+      elevation={0}
+      sx={{ p: 3, border: '1px solid', borderColor: 'divider' }}
+    >
       <Typography variant="h5" fontWeight="bold" gutterBottom>
         Mortgage Calculator
       </Typography>
@@ -190,7 +210,12 @@ const PropertyMortgageCalculator: React.FC<PropertyMortgageCalculatorProps> = ({
 
       {/* Down Payment Slider */}
       <Box sx={{ mb: 4 }}>
-        <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 1 }}>
+        <Stack
+          direction="row"
+          justifyContent="space-between"
+          alignItems="center"
+          sx={{ mb: 1 }}
+        >
           <Typography variant="body2" fontWeight="medium">
             Down Payment
           </Typography>
@@ -211,7 +236,7 @@ const PropertyMortgageCalculator: React.FC<PropertyMortgageCalculatorProps> = ({
           sx={{
             '& .MuiSlider-thumb': { backgroundColor: 'primary.main' },
             '& .MuiSlider-track': { backgroundColor: 'primary.main' },
-            '& .MuiSlider-rail': { opacity: 0.3 },
+            '& .MuiSlider-rail': { opacity: 0.3 }
           }}
         />
       </Box>
@@ -227,7 +252,7 @@ const PropertyMortgageCalculator: React.FC<PropertyMortgageCalculatorProps> = ({
           onChange={handleInterestRateChange}
           fullWidth
           InputProps={{
-            endAdornment: <InputAdornment position="end">%</InputAdornment>,
+            endAdornment: <InputAdornment position="end">%</InputAdornment>
           }}
           inputProps={{ step: 0.125, min: 0, max: 20 }}
         />
@@ -235,7 +260,12 @@ const PropertyMortgageCalculator: React.FC<PropertyMortgageCalculatorProps> = ({
 
       {/* Loan Term Slider */}
       <Box sx={{ mb: 4 }}>
-        <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 1 }}>
+        <Stack
+          direction="row"
+          justifyContent="space-between"
+          alignItems="center"
+          sx={{ mb: 1 }}
+        >
           <Typography variant="body2" fontWeight="medium">
             Loan Term
           </Typography>
@@ -254,14 +284,14 @@ const PropertyMortgageCalculator: React.FC<PropertyMortgageCalculatorProps> = ({
             { value: 10, label: '10' },
             { value: 15, label: '15' },
             { value: 20, label: '20' },
-            { value: 30, label: '30' },
+            { value: 30, label: '30' }
           ]}
           min={10}
           max={30}
           sx={{
             '& .MuiSlider-thumb': { backgroundColor: 'primary.main' },
             '& .MuiSlider-track': { backgroundColor: 'primary.main' },
-            '& .MuiSlider-rail': { opacity: 0.3 },
+            '& .MuiSlider-rail': { opacity: 0.3 }
           }}
         />
       </Box>
@@ -280,7 +310,7 @@ const PropertyMortgageCalculator: React.FC<PropertyMortgageCalculatorProps> = ({
           }}
           fullWidth
           InputProps={{
-            startAdornment: <InputAdornment position="start">$</InputAdornment>,
+            startAdornment: <InputAdornment position="start">$</InputAdornment>
           }}
           inputProps={{ step: 100, min: 0 }}
         />
@@ -300,7 +330,7 @@ const PropertyMortgageCalculator: React.FC<PropertyMortgageCalculatorProps> = ({
           }}
           fullWidth
           InputProps={{
-            startAdornment: <InputAdornment position="start">$</InputAdornment>,
+            startAdornment: <InputAdornment position="start">$</InputAdornment>
           }}
           inputProps={{ step: 100, min: 0 }}
         />
@@ -320,7 +350,7 @@ const PropertyMortgageCalculator: React.FC<PropertyMortgageCalculatorProps> = ({
           }}
           fullWidth
           InputProps={{
-            startAdornment: <InputAdornment position="start">$</InputAdornment>,
+            startAdornment: <InputAdornment position="start">$</InputAdornment>
           }}
           inputProps={{ step: 50, min: 0 }}
         />
@@ -402,7 +432,11 @@ const PropertyMortgageCalculator: React.FC<PropertyMortgageCalculatorProps> = ({
         <Divider sx={{ my: 2 }} />
 
         {/* Total */}
-        <Stack direction="row" justifyContent="space-between" alignItems="center">
+        <Stack
+          direction="row"
+          justifyContent="space-between"
+          alignItems="center"
+        >
           <Typography variant="h6" fontWeight="bold">
             Total Monthly Payment
           </Typography>
@@ -421,12 +455,13 @@ const PropertyMortgageCalculator: React.FC<PropertyMortgageCalculatorProps> = ({
             bgcolor: 'warning.light',
             borderRadius: 1,
             border: '1px solid',
-            borderColor: 'warning.main',
+            borderColor: 'warning.main'
           }}
         >
           <Typography variant="caption" color="text.primary">
-            With less than 20% down, you may be required to pay Private Mortgage Insurance (PMI),
-            which could add $50–$300+/mo depending on your loan amount and credit score.
+            With less than 20% down, you may be required to pay Private Mortgage
+            Insurance (PMI), which could add $50–$300+/mo depending on your loan
+            amount and credit score.
           </Typography>
         </Box>
       )}
@@ -438,12 +473,13 @@ const PropertyMortgageCalculator: React.FC<PropertyMortgageCalculatorProps> = ({
           bgcolor: 'info.light',
           borderRadius: 1,
           border: '1px solid',
-          borderColor: 'info.main',
+          borderColor: 'info.main'
         }}
       >
         <Typography variant="caption" color="text.secondary">
-          This calculator provides an estimate only. Your actual payment may vary based on
-          additional fees and lender requirements. Contact us for a detailed quote.
+          This calculator provides an estimate only. Your actual payment may
+          vary based on additional fees and lender requirements. Contact us for
+          a detailed quote.
         </Typography>
       </Box>
 

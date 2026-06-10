@@ -1,24 +1,25 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
+import Link from 'next/link'
+
 import {
+  Alert,
   Box,
-  TextField,
   Button,
-  Typography,
-  Paper,
+  Checkbox,
+  CircularProgress,
   FormControl,
   FormControlLabel,
-  Checkbox,
-  Select,
-  MenuItem,
   InputLabel,
-  Alert,
-  CircularProgress,
-  Stack,
   Link as MuiLink,
+  MenuItem,
+  Paper,
+  Select,
+  Stack,
+  TextField,
+  Typography
 } from '@mui/material'
-import Link from 'next/link'
 
 interface OpenHouseFormProps {
   propertyMls: string
@@ -41,7 +42,7 @@ interface FormData {
 const OpenHouseForm: React.FC<OpenHouseFormProps> = ({
   propertyMls,
   propertyAddress,
-  autoReloadSeconds = 30,
+  autoReloadSeconds = 30
 }) => {
   const [formData, setFormData] = useState<FormData>({
     firstName: '',
@@ -52,7 +53,7 @@ const OpenHouseForm: React.FC<OpenHouseFormProps> = ({
     hasAgent: false,
     agentName: '',
     wantsMarketUpdates: true,
-    wantsPropertyUpdates: true,
+    wantsPropertyUpdates: true
   })
 
   const [loading, setLoading] = useState(false)
@@ -100,12 +101,17 @@ const OpenHouseForm: React.FC<OpenHouseFormProps> = ({
     }
   }, [countdown])
 
-  const handleChange = (field: keyof FormData) => (
-    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | any
-  ) => {
-    const value = event.target.type === 'checkbox' ? event.target.checked : event.target.value
-    setFormData((prev) => ({ ...prev, [field]: value }))
-  }
+  const handleChange =
+    (field: keyof FormData) =>
+    (
+      event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | any
+    ) => {
+      const value =
+        event.target.type === 'checkbox'
+          ? event.target.checked
+          : event.target.value
+      setFormData((prev) => ({ ...prev, [field]: value }))
+    }
 
   const validateForm = (): boolean => {
     if (!formData.firstName.trim()) {
@@ -135,7 +141,7 @@ const OpenHouseForm: React.FC<OpenHouseFormProps> = ({
       return false
     }
     if (formData.hasAgent && !formData.agentName.trim()) {
-      setError('Please enter your agent\'s name')
+      setError("Please enter your agent's name")
       return false
     }
     return true
@@ -149,7 +155,9 @@ const OpenHouseForm: React.FC<OpenHouseFormProps> = ({
     }
 
     try {
-      const token = await window.grecaptcha.execute(recaptchaKey, { action: 'openhouse_signin' })
+      const token = await window.grecaptcha.execute(recaptchaKey, {
+        action: 'openhouse_signin'
+      })
       return token
     } catch (err) {
       console.error('reCAPTCHA error:', err)
@@ -175,26 +183,32 @@ const OpenHouseForm: React.FC<OpenHouseFormProps> = ({
       const response = await fetch('/api/open-house/sign-in', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({
           ...formData,
           propertyMls,
           propertyAddress,
           recaptchaToken,
-          timestamp: new Date().toISOString(),
-        }),
+          timestamp: new Date().toISOString()
+        })
       })
 
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({ message: 'Failed to submit form' }))
+        const errorData = await response
+          .json()
+          .catch(() => ({ message: 'Failed to submit form' }))
         throw new Error(errorData.message || 'Failed to submit form')
       }
 
       setSuccess(true)
       setLoading(false)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred. Please try again.')
+      setError(
+        err instanceof Error
+          ? err.message
+          : 'An error occurred. Please try again.'
+      )
       setLoading(false)
     }
   }
@@ -207,7 +221,8 @@ const OpenHouseForm: React.FC<OpenHouseFormProps> = ({
             Thank you for signing in!
           </Typography>
           <Typography variant="body2">
-            We've received your information and one of our agents will be in touch with you shortly.
+            We've received your information and one of our agents will be in
+            touch with you shortly.
           </Typography>
         </Alert>
 
@@ -235,7 +250,8 @@ const OpenHouseForm: React.FC<OpenHouseFormProps> = ({
       </Typography>
 
       <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-        Please provide your information to receive updates about this property and the local market.
+        Please provide your information to receive updates about this property
+        and the local market.
       </Typography>
 
       <Box component="form" onSubmit={handleSubmit} noValidate>
@@ -352,8 +368,9 @@ const OpenHouseForm: React.FC<OpenHouseFormProps> = ({
 
           {/* Consent Language */}
           <Typography variant="caption" color="text.secondary">
-            By signing in, you agree to receive calls, texts, and emails about your real estate
-            interests. Message and data rates may apply. You can opt out at any time. View our{' '}
+            By signing in, you agree to receive calls, texts, and emails about
+            your real estate interests. Message and data rates may apply. You
+            can opt out at any time. View our{' '}
             <Link href="/terms" passHref legacyBehavior>
               <MuiLink>Terms of Service</MuiLink>
             </Link>{' '}
@@ -391,7 +408,11 @@ const OpenHouseForm: React.FC<OpenHouseFormProps> = ({
           </Button>
 
           {/* reCAPTCHA Badge Notice */}
-          <Typography variant="caption" color="text.secondary" sx={{ textAlign: 'center' }}>
+          <Typography
+            variant="caption"
+            color="text.secondary"
+            sx={{ textAlign: 'center' }}
+          >
             This site is protected by reCAPTCHA and the Google{' '}
             <MuiLink
               href="https://policies.google.com/privacy"

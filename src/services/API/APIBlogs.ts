@@ -1,5 +1,6 @@
+import type { AISuggestions, Blog, BlogSuggestedTags } from '@/types/blog'
+
 import APIBase from './APIBase'
-import type { Blog, AISuggestions, BlogSuggestedTags } from '@/types/blog'
 
 interface BlogFilters {
   status?: 'draft' | 'published'

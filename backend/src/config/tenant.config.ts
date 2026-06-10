@@ -59,16 +59,16 @@ export const tenant: BackendTenantConfig = {
     brokerageLuxury: 'eXp Luxury',
     domain: 'floridahomefinder.com',
     domainDisplay: 'FloridaHomeFinder.com',
-    siteUrl: 'https://floridahomefinder.com',
+    siteUrl: 'https://floridahomefinder.com'
   },
   contact: {
     notificationsEmail: 'notifications@mandelteam.com',
     inboundReplyDomain: 'reply.floridahomefinder.com',
-    fallbackAgentEmail: 'andy@mandelteam.com',
+    fallbackAgentEmail: 'andy@mandelteam.com'
   },
   repliers: {
     agentId: parseInt(process.env['REPLIERS_AGENT_ID'] || '0'),
     baseUrl: process.env['REPLIERS_BASE_URL'] || 'https://api.repliers.io',
-    csrUrl: process.env['REPLIERS_CSR_URL'] || 'https://csr-api.repliers.io',
-  },
+    csrUrl: process.env['REPLIERS_CSR_URL'] || 'https://csr-api.repliers.io'
+  }
 }

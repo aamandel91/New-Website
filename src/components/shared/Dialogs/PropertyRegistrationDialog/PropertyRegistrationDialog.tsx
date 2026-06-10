@@ -1,98 +1,100 @@
 'use client'
 
-import { useCallback, useState } from 'react';
+import { useCallback, useState } from 'react'
+
+import CloseIcon from '@mui/icons-material/Close'
 import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Button,
-  Stack,
-  Typography,
-  IconButton,
   Box,
-} from '@mui/material';
-import CloseIcon from '@mui/icons-material/Close';
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  IconButton,
+  Stack,
+  Typography
+} from '@mui/material'
 
-import type { SignUpRequest } from 'services/API';
-import APIAuth from 'services/API/APIAuth';
-import { useUser } from '@/providers/UserProvider';
-import { getTrafficSource } from '@/utils/trafficSource';
+import { useUser } from '@/providers/UserProvider'
+import { getTrafficSource } from '@/utils/trafficSource'
 
-import SignupFormStep from '../AuthDialog/components/SignupFormStep';
-import ThirdPartyLoginForm from '../AuthDialog/components/ThirdPartyLoginForm';
-import OrDivider from '../AuthDialog/components/OrDivider';
-import TermsAndPrivacy from '../AuthDialog/components/TermsAndPrivacy';
+import type { SignUpRequest } from 'services/API'
+import APIAuth from 'services/API/APIAuth'
+
+import OrDivider from '../AuthDialog/components/OrDivider'
+import SignupFormStep from '../AuthDialog/components/SignupFormStep'
+import TermsAndPrivacy from '../AuthDialog/components/TermsAndPrivacy'
+import ThirdPartyLoginForm from '../AuthDialog/components/ThirdPartyLoginForm'
 
 interface PropertyRegistrationDialogProps {
-  open: boolean;
-  onClose: () => void;
-  isRequired?: boolean; // true for PPC, false for organic
-  propertyAddress?: string;
+  open: boolean
+  onClose: () => void
+  isRequired?: boolean // true for PPC, false for organic
+  propertyAddress?: string
 }
 
 const PropertyRegistrationDialog = ({
   open,
   onClose,
   isRequired = false,
-  propertyAddress,
+  propertyAddress
 }: PropertyRegistrationDialogProps) => {
-  const [loading, setLoading] = useState(false);
-  const [step, setStep] = useState<'form' | 'otp'>('form');
-  const { update } = useUser();
+  const [loading, setLoading] = useState(false)
+  const [step, setStep] = useState<'form' | 'otp'>('form')
+  const { update } = useUser()
 
   const handleClose = () => {
     // Only allow closing if registration is not required
     if (!isRequired) {
-      onClose();
+      onClose()
     }
-  };
+  }
 
-  const handleSignup = useCallback(
-    async (data: SignUpRequest) => {
-      setLoading(true);
-      try {
-        // Get traffic source data
-        const trafficSource = getTrafficSource();
+  const handleSignup = useCallback(async (data: SignUpRequest) => {
+    setLoading(true)
+    try {
+      // Get traffic source data
+      const trafficSource = getTrafficSource()
 
-        // Prepare signup request with traffic source data
-        const signupData: SignUpRequest = {
-          ...data,
-          referer: trafficSource?.referer,
-          utmSource: trafficSource?.utmSource,
-          utmMedium: trafficSource?.utmMedium,
-          utmCampaign: trafficSource?.utmCampaign,
-          utmTerm: trafficSource?.utmTerm,
-          utmContent: trafficSource?.utmContent,
-          landingPage: trafficSource?.landingPage,
-        };
-
-        await APIAuth.signup(signupData);
-        setStep('otp');
-      } catch (error) {
-        console.error('Signup failed:', error);
-      } finally {
-        setLoading(false);
+      // Prepare signup request with traffic source data
+      const signupData: SignUpRequest = {
+        ...data,
+        referer: trafficSource?.referer,
+        utmSource: trafficSource?.utmSource,
+        utmMedium: trafficSource?.utmMedium,
+        utmCampaign: trafficSource?.utmCampaign,
+        utmTerm: trafficSource?.utmTerm,
+        utmContent: trafficSource?.utmContent,
+        landingPage: trafficSource?.landingPage
       }
-    },
-    []
-  );
+
+      await APIAuth.signup(signupData)
+      setStep('otp')
+    } catch (error) {
+      console.error('Signup failed:', error)
+    } finally {
+      setLoading(false)
+    }
+  }, [])
 
   const handleGoogleOAuth = async () => {
     try {
-      const trafficSource = getTrafficSource();
+      const trafficSource = getTrafficSource()
 
       // Store traffic source in sessionStorage for OAuth callback
       if (trafficSource) {
-        sessionStorage.setItem('oauth_traffic_source', JSON.stringify(trafficSource));
+        sessionStorage.setItem(
+          'oauth_traffic_source',
+          JSON.stringify(trafficSource)
+        )
       }
 
-      const { url } = await APIAuth.auth('google');
-      window.location.href = url;
+      const { url } = await APIAuth.auth('google')
+      window.location.href = url
     } catch (error) {
-      console.error('Google OAuth failed:', error);
+      console.error('Google OAuth failed:', error)
     }
-  };
+  }
 
   return (
     <Dialog
@@ -103,9 +105,15 @@ const PropertyRegistrationDialog = ({
       disableEscapeKeyDown={isRequired}
     >
       <DialogTitle>
-        <Stack direction="row" justifyContent="space-between" alignItems="center">
+        <Stack
+          direction="row"
+          justifyContent="space-between"
+          alignItems="center"
+        >
           <Typography variant="h5" component="div">
-            {isRequired ? 'Create an Account to Continue' : 'Save This Property'}
+            {isRequired
+              ? 'Create an Account to Continue'
+              : 'Save This Property'}
           </Typography>
           {!isRequired && (
             <IconButton edge="end" onClick={handleClose} aria-label="close">
@@ -146,9 +154,13 @@ const PropertyRegistrationDialog = ({
               <Typography variant="h6" textAlign="center">
                 Check your email
               </Typography>
-              <Typography variant="body2" color="text.secondary" textAlign="center">
-                We've sent you a verification link. Click the link in the email to complete your
-                registration.
+              <Typography
+                variant="body2"
+                color="text.secondary"
+                textAlign="center"
+              >
+                We've sent you a verification link. Click the link in the email
+                to complete your registration.
               </Typography>
               <Button
                 variant="text"
@@ -170,7 +182,7 @@ const PropertyRegistrationDialog = ({
         </DialogActions>
       )}
     </Dialog>
-  );
-};
+  )
+}
 
-export default PropertyRegistrationDialog;
+export default PropertyRegistrationDialog

@@ -9,7 +9,7 @@ export async function fetchSimilarProperties(property: any, limit = 6) {
       status: 'A',
       minPrice: Math.round(price * 0.7),
       maxPrice: Math.round(price * 1.3),
-      resultsPerPage: limit + 1, // fetch one extra in case current listing is included
+      resultsPerPage: limit + 1 // fetch one extra in case current listing is included
     })
 
     if (!result?.listings) return []
@@ -24,7 +24,11 @@ export async function fetchSimilarProperties(property: any, limit = 6) {
   }
 }
 
-export async function fetchMarketStats(city: string, state: string, boardId = 110) {
+export async function fetchMarketStats(
+  city: string,
+  state: string,
+  boardId = 110
+) {
   try {
     const result = await APISearchCSR.searchListings({
       boardId,
@@ -32,7 +36,7 @@ export async function fetchMarketStats(city: string, state: string, boardId = 11
       status: 'A',
       listings: false,
       statistics: 'listPrice',
-      resultsPerPage: 1,
+      resultsPerPage: 1
     })
 
     if (!result?.statistics) return null
@@ -43,7 +47,7 @@ export async function fetchMarketStats(city: string, state: string, boardId = 11
       totalActiveListings: result.count,
       pricePerSqft: null,
       averageDaysOnMarket: result.statistics?.daysOnMarket?.avg ?? null,
-      inventoryMonths: null,
+      inventoryMonths: null
     }
   } catch (error) {
     console.error('Error fetching market stats:', error)

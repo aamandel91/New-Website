@@ -1,10 +1,14 @@
 import React from 'react'
+
 import { Box, Grid2 as Grid, Typography } from '@mui/material'
 
 const NAVY = '#0F1621'
 
 function slugify(text: string): string {
-  return text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
+  return text
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '')
 }
 
 const searches = [
@@ -17,7 +21,7 @@ const searches = [
   { label: 'No HOA Homes', slug: 'no-hoa' },
   { label: 'Foreclosure Homes', slug: 'foreclosures' },
   { label: 'Pet Friendly Condos', slug: 'pet-friendly-condos' },
-  { label: 'Price Reduced Homes', param: 'sortBy=priceReducedDate' },
+  { label: 'Price Reduced Homes', param: 'sortBy=priceReducedDate' }
 ]
 
 interface PopularSearchesProps {
@@ -29,7 +33,11 @@ export default function PopularSearches({ city }: PopularSearchesProps) {
 
   return (
     <Box>
-      <Typography variant="subtitle1" fontWeight={700} sx={{ mb: 1.5, color: NAVY }}>
+      <Typography
+        variant="subtitle1"
+        fontWeight={700}
+        sx={{ mb: 1.5, color: NAVY }}
+      >
         Popular Searches
       </Typography>
       <Grid container spacing={0.5}>
@@ -49,7 +57,7 @@ export default function PopularSearches({ city }: PopularSearchesProps) {
                   textDecoration: 'none',
                   display: 'block',
                   py: 0.5,
-                  '&:hover': { textDecoration: 'underline' },
+                  '&:hover': { textDecoration: 'underline' }
                 }}
               >
                 {s.label}

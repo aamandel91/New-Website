@@ -1,19 +1,21 @@
 'use client'
 
-import React, { useState, useEffect, useCallback } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
+
+import NotificationsActiveIcon from '@mui/icons-material/NotificationsActive'
 import {
   Box,
+  Button,
   Card,
   CardContent,
-  Typography,
+  CircularProgress,
   Switch,
   TextField,
-  Button,
-  CircularProgress,
+  Typography
 } from '@mui/material'
-import NotificationsActiveIcon from '@mui/icons-material/NotificationsActive'
-import { ssIdentify } from '@/utils/suresendTracking'
+
 import useSnackbar from '@/hooks/useSnackbar'
+import { ssIdentify } from '@/utils/suresendTracking'
 
 interface PropertyNotificationsProps {
   propertyAddress: string
@@ -22,7 +24,11 @@ interface PropertyNotificationsProps {
   neighborhood?: string
 }
 
-type ToggleKey = 'property_watcher' | 'new_listing' | 'sold_alert' | 'expired_alert'
+type ToggleKey =
+  | 'property_watcher'
+  | 'new_listing'
+  | 'sold_alert'
+  | 'expired_alert'
 
 const STORAGE_KEY = 'property_notifications'
 
@@ -49,7 +55,7 @@ const PropertyNotifications: React.FC<PropertyNotificationsProps> = ({
   propertyAddress,
   mlsNumber,
   city,
-  neighborhood,
+  neighborhood
 }) => {
   const { showSnackbar } = useSnackbar()
   const locationLabel = neighborhood || city
@@ -59,7 +65,7 @@ const PropertyNotifications: React.FC<PropertyNotificationsProps> = ({
     property_watcher: false,
     new_listing: false,
     sold_alert: false,
-    expired_alert: false,
+    expired_alert: false
   })
   const [activeToggle, setActiveToggle] = useState<ToggleKey | null>(null)
   const [email, setEmail] = useState('')
@@ -87,7 +93,7 @@ const PropertyNotifications: React.FC<PropertyNotificationsProps> = ({
         setActiveToggle(null)
       }
     },
-    [toggles, storageKey],
+    [toggles, storageKey]
   )
 
   const getTagForToggle = (key: ToggleKey): string => {
@@ -120,8 +126,8 @@ const PropertyNotifications: React.FC<PropertyNotificationsProps> = ({
           propertyAddress,
           mlsNumber,
           source: `notification_${activeToggle}`,
-          tags: [tag],
-        }),
+          tags: [tag]
+        })
       })
 
       ssIdentify({ email })
@@ -131,7 +137,11 @@ const PropertyNotifications: React.FC<PropertyNotificationsProps> = ({
       setStorageState(storageKey, updated)
       setActiveToggle(null)
       setEmail('')
-      showSnackbar('You\'re subscribed! We\'ll notify you of updates.', 'success', 3000)
+      showSnackbar(
+        "You're subscribed! We'll notify you of updates.",
+        'success',
+        3000
+      )
     } catch {
       showSnackbar('Something went wrong. Please try again.', 'error', 3000)
     } finally {
@@ -143,7 +153,7 @@ const PropertyNotifications: React.FC<PropertyNotificationsProps> = ({
     { key: 'property_watcher', label: 'Watch This Property' },
     { key: 'new_listing', label: `New Listings in ${locationLabel}` },
     { key: 'sold_alert', label: `Sold Listings in ${locationLabel}` },
-    { key: 'expired_alert', label: `Expired Listings in ${locationLabel}` },
+    { key: 'expired_alert', label: `Expired Listings in ${locationLabel}` }
   ]
 
   return (
@@ -163,7 +173,7 @@ const PropertyNotifications: React.FC<PropertyNotificationsProps> = ({
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'space-between',
-                py: 0.75,
+                py: 0.75
               }}
             >
               <Typography variant="body2" sx={{ pr: 1 }}>
@@ -183,7 +193,7 @@ const PropertyNotifications: React.FC<PropertyNotificationsProps> = ({
                   display: 'flex',
                   gap: 1,
                   pb: 1.5,
-                  alignItems: 'flex-start',
+                  alignItems: 'flex-start'
                 }}
               >
                 <TextField

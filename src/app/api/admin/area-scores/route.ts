@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server'
 
-import { targetCounties, subTypes } from '@configs/page-generation'
+import { subTypes, targetCounties } from '@configs/page-generation'
+import { requireAdmin } from '@/utils/adminAuth'
+
 import { fetchCountyCities, fetchSubTypeCount } from 'services/pageGeneration'
 import { scoreAreaPage } from 'utils/areaPageScoring'
 
@@ -14,7 +16,10 @@ export interface AreaScoreEntry {
   indexDirective: string
 }
 
-export async function GET() {
+export async function GET(request: Request) {
+  const denied = await requireAdmin(request)
+  if (denied) return denied
+
   try {
     const entries: AreaScoreEntry[] = []
 
@@ -24,7 +29,10 @@ export async function GET() {
       for (const city of cities) {
         const citySlug = city.name.toLowerCase().replace(/\s+/g, '-')
         const cityCount = city.activeCount ?? 0
-        const cityScore = scoreAreaPage({ pageType: 'city', listingCount: cityCount })
+        const cityScore = scoreAreaPage({
+          pageType: 'city',
+          listingCount: cityCount
+        })
 
         entries.push({
           url: `/${citySlug}`,
@@ -32,13 +40,17 @@ export async function GET() {
           city: city.name,
           listingCount: cityCount,
           score: cityScore.score,
-          indexDirective: cityScore.indexDirective,
+          indexDirective: cityScore.indexDirective
         })
 
         // Sample first 5 sub-types per city to keep response fast
         for (const st of subTypes.slice(0, 5)) {
           const stCount = await fetchSubTypeCount(city.name, st)
-          const stScore = scoreAreaPage({ pageType: 'subType', listingCount: stCount, subTypeSlug: st.slug })
+          const stScore = scoreAreaPage({
+            pageType: 'subType',
+            listingCount: stCount,
+            subTypeSlug: st.slug
+          })
 
           entries.push({
             url: `/${citySlug}/${st.slug}`,
@@ -47,7 +59,7 @@ export async function GET() {
             subType: st.label,
             listingCount: stCount,
             score: stScore.score,
-            indexDirective: stScore.indexDirective,
+            indexDirective: stScore.indexDirective
           })
         }
       }

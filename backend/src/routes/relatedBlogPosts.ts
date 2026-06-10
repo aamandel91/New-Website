@@ -1,5 +1,9 @@
 import Router from '@koa/router'
-import { RelatedBlogPostsService, type RelatedPageType, type RelatedFetchOpts } from '../services/relatedBlogPosts.js'
+import {
+  RelatedBlogPostsService,
+  type RelatedPageType,
+  type RelatedFetchOpts
+} from '../services/relatedBlogPosts.js'
 
 const router = new Router({ prefix: '/related-blog-posts' })
 
@@ -9,11 +13,12 @@ const VALID_PAGE_TYPES: RelatedPageType[] = [
   'neighborhood',
   'zip',
   'property_type',
-  'search',
+  'search'
 ]
 
 function pickStr(value: unknown): string | undefined {
-  if (Array.isArray(value)) return typeof value[0] === 'string' ? value[0] : undefined
+  if (Array.isArray(value))
+    return typeof value[0] === 'string' ? value[0] : undefined
   if (typeof value === 'string' && value.length > 0) return value
   return undefined
 }
@@ -23,7 +28,7 @@ function pickStr(value: unknown): string | undefined {
  * Public read. Query params: pageType, city, citySlug, subtype, neighborhood,
  * zip, county, propertyType, limit.
  */
-router.get('/', async ctx => {
+router.get('/', async (ctx) => {
   const query = ctx.query as Record<string, unknown>
   const pageType = pickStr(query['pageType']) as RelatedPageType | undefined
 
@@ -34,11 +39,13 @@ router.get('/', async ctx => {
   }
 
   const limitRaw = pickStr(query['limit'])
-  const limit = limitRaw ? Math.max(1, Math.min(10, parseInt(limitRaw, 10) || 5)) : 5
+  const limit = limitRaw
+    ? Math.max(1, Math.min(10, parseInt(limitRaw, 10) || 5))
+    : 5
 
   const opts: RelatedFetchOpts = {
     pageType,
-    limit,
+    limit
   }
 
   const city = pickStr(query['city'])

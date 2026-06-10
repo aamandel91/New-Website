@@ -72,7 +72,14 @@ const FeaturedProperties = () => {
       </Typography>
       <Grid container spacing={3}>
         {properties.map((property, index) => (
-          <Grid item xs={12} sm={6} md={4} lg={3} key={`${property.mlsNumber}-${index}`}>
+          <Grid
+            item
+            xs={12}
+            sm={6}
+            md={4}
+            lg={3}
+            key={`${property.mlsNumber}-${index}`}
+          >
             <PropertyCard property={property} openInNewTab={false} />
           </Grid>
         ))}
@@ -87,7 +94,10 @@ const FeaturedProperties = () => {
           <PropertySection title={t('justListed')} properties={featured} />
         )}
         {recentlySold.length > 0 && (
-          <PropertySection title={t('recentlySold')} properties={recentlySold} />
+          <PropertySection
+            title={t('recentlySold')}
+            properties={recentlySold}
+          />
         )}
       </Stack>
     </Container>

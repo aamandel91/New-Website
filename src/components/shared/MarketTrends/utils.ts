@@ -41,7 +41,7 @@ export const fetchMarketTrends = cache(
         lastStatus: 'Sld',
         listings: false,
         statistics: 'avg-soldPrice,med-soldPrice,avg-daysOnMarket,grp-mth',
-        resultsPerPage: 1,
+        resultsPerPage: 1
       })
 
       if (!response) {
@@ -70,18 +70,22 @@ export const fetchMarketTrends = cache(
             medianPrice: priceData?.med || null,
             averagePrice: priceData?.avg || null,
             daysOnMarket: domData?.med || null,
-            listingsCount: priceData?.count || null,
+            listingsCount: priceData?.count || null
           })
         })
       }
 
       // Calculate summary statistics
-      const months = Object.keys(statistics.soldPrice?.mth || {}).sort().reverse()
+      const months = Object.keys(statistics.soldPrice?.mth || {})
+        .sort()
+        .reverse()
       let summary: MarketTrendsSummary | null = null
 
       if (months.length > 0) {
         const currentMonth = statistics.soldPrice?.mth[months[0]]
-        const averageDaysOnMarket = Math.round(statistics.daysOnMarket?.avg || 0)
+        const averageDaysOnMarket = Math.round(
+          statistics.daysOnMarket?.avg || 0
+        )
 
         // Month-over-month change
         let monthOverMonthChange: number | undefined
@@ -125,7 +129,7 @@ export const fetchMarketTrends = cache(
             : undefined,
           averageDaysOnMarket,
           totalActiveListings: count,
-          inventoryMonths: Math.round(inventoryMonths * 10) / 10,
+          inventoryMonths: Math.round(inventoryMonths * 10) / 10
         }
       }
 

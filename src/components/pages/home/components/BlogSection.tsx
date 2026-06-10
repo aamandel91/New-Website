@@ -1,11 +1,14 @@
 'use client'
 
+import React from 'react'
+
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 
 import { Box, Button, Typography } from '@mui/material'
-import type { Blog } from '@/types/blog'
+
 import { tenant } from '@/configs/tenant.config'
+import type { Blog } from '@/types/blog'
 
 const PLACEHOLDER_ARTICLES = [
   {
@@ -14,7 +17,7 @@ const PLACEHOLDER_ARTICLES = [
     author: tenant.brand.leaderName,
     date: 'March 31, 2026',
     slug: '',
-    thumbnail: '',
+    thumbnail: ''
   },
   {
     title: 'Buying a Home with an HOA in Florida (2026)',
@@ -22,7 +25,7 @@ const PLACEHOLDER_ARTICLES = [
     author: tenant.brand.leaderName,
     date: 'March 31, 2026',
     slug: '',
-    thumbnail: '',
+    thumbnail: ''
   },
   {
     title: 'Cost of Living in Cooper City FL (2026)',
@@ -30,8 +33,8 @@ const PLACEHOLDER_ARTICLES = [
     author: tenant.brand.leaderName,
     date: 'March 30, 2026',
     slug: '',
-    thumbnail: '',
-  },
+    thumbnail: ''
+  }
 ]
 
 interface ArticleDisplay {
@@ -52,16 +55,17 @@ function blogToArticle(blog: Blog): ArticleDisplay {
       ? new Date(blog.published_at).toLocaleDateString('en-US', {
           year: 'numeric',
           month: 'long',
-          day: 'numeric',
+          day: 'numeric'
         })
       : '',
     slug: blog.slug,
-    thumbnail: blog.featured_image_url || '',
+    thumbnail: blog.featured_image_url || ''
   }
 }
 
 const BlogSection = () => {
-  const [articles, setArticles] = useState<ArticleDisplay[]>(PLACEHOLDER_ARTICLES)
+  const [articles, setArticles] =
+    useState<ArticleDisplay[]>(PLACEHOLDER_ARTICLES)
 
   useEffect(() => {
     fetch('/api/blogs?limit=3&status=published')
@@ -81,14 +85,16 @@ const BlogSection = () => {
   }, [])
 
   return (
-    <Box sx={{ bgcolor: '#2C2C2C', py: { xs: 6, md: 10 }, px: { xs: 3, md: 6 } }}>
+    <Box
+      sx={{ bgcolor: '#2C2C2C', py: { xs: 6, md: 10 }, px: { xs: 3, md: 6 } }}
+    >
       <Box
         sx={{
           maxWidth: '1200px',
           mx: 'auto',
           display: 'flex',
           flexDirection: { xs: 'column', md: 'row' },
-          gap: { xs: 4, md: 6 },
+          gap: { xs: 4, md: 6 }
         }}
       >
         {/* Left Column */}
@@ -100,23 +106,26 @@ const BlogSection = () => {
               color: '#555',
               lineHeight: 1,
               mb: 3,
-              textTransform: 'uppercase',
+              textTransform: 'uppercase'
             }}
           >
             {tenant.brand.siteName}
           </Typography>
-          <Box sx={{ width: '60px', height: '3px', bgcolor: '#00B5AD', mb: 3 }} />
+          <Box
+            sx={{ width: '60px', height: '3px', bgcolor: '#00B5AD', mb: 3 }}
+          />
           <Typography
             sx={{
               color: 'rgba(255,255,255,0.75)',
               fontSize: '14px',
               lineHeight: 1.8,
-              mb: 4,
+              mb: 4
             }}
           >
-            Catch up on the latest South Florida real estate news, tips, local insights and advice on
-            a variety of home-related topics. Educated buyers and sellers typically make smarter
-            decisions when it comes to real estate. We strive to keep you informed on the latest South
+            Catch up on the latest South Florida real estate news, tips, local
+            insights and advice on a variety of home-related topics. Educated
+            buyers and sellers typically make smarter decisions when it comes to
+            real estate. We strive to keep you informed on the latest South
             Florida real estate news.
           </Typography>
           <Link href="/blog" style={{ textDecoration: 'none' }}>
@@ -131,7 +140,10 @@ const BlogSection = () => {
                 px: 4,
                 py: 1.5,
                 borderRadius: '30px',
-                '&:hover': { borderColor: '#fff', bgcolor: 'rgba(255,255,255,0.1)' },
+                '&:hover': {
+                  borderColor: '#fff',
+                  bgcolor: 'rgba(255,255,255,0.1)'
+                }
               }}
             >
               Read Real Estate Blog
@@ -140,11 +152,16 @@ const BlogSection = () => {
         </Box>
 
         {/* Right Column — Article Cards */}
-        <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 2.5 }}>
+        <Box
+          sx={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 2.5 }}
+        >
           {articles.map((article) => {
             const Wrapper = article.slug
               ? ({ children }: { children: React.ReactNode }) => (
-                  <Link href={`/blog/${article.slug}`} style={{ textDecoration: 'none' }}>
+                  <Link
+                    href={`/blog/${article.slug}`}
+                    style={{ textDecoration: 'none' }}
+                  >
                     {children}
                   </Link>
                 )
@@ -161,7 +178,9 @@ const BlogSection = () => {
                     minHeight: '120px',
                     cursor: article.slug ? 'pointer' : 'default',
                     transition: 'transform 0.2s',
-                    '&:hover': article.slug ? { transform: 'translateY(-2px)' } : {},
+                    '&:hover': article.slug
+                      ? { transform: 'translateY(-2px)' }
+                      : {}
                   }}
                 >
                   {/* Thumbnail */}
@@ -172,7 +191,7 @@ const BlogSection = () => {
                       background: article.thumbnail
                         ? `url(${article.thumbnail}) center/cover no-repeat`
                         : 'linear-gradient(135deg, #e0e0e0 0%, #bdbdbd 100%)',
-                      display: { xs: 'none', sm: 'block' },
+                      display: { xs: 'none', sm: 'block' }
                     }}
                   />
                   {/* Content */}
@@ -181,7 +200,7 @@ const BlogSection = () => {
                       p: 2,
                       display: 'flex',
                       flexDirection: 'column',
-                      justifyContent: 'center',
+                      justifyContent: 'center'
                     }}
                   >
                     <Typography
@@ -191,7 +210,7 @@ const BlogSection = () => {
                         fontWeight: 600,
                         textTransform: 'uppercase',
                         letterSpacing: '1px',
-                        mb: 0.5,
+                        mb: 0.5
                       }}
                     >
                       {article.category}
@@ -202,7 +221,7 @@ const BlogSection = () => {
                         fontSize: '15px',
                         fontWeight: 700,
                         lineHeight: 1.4,
-                        mb: 1,
+                        mb: 1
                       }}
                     >
                       {article.title}

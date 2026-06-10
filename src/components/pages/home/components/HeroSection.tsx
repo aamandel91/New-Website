@@ -1,21 +1,14 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-
 import { useRouter } from 'next/navigation'
 
-import {
-  Box,
-  Button,
-  MenuItem,
-  Select,
-  Typography
-} from '@mui/material'
 import type { SelectChangeEvent } from '@mui/material'
+import { Box, Button, MenuItem, Select, Typography } from '@mui/material'
 
-import LocationAutocomplete from '@shared/LocationAutocomplete'
-import type { LocationResult } from '@shared/LocationAutocomplete'
 import { tenant } from '@/configs/tenant.config'
+import type { LocationResult } from '@shared/LocationAutocomplete'
+import LocationAutocomplete from '@shared/LocationAutocomplete'
 
 type HeroTab = 'buying' | 'selling' | 'estimate'
 
@@ -48,25 +41,28 @@ const PRICE_OPTIONS = [
   { label: '$2M', value: '2000000' }
 ]
 
-const TAB_CONTENT: Record<HeroTab, { headline: string; subheadline: string }> = {
-  buying: {
-    headline: 'Find Your Dream Home',
-    subheadline: 'Enter Your Price Range & Location Below'
-  },
-  selling: {
-    headline: 'Get the Strongest Cash Offer on Your Home',
-    subheadline: 'Your terms and schedule, without the hassle.'
-  },
-  estimate: {
-    headline: 'Find Out What Your Home is Really Worth',
-    subheadline: 'Get a free, instant AI-powered estimate of your home\u2019s value.'
+const TAB_CONTENT: Record<HeroTab, { headline: string; subheadline: string }> =
+  {
+    buying: {
+      headline: 'Find Your Dream Home',
+      subheadline: 'Enter Your Price Range & Location Below'
+    },
+    selling: {
+      headline: 'Get the Strongest Cash Offer on Your Home',
+      subheadline: 'Your terms and schedule, without the hassle.'
+    },
+    estimate: {
+      headline: 'Find Out What Your Home is Really Worth',
+      subheadline:
+        'Get a free, instant AI-powered estimate of your home\u2019s value.'
+    }
   }
-}
 
 const HeroSection = () => {
   const router = useRouter()
   const [activeTab, setActiveTab] = useState<HeroTab>('buying')
-  const [selectedLocation, setSelectedLocation] = useState<LocationResult | null>(null)
+  const [selectedLocation, setSelectedLocation] =
+    useState<LocationResult | null>(null)
   const [minPrice, setMinPrice] = useState('')
   const [maxPrice, setMaxPrice] = useState('')
   const [addressInput, setAddressInput] = useState('')
@@ -139,7 +135,7 @@ const HeroSection = () => {
         position: 'relative',
         px: { xs: 2, md: 4 },
         py: { xs: 6, md: 8 },
-        overflow: 'hidden',
+        overflow: 'hidden'
       }}
     >
       {/* Background image with dark overlay */}
@@ -152,7 +148,7 @@ const HeroSection = () => {
               backgroundImage: `url(${heroImageUrl})`,
               backgroundSize: 'cover',
               backgroundPosition: 'center',
-              zIndex: 0,
+              zIndex: 0
             }}
           />
           <Box
@@ -160,7 +156,7 @@ const HeroSection = () => {
               position: 'absolute',
               inset: 0,
               bgcolor: 'rgba(15, 22, 33, 0.65)',
-              zIndex: 1,
+              zIndex: 1
             }}
           />
         </>
@@ -177,12 +173,11 @@ const HeroSection = () => {
           overflowX: { xs: 'auto', md: 'visible' },
           maxWidth: '100%',
           px: 1,
-          zIndex: 2,
+          zIndex: 2
         }}
       >
         {TABS.map((tab) => {
-          const isActive =
-            tab.key === activeTab && !('href' in tab && tab.href)
+          const isActive = tab.key === activeTab && !('href' in tab && tab.href)
 
           return (
             <Box
@@ -225,7 +220,7 @@ const HeroSection = () => {
           fontWeight: 300,
           textAlign: 'center',
           mb: 1,
-          zIndex: 2,
+          zIndex: 2
         }}
       >
         {headline}
@@ -238,7 +233,7 @@ const HeroSection = () => {
           fontSize: '16px',
           textAlign: 'center',
           mb: 4,
-          zIndex: 2,
+          zIndex: 2
         }}
       >
         {subheadline}
@@ -257,7 +252,7 @@ const HeroSection = () => {
             display: 'flex',
             flexDirection: 'column',
             gap: { xs: 1.5, md: 0 },
-            zIndex: 2,
+            zIndex: 2
           }}
         >
           {/* Location — full width on mobile */}
@@ -289,7 +284,9 @@ const HeroSection = () => {
                 borderRadius: '4px'
               }}
               renderValue={(val) =>
-                val ? PRICE_OPTIONS.find((o) => o.value === val)?.label : 'Min Price'
+                val
+                  ? PRICE_OPTIONS.find((o) => o.value === val)?.label
+                  : 'Min Price'
               }
             >
               {PRICE_OPTIONS.map((opt) => (
@@ -309,7 +306,9 @@ const HeroSection = () => {
                 borderRadius: '4px'
               }}
               renderValue={(val) =>
-                val ? PRICE_OPTIONS.find((o) => o.value === val)?.label : 'Max Price'
+                val
+                  ? PRICE_OPTIONS.find((o) => o.value === val)?.label
+                  : 'Max Price'
               }
             >
               {PRICE_OPTIONS.map((opt) => (
@@ -342,7 +341,9 @@ const HeroSection = () => {
           </Button>
 
           {/* Desktop: single-row layout (unchanged) */}
-          <Box sx={{ display: { xs: 'none', md: 'flex' }, flexDirection: 'row' }}>
+          <Box
+            sx={{ display: { xs: 'none', md: 'flex' }, flexDirection: 'row' }}
+          >
             <Box sx={{ flex: 2, minWidth: 0 }}>
               <LocationAutocomplete
                 placeholder="Location, Zip, Address or MLS #"
@@ -374,7 +375,9 @@ const HeroSection = () => {
                 borderRadius: 0
               }}
               renderValue={(val) =>
-                val ? PRICE_OPTIONS.find((o) => o.value === val)?.label : 'Min Price'
+                val
+                  ? PRICE_OPTIONS.find((o) => o.value === val)?.label
+                  : 'Min Price'
               }
             >
               {PRICE_OPTIONS.map((opt) => (
@@ -394,7 +397,9 @@ const HeroSection = () => {
                 borderRadius: 0
               }}
               renderValue={(val) =>
-                val ? PRICE_OPTIONS.find((o) => o.value === val)?.label : 'Max Price'
+                val
+                  ? PRICE_OPTIONS.find((o) => o.value === val)?.label
+                  : 'Max Price'
               }
             >
               {PRICE_OPTIONS.map((opt) => (
@@ -438,7 +443,7 @@ const HeroSection = () => {
             borderRadius: '6px',
             overflow: 'hidden',
             p: { xs: 2, md: 0 },
-            zIndex: 2,
+            zIndex: 2
           }}
         >
           <Box sx={{ flex: 1, minWidth: 0 }}>
@@ -489,7 +494,7 @@ const HeroSection = () => {
             borderRadius: '6px',
             overflow: 'hidden',
             p: { xs: 2, md: 0 },
-            zIndex: 2,
+            zIndex: 2
           }}
         >
           <Box sx={{ flex: 1, minWidth: 0 }}>

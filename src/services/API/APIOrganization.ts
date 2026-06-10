@@ -91,7 +91,10 @@ class APIOrganization extends APIBase {
   /**
    * Update organization (admin only)
    */
-  async update(orgId: string, data: UpdateOrganizationInput): Promise<Organization> {
+  async update(
+    orgId: string,
+    data: UpdateOrganizationInput
+  ): Promise<Organization> {
     return this.fetchJSON<Organization>(`/organization/${orgId}`, {
       method: 'PATCH',
       body: JSON.stringify(data)
@@ -102,7 +105,9 @@ class APIOrganization extends APIBase {
    * Get organization members
    */
   async getMembers(orgId: string): Promise<OrganizationMember[]> {
-    return this.fetchJSON<OrganizationMember[]>(`/organization/${orgId}/members`)
+    return this.fetchJSON<OrganizationMember[]>(
+      `/organization/${orgId}/members`
+    )
   }
 
   /**
@@ -112,10 +117,13 @@ class APIOrganization extends APIBase {
     orgId: string,
     data: { email: string; role: string }
   ): Promise<OrganizationMember> {
-    return this.fetchJSON<OrganizationMember>(`/organization/${orgId}/members`, {
-      method: 'POST',
-      body: JSON.stringify(data)
-    })
+    return this.fetchJSON<OrganizationMember>(
+      `/organization/${orgId}/members`,
+      {
+        method: 'POST',
+        body: JSON.stringify(data)
+      }
+    )
   }
 
   /**
@@ -126,19 +134,28 @@ class APIOrganization extends APIBase {
     email: string,
     role: string
   ): Promise<OrganizationMember> {
-    return this.fetchJSON<OrganizationMember>(`/organization/${orgId}/members/${email}`, {
-      method: 'PATCH',
-      body: JSON.stringify({ role })
-    })
+    return this.fetchJSON<OrganizationMember>(
+      `/organization/${orgId}/members/${email}`,
+      {
+        method: 'PATCH',
+        body: JSON.stringify({ role })
+      }
+    )
   }
 
   /**
    * Remove member from organization (admin only)
    */
-  async removeMember(orgId: string, email: string): Promise<{ success: boolean }> {
-    return this.fetchJSON<{ success: boolean }>(`/organization/${orgId}/members/${email}`, {
-      method: 'DELETE'
-    })
+  async removeMember(
+    orgId: string,
+    email: string
+  ): Promise<{ success: boolean }> {
+    return this.fetchJSON<{ success: boolean }>(
+      `/organization/${orgId}/members/${email}`,
+      {
+        method: 'DELETE'
+      }
+    )
   }
 
   /**
@@ -160,25 +177,30 @@ class APIOrganization extends APIBase {
   async acceptInvitation(
     token: string
   ): Promise<{ organization: Organization; member: OrganizationMember }> {
-    return this.fetchJSON<{ organization: Organization; member: OrganizationMember }>(
-      `/organization/invitations/${token}/accept`,
-      {
-        method: 'POST'
-      }
-    )
+    return this.fetchJSON<{
+      organization: Organization
+      member: OrganizationMember
+    }>(`/organization/invitations/${token}/accept`, {
+      method: 'POST'
+    })
   }
 
   /**
    * Get agents with subdomains
    */
   async getAgentSubdomains(orgId: string): Promise<AgentSubdomain[]> {
-    return this.fetchJSON<AgentSubdomain[]>(`/organization/${orgId}/agents/subdomains`)
+    return this.fetchJSON<AgentSubdomain[]>(
+      `/organization/${orgId}/agents/subdomains`
+    )
   }
 
   /**
    * Find agent by subdomain
    */
-  async findAgentBySubdomain(orgId: string, subdomain: string): Promise<AgentSubdomain> {
+  async findAgentBySubdomain(
+    orgId: string,
+    subdomain: string
+  ): Promise<AgentSubdomain> {
     return this.fetchJSON<AgentSubdomain>(
       `/organization/${orgId}/agents/subdomain/${subdomain}`
     )

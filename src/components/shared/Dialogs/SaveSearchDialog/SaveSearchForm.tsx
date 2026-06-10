@@ -9,15 +9,15 @@ import {
   CircularProgress,
   DialogActions,
   DialogContent,
+  Divider,
+  FormControlLabel,
   InputAdornment,
   Stack,
+  Switch,
   TextField,
   ToggleButton,
   ToggleButtonGroup,
-  Typography,
-  FormControlLabel,
-  Switch,
-  Divider
+  Typography
 } from '@mui/material'
 
 import i18nConfig from '@configs/i18n'
@@ -91,7 +91,12 @@ const SaveSearchForm = ({
   const notificationFrequency = watch('notificationFrequency')
 
   const onFormSubmit: SubmitHandler<Partial<ApiSaveSearch>> = async (data) => {
-    const { name, notificationFrequency, priceChangeNotifications, soldNotifications } = data
+    const {
+      name,
+      notificationFrequency,
+      priceChangeNotifications,
+      soldNotifications
+    } = data
     if (editId) {
       await editSearch(editId, {
         name,
@@ -223,7 +228,11 @@ const SaveSearchForm = ({
                   </ToggleButtonGroup>
                 )}
               />
-              <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 1 }}>
+              <Typography
+                variant="caption"
+                color="text.secondary"
+                sx={{ display: 'block', mt: 1 }}
+              >
                 Get notified about new listings matching your search criteria
               </Typography>
             </Box>
@@ -248,9 +257,15 @@ const SaveSearchForm = ({
                           }
                           label={
                             <Box>
-                              <Typography variant="body2">Price Change Alerts</Typography>
-                              <Typography variant="caption" color="text.secondary">
-                                Notify me when properties in my saved search change price
+                              <Typography variant="body2">
+                                Price Change Alerts
+                              </Typography>
+                              <Typography
+                                variant="caption"
+                                color="text.secondary"
+                              >
+                                Notify me when properties in my saved search
+                                change price
                               </Typography>
                             </Box>
                           }
@@ -271,9 +286,15 @@ const SaveSearchForm = ({
                           }
                           label={
                             <Box>
-                              <Typography variant="body2">Sold Alerts</Typography>
-                              <Typography variant="caption" color="text.secondary">
-                                Notify me when properties in my saved search are sold
+                              <Typography variant="body2">
+                                Sold Alerts
+                              </Typography>
+                              <Typography
+                                variant="caption"
+                                color="text.secondary"
+                              >
+                                Notify me when properties in my saved search are
+                                sold
                               </Typography>
                             </Box>
                           }

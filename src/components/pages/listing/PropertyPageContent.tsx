@@ -44,7 +44,9 @@ import {
 
 const HomeMap = dynamic(() => import('./components/HomeMap'), {
   ssr: false,
-  loading: () => <Skeleton variant="rectangular" height={400} sx={{ borderRadius: 1 }} />,
+  loading: () => (
+    <Skeleton variant="rectangular" height={400} sx={{ borderRadius: 1 }} />
+  )
 })
 
 const PropertyPageContent = ({

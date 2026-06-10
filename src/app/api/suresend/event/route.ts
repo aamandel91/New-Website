@@ -1,18 +1,29 @@
 import { NextResponse } from 'next/server'
+
 import { createEvent } from '@/services/suresend/client'
 import type { SureSendEventType } from '@/services/suresend/types'
 
 export async function POST(request: Request) {
   try {
     const body = await request.json()
-    const { type, personId, email, property, propertySearch, metadata } = body as {
-      type: SureSendEventType
-      personId?: string
-      email?: string
-      property?: { mlsNumber?: string; address?: string; price?: number; propertyType?: string }
-      propertySearch?: { query?: string; filters?: Record<string, string | number | boolean>; resultCount?: number }
-      metadata?: Record<string, string | number | boolean>
-    }
+    const { type, personId, email, property, propertySearch, metadata } =
+      body as {
+        type: SureSendEventType
+        personId?: string
+        email?: string
+        property?: {
+          mlsNumber?: string
+          address?: string
+          price?: number
+          propertyType?: string
+        }
+        propertySearch?: {
+          query?: string
+          filters?: Record<string, string | number | boolean>
+          resultCount?: number
+        }
+        metadata?: Record<string, string | number | boolean>
+      }
 
     if (!type) {
       return NextResponse.json(
@@ -27,7 +38,7 @@ export async function POST(request: Request) {
       email,
       property,
       propertySearch,
-      metadata,
+      metadata
     })
 
     return NextResponse.json(result)

@@ -1,19 +1,22 @@
 'use client'
 
-import { useState, useRef, useCallback } from 'react'
+import React from 'react'
+
+import { useCallback, useRef, useState } from 'react'
+
+import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate'
+import CloudUploadIcon from '@mui/icons-material/CloudUpload'
+import ContentCopyIcon from '@mui/icons-material/ContentCopy'
+import DeleteIcon from '@mui/icons-material/Delete'
 import {
+  Alert,
   Box,
-  Typography,
   IconButton,
   LinearProgress,
   Stack,
   Tooltip,
-  Alert
+  Typography
 } from '@mui/material'
-import CloudUploadIcon from '@mui/icons-material/CloudUpload'
-import ContentCopyIcon from '@mui/icons-material/ContentCopy'
-import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate'
-import DeleteIcon from '@mui/icons-material/Delete'
 
 interface UploadedImage {
   url: string
@@ -53,7 +56,7 @@ const ImageUploader = ({
 
       try {
         const formData = new FormData()
-        fileArray.forEach(file => formData.append('files', file))
+        fileArray.forEach((file) => formData.append('files', file))
 
         setUploadProgress(30)
 
@@ -126,15 +129,12 @@ const ImageUploader = ({
     [uploadFiles]
   )
 
-  const handleCopyMarkdown = useCallback(
-    (image: UploadedImage) => {
-      const markdown = `![${image.filename}](${image.url})`
-      navigator.clipboard.writeText(markdown)
-      setCopyFeedback(image.filename)
-      setTimeout(() => setCopyFeedback(null), 2000)
-    },
-    []
-  )
+  const handleCopyMarkdown = useCallback((image: UploadedImage) => {
+    const markdown = `![${image.filename}](${image.url})`
+    navigator.clipboard.writeText(markdown)
+    setCopyFeedback(image.filename)
+    setTimeout(() => setCopyFeedback(null), 2000)
+  }, [])
 
   const handleInsert = useCallback(
     (image: UploadedImage) => {
@@ -156,7 +156,7 @@ const ImageUploader = ({
       } catch {
         // Proceed with UI removal even if server delete fails
       }
-      onImagesChange(images.filter(img => img.filename !== image.filename))
+      onImagesChange(images.filter((img) => img.filename !== image.filename))
     },
     [images, onImagesChange]
   )
@@ -196,7 +196,9 @@ const ImageUploader = ({
           }
         }}
       >
-        <CloudUploadIcon sx={{ fontSize: 40, color: 'text.secondary', mb: 1 }} />
+        <CloudUploadIcon
+          sx={{ fontSize: 40, color: 'text.secondary', mb: 1 }}
+        />
         <Typography variant="body1" color="text.secondary">
           Drag & drop images here or click to browse
         </Typography>
@@ -227,7 +229,7 @@ const ImageUploader = ({
       {/* Image Gallery */}
       {images.length > 0 && (
         <Stack spacing={1} sx={{ mt: 2 }}>
-          {images.map(image => (
+          {images.map((image) => (
             <Box
               key={image.filename}
               sx={{
@@ -267,20 +269,36 @@ const ImageUploader = ({
 
               {/* Actions */}
               <Stack direction="row" spacing={0.5}>
-                <Tooltip title={copyFeedback === image.filename ? 'Copied!' : 'Copy markdown'}>
-                  <IconButton size="small" onClick={() => handleCopyMarkdown(image)}>
+                <Tooltip
+                  title={
+                    copyFeedback === image.filename
+                      ? 'Copied!'
+                      : 'Copy markdown'
+                  }
+                >
+                  <IconButton
+                    size="small"
+                    onClick={() => handleCopyMarkdown(image)}
+                  >
                     <ContentCopyIcon fontSize="small" />
                   </IconButton>
                 </Tooltip>
                 {onInsert && (
                   <Tooltip title="Insert into editor">
-                    <IconButton size="small" onClick={() => handleInsert(image)}>
+                    <IconButton
+                      size="small"
+                      onClick={() => handleInsert(image)}
+                    >
                       <AddPhotoAlternateIcon fontSize="small" />
                     </IconButton>
                   </Tooltip>
                 )}
                 <Tooltip title="Delete">
-                  <IconButton size="small" onClick={() => handleDelete(image)} color="error">
+                  <IconButton
+                    size="small"
+                    onClick={() => handleDelete(image)}
+                    color="error"
+                  >
                     <DeleteIcon fontSize="small" />
                   </IconButton>
                 </Tooltip>

@@ -9,10 +9,10 @@ import React, {
 } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { type Map as MapboxMap } from 'mapbox-gl'
-import { type LngLat, type LngLatBounds } from 'utils/lngLat'
 
 import { type MapStyle } from '@configs/map'
 
+import { type LngLat, type LngLatBounds } from 'utils/lngLat'
 import { getCoords, getZoom } from 'utils/map'
 
 export type MapPosition = {

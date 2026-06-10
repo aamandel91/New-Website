@@ -156,7 +156,12 @@ export interface SureSendWebhookEvent {
 
 // ─── Custom Fields ─────────────────────────────────────────────
 
-export type SureSendCustomFieldType = 'text' | 'number' | 'dropdown' | 'date' | 'boolean'
+export type SureSendCustomFieldType =
+  | 'text'
+  | 'number'
+  | 'dropdown'
+  | 'date'
+  | 'boolean'
 
 export interface SureSendCustomFieldInput {
   name: string

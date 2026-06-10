@@ -86,10 +86,16 @@ export function generateStaticPropertyUrl(address: {
   state?: string
   zip?: string
 }): string {
-  const street = [address.streetNumber, address.streetName, address.streetSuffix]
+  const street = [
+    address.streetNumber,
+    address.streetName,
+    address.streetSuffix
+  ]
     .filter(Boolean)
     .join('-')
-  const parts = [street, address.city, address.state, address.zip].filter(Boolean)
+  const parts = [street, address.city, address.state, address.zip].filter(
+    Boolean
+  )
   const slug = parts
     .join('-')
     .toLowerCase()
@@ -115,7 +121,7 @@ export function parseAddressSlug(slug: string): {
     street: match[1].replace(/-/g, ' '),
     city: match[2].replace(/-/g, ' '),
     state: match[3].toUpperCase(),
-    zip: match[4],
+    zip: match[4]
   }
 }
 
@@ -146,11 +152,15 @@ export function generatePropertyUrl(
     const streetParts = address.street.trim().split(/\s+/)
     return generateStaticPropertyUrl({
       streetNumber: streetParts[0],
-      streetName: streetParts.slice(1, -1).join(' ') || streetParts.slice(1).join(' '),
-      streetSuffix: streetParts.length > 2 ? streetParts[streetParts.length - 1] : undefined,
+      streetName:
+        streetParts.slice(1, -1).join(' ') || streetParts.slice(1).join(' '),
+      streetSuffix:
+        streetParts.length > 2
+          ? streetParts[streetParts.length - 1]
+          : undefined,
       city: address.city,
       state: address.state,
-      zip: address.zip,
+      zip: address.zip
     })
   }
   // Last resort: use MLS-based URL if no address available

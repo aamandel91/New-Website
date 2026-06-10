@@ -1,4 +1,4 @@
-import type { Knex } from "knex";
+import type { Knex } from 'knex'
 
 export async function up(knex: Knex): Promise<void> {
   await knex.schema.raw(`create table admin_settings (
@@ -9,15 +9,16 @@ export async function up(knex: Knex): Promise<void> {
     updated_by varchar,
     created_at TIMESTAMP without time zone not null default CURRENT_TIMESTAMP,
     updated_at TIMESTAMP without time zone not null default CURRENT_TIMESTAMP
-  )`);
+  )`)
 
   // Insert default settings for PPC registration
-  await knex.schema.raw(`insert into admin_settings (key, value, description) values
+  await knex.schema
+    .raw(`insert into admin_settings (key, value, description) values
     ('ppc_registration_required', '{"enabled": true, "sources": ["ppc", "cpc", "paid"], "viewThreshold": 1}'::jsonb, 'Force registration on first property view for paid traffic sources'),
     ('organic_registration_optional', '{"enabled": true, "viewThreshold": 4}'::jsonb, 'Show optional registration modal for organic traffic after 4th property view')
-  `);
+  `)
 }
 
 export async function down(knex: Knex): Promise<void> {
-  await knex.schema.dropTable("admin_settings");
+  await knex.schema.dropTable('admin_settings')
 }

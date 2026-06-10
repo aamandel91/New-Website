@@ -101,9 +101,7 @@ export default class SchoolsLookupService {
             if (!entry || typeof entry !== 'object') return null
             const e = entry as Record<string, unknown>
             const name =
-              (e['name'] as string) ||
-              (e['school_name'] as string) ||
-              ''
+              (e['name'] as string) || (e['school_name'] as string) || ''
             if (!name) return null
             const rating = toNum(e['rating'])
             const level = normalizeLevel(

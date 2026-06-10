@@ -46,7 +46,10 @@ export type TemplateContext = Record<string, string | undefined>
 // don't refetch the same template row. 60-second TTL matches the live-stats
 // cache in the backend service.
 const TEMPLATE_CACHE_TTL_MS = 60 * 1000
-const templateCache = new Map<string, { value: SeoMetaTemplate | null; expiresAt: number }>()
+const templateCache = new Map<
+  string,
+  { value: SeoMetaTemplate | null; expiresAt: number }
+>()
 
 export async function fetchSeoMetaTemplate(
   pageType: SeoPageType
@@ -56,26 +59,41 @@ export async function fetchSeoMetaTemplate(
   if (hit && hit.expiresAt > now) return hit.value
 
   try {
-    const res = await fetch(`${API_URL}/seo-meta-templates/page-type/${pageType}`, {
-      // Don't blow up if the backend is sluggish — generateMetadata has its
-      // own implicit budget from Next.js.
-      next: { revalidate: 60 },
-    })
+    const res = await fetch(
+      `${API_URL}/seo-meta-templates/page-type/${pageType}`,
+      {
+        // Don't blow up if the backend is sluggish — generateMetadata has its
+        // own implicit budget from Next.js.
+        next: { revalidate: 60 }
+      }
+    )
     if (!res.ok) {
-      templateCache.set(pageType, { value: null, expiresAt: now + TEMPLATE_CACHE_TTL_MS })
+      templateCache.set(pageType, {
+        value: null,
+        expiresAt: now + TEMPLATE_CACHE_TTL_MS
+      })
       return null
     }
     const data = (await res.json()) as { template: SeoMetaTemplate }
     const value = data.template ?? null
-    templateCache.set(pageType, { value, expiresAt: now + TEMPLATE_CACHE_TTL_MS })
+    templateCache.set(pageType, {
+      value,
+      expiresAt: now + TEMPLATE_CACHE_TTL_MS
+    })
     return value
   } catch {
-    templateCache.set(pageType, { value: null, expiresAt: now + TEMPLATE_CACHE_TTL_MS })
+    templateCache.set(pageType, {
+      value: null,
+      expiresAt: now + TEMPLATE_CACHE_TTL_MS
+    })
     return null
   }
 }
 
-export function resolveTemplate(template: string, context: TemplateContext): string {
+export function resolveTemplate(
+  template: string,
+  context: TemplateContext
+): string {
   if (!template) return ''
   const result = template.replace(/\{([A-Z_]+)\}/g, (match, key) => {
     const val = context[key]

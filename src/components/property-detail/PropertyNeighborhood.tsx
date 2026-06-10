@@ -1,8 +1,9 @@
 'use client'
 
 import React from 'react'
-import { Box, Typography, Paper, Link } from '@mui/material'
+
 import LocationCityIcon from '@mui/icons-material/LocationCity'
+import { Box, Link, Paper, Typography } from '@mui/material'
 
 interface PropertyNeighborhoodProps {
   neighborhood?: string
@@ -19,12 +20,13 @@ const PropertyNeighborhood: React.FC<PropertyNeighborhoodProps> = ({
   neighborhood,
   city,
   state,
-  zip,
+  zip
 }) => {
   if (!neighborhood) return null
 
   const neighborhoodSlug = slugify(neighborhood)
-  const cityStateSlug = city && state ? `${slugify(city)}-${slugify(state)}` : ''
+  const cityStateSlug =
+    city && state ? `${slugify(city)}-${slugify(state)}` : ''
 
   const paragraph = [
     `${neighborhood} is a neighborhood`,
@@ -35,7 +37,7 @@ const PropertyNeighborhood: React.FC<PropertyNeighborhoodProps> = ({
     city
       ? `Residents of ${neighborhood} enjoy the amenities and lifestyle that ${city} has to offer. `
       : '',
-    `Explore available listings in ${neighborhood} to find your next home.`,
+    `Explore available listings in ${neighborhood} to find your next home.`
   ].join('')
 
   return (
@@ -44,7 +46,7 @@ const PropertyNeighborhood: React.FC<PropertyNeighborhoodProps> = ({
       sx={{
         p: 3,
         bgcolor: 'grey.50',
-        borderRadius: 2,
+        borderRadius: 2
       }}
     >
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
@@ -54,7 +56,11 @@ const PropertyNeighborhood: React.FC<PropertyNeighborhoodProps> = ({
         </Typography>
       </Box>
 
-      <Typography variant="body1" color="text.secondary" sx={{ mb: 2, lineHeight: 1.7 }}>
+      <Typography
+        variant="body1"
+        color="text.secondary"
+        sx={{ mb: 2, lineHeight: 1.7 }}
+      >
         {paragraph}
       </Typography>
 

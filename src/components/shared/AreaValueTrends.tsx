@@ -1,9 +1,10 @@
 'use client'
 
 import React, { useCallback, useEffect, useRef, useState } from 'react'
-import { Box, Paper, Stack, Typography } from '@mui/material'
-import TrendingUpIcon from '@mui/icons-material/TrendingUp'
+
 import TrendingDownIcon from '@mui/icons-material/TrendingDown'
+import TrendingUpIcon from '@mui/icons-material/TrendingUp'
+import { Box, Paper, Stack, Typography } from '@mui/material'
 
 import type { Property } from 'services/API'
 import APISearchCSR from 'services/API/APISearchCSR'
@@ -31,7 +32,7 @@ const formatCurrency = (value: number): string =>
     style: 'currency',
     currency: 'USD',
     minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
+    maximumFractionDigits: 0
   }).format(value)
 
 function formatMonth(dateStr: string): string {
@@ -49,7 +50,7 @@ function TrendLineChart({
   data,
   trendDirection,
   width,
-  height,
+  height
 }: {
   data: MonthValue[]
   trendDirection: 'up' | 'down' | 'flat'
@@ -69,8 +70,7 @@ function TrendLineChart({
   const yMin = minVal - pad
   const yMax = maxVal + pad
 
-  const xScale = (i: number) =>
-    PADDING.left + (i / (data.length - 1)) * chartW
+  const xScale = (i: number) => PADDING.left + (i / (data.length - 1)) * chartW
   const yScale = (val: number) =>
     PADDING.top + chartH - ((val - yMin) / (yMax - yMin)) * chartH
 
@@ -199,7 +199,7 @@ function TrendLineChart({
 
 const AreaValueTrends: React.FC<AreaValueTrendsProps> = ({
   city,
-  neighborhood,
+  neighborhood
 }) => {
   const containerRef = useRef<HTMLDivElement>(null)
   const [containerWidth, setContainerWidth] = useState(600)
@@ -232,7 +232,7 @@ const AreaValueTrends: React.FC<AreaValueTrendsProps> = ({
         status: 'A',
         resultsPerPage: 50,
         hasImages: true,
-        fields: 'estimate',
+        fields: 'estimate'
       })
 
       if (!response || !response.listings) {
@@ -274,7 +274,7 @@ const AreaValueTrends: React.FC<AreaValueTrendsProps> = ({
       const sorted = Object.entries(monthMap)
         .map(([date, { total, count }]) => ({
           date,
-          value: Math.round(total / count),
+          value: Math.round(total / count)
         }))
         .sort((a, b) => a.date.localeCompare(b.date))
         .slice(-24) // last 24 months
@@ -305,8 +305,7 @@ const AreaValueTrends: React.FC<AreaValueTrendsProps> = ({
     const recent = monthlyData.slice(-3)
     const yearAgo = monthlyData.slice(-15, -12)
     if (yearAgo.length > 0) {
-      const recentAvg =
-        recent.reduce((s, d) => s + d.value, 0) / recent.length
+      const recentAvg = recent.reduce((s, d) => s + d.value, 0) / recent.length
       const yearAgoAvg =
         yearAgo.reduce((s, d) => s + d.value, 0) / yearAgo.length
       if (yearAgoAvg > 0) {
@@ -326,16 +325,18 @@ const AreaValueTrends: React.FC<AreaValueTrendsProps> = ({
         Average Estimated Home Value in {areaLabel}
       </Typography>
 
-      <Typography variant="h4" fontWeight={700} color="primary.main" gutterBottom>
+      <Typography
+        variant="h4"
+        fontWeight={700}
+        color="primary.main"
+        gutterBottom
+      >
         {formatCurrency(avgValue)}
       </Typography>
 
       {/* SVG Chart */}
       {monthlyData.length >= 2 && (
-        <Box
-          ref={containerRef}
-          sx={{ mt: 2, minHeight: 200 }}
-        >
+        <Box ref={containerRef} sx={{ mt: 2, minHeight: 200 }}>
           <TrendLineChart
             data={monthlyData}
             trendDirection={trendDirection}
@@ -365,8 +366,8 @@ const AreaValueTrends: React.FC<AreaValueTrendsProps> = ({
                 color={trendDirection === 'up' ? 'success.main' : 'error.main'}
               >
                 {trendDirection === 'up' ? '\u2191' : '\u2193'}{' '}
-                {trendDirection === 'up' ? 'Up' : 'Down'} {trendPercentage}% over
-                the past year
+                {trendDirection === 'up' ? 'Up' : 'Down'} {trendPercentage}%
+                over the past year
               </Typography>
             </Stack>
           )}

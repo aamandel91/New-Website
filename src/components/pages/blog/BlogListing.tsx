@@ -2,25 +2,27 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
+
 import {
   Box,
-  Container,
-  Grid,
-  Typography,
+  Button,
   Card,
   CardContent,
   CardMedia,
   Chip,
-  Stack,
-  Pagination,
   CircularProgress,
-  TextField,
-  Select,
+  Container,
+  Grid,
   MenuItem,
-  Button
+  Pagination,
+  Select,
+  Stack,
+  TextField,
+  Typography
 } from '@mui/material'
-import type { Blog, BlogTag, BlogCategory } from '@/types/blog'
+
 import APIBlogs from '@/services/API/APIBlogs'
+import type { Blog, BlogCategory, BlogTag } from '@/types/blog'
 
 interface BlogListingProps {
   featured?: boolean
@@ -96,7 +98,10 @@ const BlogListing = ({ featured = false }: BlogListingProps) => {
     <Container maxWidth="lg">
       <Box sx={{ py: 8 }}>
         {/* Header */}
-        <Typography variant="h1" sx={{ mb: 1, fontSize: { xs: '2rem', sm: '2.5rem' } }}>
+        <Typography
+          variant="h1"
+          sx={{ mb: 1, fontSize: { xs: '2rem', sm: '2.5rem' } }}
+        >
           {featured ? 'Featured Articles' : 'Blog'}
         </Typography>
         <Typography variant="h5" color="text.secondary" sx={{ mb: 4 }}>
@@ -115,7 +120,7 @@ const BlogListing = ({ featured = false }: BlogListingProps) => {
                   label="Search"
                   variant="outlined"
                   value={search}
-                  onChange={e => handleSearchChange(e.target.value)}
+                  onChange={(e) => handleSearchChange(e.target.value)}
                   size="small"
                 />
               </Grid>
@@ -124,14 +129,14 @@ const BlogListing = ({ featured = false }: BlogListingProps) => {
                   fullWidth
                   displayEmpty
                   value={selectedTag}
-                  onChange={e => {
+                  onChange={(e) => {
                     setSelectedTag(e.target.value)
                     setPage(1)
                   }}
                   size="small"
                 >
                   <MenuItem value="">All Tags</MenuItem>
-                  {tags.map(tag => (
+                  {tags.map((tag) => (
                     <MenuItem key={tag.id} value={tag.slug}>
                       {tag.name}
                     </MenuItem>
@@ -143,14 +148,14 @@ const BlogListing = ({ featured = false }: BlogListingProps) => {
                   fullWidth
                   displayEmpty
                   value={selectedCategory}
-                  onChange={e => {
+                  onChange={(e) => {
                     setSelectedCategory(e.target.value)
                     setPage(1)
                   }}
                   size="small"
                 >
                   <MenuItem value="">All Categories</MenuItem>
-                  {categories.map(category => (
+                  {categories.map((category) => (
                     <MenuItem key={category.id} value={category.slug}>
                       {category.name}
                     </MenuItem>
@@ -172,15 +177,22 @@ const BlogListing = ({ featured = false }: BlogListingProps) => {
             <CircularProgress />
           </Box>
         ) : blogs.length === 0 ? (
-          <Typography variant="h6" color="text.secondary" sx={{ textAlign: 'center', py: 8 }}>
+          <Typography
+            variant="h6"
+            color="text.secondary"
+            sx={{ textAlign: 'center', py: 8 }}
+          >
             No blogs found. Try adjusting your filters.
           </Typography>
         ) : (
           <>
             <Grid container spacing={4} sx={{ mb: 6 }}>
-              {blogs.map(blog => (
+              {blogs.map((blog) => (
                 <Grid item xs={12} sm={6} md={4} key={blog.id}>
-                  <Link href={`/blog/${blog.slug}`} style={{ textDecoration: 'none' }}>
+                  <Link
+                    href={`/blog/${blog.slug}`}
+                    style={{ textDecoration: 'none' }}
+                  >
                     <Card
                       sx={{
                         height: '100%',
@@ -202,19 +214,38 @@ const BlogListing = ({ featured = false }: BlogListingProps) => {
                         />
                       )}
                       <CardContent sx={{ flexGrow: 1 }}>
-                        <Typography gutterBottom variant="h5" component="div" sx={{ mb: 1 }}>
+                        <Typography
+                          gutterBottom
+                          variant="h5"
+                          component="div"
+                          sx={{ mb: 1 }}
+                        >
                           {blog.title}
                         </Typography>
 
-                        <Typography variant="body2" color="text.secondary" sx={{ mb: 2, lineHeight: 1.6 }}>
+                        <Typography
+                          variant="body2"
+                          color="text.secondary"
+                          sx={{ mb: 2, lineHeight: 1.6 }}
+                        >
                           {blog.description}
                         </Typography>
 
                         {/* Tags */}
                         {blog.tags.length > 0 && (
-                          <Stack direction="row" spacing={0.5} sx={{ mb: 2, flexWrap: 'wrap' }} useFlexGap>
-                            {blog.tags.slice(0, 3).map(tag => (
-                              <Chip key={tag} label={tag} size="small" variant="outlined" />
+                          <Stack
+                            direction="row"
+                            spacing={0.5}
+                            sx={{ mb: 2, flexWrap: 'wrap' }}
+                            useFlexGap
+                          >
+                            {blog.tags.slice(0, 3).map((tag) => (
+                              <Chip
+                                key={tag}
+                                label={tag}
+                                size="small"
+                                variant="outlined"
+                              />
                             ))}
                           </Stack>
                         )}
@@ -222,11 +253,14 @@ const BlogListing = ({ featured = false }: BlogListingProps) => {
                         {/* Meta info */}
                         <Typography variant="caption" color="text.secondary">
                           {blog.published_at
-                            ? new Date(blog.published_at).toLocaleDateString('en-US', {
-                                year: 'numeric',
-                                month: 'short',
-                                day: 'numeric'
-                              })
+                            ? new Date(blog.published_at).toLocaleDateString(
+                                'en-US',
+                                {
+                                  year: 'numeric',
+                                  month: 'short',
+                                  day: 'numeric'
+                                }
+                              )
                             : 'Draft'}
                         </Typography>
                       </CardContent>

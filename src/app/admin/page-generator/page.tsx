@@ -1,52 +1,54 @@
 'use client'
 
-import React, { useState, useEffect, useCallback } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
+
+import AddIcon from '@mui/icons-material/Add'
+import BackIcon from '@mui/icons-material/ArrowBack'
+import NextIcon from '@mui/icons-material/ArrowForward'
+import CopyIcon from '@mui/icons-material/ContentCopy'
+import DeleteIcon from '@mui/icons-material/Delete'
+import GenerateIcon from '@mui/icons-material/Publish'
 import {
+  Alert,
+  Autocomplete,
   Box,
-  Container,
-  Typography,
-  Stepper,
-  Step,
-  StepLabel,
   Button,
-  Paper,
   Checkbox,
+  Chip,
+  CircularProgress,
+  Container,
   FormControlLabel,
   FormGroup,
+  IconButton,
   LinearProgress,
+  Paper,
+  Stack,
+  Step,
+  StepLabel,
+  Stepper,
+  Tab,
   Table,
   TableBody,
   TableCell,
   TableContainer,
   TableHead,
   TableRow,
-  Alert,
-  CircularProgress,
-  Chip,
-  Stack,
   Tabs,
-  Tab,
   TextField,
-  IconButton,
-  Autocomplete
+  Typography
 } from '@mui/material'
-import AddIcon from '@mui/icons-material/Add'
-import DeleteIcon from '@mui/icons-material/Delete'
-import BackIcon from '@mui/icons-material/ArrowBack'
-import NextIcon from '@mui/icons-material/ArrowForward'
-import GenerateIcon from '@mui/icons-material/Publish'
-import CopyIcon from '@mui/icons-material/ContentCopy'
-import APISearch from '@/services/API/APISearch'
-import APIContentPages from '@/services/API/APIContentPages'
-import type { ContentPage } from '@/services/API/APIContentPages'
-import type { ApiBoardCity } from '@/services/API'
-import { targetCounties, subTypes } from '@configs/page-generation'
+
 import type { SubTypeConfig as SubType } from '@configs/page-generation'
+import { subTypes, targetCounties } from '@configs/page-generation'
+import type { ApiBoardCity } from '@/services/API'
+import type { ContentPage } from '@/services/API/APIContentPages'
+import APIContentPages from '@/services/API/APIContentPages'
+import APISearch from '@/services/API/APISearch'
 import {
-  processTemplate,
-  generateMetaTitle,
   generateMetaDescription,
-  generateSlug
+  generateMetaTitle,
+  generateSlug,
+  processTemplate
 } from '@/utils/templateEngine'
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -106,7 +108,11 @@ export default function PageGeneratorPage() {
           Generate city + sub-type pages or copy existing pages to new cities
         </Typography>
 
-        <Tabs value={tabIndex} onChange={(_, v) => setTabIndex(v)} sx={{ mb: 3 }}>
+        <Tabs
+          value={tabIndex}
+          onChange={(_, v) => setTabIndex(v)}
+          sx={{ mb: 3 }}
+        >
           <Tab label="Generate Pages" />
           <Tab label="Copy Page to Cities" />
         </Tabs>
@@ -128,11 +134,15 @@ function GenerateSection() {
 
   // Step 1: City selection
   const [loadingLocations, setLoadingLocations] = useState(true)
-  const [countyGroups, setCountyGroups] = useState<Record<string, CityWithCounty[]>>({})
+  const [countyGroups, setCountyGroups] = useState<
+    Record<string, CityWithCounty[]>
+  >({})
   const [selectedCities, setSelectedCities] = useState<Set<string>>(new Set())
 
   // Step 2: Sub-type selection
-  const [selectedSubTypes, setSelectedSubTypes] = useState<Set<string>>(new Set())
+  const [selectedSubTypes, setSelectedSubTypes] = useState<Set<string>>(
+    new Set()
+  )
 
   // Step 3: Generation
   const [previewRows, setPreviewRows] = useState<PagePreviewRow[]>([])
@@ -153,7 +163,11 @@ function GenerateSection() {
           for (const cls of board.classes) {
             for (const area of cls.areas) {
               const countyName = area.name.replace(' County', '').trim()
-              if (!targetCounties.some((tc) => area.name.toLowerCase().includes(tc.toLowerCase()))) {
+              if (
+                !targetCounties.some((tc) =>
+                  area.name.toLowerCase().includes(tc.toLowerCase())
+                )
+              ) {
                 continue
               }
               if (!groups[countyName]) groups[countyName] = []
@@ -169,13 +183,17 @@ function GenerateSection() {
         }
         setCountyGroups(groups)
       } catch (err: any) {
-        setError('Failed to load locations: ' + (err?.message || 'Unknown error'))
+        setError(
+          'Failed to load locations: ' + (err?.message || 'Unknown error')
+        )
       } finally {
         if (!cancelled) setLoadingLocations(false)
       }
     }
     load()
-    return () => { cancelled = true }
+    return () => {
+      cancelled = true
+    }
   }, [])
 
   // ── City key helper ──
@@ -194,7 +212,9 @@ function GenerateSection() {
 
   const toggleCounty = (county: string) => {
     const cities = countyGroups[county] || []
-    const allSelected = cities.every((c) => selectedCities.has(cityKey(c.name, county)))
+    const allSelected = cities.every((c) =>
+      selectedCities.has(cityKey(c.name, county))
+    )
     setSelectedCities((prev) => {
       const next = new Set(prev)
       for (const c of cities) {
@@ -274,16 +294,19 @@ function GenerateSection() {
           .find((c) => c.name === row.city && c.county === row.county)
         const count = cityData?.activeCount || 0
 
-        const title = processTemplate('{{subType}} in {{city}}, {{county}} County, Florida', {
-          city: row.city,
-          county: row.county,
-          state: 'Florida',
-          stateCode: 'FL',
-          subType: row.subType.label,
-          subTypeSlug: row.subType.slug,
-          count,
-          year
-        })
+        const title = processTemplate(
+          '{{subType}} in {{city}}, {{county}} County, Florida',
+          {
+            city: row.city,
+            county: row.county,
+            state: 'Florida',
+            stateCode: 'FL',
+            subType: row.subType.label,
+            subTypeSlug: row.subType.slug,
+            count,
+            year
+          }
+        )
 
         const content = processTemplate(DEFAULT_TEMPLATE, {
           city: row.city,
@@ -300,12 +323,23 @@ function GenerateSection() {
           title,
           slug: row.slug,
           meta_title: generateMetaTitle(row.city, row.subType.label, count),
-          meta_description: generateMetaDescription(row.city, row.county, row.subType.label, count),
+          meta_description: generateMetaDescription(
+            row.city,
+            row.county,
+            row.subType.label,
+            count
+          ),
           content: {
             modules: [
               { type: 'text', data: { body: content } },
-              { type: 'search-widget', data: { city: row.city, filterType: row.subType.filterType } },
-              { type: 'market-stats', data: { city: row.city, county: row.county } }
+              {
+                type: 'search-widget',
+                data: { city: row.city, filterType: row.subType.filterType }
+              },
+              {
+                type: 'market-stats',
+                data: { city: row.city, county: row.county }
+              }
             ],
             sidebar: []
           },
@@ -314,7 +348,11 @@ function GenerateSection() {
 
         rows[i] = { ...rows[i], status: 'created', pageId: page.id }
       } catch (err: any) {
-        rows[i] = { ...rows[i], status: 'error', error: err?.message || 'Failed to create page' }
+        rows[i] = {
+          ...rows[i],
+          status: 'error',
+          error: err?.message || 'Failed to create page'
+        }
       }
 
       completed++
@@ -369,7 +407,8 @@ function GenerateSection() {
             Select Cities
           </Typography>
           <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-            Choose which cities to generate pages for. Cities are grouped by county.
+            Choose which cities to generate pages for. Cities are grouped by
+            county.
           </Typography>
 
           {loadingLocations ? (
@@ -378,7 +417,8 @@ function GenerateSection() {
             </Box>
           ) : Object.keys(countyGroups).length === 0 ? (
             <Alert severity="warning">
-              No cities found for the target counties ({targetCounties.join(', ')}).
+              No cities found for the target counties (
+              {targetCounties.join(', ')}).
             </Alert>
           ) : (
             Object.entries(countyGroups).map(([county, cities]) => {
@@ -423,7 +463,9 @@ function GenerateSection() {
                         key={cityKey(city.name, county)}
                         control={
                           <Checkbox
-                            checked={selectedCities.has(cityKey(city.name, county))}
+                            checked={selectedCities.has(
+                              cityKey(city.name, county)
+                            )}
                             onChange={() => toggleCity(city.name, county)}
                             size="small"
                           />
@@ -449,7 +491,8 @@ function GenerateSection() {
 
           {selectedCities.size > 0 && (
             <Alert severity="info" sx={{ mt: 2 }}>
-              {selectedCities.size} {selectedCities.size === 1 ? 'city' : 'cities'} selected
+              {selectedCities.size}{' '}
+              {selectedCities.size === 1 ? 'city' : 'cities'} selected
             </Alert>
           )}
         </Box>
@@ -462,18 +505,26 @@ function GenerateSection() {
             Select Property Sub-Types
           </Typography>
           <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-            Choose which property types to generate pages for each selected city.
+            Choose which property types to generate pages for each selected
+            city.
           </Typography>
 
           <FormControlLabel
             control={
               <Checkbox
                 checked={selectedSubTypes.size === subTypes.length}
-                indeterminate={selectedSubTypes.size > 0 && selectedSubTypes.size < subTypes.length}
+                indeterminate={
+                  selectedSubTypes.size > 0 &&
+                  selectedSubTypes.size < subTypes.length
+                }
                 onChange={toggleAllSubTypes}
               />
             }
-            label={<Typography fontWeight="bold">Select All ({subTypes.length})</Typography>}
+            label={
+              <Typography fontWeight="bold">
+                Select All ({subTypes.length})
+              </Typography>
+            }
           />
 
           <FormGroup
@@ -505,8 +556,10 @@ function GenerateSection() {
 
           {pageCount > 0 && (
             <Alert severity="info" sx={{ mt: 3 }}>
-              This will create <strong>{pageCount}</strong> pages ({selectedCities.size}{' '}
-              {selectedCities.size === 1 ? 'city' : 'cities'} x {selectedSubTypes.size}{' '}
+              This will create <strong>{pageCount}</strong> pages (
+              {selectedCities.size}{' '}
+              {selectedCities.size === 1 ? 'city' : 'cities'} x{' '}
+              {selectedSubTypes.size}{' '}
               {selectedSubTypes.size === 1 ? 'sub-type' : 'sub-types'})
             </Alert>
           )}
@@ -525,13 +578,17 @@ function GenerateSection() {
               <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
                 Creating pages... {generationProgress}%
               </Typography>
-              <LinearProgress variant="determinate" value={generationProgress} />
+              <LinearProgress
+                variant="determinate"
+                value={generationProgress}
+              />
             </Box>
           )}
 
           {generationDone && (
             <Alert severity="success" sx={{ mb: 2 }}>
-              Generation complete! {previewRows.filter((r) => r.status === 'created').length} of{' '}
+              Generation complete!{' '}
+              {previewRows.filter((r) => r.status === 'created').length} of{' '}
               {previewRows.length} pages created successfully.
             </Alert>
           )}
@@ -552,7 +609,9 @@ function GenerateSection() {
                   <TableRow key={idx}>
                     <TableCell>{row.city}</TableCell>
                     <TableCell>{row.subType.label}</TableCell>
-                    <TableCell sx={{ fontFamily: 'monospace', fontSize: '0.8rem' }}>
+                    <TableCell
+                      sx={{ fontFamily: 'monospace', fontSize: '0.8rem' }}
+                    >
                       /{row.slug}
                     </TableCell>
                     <TableCell>
@@ -591,7 +650,16 @@ function GenerateSection() {
       )}
 
       {/* Navigation */}
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 4, pt: 2, borderTop: '1px solid', borderColor: 'divider' }}>
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          mt: 4,
+          pt: 2,
+          borderTop: '1px solid',
+          borderColor: 'divider'
+        }}
+      >
         <Button
           disabled={activeStep === 0 || generating}
           onClick={handleBack}
@@ -628,7 +696,9 @@ function CopySection() {
 
   // City selection
   const [loadingLocations, setLoadingLocations] = useState(true)
-  const [countyGroups, setCountyGroups] = useState<Record<string, CityWithCounty[]>>({})
+  const [countyGroups, setCountyGroups] = useState<
+    Record<string, CityWithCounty[]>
+  >({})
   const [selectedCities, setSelectedCities] = useState<Set<string>>(new Set())
 
   // Replacements
@@ -638,7 +708,12 @@ function CopySection() {
   const [copying, setCopying] = useState(false)
   const [copyProgress, setCopyProgress] = useState(0)
   const [copyResults, setCopyResults] = useState<
-    Array<{ city: string; status: 'created' | 'error'; pageId?: string; error?: string }>
+    Array<{
+      city: string
+      status: 'created' | 'error'
+      pageId?: string
+      error?: string
+    }>
   >([])
 
   // ── Load pages ──
@@ -668,7 +743,11 @@ function CopySection() {
           for (const cls of board.classes) {
             for (const area of cls.areas) {
               const countyName = area.name.replace(' County', '').trim()
-              if (!targetCounties.some((tc) => area.name.toLowerCase().includes(tc.toLowerCase()))) {
+              if (
+                !targetCounties.some((tc) =>
+                  area.name.toLowerCase().includes(tc.toLowerCase())
+                )
+              ) {
                 continue
               }
               if (!groups[countyName]) groups[countyName] = []
@@ -710,7 +789,9 @@ function CopySection() {
         detected.push({ find: cityMatch, replace: '{{CITY}}' })
       }
       // Try to extract county
-      const countyMatch = locationPart.match(/(\w[\w\s]+)\s+County/)?.[1]?.trim()
+      const countyMatch = locationPart
+        .match(/(\w[\w\s]+)\s+County/)?.[1]
+        ?.trim()
       if (countyMatch) {
         detected.push({ find: countyMatch, replace: '{{COUNTY}}' })
       }
@@ -738,7 +819,9 @@ function CopySection() {
 
   const toggleCounty = (county: string) => {
     const cities = countyGroups[county] || []
-    const allSelected = cities.every((c) => selectedCities.has(cityKey(c.name, county)))
+    const allSelected = cities.every((c) =>
+      selectedCities.has(cityKey(c.name, county))
+    )
     setSelectedCities((prev) => {
       const next = new Set(prev)
       for (const c of cities) {
@@ -750,7 +833,11 @@ function CopySection() {
     })
   }
 
-  const updateReplacement = (index: number, field: 'find' | 'replace', value: string) => {
+  const updateReplacement = (
+    index: number,
+    field: 'find' | 'replace',
+    value: string
+  ) => {
     setReplacements((prev) => {
       const next = [...prev]
       next[index] = { ...next[index], [field]: value }
@@ -787,7 +874,12 @@ function CopySection() {
         // Build replacement map for this city
         const replaceMap = replacements.map((r) => ({
           find: r.find,
-          replace: r.replace === '{{CITY}}' ? city : r.replace === '{{COUNTY}}' ? county : r.replace
+          replace:
+            r.replace === '{{CITY}}'
+              ? city
+              : r.replace === '{{COUNTY}}'
+                ? county
+                : r.replace
         }))
 
         // Apply replacements to the source page content
@@ -798,7 +890,10 @@ function CopySection() {
 
         for (const { find, replace } of replaceMap) {
           if (!find) continue
-          const regex = new RegExp(find.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi')
+          const regex = new RegExp(
+            find.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'),
+            'gi'
+          )
           title = title.replace(regex, replace)
           metaTitle = metaTitle.replace(regex, replace)
           metaDesc = metaDesc.replace(regex, replace)
@@ -818,7 +913,11 @@ function CopySection() {
 
         results.push({ city, status: 'created', pageId: page.id })
       } catch (err: any) {
-        results.push({ city, status: 'error', error: err?.message || 'Failed to copy' })
+        results.push({
+          city,
+          status: 'error',
+          error: err?.message || 'Failed to copy'
+        })
       }
 
       completed++
@@ -835,7 +934,8 @@ function CopySection() {
         Copy Page to Cities
       </Typography>
       <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-        Select a source page and target cities. The page content will be duplicated with automatic text replacements.
+        Select a source page and target cities. The page content will be
+        duplicated with automatic text replacements.
       </Typography>
 
       {error && (
@@ -859,7 +959,12 @@ function CopySection() {
               value={sourcePage}
               onChange={(_, value) => setSourcePage(value)}
               renderInput={(params) => (
-                <TextField {...params} label="Search pages..." variant="outlined" fullWidth />
+                <TextField
+                  {...params}
+                  label="Search pages..."
+                  variant="outlined"
+                  fullWidth
+                />
               )}
               isOptionEqualToValue={(option, value) => option.id === value.id}
             />
@@ -873,16 +978,25 @@ function CopySection() {
               2. Text Replacements
             </Typography>
             <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-              Auto-detected replacements from the source page. Use {'{{CITY}}'} and {'{{COUNTY}}'} as
-              placeholders that will be replaced with each target city/county name.
+              Auto-detected replacements from the source page. Use {'{{CITY}}'}{' '}
+              and {'{{COUNTY}}'} as placeholders that will be replaced with each
+              target city/county name.
             </Typography>
 
             {replacements.map((pair, idx) => (
-              <Stack key={idx} direction="row" spacing={2} sx={{ mb: 1 }} alignItems="center">
+              <Stack
+                key={idx}
+                direction="row"
+                spacing={2}
+                sx={{ mb: 1 }}
+                alignItems="center"
+              >
                 <TextField
                   label="Find"
                   value={pair.find}
-                  onChange={(e) => updateReplacement(idx, 'find', e.target.value)}
+                  onChange={(e) =>
+                    updateReplacement(idx, 'find', e.target.value)
+                  }
                   size="small"
                   sx={{ flex: 1 }}
                 />
@@ -890,16 +1004,27 @@ function CopySection() {
                 <TextField
                   label="Replace with"
                   value={pair.replace}
-                  onChange={(e) => updateReplacement(idx, 'replace', e.target.value)}
+                  onChange={(e) =>
+                    updateReplacement(idx, 'replace', e.target.value)
+                  }
                   size="small"
                   sx={{ flex: 1 }}
                 />
-                <IconButton onClick={() => removeReplacement(idx)} size="small" color="error">
+                <IconButton
+                  onClick={() => removeReplacement(idx)}
+                  size="small"
+                  color="error"
+                >
                   <DeleteIcon fontSize="small" />
                 </IconButton>
               </Stack>
             ))}
-            <Button startIcon={<AddIcon />} size="small" onClick={addReplacement} sx={{ mt: 1 }}>
+            <Button
+              startIcon={<AddIcon />}
+              size="small"
+              onClick={addReplacement}
+              sx={{ mt: 1 }}
+            >
               Add Replacement
             </Button>
           </Box>
@@ -956,7 +1081,9 @@ function CopySection() {
                         key={cityKey(city.name, county)}
                         control={
                           <Checkbox
-                            checked={selectedCities.has(cityKey(city.name, county))}
+                            checked={selectedCities.has(
+                              cityKey(city.name, county)
+                            )}
                             onChange={() => toggleCity(city.name, county)}
                             size="small"
                           />
@@ -1012,7 +1139,9 @@ function CopySection() {
                       <TableCell>{result.city}</TableCell>
                       <TableCell>
                         <StatusChip
-                          status={result.status === 'created' ? 'created' : 'error'}
+                          status={
+                            result.status === 'created' ? 'created' : 'error'
+                          }
                           error={result.error}
                         />
                       </TableCell>
@@ -1039,7 +1168,13 @@ function CopySection() {
         <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
           <Button
             variant="contained"
-            startIcon={copying ? <CircularProgress size={20} color="inherit" /> : <CopyIcon />}
+            startIcon={
+              copying ? (
+                <CircularProgress size={20} color="inherit" />
+              ) : (
+                <CopyIcon />
+              )
+            }
             onClick={handleCopy}
             disabled={!sourcePage || selectedCities.size === 0 || copying}
             size="large"
@@ -1059,7 +1194,13 @@ function CopySection() {
 // ═════════════════════════════════════════════════════════════════════════════
 
 function StatusChip({ status, error }: { status: string; error?: string }) {
-  const config: Record<string, { label: string; color: 'default' | 'info' | 'success' | 'error' | 'warning' }> = {
+  const config: Record<
+    string,
+    {
+      label: string
+      color: 'default' | 'info' | 'success' | 'error' | 'warning'
+    }
+  > = {
     pending: { label: 'Pending', color: 'default' },
     creating: { label: 'Creating...', color: 'info' },
     created: { label: 'Created', color: 'success' },

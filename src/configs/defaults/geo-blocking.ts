@@ -5,7 +5,7 @@ export const blockedCountries = [
   'CM', // Cameroon
   'KE', // Kenya
   'CI', // Ivory Coast
-  'SN', // Senegal
+  'SN' // Senegal
 ]
 
 export const blockedIPRanges: string[] = []

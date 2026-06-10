@@ -1,5 +1,6 @@
-import { BlogEditor } from '@pages/blog'
 import type { Metadata } from 'next'
+
+import { BlogEditor } from '@pages/blog'
 
 interface EditBlogPageProps {
   params: Promise<{

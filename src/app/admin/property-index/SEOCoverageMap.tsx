@@ -2,6 +2,8 @@
 
 import React, { useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
+
+import AutoFixHighIcon from '@mui/icons-material/AutoFixHigh'
 import {
   Alert,
   Box,
@@ -10,13 +12,15 @@ import {
   Skeleton,
   Stack,
   Tooltip,
-  Typography,
+  Typography
 } from '@mui/material'
-import AutoFixHighIcon from '@mui/icons-material/AutoFixHigh'
 
-import APIAIContent, { type CityLocation } from '@/services/API/APIAIContent'
-import APIContentPages, { type ContentPage } from '@/services/API/APIContentPages'
 import { subTypes, targetCounties } from '@configs/page-generation'
+import APIAIContent, { type CityLocation } from '@/services/API/APIAIContent'
+import APIContentPages, {
+  type ContentPage
+} from '@/services/API/APIContentPages'
+
 import { displayNameToSlug } from 'utils/templateEngine'
 
 type CoverageStatus = 'published' | 'draft' | 'missing'
@@ -75,7 +79,7 @@ export default function SEOCoverageMap() {
         setError(null)
         const [cityList, pageResp] = await Promise.all([
           APIAIContent.getLocationCities(),
-          APIContentPages.getPages({ is_template: false }),
+          APIContentPages.getPages({ is_template: false })
         ])
         if (cancelled) return
         setCities(cityList)
@@ -137,7 +141,7 @@ export default function SEOCoverageMap() {
           cov.set(`${city.id}|${st.slug}`, {
             status,
             pageId: page?.id,
-            pageSlug: page?.slug,
+            pageSlug: page?.slug
           })
           if (status === 'published') published += 1
           else if (status === 'draft') draft += 1
@@ -147,19 +151,21 @@ export default function SEOCoverageMap() {
               city: city.name,
               county: city.county,
               subtypeSlug: st.slug,
-              subtypeLabel: st.label,
+              subtypeLabel: st.label
             })
           }
         }
       }
     }
     const total =
-      Object.values(citiesByCounty).reduce((acc, list) => acc + list.length, 0) *
-      subTypes.length
+      Object.values(citiesByCounty).reduce(
+        (acc, list) => acc + list.length,
+        0
+      ) * subTypes.length
     return {
       coverage: cov,
       totals: { total, published, draft, missing: missingCount },
-      missing: missingList,
+      missing: missingList
     }
   }, [citiesByCounty, pageBySlug])
 
@@ -179,7 +185,11 @@ export default function SEOCoverageMap() {
   if (loading) {
     return (
       <Box>
-        <Skeleton variant="rectangular" height={80} sx={{ mb: 2, borderRadius: 1 }} />
+        <Skeleton
+          variant="rectangular"
+          height={80}
+          sx={{ mb: 2, borderRadius: 1 }}
+        />
         <Skeleton variant="rectangular" height={400} sx={{ borderRadius: 1 }} />
       </Box>
     )
@@ -214,18 +224,36 @@ export default function SEOCoverageMap() {
               {coveragePct}%)
             </Typography>
             <Typography variant="body2" color="text.secondary">
-              Coverage across {Object.values(citiesByCounty).reduce(
+              Coverage across{' '}
+              {Object.values(citiesByCounty).reduce(
                 (acc, l) => acc + l.length,
                 0
               )}{' '}
               cities × {subTypes.length} property subtypes.
             </Typography>
           </Box>
-          <Stack direction="row" spacing={2} alignItems="center" flexWrap="wrap">
+          <Stack
+            direction="row"
+            spacing={2}
+            alignItems="center"
+            flexWrap="wrap"
+          >
             <Stack direction="row" spacing={2}>
-              <CountChip color="success.main" label="Published" value={totals.published} />
-              <CountChip color="warning.main" label="Draft" value={totals.draft} />
-              <CountChip color="error.light" label="Missing" value={totals.missing} />
+              <CountChip
+                color="success.main"
+                label="Published"
+                value={totals.published}
+              />
+              <CountChip
+                color="warning.main"
+                label="Draft"
+                value={totals.draft}
+              />
+              <CountChip
+                color="error.light"
+                label="Missing"
+                value={totals.missing}
+              />
             </Stack>
             <Button
               variant="contained"
@@ -240,7 +268,13 @@ export default function SEOCoverageMap() {
       </Paper>
 
       {/* Legend */}
-      <Stack direction="row" spacing={2} alignItems="center" sx={{ mb: 2 }} flexWrap="wrap">
+      <Stack
+        direction="row"
+        spacing={2}
+        alignItems="center"
+        sx={{ mb: 2 }}
+        flexWrap="wrap"
+      >
         <LegendSwatch color="success.main" label="Published — view live" />
         <LegendSwatch color="warning.main" label="Draft — open in editor" />
         <LegendSwatch color="error.light" label="Missing — not yet generated" />
@@ -259,7 +293,7 @@ export default function SEOCoverageMap() {
               bgcolor: 'background.paper',
               zIndex: 2,
               borderBottom: '1px solid',
-              borderColor: 'divider',
+              borderColor: 'divider'
             }}
           >
             <Box
@@ -270,7 +304,7 @@ export default function SEOCoverageMap() {
                 bgcolor: 'background.paper',
                 zIndex: 3,
                 borderRight: '1px solid',
-                borderColor: 'divider',
+                borderColor: 'divider'
               }}
             >
               <Typography variant="subtitle2" fontWeight={700}>
@@ -284,7 +318,7 @@ export default function SEOCoverageMap() {
                     p: 1,
                     textAlign: 'center',
                     borderLeft: '1px solid',
-                    borderColor: 'divider',
+                    borderColor: 'divider'
                   }}
                 >
                   <Typography
@@ -294,7 +328,7 @@ export default function SEOCoverageMap() {
                       transform: 'rotate(180deg)',
                       whiteSpace: 'nowrap',
                       display: 'inline-block',
-                      lineHeight: 1.2,
+                      lineHeight: 1.2
                     }}
                   >
                     {st.label}
@@ -319,7 +353,7 @@ export default function SEOCoverageMap() {
                     borderBottom: '1px solid',
                     borderColor: 'divider',
                     position: 'sticky',
-                    left: 0,
+                    left: 0
                   }}
                 >
                   <Typography variant="overline" fontWeight={700}>
@@ -333,7 +367,7 @@ export default function SEOCoverageMap() {
                       display: 'grid',
                       gridTemplateColumns: `220px repeat(${subTypes.length}, minmax(64px, 1fr))`,
                       borderBottom: '1px solid',
-                      borderColor: 'divider',
+                      borderColor: 'divider'
                     }}
                   >
                     <Box
@@ -344,7 +378,7 @@ export default function SEOCoverageMap() {
                         bgcolor: 'background.paper',
                         zIndex: 1,
                         borderRight: '1px solid',
-                        borderColor: 'divider',
+                        borderColor: 'divider'
                       }}
                     >
                       <Typography variant="body2" fontWeight={500} noWrap>
@@ -353,7 +387,7 @@ export default function SEOCoverageMap() {
                     </Box>
                     {subTypes.map((st) => {
                       const cell = coverage.get(`${city.id}|${st.slug}`) || {
-                        status: 'missing' as const,
+                        status: 'missing' as const
                       }
                       const citySlug = displayNameToSlug(city.name)
                       return (
@@ -381,7 +415,7 @@ export default function SEOCoverageMap() {
 function CountChip({
   color,
   label,
-  value,
+  value
 }: {
   color: string
   label: string
@@ -389,7 +423,9 @@ function CountChip({
 }) {
   return (
     <Stack direction="row" spacing={1} alignItems="center">
-      <Box sx={{ width: 12, height: 12, bgcolor: color, borderRadius: '2px' }} />
+      <Box
+        sx={{ width: 12, height: 12, bgcolor: color, borderRadius: '2px' }}
+      />
       <Typography variant="body2" color="text.secondary">
         {label}: <strong>{value}</strong>
       </Typography>
@@ -400,7 +436,9 @@ function CountChip({
 function LegendSwatch({ color, label }: { color: string; label: string }) {
   return (
     <Stack direction="row" spacing={1} alignItems="center">
-      <Box sx={{ width: 16, height: 16, bgcolor: color, borderRadius: '2px' }} />
+      <Box
+        sx={{ width: 16, height: 16, bgcolor: color, borderRadius: '2px' }}
+      />
       <Typography variant="caption" color="text.secondary">
         {label}
       </Typography>
@@ -413,7 +451,7 @@ function CoverageCellView({
   cityName,
   citySlug,
   subtypeLabel,
-  subtypeSlug,
+  subtypeSlug
 }: {
   cell: CoverageCell
   cityName: string
@@ -430,7 +468,7 @@ function CoverageCellView({
     borderColor: 'divider',
     cursor: cell.status === 'missing' ? 'default' : 'pointer',
     transition: 'opacity 0.15s',
-    '&:hover': cell.status === 'missing' ? {} : { opacity: 0.8 },
+    '&:hover': cell.status === 'missing' ? {} : { opacity: 0.8 }
   } as const
 
   if (cell.status === 'missing') {
@@ -443,7 +481,7 @@ function CoverageCellView({
           sx={{
             ...baseSx,
             bgcolor: statusBg(cell.status),
-            color: statusFg(cell.status),
+            color: statusFg(cell.status)
           }}
         >
           <Typography variant="caption" sx={{ opacity: 0.7 }}>
@@ -476,7 +514,7 @@ function CoverageCellView({
           ...baseSx,
           bgcolor: statusBg(cell.status),
           color: statusFg(cell.status),
-          textDecoration: 'none',
+          textDecoration: 'none'
         }}
       />
     </Tooltip>

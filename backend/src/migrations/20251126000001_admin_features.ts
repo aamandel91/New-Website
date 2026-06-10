@@ -1,4 +1,4 @@
-import type { Knex } from "knex";
+import type { Knex } from 'knex'
 
 export async function up(knex: Knex): Promise<void> {
   // Create leads table for CRM functionality
@@ -21,7 +21,7 @@ export async function up(knex: Knex): Promise<void> {
       created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
       updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
     )
-  `);
+  `)
 
   // Create lead activities table for activity timeline
   await knex.schema.raw(`
@@ -35,7 +35,7 @@ export async function up(knex: Knex): Promise<void> {
       metadata JSONB DEFAULT '{}',
       created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
     )
-  `);
+  `)
 
   // Create analytics events table
   await knex.schema.raw(`
@@ -47,7 +47,7 @@ export async function up(knex: Knex): Promise<void> {
       properties JSONB DEFAULT '{}', -- Custom event properties
       created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
     )
-  `);
+  `)
 
   // Create analytics metrics table (pre-aggregated metrics)
   await knex.schema.raw(`
@@ -60,7 +60,7 @@ export async function up(knex: Knex): Promise<void> {
       created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
       UNIQUE(org_id, metric_name, date)
     )
-  `);
+  `)
 
   // Create content pages table
   await knex.schema.raw(`
@@ -88,7 +88,7 @@ export async function up(knex: Knex): Promise<void> {
       updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
       UNIQUE(org_id, slug)
     )
-  `);
+  `)
 
   // Create testimonials table
   await knex.schema.raw(`
@@ -107,7 +107,7 @@ export async function up(knex: Knex): Promise<void> {
       created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
       updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
     )
-  `);
+  `)
 
   // Create navigation items table
   await knex.schema.raw(`
@@ -127,7 +127,7 @@ export async function up(knex: Knex): Promise<void> {
       created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
       updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
     )
-  `);
+  `)
 
   // Create SEO settings table
   await knex.schema.raw(`
@@ -144,7 +144,7 @@ export async function up(knex: Knex): Promise<void> {
       created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
       updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
     )
-  `);
+  `)
 
   // Create indexes
   await knex.schema.raw(`
@@ -159,16 +159,16 @@ export async function up(knex: Knex): Promise<void> {
     CREATE INDEX idx_content_pages_status ON content_pages(org_id, status);
     CREATE INDEX idx_testimonials_org ON testimonials(org_id, published);
     CREATE INDEX idx_nav_items_org_pos ON navigation_items(org_id, position, order_index);
-  `);
+  `)
 }
 
 export async function down(knex: Knex): Promise<void> {
-  await knex.schema.dropTableIfExists('seo_settings');
-  await knex.schema.dropTableIfExists('navigation_items');
-  await knex.schema.dropTableIfExists('testimonials');
-  await knex.schema.dropTableIfExists('content_pages');
-  await knex.schema.dropTableIfExists('analytics_metrics');
-  await knex.schema.dropTableIfExists('analytics_events');
-  await knex.schema.dropTableIfExists('lead_activities');
-  await knex.schema.dropTableIfExists('leads');
+  await knex.schema.dropTableIfExists('seo_settings')
+  await knex.schema.dropTableIfExists('navigation_items')
+  await knex.schema.dropTableIfExists('testimonials')
+  await knex.schema.dropTableIfExists('content_pages')
+  await knex.schema.dropTableIfExists('analytics_metrics')
+  await knex.schema.dropTableIfExists('analytics_events')
+  await knex.schema.dropTableIfExists('lead_activities')
+  await knex.schema.dropTableIfExists('leads')
 }

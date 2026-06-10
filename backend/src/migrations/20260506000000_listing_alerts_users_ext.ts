@@ -39,6 +39,10 @@ export async function up(knex: Knex): Promise<void> {
 
 export async function down(knex: Knex): Promise<void> {
   await knex.schema.raw(`DROP TABLE IF EXISTS agent_assignments`)
-  await knex.schema.raw(`DROP INDEX IF EXISTS site_users_repliers_client_id_idx`)
-  await knex.schema.raw(`ALTER TABLE site_users DROP COLUMN IF EXISTS repliers_client_id`)
+  await knex.schema.raw(
+    `DROP INDEX IF EXISTS site_users_repliers_client_id_idx`
+  )
+  await knex.schema.raw(
+    `ALTER TABLE site_users DROP COLUMN IF EXISTS repliers_client_id`
+  )
 }

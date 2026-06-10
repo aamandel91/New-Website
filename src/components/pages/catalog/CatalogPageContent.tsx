@@ -15,13 +15,10 @@ import {
   type ApiNeighborhood,
   type Property
 } from 'services/API'
-import { isClientSideSort } from 'services/Search'
 import type { Filters } from 'services/Search'
+import { isClientSideSort } from 'services/Search'
 import MapOptionsProvider from 'providers/MapOptionsProvider'
-import {
-  filterPriceReduced,
-  sortPropertiesClientSide
-} from 'utils/properties'
+import { filterPriceReduced, sortPropertiesClientSide } from 'utils/properties'
 
 import {
   Breadcrumbs,

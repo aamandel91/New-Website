@@ -1,7 +1,9 @@
 'use client'
 
 import { create } from 'zustand'
+
 import { persist } from 'zustand/middleware'
+
 import { type Property } from 'services/API'
 
 interface RecentlyViewedStore {
@@ -26,14 +28,14 @@ export const useRecentlyViewed = create<RecentlyViewedStore>()(
 
           // Add to front and limit to max
           return {
-            properties: [property, ...filtered].slice(0, MAX_RECENTLY_VIEWED),
+            properties: [property, ...filtered].slice(0, MAX_RECENTLY_VIEWED)
           }
         }),
 
-      clearAll: () => set({ properties: [] }),
+      clearAll: () => set({ properties: [] })
     }),
     {
-      name: 'recently-viewed-storage',
+      name: 'recently-viewed-storage'
     }
   )
 )

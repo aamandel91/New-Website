@@ -130,13 +130,20 @@ export class BlogAutoTagService {
   private neighborhoodBySlug: Map<string, string>
 
   constructor() {
-    this.anthropic = new Anthropic({ apiKey: process.env['ANTHROPIC_API_KEY'] || '' })
+    this.anthropic = new Anthropic({
+      apiKey: process.env['ANTHROPIC_API_KEY'] || ''
+    })
 
     this.cityBySlug = new Map(
-      activeCities.map(c => [slugify(c.name), { name: c.name, county: c.county }])
+      activeCities.map((c) => [
+        slugify(c.name),
+        { name: c.name, county: c.county }
+      ])
     )
-    this.countyBySlug = new Map(activeCounties.map(c => [slugify(c), c]))
-    this.neighborhoodBySlug = new Map(activeNeighborhoods.map(n => [slugify(n), n]))
+    this.countyBySlug = new Map(activeCounties.map((c) => [slugify(c), c]))
+    this.neighborhoodBySlug = new Map(
+      activeNeighborhoods.map((n) => [slugify(n), n])
+    )
   }
 
   /** Returns true if the global kill switch is OFF. */
@@ -201,10 +208,14 @@ export class BlogAutoTagService {
     }
 
     // Cost guard: truncate input to 50KB before sending.
-    const rawContent = [input.excerpt ?? '', input.content].filter(Boolean).join('\n\n')
+    const rawContent = [input.excerpt ?? '', input.content]
+      .filter(Boolean)
+      .join('\n\n')
     const originalSize = Buffer.byteLength(rawContent, 'utf-8')
     const truncated = originalSize > MAX_INPUT_BYTES
-    const content = truncated ? rawContent.slice(0, MAX_INPUT_BYTES) : rawContent
+    const content = truncated
+      ? rawContent.slice(0, MAX_INPUT_BYTES)
+      : rawContent
 
     try {
       const response = await this.anthropic.messages.create({
@@ -228,7 +239,7 @@ export class BlogAutoTagService {
         truncated
       })
 
-      const toolBlock = response.content.find(b => b.type === 'tool_use') as
+      const toolBlock = response.content.find((b) => b.type === 'tool_use') as
         | { type: 'tool_use'; input: unknown }
         | undefined
       if (!toolBlock) {
@@ -249,19 +260,23 @@ export class BlogAutoTagService {
       }
 
       const validated = this.validate(toolBlock.input)
-      validated.cities = validated.cities.filter(s => !(input.rejected ?? []).includes(s))
-      validated.neighborhoods = validated.neighborhoods.filter(
-        s => !(input.rejected ?? []).includes(s)
+      validated.cities = validated.cities.filter(
+        (s) => !(input.rejected ?? []).includes(s)
       )
-      validated.counties = validated.counties.filter(s => !(input.rejected ?? []).includes(s))
+      validated.neighborhoods = validated.neighborhoods.filter(
+        (s) => !(input.rejected ?? []).includes(s)
+      )
+      validated.counties = validated.counties.filter(
+        (s) => !(input.rejected ?? []).includes(s)
+      )
       validated.topics = validated.topics.filter(
-        s => !(input.rejected ?? []).includes(s)
+        (s) => !(input.rejected ?? []).includes(s)
       ) as Topic[]
       validated.audience = validated.audience.filter(
-        s => !(input.rejected ?? []).includes(`audience:${s}`)
+        (s) => !(input.rejected ?? []).includes(`audience:${s}`)
       ) as Audience[]
       validated.seasonality = validated.seasonality.filter(
-        s => !(input.rejected ?? []).includes(`season:${s}`)
+        (s) => !(input.rejected ?? []).includes(`season:${s}`)
       ) as Seasonality[]
 
       return {
@@ -301,19 +316,28 @@ export class BlogAutoTagService {
    * Pure function: no I/O, easy to unit test. Exposed for tests.
    */
   validate(raw: unknown): StructuredSuggestion {
-    const r = (raw && typeof raw === 'object' ? raw : {}) as Record<string, unknown>
+    const r = (raw && typeof raw === 'object' ? raw : {}) as Record<
+      string,
+      unknown
+    >
     const cities = this.filterCities(this.asStringArray(r['cities']))
-    const neighborhoods = this.filterNeighborhoods(this.asStringArray(r['neighborhoods']))
+    const neighborhoods = this.filterNeighborhoods(
+      this.asStringArray(r['neighborhoods'])
+    )
     const counties = this.filterCounties(this.asStringArray(r['counties']))
     const topics = this.asStringArray(r['topics'])
-      .map(t => slugify(t))
+      .map((t) => slugify(t))
       .filter((t): t is Topic => (TOPIC_ENUM as readonly string[]).includes(t))
     const audience = this.asStringArray(r['audience'])
-      .map(t => slugify(t))
-      .filter((t): t is Audience => (AUDIENCE_ENUM as readonly string[]).includes(t))
+      .map((t) => slugify(t))
+      .filter((t): t is Audience =>
+        (AUDIENCE_ENUM as readonly string[]).includes(t)
+      )
     const seasonality = this.asStringArray(r['seasonality'])
-      .map(t => slugify(t))
-      .filter((t): t is Seasonality => (SEASONALITY_ENUM as readonly string[]).includes(t))
+      .map((t) => slugify(t))
+      .filter((t): t is Seasonality =>
+        (SEASONALITY_ENUM as readonly string[]).includes(t)
+      )
 
     const out: StructuredSuggestion = {
       cities: dedupe(cities),
@@ -341,28 +365,24 @@ export class BlogAutoTagService {
       ...s.neighborhoods,
       ...s.counties,
       ...s.topics,
-      ...s.audience.map(a => `audience:${a}`),
-      ...s.seasonality.map(a => `season:${a}`)
+      ...s.audience.map((a) => `audience:${a}`),
+      ...s.seasonality.map((a) => `season:${a}`)
     ]
     return dedupe(flat)
   }
 
   private filterCities(values: string[]): string[] {
-    return values
-      .map(v => slugify(v))
-      .filter(v => this.cityBySlug.has(v))
+    return values.map((v) => slugify(v)).filter((v) => this.cityBySlug.has(v))
   }
 
   private filterNeighborhoods(values: string[]): string[] {
     return values
-      .map(v => slugify(v))
-      .filter(v => this.neighborhoodBySlug.has(v))
+      .map((v) => slugify(v))
+      .filter((v) => this.neighborhoodBySlug.has(v))
   }
 
   private filterCounties(values: string[]): string[] {
-    return values
-      .map(v => slugify(v))
-      .filter(v => this.countyBySlug.has(v))
+    return values.map((v) => slugify(v)).filter((v) => this.countyBySlug.has(v))
   }
 
   private asStringArray(x: unknown): string[] {
@@ -370,13 +390,19 @@ export class BlogAutoTagService {
     return x.filter((v): v is string => typeof v === 'string')
   }
 
-  private buildPrompt(title: string, content: string, rejected: string[] | undefined): string {
-    const cityList = activeCities.map(c => slugify(c.name)).join(', ')
-    const countyList = activeCounties.map(c => slugify(c)).join(', ')
-    const neighborhoodList = activeNeighborhoods.map(n => slugify(n)).join(', ') || '(none defined)'
-    const rejectedClause = rejected && rejected.length > 0
-      ? `\n\nAn admin has previously REJECTED the following tags for this post. DO NOT suggest any of them again: ${rejected.join(', ')}`
-      : ''
+  private buildPrompt(
+    title: string,
+    content: string,
+    rejected: string[] | undefined
+  ): string {
+    const cityList = activeCities.map((c) => slugify(c.name)).join(', ')
+    const countyList = activeCounties.map((c) => slugify(c)).join(', ')
+    const neighborhoodList =
+      activeNeighborhoods.map((n) => slugify(n)).join(', ') || '(none defined)'
+    const rejectedClause =
+      rejected && rejected.length > 0
+        ? `\n\nAn admin has previously REJECTED the following tags for this post. DO NOT suggest any of them again: ${rejected.join(', ')}`
+        : ''
 
     return `Tag the following blog post for a South Florida real-estate site.
 
@@ -455,7 +481,14 @@ ${content}`
             description: 'One-sentence rationale for the chosen tags.'
           }
         },
-        required: ['cities', 'neighborhoods', 'counties', 'topics', 'audience', 'seasonality']
+        required: [
+          'cities',
+          'neighborhoods',
+          'counties',
+          'topics',
+          'audience',
+          'seasonality'
+        ]
       }
     }
   }

@@ -8,14 +8,54 @@ import { Box, Button, Typography } from '@mui/material'
 import { activeMarkets } from '@configs/page-generation'
 
 const METRO_AREAS = [
-  { key: 'miami-metro', label: 'MIAMI METRO', gradient: 'linear-gradient(135deg, #0F1621 0%, #1a3a4a 60%, #00B5AD 100%)', href: '/search/gallery?area=miami-dade' },
-  { key: 'broward-palm-beach', label: 'BROWARD / PALM BEACH METRO', gradient: 'linear-gradient(135deg, #1a3a4a 0%, #2c5364 60%, #0F1621 100%)', href: '/search/gallery?area=broward-palm-beach' },
-  { key: 'port-st-lucie', label: 'PORT ST LUCIE METRO', gradient: 'linear-gradient(135deg, #2c5364 0%, #203a43 60%, #0F1621 100%)', href: '/search/gallery?area=st-lucie' },
-  { key: 'orlando', label: 'ORLANDO METRO', gradient: 'linear-gradient(135deg, #0F1621 0%, #1b4332 60%, #2d6a4f 100%)', href: '/orlando' },
-  { key: 'tampa-st-pete', label: 'TAMPA / ST PETE METRO', gradient: 'linear-gradient(135deg, #1a3a4a 0%, #0F1621 60%, #2c5364 100%)', href: '/tampa' },
-  { key: 'sarasota', label: 'SARASOTA METRO', gradient: 'linear-gradient(135deg, #203a43 0%, #2c5364 60%, #0F1621 100%)', href: '/sarasota' },
-  { key: 'sw-florida', label: 'SW FLORIDA', gradient: 'linear-gradient(135deg, #0F1621 0%, #2c5364 60%, #1a3a4a 100%)', href: '/search/gallery?area=sw-florida' },
-  { key: 'florida-keys', label: 'FLORIDA KEYS', gradient: 'linear-gradient(135deg, #00B5AD 0%, #1a3a4a 60%, #0F1621 100%)', href: '/search/gallery?area=florida-keys' }
+  {
+    key: 'miami-metro',
+    label: 'MIAMI METRO',
+    gradient: 'linear-gradient(135deg, #0F1621 0%, #1a3a4a 60%, #00B5AD 100%)',
+    href: '/search/gallery?area=miami-dade'
+  },
+  {
+    key: 'broward-palm-beach',
+    label: 'BROWARD / PALM BEACH METRO',
+    gradient: 'linear-gradient(135deg, #1a3a4a 0%, #2c5364 60%, #0F1621 100%)',
+    href: '/search/gallery?area=broward-palm-beach'
+  },
+  {
+    key: 'port-st-lucie',
+    label: 'PORT ST LUCIE METRO',
+    gradient: 'linear-gradient(135deg, #2c5364 0%, #203a43 60%, #0F1621 100%)',
+    href: '/search/gallery?area=st-lucie'
+  },
+  {
+    key: 'orlando',
+    label: 'ORLANDO METRO',
+    gradient: 'linear-gradient(135deg, #0F1621 0%, #1b4332 60%, #2d6a4f 100%)',
+    href: '/orlando'
+  },
+  {
+    key: 'tampa-st-pete',
+    label: 'TAMPA / ST PETE METRO',
+    gradient: 'linear-gradient(135deg, #1a3a4a 0%, #0F1621 60%, #2c5364 100%)',
+    href: '/tampa'
+  },
+  {
+    key: 'sarasota',
+    label: 'SARASOTA METRO',
+    gradient: 'linear-gradient(135deg, #203a43 0%, #2c5364 60%, #0F1621 100%)',
+    href: '/sarasota'
+  },
+  {
+    key: 'sw-florida',
+    label: 'SW FLORIDA',
+    gradient: 'linear-gradient(135deg, #0F1621 0%, #2c5364 60%, #1a3a4a 100%)',
+    href: '/search/gallery?area=sw-florida'
+  },
+  {
+    key: 'florida-keys',
+    label: 'FLORIDA KEYS',
+    gradient: 'linear-gradient(135deg, #00B5AD 0%, #1a3a4a 60%, #0F1621 100%)',
+    href: '/search/gallery?area=florida-keys'
+  }
 ]
 
 function isActiveMarket(key: string): boolean {
@@ -23,15 +63,15 @@ function isActiveMarket(key: string): boolean {
     'miami-metro': 'south-florida',
     'broward-palm-beach': 'south-florida',
     'port-st-lucie': 'south-florida',
-    'orlando': 'orlando',
+    orlando: 'orlando',
     'tampa-st-pete': 'tampa-bay',
-    'sarasota': 'sarasota',
+    sarasota: 'sarasota',
     'sw-florida': 'naples-swfl',
     'florida-keys': 'south-florida'
   }
   const marketId = keyToMarketId[key]
   if (!marketId) return false
-  return activeMarkets.some(m => m.id === marketId)
+  return activeMarkets.some((m) => m.id === marketId)
 }
 
 const ExploreListings = () => {
@@ -68,20 +108,26 @@ const ExploreListings = () => {
       <Box
         sx={{
           display: 'grid',
-          gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', md: 'repeat(3, 1fr)' },
+          gridTemplateColumns: {
+            xs: '1fr',
+            sm: 'repeat(2, 1fr)',
+            md: 'repeat(3, 1fr)'
+          },
           gap: '2px'
         }}
       >
         {METRO_AREAS.map((area) => {
           const imageUrl = tileImages[area.key]
-          const bgStyle = imageUrl
-            ? `url(${imageUrl})`
-            : area.gradient
+          const bgStyle = imageUrl ? `url(${imageUrl})` : area.gradient
           const active = isActiveMarket(area.key)
           const tileHref = active ? area.href : '#'
 
           return (
-            <Link key={area.key} href={tileHref} style={{ textDecoration: 'none' }}>
+            <Link
+              key={area.key}
+              href={tileHref}
+              style={{ textDecoration: 'none' }}
+            >
               <Box
                 sx={{
                   height: { xs: '200px', sm: '250px', md: '300px' },
@@ -142,7 +188,12 @@ const ExploreListings = () => {
                 <Typography
                   sx={{
                     color: '#fff',
-                    fontSize: { xs: '18px', sm: '22px', md: '28px', lg: '32px' },
+                    fontSize: {
+                      xs: '18px',
+                      sm: '22px',
+                      md: '28px',
+                      lg: '32px'
+                    },
                     fontWeight: 700,
                     textTransform: 'uppercase',
                     textAlign: 'center',
@@ -171,7 +222,10 @@ const ExploreListings = () => {
                     py: 1,
                     zIndex: 2,
                     borderRadius: '30px',
-                    '&:hover': { borderColor: '#fff', bgcolor: 'rgba(255,255,255,0.15)' }
+                    '&:hover': {
+                      borderColor: '#fff',
+                      bgcolor: 'rgba(255,255,255,0.15)'
+                    }
                   }}
                 >
                   {area.label} Homes

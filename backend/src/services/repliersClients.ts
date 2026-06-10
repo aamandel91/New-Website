@@ -134,7 +134,10 @@ export default class RepliersClientsService {
       .orderBy('assigned_at', 'desc')
       .first<{ repliers_agent_id: number; assigned_at: Date }>()
     if (!row) return null
-    return { agentId: Number(row.repliers_agent_id), assignedAt: row.assigned_at }
+    return {
+      agentId: Number(row.repliers_agent_id),
+      assignedAt: row.assigned_at
+    }
   }
 
   /**
@@ -142,11 +145,15 @@ export default class RepliersClientsService {
    * Useful for users created before this rollout, or whose initial
    * provision failed.
    */
-  async backfillMissing(limit: number = 50): Promise<{ attempted: number; provisioned: number }> {
+  async backfillMissing(
+    limit: number = 50
+  ): Promise<{ attempted: number; provisioned: number }> {
     const users = await this.db('site_users')
       .whereNull('repliers_client_id')
       .limit(limit)
-      .select<SiteUserRecord[]>('id', 'email', 'name', 'phone', 'repliers_client_id')
+      .select<
+        SiteUserRecord[]
+      >('id', 'email', 'name', 'phone', 'repliers_client_id')
 
     let provisioned = 0
     for (const u of users) {

@@ -3,14 +3,8 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 
-import {
-  Autocomplete,
-  Box,
-  Chip,
-  TextField,
-  Typography
-} from '@mui/material'
 import type { SxProps, Theme } from '@mui/material'
+import { Autocomplete, Box, Chip, TextField, Typography } from '@mui/material'
 
 const CSR_API_URL = 'https://csr-api.repliers.io'
 const CSR_API_KEY = process.env.NEXT_PUBLIC_REPLIERS_CSR_KEY || ''
@@ -294,7 +288,8 @@ const LocationAutocomplete = ({
         />
       )}
       renderOption={(props, option) => {
-        const { key, ...otherProps } = props as React.HTMLAttributes<HTMLLIElement> & { key?: React.Key }
+        const { key, ...otherProps } =
+          props as React.HTMLAttributes<HTMLLIElement> & { key?: React.Key }
         const badge = getTypeBadge(option.type)
         return (
           <Box

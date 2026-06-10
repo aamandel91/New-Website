@@ -3,16 +3,23 @@ import type React from 'react'
 
 import content from '@configs/content'
 import searchConfig from '@configs/search'
-import StructuredData from '@shared/StructuredData'
 import { Property404Template, PropertyPageTemplate } from '@templates'
+import StructuredData from '@shared/StructuredData'
 
 import { formatMetadata } from 'utils/properties'
+import {
+  generatePropertyBreadcrumbJsonLd,
+  generatePropertyJsonLd
+} from 'utils/propertySchema'
+import {
+  extractMlsFromSlug,
+  generatePropertyUrl,
+  generateStaticPropertyUrl
+} from 'utils/propertyUrls'
 import { getProtocolHost } from 'utils/urls'
-import { extractMlsFromSlug, generatePropertyUrl, generateStaticPropertyUrl } from 'utils/propertyUrls'
-import { generatePropertyJsonLd, generatePropertyBreadcrumbJsonLd } from 'utils/propertySchema'
 
+import { fetchMarketStats, fetchSimilarProperties } from './similarProperties'
 import { fetchNearbies, fetchProperty } from './utils'
-import { fetchSimilarProperties, fetchMarketStats } from './similarProperties'
 
 type PropertyDetailPageProps = {
   params: Promise<{
@@ -42,7 +49,7 @@ export const generateMetadata = async (props: PropertyDetailPageProps) => {
       : undefined
     return {
       ...meta,
-      ...(canonical && { alternates: { canonical } }),
+      ...(canonical && { alternates: { canonical } })
     }
   } catch (error: any) {
     return content.missingPropertyMetadata
@@ -67,7 +74,11 @@ const PropertyDetailPage = async (props: PropertyDetailPageProps) => {
     const [similarProperties, marketStats] = await Promise.all([
       fetchSimilarProperties(property, 6),
       property.address?.city && property.address?.state
-        ? fetchMarketStats(property.address.city, property.address.state, boardId)
+        ? fetchMarketStats(
+            property.address.city,
+            property.address.state,
+            boardId
+          )
         : Promise.resolve(null)
     ])
 

@@ -2,15 +2,8 @@
 
 import React, { useState } from 'react'
 
-import {
-  Alert,
-  Box,
-  Button,
-  Paper,
-  TextField,
-  Typography,
-} from '@mui/material'
 import NotificationsActiveIcon from '@mui/icons-material/NotificationsActive'
+import { Alert, Box, Button, Paper, TextField, Typography } from '@mui/material'
 
 import { ssIdentify } from '@/utils/suresendTracking'
 
@@ -19,7 +12,7 @@ interface NotifyWhenListedProps {
 }
 
 const NotifyWhenListed: React.FC<NotifyWhenListedProps> = ({
-  propertyAddress,
+  propertyAddress
 }) => {
   const [email, setEmail] = useState('')
   const [submitted, setSubmitted] = useState(false)
@@ -47,8 +40,8 @@ const NotifyWhenListed: React.FC<NotifyWhenListedProps> = ({
           message: `Notify me when ${propertyAddress} hits the market.`,
           formType: 'contact',
           propertyAddress,
-          source: 'property_watcher',
-        }),
+          source: 'property_watcher'
+        })
       })
 
       if (!res.ok) throw new Error('Failed to submit')
@@ -81,9 +74,14 @@ const NotifyWhenListed: React.FC<NotifyWhenListedProps> = ({
         </Typography>
       </Box>
       <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-        We&apos;ll send you an email as soon as this property is listed for sale.
+        We&apos;ll send you an email as soon as this property is listed for
+        sale.
       </Typography>
-      <Box component="form" onSubmit={handleSubmit} sx={{ display: 'flex', gap: 1 }}>
+      <Box
+        component="form"
+        onSubmit={handleSubmit}
+        sx={{ display: 'flex', gap: 1 }}
+      >
         <TextField
           size="small"
           type="email"

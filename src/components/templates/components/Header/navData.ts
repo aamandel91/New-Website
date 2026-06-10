@@ -40,7 +40,7 @@ const cities = [
   'Fort Pierce',
   'Jensen Beach',
   'Hobe Sound',
-  'Tradition',
+  'Tradition'
 ] as const
 
 const counties = [
@@ -48,7 +48,7 @@ const counties = [
   { name: 'Palm Beach County', slug: 'palm-beach-county' },
   { name: 'Miami-Dade County', slug: 'miami-dade-county' },
   { name: 'Martin County', slug: 'martin-county' },
-  { name: 'St. Lucie County', slug: 'st-lucie-county' },
+  { name: 'St. Lucie County', slug: 'st-lucie-county' }
 ] as const
 
 function cityToSlug(city: string) {
@@ -57,15 +57,15 @@ function cityToSlug(city: string) {
 
 export const cityItems = cities.map((city) => ({
   label: city,
-  href: `/${cityToSlug(city)}`,
+  href: `/${cityToSlug(city)}`
 }))
 
 export const countyItems = counties.map((c) => ({
   label: c.name,
-  href: `/search?county=${encodeURIComponent(c.name)}`,
+  href: `/search?county=${encodeURIComponent(c.name)}`
 }))
 
 export const propertyTypeItems = subTypes.map((st) => ({
   label: st.label,
-  href: `/${st.slug}`,
+  href: `/${st.slug}`
 }))

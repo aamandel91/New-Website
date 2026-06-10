@@ -1,7 +1,13 @@
 'use client'
 
 import React, { useState } from 'react'
+
+import ArrowBackIcon from '@mui/icons-material/ArrowBack'
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
+import CheckCircleIcon from '@mui/icons-material/CheckCircle'
+import SendIcon from '@mui/icons-material/Send'
 import {
+  Alert,
   Box,
   Button,
   Container,
@@ -13,13 +19,9 @@ import {
   Slider,
   Stack,
   TextField,
-  Typography,
-  Alert,
+  Typography
 } from '@mui/material'
-import ArrowBackIcon from '@mui/icons-material/ArrowBack'
-import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
-import SendIcon from '@mui/icons-material/Send'
-import CheckCircleIcon from '@mui/icons-material/CheckCircle'
+
 import { trackFormSubmission } from '@/utils/analytics'
 import { ssIdentify } from '@/utils/suresendTracking'
 
@@ -32,7 +34,7 @@ function formatCurrency(val: number): string {
     style: 'currency',
     currency: 'USD',
     minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
+    maximumFractionDigits: 0
   }).format(val)
 }
 
@@ -54,7 +56,7 @@ function sendToSureSend(data: {
     `Payment: ${data.paymentType}`,
     data.paymentType === 'loan' ? `Down Payment: ${data.downPayment}%` : '',
     `Toured: ${data.toured}`,
-    data.notes ? `Notes: ${data.notes}` : '',
+    data.notes ? `Notes: ${data.notes}` : ''
   ]
     .filter(Boolean)
     .join('\n')
@@ -70,8 +72,8 @@ function sendToSureSend(data: {
       formType: 'offer',
       propertyAddress: data.address,
       mlsNumber: data.mlsNumber,
-      source: 'offer_wizard',
-    }),
+      source: 'offer_wizard'
+    })
   }).catch((err) => console.error('[SureSend] Offer lead failed:', err))
 }
 
@@ -81,7 +83,11 @@ interface OfferWizardProps {
   backHref: string
 }
 
-export default function OfferWizard({ address, mlsNumber, backHref }: OfferWizardProps) {
+export default function OfferWizard({
+  address,
+  mlsNumber,
+  backHref
+}: OfferWizardProps) {
   const [step, setStep] = useState(0)
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
@@ -92,7 +98,9 @@ export default function OfferWizard({ address, mlsNumber, backHref }: OfferWizar
   const [offerPrice, setOfferPrice] = useState<number>(500000)
 
   // Step 3
-  const [paymentType, setPaymentType] = useState<'loan' | 'cash' | 'later' | ''>('')
+  const [paymentType, setPaymentType] = useState<
+    'loan' | 'cash' | 'later' | ''
+  >('')
   const [downPayment, setDownPayment] = useState<number>(20)
 
   // Step 4
@@ -130,7 +138,7 @@ export default function OfferWizard({ address, mlsNumber, backHref }: OfferWizar
         toured: toured || 'no',
         notes,
         address,
-        mlsNumber,
+        mlsNumber
       })
       setSuccess(true)
     } catch {
@@ -144,14 +152,21 @@ export default function OfferWizard({ address, mlsNumber, backHref }: OfferWizar
     return (
       <Container maxWidth="sm" sx={{ py: { xs: 8, md: 12 } }}>
         <Paper elevation={3} sx={{ p: { xs: 3, md: 5 }, textAlign: 'center' }}>
-          <CheckCircleIcon sx={{ fontSize: 64, color: 'success.main', mb: 2 }} />
+          <CheckCircleIcon
+            sx={{ fontSize: 64, color: 'success.main', mb: 2 }}
+          />
           <Typography variant="h5" fontWeight={700} sx={{ mb: 1 }}>
             Offer Inquiry Submitted
           </Typography>
           <Typography color="text.secondary" sx={{ mb: 3 }}>
-            A member of our team will reach out shortly to discuss next steps for {address || 'this property'}.
+            A member of our team will reach out shortly to discuss next steps
+            for {address || 'this property'}.
           </Typography>
-          <Button variant="contained" href={backHref} sx={{ bgcolor: NAVY, '&:hover': { bgcolor: '#1a2435' } }}>
+          <Button
+            variant="contained"
+            href={backHref}
+            sx={{ bgcolor: NAVY, '&:hover': { bgcolor: '#1a2435' } }}
+          >
             Back to Listing
           </Button>
         </Paper>
@@ -165,7 +180,13 @@ export default function OfferWizard({ address, mlsNumber, backHref }: OfferWizar
         <LinearProgress
           variant="determinate"
           value={progress}
-          sx={{ mb: 4, height: 6, borderRadius: 3, bgcolor: '#eee', '& .MuiLinearProgress-bar': { bgcolor: GOLD } }}
+          sx={{
+            mb: 4,
+            height: 6,
+            borderRadius: 3,
+            bgcolor: '#eee',
+            '& .MuiLinearProgress-bar': { bgcolor: GOLD }
+          }}
         />
 
         {/* Step 1: Intro */}
@@ -175,15 +196,33 @@ export default function OfferWizard({ address, mlsNumber, backHref }: OfferWizar
               Here&apos;s what to expect
             </Typography>
             <Typography color="text.secondary">
-              Starting an offer is a big step. We&apos;ll walk you through a few quick questions to get things started.
+              Starting an offer is a big step. We&apos;ll walk you through a few
+              quick questions to get things started.
             </Typography>
             <Stack spacing={2.5} sx={{ py: 2 }}>
               {[
-                { num: '1', title: 'Offer Details', desc: 'We\'ll ask about your offer price and how you plan to pay.' },
-                { num: '2', title: 'Payment Info', desc: 'Tell us about your financing — loan, cash, or still deciding.' },
-                { num: '3', title: 'Your Contact Info', desc: 'We\'ll need your info so an agent can follow up with you.' },
+                {
+                  num: '1',
+                  title: 'Offer Details',
+                  desc: "We'll ask about your offer price and how you plan to pay."
+                },
+                {
+                  num: '2',
+                  title: 'Payment Info',
+                  desc: 'Tell us about your financing — loan, cash, or still deciding.'
+                },
+                {
+                  num: '3',
+                  title: 'Your Contact Info',
+                  desc: "We'll need your info so an agent can follow up with you."
+                }
               ].map((item) => (
-                <Stack key={item.num} direction="row" spacing={2} alignItems="flex-start">
+                <Stack
+                  key={item.num}
+                  direction="row"
+                  spacing={2}
+                  alignItems="flex-start"
+                >
                   <Box
                     sx={{
                       width: 32,
@@ -196,14 +235,16 @@ export default function OfferWizard({ address, mlsNumber, backHref }: OfferWizar
                       justifyContent: 'center',
                       fontWeight: 700,
                       fontSize: 14,
-                      flexShrink: 0,
+                      flexShrink: 0
                     }}
                   >
                     {item.num}
                   </Box>
                   <Box>
                     <Typography fontWeight={600}>{item.title}</Typography>
-                    <Typography variant="body2" color="text.secondary">{item.desc}</Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      {item.desc}
+                    </Typography>
                   </Box>
                 </Stack>
               ))}
@@ -222,9 +263,20 @@ export default function OfferWizard({ address, mlsNumber, backHref }: OfferWizar
             <Typography variant="h5" fontWeight={700}>
               Do you have an offer price in mind?
             </Typography>
-            <RadioGroup value={hasPrice} onChange={(e) => setHasPrice(e.target.value as 'yes' | 'no')}>
-              <FormControlLabel value="yes" control={<Radio />} label="Yes, I have a price in mind" />
-              <FormControlLabel value="no" control={<Radio />} label="No, I need help deciding" />
+            <RadioGroup
+              value={hasPrice}
+              onChange={(e) => setHasPrice(e.target.value as 'yes' | 'no')}
+            >
+              <FormControlLabel
+                value="yes"
+                control={<Radio />}
+                label="Yes, I have a price in mind"
+              />
+              <FormControlLabel
+                value="no"
+                control={<Radio />}
+                label="No, I need help deciding"
+              />
             </RadioGroup>
             {hasPrice === 'yes' && (
               <Stack spacing={2}>
@@ -235,7 +287,9 @@ export default function OfferWizard({ address, mlsNumber, backHref }: OfferWizar
                   size="small"
                   value={offerPrice}
                   onChange={(e) => setOfferPrice(Number(e.target.value))}
-                  InputProps={{ startAdornment: <Typography sx={{ mr: 0.5 }}>$</Typography> }}
+                  InputProps={{
+                    startAdornment: <Typography sx={{ mr: 0.5 }}>$</Typography>
+                  }}
                 />
                 <Slider
                   value={offerPrice}
@@ -247,7 +301,11 @@ export default function OfferWizard({ address, mlsNumber, backHref }: OfferWizar
                   valueLabelFormat={formatCurrency}
                   sx={{ color: GOLD }}
                 />
-                <Typography variant="body2" color="text.secondary" textAlign="center">
+                <Typography
+                  variant="body2"
+                  color="text.secondary"
+                  textAlign="center"
+                >
                   {formatCurrency(offerPrice)}
                 </Typography>
               </Stack>
@@ -261,10 +319,23 @@ export default function OfferWizard({ address, mlsNumber, backHref }: OfferWizar
             <Typography variant="h5" fontWeight={700}>
               How do you plan to pay?
             </Typography>
-            <RadioGroup value={paymentType} onChange={(e) => setPaymentType(e.target.value as 'loan' | 'cash' | 'later')}>
+            <RadioGroup
+              value={paymentType}
+              onChange={(e) =>
+                setPaymentType(e.target.value as 'loan' | 'cash' | 'later')
+              }
+            >
               <FormControlLabel value="loan" control={<Radio />} label="Loan" />
-              <FormControlLabel value="cash" control={<Radio />} label="All Cash" />
-              <FormControlLabel value="later" control={<Radio />} label="I'll decide later" />
+              <FormControlLabel
+                value="cash"
+                control={<Radio />}
+                label="All Cash"
+              />
+              <FormControlLabel
+                value="later"
+                control={<Radio />}
+                label="I'll decide later"
+              />
             </RadioGroup>
             {paymentType === 'loan' && (
               <Stack spacing={2}>
@@ -301,16 +372,50 @@ export default function OfferWizard({ address, mlsNumber, backHref }: OfferWizar
 
             <Stack spacing={2}>
               <Stack direction="row" spacing={2}>
-                <TextField label="First Name" required fullWidth size="small" value={firstName} onChange={(e) => setFirstName(e.target.value)} />
-                <TextField label="Last Name" required fullWidth size="small" value={lastName} onChange={(e) => setLastName(e.target.value)} />
+                <TextField
+                  label="First Name"
+                  required
+                  fullWidth
+                  size="small"
+                  value={firstName}
+                  onChange={(e) => setFirstName(e.target.value)}
+                />
+                <TextField
+                  label="Last Name"
+                  required
+                  fullWidth
+                  size="small"
+                  value={lastName}
+                  onChange={(e) => setLastName(e.target.value)}
+                />
               </Stack>
-              <TextField label="Email" type="email" required fullWidth size="small" value={email} onChange={(e) => setEmail(e.target.value)} />
-              <TextField label="Phone" type="tel" fullWidth size="small" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="(555) 555-1234" />
+              <TextField
+                label="Email"
+                type="email"
+                required
+                fullWidth
+                size="small"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+              <TextField
+                label="Phone"
+                type="tel"
+                fullWidth
+                size="small"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                placeholder="(555) 555-1234"
+              />
 
               <Typography variant="body2" fontWeight={600} sx={{ pt: 1 }}>
                 Have you toured this home?
               </Typography>
-              <RadioGroup row value={toured} onChange={(e) => setToured(e.target.value as 'yes' | 'no')}>
+              <RadioGroup
+                row
+                value={toured}
+                onChange={(e) => setToured(e.target.value as 'yes' | 'no')}
+              >
                 <FormControlLabel value="yes" control={<Radio />} label="Yes" />
                 <FormControlLabel value="no" control={<Radio />} label="No" />
               </RadioGroup>

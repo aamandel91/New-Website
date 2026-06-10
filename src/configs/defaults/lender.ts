@@ -8,7 +8,7 @@ const lenderConfig = {
   companyNmls: '3029',
   phone: '(555) 555-0100',
   ctaLabel: 'ASK A LENDER',
-  ctaUrl: tenant.integrations.lender.applyUrl,
+  ctaUrl: tenant.integrations.lender.applyUrl
 }
 
 export default lenderConfig

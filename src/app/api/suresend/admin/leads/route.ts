@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+
 import { listPeople } from '@/services/suresend/client'
 
 export async function GET() {
@@ -23,13 +24,17 @@ export async function GET() {
       stats: {
         total: result.total,
         thisWeek,
-        bySource,
-      },
+        bySource
+      }
     })
   } catch (error) {
     console.error('[SureSend] Admin leads error:', error)
     return NextResponse.json(
-      { error: 'Failed to fetch leads from CRM', people: [], stats: { total: 0, thisWeek: 0, bySource: {} } },
+      {
+        error: 'Failed to fetch leads from CRM',
+        people: [],
+        stats: { total: 0, thisWeek: 0, bySource: {} }
+      },
       { status: 502 }
     )
   }

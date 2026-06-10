@@ -44,7 +44,11 @@ export class LeadsRepository {
   /**
    * Update a lead
    */
-  async updateLead(orgId: bigint, id: bigint, input: UpdateLeadInput): Promise<Lead> {
+  async updateLead(
+    orgId: bigint,
+    id: bigint,
+    input: UpdateLeadInput
+  ): Promise<Lead> {
     const updateData: any = {
       updated_at: new Date()
     }
@@ -55,14 +59,16 @@ export class LeadsRepository {
     if (input.phone !== undefined) updateData.phone = input.phone
     if (input.source !== undefined) updateData.source = input.source
     if (input.status !== undefined) updateData.status = input.status
-    if (input.assigned_to !== undefined) updateData.assigned_to = input.assigned_to
+    if (input.assigned_to !== undefined)
+      updateData.assigned_to = input.assigned_to
     if (input.property_interest !== undefined)
       updateData.property_interest = input.property_interest
     if (input.tags !== undefined) updateData.tags = JSON.stringify(input.tags)
     if (input.custom_fields !== undefined)
       updateData.custom_fields = JSON.stringify(input.custom_fields)
     if (input.notes !== undefined) updateData.notes = input.notes
-    if (input.last_contact_at !== undefined) updateData.last_contact_at = input.last_contact_at
+    if (input.last_contact_at !== undefined)
+      updateData.last_contact_at = input.last_contact_at
 
     const [lead] = await this.db('leads')
       .where({ id, org_id: orgId })
@@ -124,7 +130,10 @@ export class LeadsRepository {
     const limit = filters.limit || 20
     const offset = filters.offset || 0
 
-    const leads = await query.orderBy('created_at', 'desc').limit(limit).offset(offset)
+    const leads = await query
+      .orderBy('created_at', 'desc')
+      .limit(limit)
+      .offset(offset)
 
     return {
       leads: leads.map((lead) => this.formatLead(lead)),
@@ -185,7 +194,10 @@ export class LeadsRepository {
     byStatus: Record<string, number>
     bySource: Record<string, number>
   }> {
-    const totalRow = await this.db('leads').where({ org_id: orgId }).count('* as count').first()
+    const totalRow = await this.db('leads')
+      .where({ org_id: orgId })
+      .count('* as count')
+      .first()
     const total = Number(totalRow?.['count'] ?? 0)
 
     const byStatus = await this.db('leads')

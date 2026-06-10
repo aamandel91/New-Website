@@ -14,7 +14,11 @@ export default function SlugsLoading() {
       <Grid container spacing={2} sx={{ mb: 4 }}>
         {Array.from({ length: 6 }).map((_, i) => (
           <Grid item xs={12} sm={6} md={4} key={i}>
-            <Skeleton variant="rectangular" height={280} sx={{ borderRadius: 1 }} />
+            <Skeleton
+              variant="rectangular"
+              height={280}
+              sx={{ borderRadius: 1 }}
+            />
           </Grid>
         ))}
       </Grid>

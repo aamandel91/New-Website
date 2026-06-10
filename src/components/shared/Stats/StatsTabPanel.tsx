@@ -98,7 +98,10 @@ export const StatsTabPanel = ({
         />
       </Box>
       <Box gridColumn="span 1" order={{ xs: 3, sm: 5, md: 2 }}>
-        <InsiderGate title="Become an Insider" description="Sign up for free to see trending neighbourhoods and market insights.">
+        <InsiderGate
+          title="Become an Insider"
+          description="Sign up for free to see trending neighbourhoods and market insights."
+        >
           <ArrayWidget
             index={1} // 100ms delay
             icon={houseImg}
@@ -133,7 +136,10 @@ export const StatsTabPanel = ({
         />
       </Box>
       <Box gridColumn="span 1" order={{ xs: 4, sm: 2, md: 4 }}>
-        <InsiderGate title="Become an Insider" description="Sign up for free to see trending neighbourhoods and market insights.">
+        <InsiderGate
+          title="Become an Insider"
+          description="Sign up for free to see trending neighbourhoods and market insights."
+        >
           <ArrayWidget
             index={3} // 300ms delay
             data={volumes}

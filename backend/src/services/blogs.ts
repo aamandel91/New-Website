@@ -31,7 +31,7 @@ export class BlogService {
    */
   async createBlog(input: CreateBlogInput): Promise<Blog> {
     const blog = await this.blogRepo.createBlog(input)
-    this.runAutoTagAsync(blog).catch(err =>
+    this.runAutoTagAsync(blog).catch((err) =>
       console.error('[BlogService.createBlog] auto-tag scheduling error', err)
     )
     return blog
@@ -45,7 +45,7 @@ export class BlogService {
     const updated = await this.blogRepo.updateBlog(id, input)
     const shouldRetag = input.title !== undefined || input.content !== undefined
     if (shouldRetag) {
-      this.runAutoTagAsync(updated).catch(err =>
+      this.runAutoTagAsync(updated).catch((err) =>
         console.error('[BlogService.updateBlog] auto-tag scheduling error', err)
       )
     }
@@ -104,7 +104,9 @@ export class BlogService {
     await this.blogRepo.updateAutoTagColumns(blog.id, {
       suggested_tags: blob,
       auto_tagged_at: new Date(),
-      ...(shouldAutoApply ? { tags: result.flatTags, ai_suggested_tags: true } : {})
+      ...(shouldAutoApply
+        ? { tags: result.flatTags, ai_suggested_tags: true }
+        : {})
     })
 
     return result
@@ -131,12 +133,16 @@ export class BlogService {
     const blog = await this.blogRepo.getBlogById(id)
     if (!blog) return null
 
-    const mergedTags = Array.from(new Set([...(blog.tags || []), ...decisions.accepted]))
+    const mergedTags = Array.from(
+      new Set([...(blog.tags || []), ...decisions.accepted])
+    )
     const mergedRejected = Array.from(
       new Set([...(blog.rejected_tags || []), ...decisions.rejected])
     )
 
-    const updateFields: Parameters<typeof this.blogRepo.updateAutoTagColumns>[1] = {
+    const updateFields: Parameters<
+      typeof this.blogRepo.updateAutoTagColumns
+    >[1] = {
       tags: mergedTags,
       rejected_tags: mergedRejected
     }
@@ -193,7 +199,11 @@ export class BlogService {
   /**
    * Generate AI suggestions for meta title, description, keywords, and tags
    */
-  async generateAISuggestions(title: string, description: string, content: string): Promise<AISuggestions> {
+  async generateAISuggestions(
+    title: string,
+    description: string,
+    content: string
+  ): Promise<AISuggestions> {
     const prompt = `Acting as an SEO expert, based on the following blog post, generate suggestions for:
 1. A compelling meta title (max 60 characters)
 2. A concise meta description (max 160 characters)
@@ -243,7 +253,8 @@ Make sure the suggestions are relevant to South Florida real estate and property
 
       return {
         meta_title: suggestions.meta_title || title,
-        meta_description: suggestions.meta_description || description.substring(0, 160),
+        meta_description:
+          suggestions.meta_description || description.substring(0, 160),
         meta_keywords: suggestions.meta_keywords || [],
         tags: suggestions.tags || []
       }
@@ -263,7 +274,11 @@ Make sure the suggestions are relevant to South Florida real estate and property
   /**
    * Extract potential tags from blog content
    */
-  private extractTagsFromText(title: string, description: string, content: string): string[] {
+  private extractTagsFromText(
+    title: string,
+    description: string,
+    content: string
+  ): string[] {
     const text = `${title} ${description} ${content}`.toLowerCase()
     const realEstateTerms = [
       'property',
@@ -297,7 +312,7 @@ Make sure the suggestions are relevant to South Florida real estate and property
       'appraisal'
     ]
 
-    const foundTags = realEstateTerms.filter(term => text.includes(term))
+    const foundTags = realEstateTerms.filter((term) => text.includes(term))
 
     return foundTags.slice(0, 8)
   }
@@ -310,11 +325,11 @@ Make sure the suggestions are relevant to South Florida real estate and property
     const words = content
       .toLowerCase()
       .split(/\W+/)
-      .filter(word => word.length > 5)
+      .filter((word) => word.length > 5)
 
     const frequency: { [key: string]: number } = {}
 
-    words.forEach(word => {
+    words.forEach((word) => {
       frequency[word] = (frequency[word] || 0) + 1
     })
 
@@ -371,7 +386,9 @@ Make sure the suggestions are relevant to South Florida real estate and property
 
     // Filter blogs that share tags with the current blog
     const related = blogs
-      .filter(b => b.id !== blogId && b.tags.some(tag => blog.tags.includes(tag)))
+      .filter(
+        (b) => b.id !== blogId && b.tags.some((tag) => blog.tags.includes(tag))
+      )
       .slice(0, limit)
 
     return related

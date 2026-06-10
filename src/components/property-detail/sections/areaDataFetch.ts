@@ -112,7 +112,7 @@ export async function fetchAreaSchools(
         rating: parseNumber(s.rating),
         distance: formatDistanceMiles(dist),
         distanceKm: dist,
-        stateRank: parseNumber(s.stateRank ?? s.state_rank),
+        stateRank: parseNumber(s.stateRank ?? s.state_rank)
       }
     })
     return schools.filter((s) => s.name)
@@ -164,7 +164,7 @@ export async function fetchAreaDemographics(
       households: parseNumber(src.households),
       ownerOccupiedPct: parseNumber(
         src.ownerOccupiedPct ?? src.ownerOccupied ?? src.owner_occupied
-      ),
+      )
     }
 
     const hasAny = Object.values(demographics).some((v) => v !== undefined)
@@ -190,7 +190,7 @@ export async function fetchAreaMarketStats(
         status: 'A',
         listings: false,
         resultsPerPage: 1,
-        statistics: 'avg-listPrice,med-listPrice,avg-daysOnMarket',
+        statistics: 'avg-listPrice,med-listPrice,avg-daysOnMarket'
       } as any).catch(() => null),
       APISearchCSR.searchListings({
         boardId: 110,
@@ -200,8 +200,8 @@ export async function fetchAreaMarketStats(
         listings: false,
         resultsPerPage: 1,
         statistics:
-          'grp-mth,med-soldPrice,avg-soldPrice,avg-listPrice,avg-daysOnMarket',
-      } as any).catch(() => null),
+          'grp-mth,med-soldPrice,avg-soldPrice,avg-listPrice,avg-daysOnMarket'
+      } as any).catch(() => null)
     ])
 
     if (!active && !soldHistory) return null
@@ -219,7 +219,7 @@ export async function fetchAreaMarketStats(
       averageDaysOnMarket:
         (active?.statistics as any)?.daysOnMarket?.avg ??
         (soldHistory?.statistics as any)?.daysOnMarket?.avg ??
-        undefined,
+        undefined
     }
 
     // sale-to-list ratio (sold / list)
@@ -236,7 +236,9 @@ export async function fetchAreaMarketStats(
         .map(([month, agg]: [string, any]) => {
           const medianPrice =
             agg?.soldPrice?.med ?? agg?.soldPrice?.avg ?? agg?.med ?? undefined
-          return medianPrice ? { month, medianPrice: Number(medianPrice) } : null
+          return medianPrice
+            ? { month, medianPrice: Number(medianPrice) }
+            : null
         })
         .filter((x): x is { month: string; medianPrice: number } => Boolean(x))
         .sort((a, b) => a.month.localeCompare(b.month))

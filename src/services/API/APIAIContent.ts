@@ -166,7 +166,9 @@ class APIAIContent extends APIBase {
   /**
    * Generate a blog post with AI
    */
-  async generateBlogPost(request: AIBlogPostRequest): Promise<AIBlogPostResponse> {
+  async generateBlogPost(
+    request: AIBlogPostRequest
+  ): Promise<AIBlogPostResponse> {
     return this.fetchJSON<AIBlogPostResponse>('/ai-content/blog', {
       method: 'POST',
       body: JSON.stringify(request)
@@ -176,7 +178,10 @@ class APIAIContent extends APIBase {
   /**
    * Suggest keywords for a topic
    */
-  async suggestKeywords(topic: string, city?: string): Promise<AIKeywordSuggestion[]> {
+  async suggestKeywords(
+    topic: string,
+    city?: string
+  ): Promise<AIKeywordSuggestion[]> {
     const response = await this.fetchJSON<{ keywords: AIKeywordSuggestion[] }>(
       '/ai-content/keywords',
       {
@@ -190,7 +195,9 @@ class APIAIContent extends APIBase {
   /**
    * Generate page content with AI
    */
-  async generatePageContent(request: AIPageContentRequest): Promise<AIPageContentResponse> {
+  async generatePageContent(
+    request: AIPageContentRequest
+  ): Promise<AIPageContentResponse> {
     return this.fetchJSON<AIPageContentResponse>('/ai-content/page', {
       method: 'POST',
       body: JSON.stringify(request)
@@ -216,7 +223,9 @@ class APIAIContent extends APIBase {
   /**
    * Preview bulk page generation
    */
-  async previewBulkPages(request: BulkPageGenerationRequest): Promise<BulkPagePreview[]> {
+  async previewBulkPages(
+    request: BulkPageGenerationRequest
+  ): Promise<BulkPagePreview[]> {
     const response = await this.fetchJSON<{ preview: BulkPagePreview[] }>(
       '/ai-content/bulk-pages/preview',
       {
@@ -230,11 +239,16 @@ class APIAIContent extends APIBase {
   /**
    * Generate pages in bulk
    */
-  async generateBulkPages(request: BulkPageGenerationRequest): Promise<BulkPageGenerationResult> {
-    return this.fetchJSON<BulkPageGenerationResult>('/ai-content/bulk-pages/generate', {
-      method: 'POST',
-      body: JSON.stringify(request)
-    })
+  async generateBulkPages(
+    request: BulkPageGenerationRequest
+  ): Promise<BulkPageGenerationResult> {
+    return this.fetchJSON<BulkPageGenerationResult>(
+      '/ai-content/bulk-pages/generate',
+      {
+        method: 'POST',
+        body: JSON.stringify(request)
+      }
+    )
   }
 
   /**
@@ -291,11 +305,13 @@ class APIAIContent extends APIBase {
   /**
    * List keyword queue rows. Filters: status, city, priority_min.
    */
-  async listKeywordQueue(filters: {
-    status?: KeywordQueueStatus
-    city?: string
-    priority_min?: number
-  } = {}): Promise<KeywordQueueRow[]> {
+  async listKeywordQueue(
+    filters: {
+      status?: KeywordQueueStatus
+      city?: string
+      priority_min?: number
+    } = {}
+  ): Promise<KeywordQueueRow[]> {
     const params = new URLSearchParams()
     if (filters.status) params.set('status', filters.status)
     if (filters.city) params.set('city', filters.city)

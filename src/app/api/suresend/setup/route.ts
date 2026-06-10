@@ -1,12 +1,22 @@
 import { NextResponse } from 'next/server'
-import { listCustomFields, createCustomField } from '@/services/suresend/client'
+
+import { createCustomField, listCustomFields } from '@/services/suresend/client'
 import type { SureSendCustomFieldInput } from '@/services/suresend/types'
 
 const REQUIRED_FIELDS: SureSendCustomFieldInput[] = [
   {
     name: 'property_interest_type',
     type: 'dropdown',
-    options: ['Single Family', 'Condo', 'Townhouse', 'Villa', 'Multi-Family', 'Land', 'Luxury', 'Other'],
+    options: [
+      'Single Family',
+      'Condo',
+      'Townhouse',
+      'Villa',
+      'Multi-Family',
+      'Land',
+      'Luxury',
+      'Other'
+    ]
   },
   { name: 'budget_min', type: 'number' },
   { name: 'budget_max', type: 'number' },
@@ -14,14 +24,14 @@ const REQUIRED_FIELDS: SureSendCustomFieldInput[] = [
   {
     name: 'pre_approved',
     type: 'dropdown',
-    options: ['Yes', 'No', 'Not Yet'],
+    options: ['Yes', 'No', 'Not Yet']
   },
   {
     name: 'working_with_agent',
     type: 'dropdown',
-    options: ['Yes', 'No'],
+    options: ['Yes', 'No']
   },
-  { name: 'lead_source_page', type: 'text' },
+  { name: 'lead_source_page', type: 'text' }
 ]
 
 export async function GET() {
@@ -46,7 +56,7 @@ export async function GET() {
       success: true,
       created,
       skipped,
-      message: `Created ${created.length} field(s), skipped ${skipped.length} existing field(s).`,
+      message: `Created ${created.length} field(s), skipped ${skipped.length} existing field(s).`
     })
   } catch (error) {
     console.error('[SureSend] Setup route error:', error)

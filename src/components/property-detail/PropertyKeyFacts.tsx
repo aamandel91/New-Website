@@ -1,7 +1,8 @@
 'use client'
 
 import React from 'react'
-import { Box, Typography, Paper, Grid, Divider } from '@mui/material'
+
+import { Box, Divider, Grid, Paper, Typography } from '@mui/material'
 
 interface KeyFact {
   label: string
@@ -31,14 +32,14 @@ const PropertyKeyFacts: React.FC<PropertyKeyFactsProps> = ({
   hoa,
   annualTaxes,
   daysOnMarket,
-  address,
+  address
 }) => {
   const formatCurrency = (value: number): string => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD',
       minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
+      maximumFractionDigits: 0
     }).format(value)
   }
 
@@ -49,77 +50,86 @@ const PropertyKeyFacts: React.FC<PropertyKeyFactsProps> = ({
   const facts: KeyFact[] = [
     {
       label: 'MLS Number',
-      value: mlsNumber,
+      value: mlsNumber
     },
     ...(propertyType
       ? [
           {
             label: 'Property Type',
-            value: propertyType,
-          },
+            value: propertyType
+          }
         ]
       : []),
     ...(status
       ? [
           {
             label: 'Status',
-            value: status,
-          },
+            value: status
+          }
         ]
       : []),
     ...(yearBuilt
       ? [
           {
             label: 'Year Built',
-            value: yearBuilt,
-          },
+            value: yearBuilt
+          }
         ]
       : []),
     ...(daysOnMarket
       ? [
           {
             label: 'Days on Market',
-            value: daysOnMarket,
-          },
+            value: daysOnMarket
+          }
         ]
       : []),
     ...(lotSize
       ? [
           {
             label: 'Lot Size',
-            value: `${formatNumber(lotSize)} sqft`,
-          },
+            value: `${formatNumber(lotSize)} sqft`
+          }
         ]
       : []),
     ...(pricePerSqft
       ? [
           {
             label: 'Price per Sq Ft',
-            value: formatCurrency(pricePerSqft),
-          },
+            value: formatCurrency(pricePerSqft)
+          }
         ]
       : []),
     ...(hoa
       ? [
           {
             label: 'HOA Fees',
-            value: `${formatCurrency(hoa)}/month`,
-          },
+            value: `${formatCurrency(hoa)}/month`
+          }
         ]
       : []),
     ...(annualTaxes
       ? [
           {
             label: 'Annual Property Taxes',
-            value: formatCurrency(annualTaxes),
-          },
+            value: formatCurrency(annualTaxes)
+          }
         ]
-      : []),
+      : [])
   ]
 
   return (
-    <Paper elevation={0} sx={{ p: 3, border: '1px solid', borderColor: 'divider' }}>
-      <Typography variant="h5" component="h2" gutterBottom fontWeight="bold" sx={{ mb: 2 }}>
+    <Paper
+      elevation={0}
+      sx={{ p: 3, border: '1px solid', borderColor: 'divider' }}
+    >
+      <Typography
+        variant="h5"
+        component="h2"
+        gutterBottom
+        fontWeight="bold"
+        sx={{ mb: 2 }}
+      >
         {address ? `Property Details for ${address}` : 'Property Details'}
       </Typography>
 
@@ -134,11 +144,15 @@ const PropertyKeyFacts: React.FC<PropertyKeyFactsProps> = ({
                 py: 1.5,
                 px: 1,
                 '&:hover': {
-                  bgcolor: 'action.hover',
-                },
+                  bgcolor: 'action.hover'
+                }
               }}
             >
-              <Typography variant="body2" color="text.secondary" fontWeight="medium">
+              <Typography
+                variant="body2"
+                color="text.secondary"
+                fontWeight="medium"
+              >
                 {fact.label}
               </Typography>
               <Typography variant="body1" fontWeight="bold">

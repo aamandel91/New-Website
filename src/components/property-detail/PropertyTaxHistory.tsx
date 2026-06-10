@@ -1,14 +1,15 @@
 'use client'
 
 import React from 'react'
+
 import {
   Box,
-  Typography,
   Table,
   TableBody,
   TableCell,
   TableContainer,
   TableRow,
+  Typography
 } from '@mui/material'
 
 interface PropertyTaxHistoryProps {
@@ -26,7 +27,7 @@ const PropertyTaxHistory: React.FC<PropertyTaxHistoryProps> = ({ taxes }) => {
       style: 'currency',
       currency: 'USD',
       minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
+      maximumFractionDigits: 0
     }).format(value)
   }
 
@@ -41,18 +42,36 @@ const PropertyTaxHistory: React.FC<PropertyTaxHistoryProps> = ({ taxes }) => {
         <Table size="small">
           <TableBody>
             <TableRow>
-              <TableCell sx={{ fontWeight: 500, borderBottom: '1px solid', borderColor: 'divider' }}>
+              <TableCell
+                sx={{
+                  fontWeight: 500,
+                  borderBottom: '1px solid',
+                  borderColor: 'divider'
+                }}
+              >
                 Assessment Year
               </TableCell>
-              <TableCell align="right" sx={{ borderBottom: '1px solid', borderColor: 'divider' }}>
+              <TableCell
+                align="right"
+                sx={{ borderBottom: '1px solid', borderColor: 'divider' }}
+              >
                 {taxes.assessmentYear}
               </TableCell>
             </TableRow>
             <TableRow>
-              <TableCell sx={{ fontWeight: 500, borderBottom: '1px solid', borderColor: 'divider' }}>
+              <TableCell
+                sx={{
+                  fontWeight: 500,
+                  borderBottom: '1px solid',
+                  borderColor: 'divider'
+                }}
+              >
                 Annual Tax
               </TableCell>
-              <TableCell align="right" sx={{ borderBottom: '1px solid', borderColor: 'divider' }}>
+              <TableCell
+                align="right"
+                sx={{ borderBottom: '1px solid', borderColor: 'divider' }}
+              >
                 {formatCurrency(taxes.annualAmount)}
               </TableCell>
             </TableRow>

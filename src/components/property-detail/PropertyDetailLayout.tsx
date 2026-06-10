@@ -6,7 +6,10 @@ import { Box, Container, Grid, Snackbar } from '@mui/material'
 
 import { useRecentlyViewed } from '@/hooks/useRecentlyViewed'
 import { trackPropertyView } from '@/utils/analytics'
-import { ssTrackPropertyView, ssTrackSavedProperty } from '@/utils/suresendTracking'
+import {
+  ssTrackPropertyView,
+  ssTrackSavedProperty
+} from '@/utils/suresendTracking'
 import { PropertyHistoryCard } from '@pages/listing/components'
 
 import { APIContact, type HistoryItemType, type Property } from 'services/API'
@@ -14,24 +17,23 @@ import { useFavorites } from 'providers/FavoritesProvider'
 import { useFeatures } from 'providers/FeaturesProvider'
 import useSnackbar from 'hooks/useSnackbar'
 import { extractErrorMessage } from 'utils/errors'
-
-import type { ContactFormData } from './PropertyContactForm'
+import { getCDNPath } from 'utils/urls'
 
 import CommunityLink from './CommunityLink'
 import ExploreMore from './ExploreMore'
 import HiddenPropertyDescription from './HiddenPropertyDescription'
 import HomeWorthCheckCTA from './HomeWorthCheckCTA'
 import MobileContactBar from './MobileContactBar'
+import PreferredLender from './PreferredLender'
 import Property3DTour from './Property3DTour'
 import PropertyBreadcrumbs from './PropertyBreadcrumbs'
+import type { ContactFormData } from './PropertyContactForm'
 import PropertyContactForm from './PropertyContactForm'
 import PropertyHeader from './PropertyHeader'
 import PropertyNotifications from './PropertyNotifications'
 import PropertyPhotoGallery from './PropertyPhotoGallery'
-import PreferredLender from './PreferredLender'
-import ViewOtherUnits from './ViewOtherUnits'
-import { getCDNPath } from 'utils/urls'
 import PropertyTabs from './PropertyTabs'
+import ViewOtherUnits from './ViewOtherUnits'
 
 interface PropertyDetailLayoutProps {
   property: Property
@@ -62,7 +64,8 @@ const PropertyDetailLayout: React.FC<PropertyDetailLayoutProps> = ({
     addToRecentlyViewed(property)
     trackPropertyView(property)
 
-    const street = `${property.address?.streetNumber || ''} ${property.address?.streetName || ''} ${property.address?.streetSuffix || ''}`.trim()
+    const street =
+      `${property.address?.streetNumber || ''} ${property.address?.streetName || ''} ${property.address?.streetSuffix || ''}`.trim()
     ssTrackPropertyView({
       mlsNumber: property.mlsNumber,
       street,
@@ -75,14 +78,18 @@ const PropertyDetailLayout: React.FC<PropertyDetailLayoutProps> = ({
       squareFeet: property.details?.sqft || '0',
       lotSize: property.lot?.acres?.toString() || '',
       propertyType: property.details?.propertyType || '',
-      forRent: false,
+      forRent: false
     })
   }, [property.mlsNumber])
 
   // Map property photos - images is an array of strings
   const photos =
     property.images?.map((imgUrl, index) => ({
-      url: imgUrl ? (imgUrl.startsWith('http') ? imgUrl : getCDNPath(imgUrl, 'large')) : '',
+      url: imgUrl
+        ? imgUrl.startsWith('http')
+          ? imgUrl
+          : getCDNPath(imgUrl, 'large')
+        : '',
       caption: undefined,
       order: index
     })) || []
@@ -147,14 +154,15 @@ const PropertyDetailLayout: React.FC<PropertyDetailLayoutProps> = ({
   const handleSave = () => {
     const favoriteId = findFavorite(property)
     if (!favoriteId) {
-      const street = `${property.address?.streetNumber || ''} ${property.address?.streetName || ''} ${property.address?.streetSuffix || ''}`.trim()
+      const street =
+        `${property.address?.streetNumber || ''} ${property.address?.streetName || ''} ${property.address?.streetSuffix || ''}`.trim()
       ssTrackSavedProperty({
         mlsNumber: property.mlsNumber,
         street,
         city: property.address?.city || '',
         state: property.address?.state || '',
         zipCode: property.address?.zip || '',
-        price: property.listPrice ? parseFloat(property.listPrice) : 0,
+        price: property.listPrice ? parseFloat(property.listPrice) : 0
       })
     }
     toggleFavorite(property)
@@ -305,7 +313,7 @@ const PropertyDetailLayout: React.FC<PropertyDetailLayoutProps> = ({
                 alignSelf: 'flex-start',
                 display: 'flex',
                 flexDirection: 'column',
-                gap: 2,
+                gap: 2
               }}
             >
               <PropertyContactForm
@@ -326,7 +334,10 @@ const PropertyDetailLayout: React.FC<PropertyDetailLayoutProps> = ({
       </Container>
 
       {/* Mobile Property Notifications */}
-      <Container maxWidth="xl" sx={{ display: { xs: 'block', lg: 'none' }, pb: 2 }}>
+      <Container
+        maxWidth="xl"
+        sx={{ display: { xs: 'block', lg: 'none' }, pb: 2 }}
+      >
         <PropertyNotifications
           propertyAddress={propertyAddress}
           mlsNumber={property.mlsNumber}

@@ -163,16 +163,16 @@ const Autosuggestion = ({
                 search: query,
                 type: 'area,city,neighborhood',
                 resultsPerPage: '8',
-                state: 'FL',
+                state: 'FL'
               })
               const locRes = await fetch(
                 `${CSR_API_URL}/locations/autocomplete?${locParams}`,
                 {
                   headers: {
                     'REPLIERS-API-KEY': CSR_API_KEY,
-                    'Content-Type': 'application/json',
+                    'Content-Type': 'application/json'
                   },
-                  signal: controller.signal,
+                  signal: controller.signal
                 }
               )
               if (locRes.ok) {
@@ -185,9 +185,13 @@ const Autosuggestion = ({
                   locationResults.push({
                     type: type === 'neighborhood' ? 'neighborhood' : 'city',
                     source: { name: result.name || '' },
-                    parent: result.address?.city ? { name: result.address.city } : undefined,
-                    _locationResult: result,
-                  } as AutosuggestionOption & { _locationResult: LocationResult })
+                    parent: result.address?.city
+                      ? { name: result.address.city }
+                      : undefined,
+                    _locationResult: result
+                  } as AutosuggestionOption & {
+                    _locationResult: LocationResult
+                  })
                 }
               }
             } catch (err: any) {
@@ -410,7 +414,9 @@ const Autosuggestion = ({
     setAreaLoading(true)
 
     // If this came from Locations Autocomplete, navigate to clean URL
-    const locResult = (option as any)?._locationResult as LocationResult | undefined
+    const locResult = (option as any)?._locationResult as
+      | LocationResult
+      | undefined
     if (locResult) {
       const cleanUrl = locationToCleanUrl(locResult)
       router.push(cleanUrl)

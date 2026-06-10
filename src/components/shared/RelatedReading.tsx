@@ -1,5 +1,13 @@
 import NextLink from 'next/link'
-import { Box, Card, CardContent, Grid, Typography, Link as MuiLink } from '@mui/material'
+
+import {
+  Box,
+  Card,
+  CardContent,
+  Grid,
+  Link as MuiLink,
+  Typography
+} from '@mui/material'
 
 import { tenant } from '@/configs/tenant.config'
 
@@ -49,14 +57,16 @@ function formatPubDate(value: string | null): string | null {
     return new Date(value).toLocaleDateString('en-US', {
       month: 'short',
       day: 'numeric',
-      year: 'numeric',
+      year: 'numeric'
     })
   } catch {
     return null
   }
 }
 
-async function fetchRelated(opts: RelatedReadingProps): Promise<BlogPostSummary[]> {
+async function fetchRelated(
+  opts: RelatedReadingProps
+): Promise<BlogPostSummary[]> {
   const base = getApiBase()
   if (!base) return []
   const params = new URLSearchParams()
@@ -149,7 +159,7 @@ const RelatedReading = async (props: RelatedReadingProps) => {
                     color: accent,
                     fontWeight: 600,
                     fontSize: '0.95rem',
-                    display: 'block',
+                    display: 'block'
                   }}
                 >
                   {post.title}
@@ -162,7 +172,7 @@ const RelatedReading = async (props: RelatedReadingProps) => {
                       display: '-webkit-box',
                       WebkitLineClamp: 1,
                       WebkitBoxOrient: 'vertical',
-                      overflow: 'hidden',
+                      overflow: 'hidden'
                     }}
                   >
                     {post.description}
@@ -181,7 +191,12 @@ const RelatedReading = async (props: RelatedReadingProps) => {
           component={NextLink}
           href="/blog"
           underline="hover"
-          sx={{ fontSize: '0.85rem', color: accent, mt: 1, display: 'inline-block' }}
+          sx={{
+            fontSize: '0.85rem',
+            color: accent,
+            mt: 1,
+            display: 'inline-block'
+          }}
         >
           More articles from our blog
         </MuiLink>
@@ -191,11 +206,7 @@ const RelatedReading = async (props: RelatedReadingProps) => {
 
   return (
     <Box component="section" aria-label={heading} sx={{ mt: 5 }}>
-      <Typography
-        variant="h4"
-        component="h2"
-        sx={{ fontWeight: 700, mb: 2.5 }}
-      >
+      <Typography variant="h4" component="h2" sx={{ fontWeight: 700, mb: 2.5 }}>
         {heading}
       </Typography>
       <Grid container spacing={2}>
@@ -214,8 +225,8 @@ const RelatedReading = async (props: RelatedReadingProps) => {
                   borderColor: border,
                   transition: 'border-color 120ms ease, transform 120ms ease',
                   '&:hover': {
-                    borderColor: accent,
-                  },
+                    borderColor: accent
+                  }
                 }}
               >
                 <NextLink
@@ -228,10 +239,12 @@ const RelatedReading = async (props: RelatedReadingProps) => {
                     backgroundImage: `url(${image})`,
                     backgroundSize: 'cover',
                     backgroundPosition: 'center',
-                    backgroundColor: '#eee',
+                    backgroundColor: '#eee'
                   }}
                 />
-                <CardContent sx={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+                <CardContent
+                  sx={{ flex: 1, display: 'flex', flexDirection: 'column' }}
+                >
                   <MuiLink
                     component={NextLink}
                     href={href}
@@ -247,7 +260,7 @@ const RelatedReading = async (props: RelatedReadingProps) => {
                         display: '-webkit-box',
                         WebkitLineClamp: 2,
                         WebkitBoxOrient: 'vertical',
-                        overflow: 'hidden',
+                        overflow: 'hidden'
                       }}
                     >
                       {post.title}
@@ -263,7 +276,7 @@ const RelatedReading = async (props: RelatedReadingProps) => {
                         display: '-webkit-box',
                         WebkitLineClamp: 2,
                         WebkitBoxOrient: 'vertical',
-                        overflow: 'hidden',
+                        overflow: 'hidden'
                       }}
                     >
                       {post.description}
@@ -274,7 +287,7 @@ const RelatedReading = async (props: RelatedReadingProps) => {
                       mt: 'auto',
                       display: 'flex',
                       alignItems: 'center',
-                      justifyContent: 'space-between',
+                      justifyContent: 'space-between'
                     }}
                   >
                     {date && (

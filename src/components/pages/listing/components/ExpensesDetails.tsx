@@ -13,7 +13,10 @@ const ExpensesDetails = () => {
   if (!expenses?.length) return null
 
   return (
-    <DetailsContainer title={t('pdp.sections.expenses.name')} id="expenses-taxes">
+    <DetailsContainer
+      title={t('pdp.sections.expenses.name')}
+      id="expenses-taxes"
+    >
       <DetailsList>
         {expenses.map((group) => (
           <DetailsGroup key={group.title} group={group} />

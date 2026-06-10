@@ -26,13 +26,16 @@ async function verifyRecaptcha(token: string): Promise<boolean> {
   }
 
   try {
-    const response = await fetch('https://www.google.com/recaptcha/api/siteverify', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
-      body: `secret=${secretKey}&response=${token}`,
-    })
+    const response = await fetch(
+      'https://www.google.com/recaptcha/api/siteverify',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: `secret=${secretKey}&response=${token}`
+      }
+    )
 
     const data = await response.json()
 
@@ -66,35 +69,59 @@ export async function POST(request: Request) {
 
     // Validate required fields
     if (!body.firstName?.trim()) {
-      return NextResponse.json({ message: 'First name is required' }, { status: 400 })
+      return NextResponse.json(
+        { message: 'First name is required' },
+        { status: 400 }
+      )
     }
 
     if (!body.lastName?.trim()) {
-      return NextResponse.json({ message: 'Last name is required' }, { status: 400 })
+      return NextResponse.json(
+        { message: 'Last name is required' },
+        { status: 400 }
+      )
     }
 
     if (!body.email?.trim()) {
-      return NextResponse.json({ message: 'Email is required' }, { status: 400 })
+      return NextResponse.json(
+        { message: 'Email is required' },
+        { status: 400 }
+      )
     }
 
     if (!isValidEmail(body.email)) {
-      return NextResponse.json({ message: 'Invalid email format' }, { status: 400 })
+      return NextResponse.json(
+        { message: 'Invalid email format' },
+        { status: 400 }
+      )
     }
 
     if (!body.phone?.trim()) {
-      return NextResponse.json({ message: 'Phone number is required' }, { status: 400 })
+      return NextResponse.json(
+        { message: 'Phone number is required' },
+        { status: 400 }
+      )
     }
 
     if (!isValidPhone(body.phone)) {
-      return NextResponse.json({ message: 'Invalid phone format' }, { status: 400 })
+      return NextResponse.json(
+        { message: 'Invalid phone format' },
+        { status: 400 }
+      )
     }
 
     if (!body.buyingTimeline) {
-      return NextResponse.json({ message: 'Buying timeline is required' }, { status: 400 })
+      return NextResponse.json(
+        { message: 'Buying timeline is required' },
+        { status: 400 }
+      )
     }
 
     if (body.hasAgent && !body.agentName?.trim()) {
-      return NextResponse.json({ message: 'Agent name is required when working with an agent' }, { status: 400 })
+      return NextResponse.json(
+        { message: 'Agent name is required when working with an agent' },
+        { status: 400 }
+      )
     }
 
     // Verify reCAPTCHA if token provided
@@ -125,7 +152,9 @@ export async function POST(request: Request) {
       timestamp: body.timestamp,
       source: 'open_house_signin',
       userAgent: request.headers.get('user-agent'),
-      ipAddress: request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip'),
+      ipAddress:
+        request.headers.get('x-forwarded-for') ||
+        request.headers.get('x-real-ip')
     }
 
     // NOTE: Open-house sign-in workflow is scaffolding only — feature is not
@@ -174,7 +203,7 @@ export async function POST(request: Request) {
     return NextResponse.json(
       {
         success: true,
-        message: 'Thank you for signing in! We will be in touch shortly.',
+        message: 'Thank you for signing in! We will be in touch shortly.'
       },
       { status: 200 }
     )
@@ -182,7 +211,8 @@ export async function POST(request: Request) {
     console.error('Open house sign-in error:', error)
     return NextResponse.json(
       {
-        message: 'An error occurred while processing your sign-in. Please try again.',
+        message:
+          'An error occurred while processing your sign-in. Please try again.'
       },
       { status: 500 }
     )

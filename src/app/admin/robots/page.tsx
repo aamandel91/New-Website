@@ -1,21 +1,22 @@
 'use client'
 
 import React, { useEffect, useState } from 'react'
+
+import AddIcon from '@mui/icons-material/Add'
+import ResetIcon from '@mui/icons-material/RestartAlt'
+import SaveIcon from '@mui/icons-material/Save'
 import {
+  Alert,
   Box,
+  Button,
+  Chip,
+  CircularProgress,
   Container,
   Paper,
-  Typography,
-  TextField,
-  Button,
-  Alert,
-  CircularProgress,
   Stack,
-  Chip,
+  TextField,
+  Typography
 } from '@mui/material'
-import SaveIcon from '@mui/icons-material/Save'
-import ResetIcon from '@mui/icons-material/RestartAlt'
-import AddIcon from '@mui/icons-material/Add'
 
 const DEFAULT_ROBOTS = `# Robots.txt
 # Control how search engines crawl your site
@@ -44,7 +45,7 @@ const COMMON_RULES = [
   { label: 'Block JSON files', value: 'Disallow: /*.json$' },
   { label: 'Block /private/', value: 'Disallow: /private/' },
   { label: 'Allow all', value: 'Allow: /' },
-  { label: 'Block all', value: 'Disallow: /' },
+  { label: 'Block all', value: 'Disallow: /' }
 ]
 
 const AdminRobotsPage = () => {
@@ -83,7 +84,7 @@ const AdminRobotsPage = () => {
       const res = await fetch('/api/admin/robots', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ content }),
+        body: JSON.stringify({ content })
       })
 
       if (!res.ok) {
@@ -94,7 +95,8 @@ const AdminRobotsPage = () => {
       setSuccess(true)
       setTimeout(() => setSuccess(false), 3000)
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Failed to save robots.txt'
+      const message =
+        err instanceof Error ? err.message : 'Failed to save robots.txt'
       setError(message)
     } finally {
       setSaving(false)
@@ -114,7 +116,12 @@ const AdminRobotsPage = () => {
   if (loading) {
     return (
       <Container maxWidth="md" sx={{ py: 8 }}>
-        <Box display="flex" justifyContent="center" alignItems="center" minHeight="400px">
+        <Box
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+          minHeight="400px"
+        >
           <CircularProgress />
         </Box>
       </Container>
@@ -127,8 +134,8 @@ const AdminRobotsPage = () => {
         Robots.txt Editor
       </Typography>
       <Typography variant="body1" color="text.secondary" sx={{ mb: 4 }}>
-        Control how search engines crawl and index your website. The robots.txt file tells web
-        crawlers which pages they can or cannot access.
+        Control how search engines crawl and index your website. The robots.txt
+        file tells web crawlers which pages they can or cannot access.
       </Typography>
 
       {error && (
@@ -155,7 +162,7 @@ const AdminRobotsPage = () => {
             value={content}
             onChange={(e) => setContent(e.target.value)}
             InputProps={{
-              sx: { fontFamily: 'monospace', fontSize: '0.875rem' },
+              sx: { fontFamily: 'monospace', fontSize: '0.875rem' }
             }}
             placeholder="User-agent: *&#10;Allow: /"
           />
@@ -206,7 +213,11 @@ const AdminRobotsPage = () => {
           </Typography>
           <Stack spacing={1.5}>
             <Box>
-              <Typography variant="subtitle2" component="code" sx={{ fontFamily: 'monospace' }}>
+              <Typography
+                variant="subtitle2"
+                component="code"
+                sx={{ fontFamily: 'monospace' }}
+              >
                 User-agent: *
               </Typography>
               <Typography variant="body2" color="text.secondary">
@@ -214,7 +225,11 @@ const AdminRobotsPage = () => {
               </Typography>
             </Box>
             <Box>
-              <Typography variant="subtitle2" component="code" sx={{ fontFamily: 'monospace' }}>
+              <Typography
+                variant="subtitle2"
+                component="code"
+                sx={{ fontFamily: 'monospace' }}
+              >
                 Allow: /path/
               </Typography>
               <Typography variant="body2" color="text.secondary">
@@ -222,7 +237,11 @@ const AdminRobotsPage = () => {
               </Typography>
             </Box>
             <Box>
-              <Typography variant="subtitle2" component="code" sx={{ fontFamily: 'monospace' }}>
+              <Typography
+                variant="subtitle2"
+                component="code"
+                sx={{ fontFamily: 'monospace' }}
+              >
                 Disallow: /path/
               </Typography>
               <Typography variant="body2" color="text.secondary">
@@ -230,7 +249,11 @@ const AdminRobotsPage = () => {
               </Typography>
             </Box>
             <Box>
-              <Typography variant="subtitle2" component="code" sx={{ fontFamily: 'monospace' }}>
+              <Typography
+                variant="subtitle2"
+                component="code"
+                sx={{ fontFamily: 'monospace' }}
+              >
                 Sitemap: https://example.com/sitemap.xml
               </Typography>
               <Typography variant="body2" color="text.secondary">
@@ -238,7 +261,11 @@ const AdminRobotsPage = () => {
               </Typography>
             </Box>
             <Box>
-              <Typography variant="subtitle2" component="code" sx={{ fontFamily: 'monospace' }}>
+              <Typography
+                variant="subtitle2"
+                component="code"
+                sx={{ fontFamily: 'monospace' }}
+              >
                 Crawl-delay: 1
               </Typography>
               <Typography variant="body2" color="text.secondary">

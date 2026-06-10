@@ -1,7 +1,9 @@
 'use client'
 
 import { create } from 'zustand'
+
 import { persist } from 'zustand/middleware'
+
 import { type Property } from 'services/API'
 
 interface ComparisonStore {
@@ -23,7 +25,9 @@ export const usePropertyComparison = create<ComparisonStore>()(
       addProperty: (property) =>
         set((state) => {
           // Don't add if already in comparison
-          if (state.properties.some((p) => p.mlsNumber === property.mlsNumber)) {
+          if (
+            state.properties.some((p) => p.mlsNumber === property.mlsNumber)
+          ) {
             return state
           }
 
@@ -33,13 +37,13 @@ export const usePropertyComparison = create<ComparisonStore>()(
           }
 
           return {
-            properties: [...state.properties, property],
+            properties: [...state.properties, property]
           }
         }),
 
       removeProperty: (mlsNumber) =>
         set((state) => ({
-          properties: state.properties.filter((p) => p.mlsNumber !== mlsNumber),
+          properties: state.properties.filter((p) => p.mlsNumber !== mlsNumber)
         })),
 
       clearAll: () => set({ properties: [] }),
@@ -52,10 +56,10 @@ export const usePropertyComparison = create<ComparisonStore>()(
       canAddMore: () => {
         const { properties } = get()
         return properties.length < MAX_COMPARISON_PROPERTIES
-      },
+      }
     }),
     {
-      name: 'property-comparison-storage',
+      name: 'property-comparison-storage'
     }
   )
 )

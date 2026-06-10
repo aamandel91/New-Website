@@ -2,30 +2,32 @@
 
 import React, { useEffect, useRef, useState } from 'react'
 import mapboxgl from 'mapbox-gl'
-import 'mapbox-gl/dist/mapbox-gl.css'
+
+import TransitIcon from '@mui/icons-material/DirectionsBus'
+import HospitalIcon from '@mui/icons-material/LocalHospital'
+import ParkIcon from '@mui/icons-material/Park'
+import PlaceIcon from '@mui/icons-material/Place'
+import RestaurantIcon from '@mui/icons-material/Restaurant'
+import SchoolIcon from '@mui/icons-material/School'
+import ShoppingIcon from '@mui/icons-material/ShoppingCart'
 import {
   Box,
-  Typography,
-  Paper,
-  Grid,
   Chip,
+  Grid,
+  Link,
   List,
   ListItem,
   ListItemIcon,
   ListItemText,
-  Tabs,
+  Paper,
   Tab,
-  Link,
+  Tabs,
+  Typography
 } from '@mui/material'
-import SchoolIcon from '@mui/icons-material/School'
-import ShoppingIcon from '@mui/icons-material/ShoppingCart'
-import RestaurantIcon from '@mui/icons-material/Restaurant'
-import HospitalIcon from '@mui/icons-material/LocalHospital'
-import TransitIcon from '@mui/icons-material/DirectionsBus'
-import ParkIcon from '@mui/icons-material/Park'
-import PlaceIcon from '@mui/icons-material/Place'
 
 import mapConfig from '@configs/map'
+
+import 'mapbox-gl/dist/mapbox-gl.css'
 
 interface Coordinates {
   latitude: number
@@ -34,7 +36,14 @@ interface Coordinates {
 
 interface NearbyPlace {
   name: string
-  type: 'school' | 'shopping' | 'restaurant' | 'hospital' | 'transit' | 'park' | 'other'
+  type:
+    | 'school'
+    | 'shopping'
+    | 'restaurant'
+    | 'hospital'
+    | 'transit'
+    | 'park'
+    | 'other'
   distance?: string
   rating?: number
 }
@@ -65,7 +74,7 @@ const PropertyLocation: React.FC<PropertyLocationProps> = ({
   nearbyPlaces = [],
   walkscore,
   transitscore,
-  bikescore,
+  bikescore
 }) => {
   const [activeTab, setActiveTab] = useState(0)
   const mapContainerRef = useRef<HTMLDivElement>(null)
@@ -91,7 +100,7 @@ const PropertyLocation: React.FC<PropertyLocationProps> = ({
       center: [coordinates.longitude, coordinates.latitude],
       zoom: mapConfig.propertyPageAddressZoom,
       interactive: true,
-      attributionControl: false,
+      attributionControl: false
     })
 
     map.addControl(new mapboxgl.NavigationControl(), 'top-right')
@@ -134,7 +143,7 @@ const PropertyLocation: React.FC<PropertyLocationProps> = ({
       dining: nearbyPlaces.filter((p) => p.type === 'restaurant'),
       parks: nearbyPlaces.filter((p) => p.type === 'park'),
       transit: nearbyPlaces.filter((p) => p.type === 'transit'),
-      healthcare: nearbyPlaces.filter((p) => p.type === 'hospital'),
+      healthcare: nearbyPlaces.filter((p) => p.type === 'hospital')
     }
     return categories
   }
@@ -164,11 +173,7 @@ const PropertyLocation: React.FC<PropertyLocationProps> = ({
               secondaryTypographyProps={{ variant: 'caption' }}
             />
             {place.rating && (
-              <Chip
-                label={`★ ${place.rating}`}
-                size="small"
-                sx={{ ml: 1 }}
-              />
+              <Chip label={`★ ${place.rating}`} size="small" sx={{ ml: 1 }} />
             )}
           </ListItem>
         ))}
@@ -206,7 +211,7 @@ const PropertyLocation: React.FC<PropertyLocationProps> = ({
           height: 400,
           mb: 2,
           borderRadius: 1,
-          overflow: 'hidden',
+          overflow: 'hidden'
         }}
       />
 
@@ -231,7 +236,11 @@ const PropertyLocation: React.FC<PropertyLocationProps> = ({
             <Grid item xs={12} sm={4}>
               <Paper
                 elevation={0}
-                sx={{ p: 2, bgcolor: 'background.default', textAlign: 'center' }}
+                sx={{
+                  p: 2,
+                  bgcolor: 'background.default',
+                  textAlign: 'center'
+                }}
               >
                 <Typography variant="h4" color="primary">
                   {walkscore}
@@ -246,7 +255,11 @@ const PropertyLocation: React.FC<PropertyLocationProps> = ({
             <Grid item xs={12} sm={4}>
               <Paper
                 elevation={0}
-                sx={{ p: 2, bgcolor: 'background.default', textAlign: 'center' }}
+                sx={{
+                  p: 2,
+                  bgcolor: 'background.default',
+                  textAlign: 'center'
+                }}
               >
                 <Typography variant="h4" color="primary">
                   {transitscore}
@@ -261,7 +274,11 @@ const PropertyLocation: React.FC<PropertyLocationProps> = ({
             <Grid item xs={12} sm={4}>
               <Paper
                 elevation={0}
-                sx={{ p: 2, bgcolor: 'background.default', textAlign: 'center' }}
+                sx={{
+                  p: 2,
+                  bgcolor: 'background.default',
+                  textAlign: 'center'
+                }}
               >
                 <Typography variant="h4" color="primary">
                   {bikescore}
@@ -278,7 +295,13 @@ const PropertyLocation: React.FC<PropertyLocationProps> = ({
       {/* Nearby Places */}
       {nearbyPlaces.length > 0 && (
         <>
-          <Typography variant="h6" component="h3" gutterBottom fontWeight="bold" sx={{ mt: 3 }}>
+          <Typography
+            variant="h6"
+            component="h3"
+            gutterBottom
+            fontWeight="bold"
+            sx={{ mt: 3 }}
+          >
             {fullAddress ? `Schools Near ${fullAddress}` : "What's Nearby"}
           </Typography>
 
@@ -309,8 +332,13 @@ const PropertyLocation: React.FC<PropertyLocationProps> = ({
       )}
 
       {/* Coordinates (for reference) */}
-      <Typography variant="caption" color="text.secondary" sx={{ mt: 2, display: 'block' }}>
-        Coordinates: {coordinates.latitude.toFixed(6)}, {coordinates.longitude.toFixed(6)}
+      <Typography
+        variant="caption"
+        color="text.secondary"
+        sx={{ mt: 2, display: 'block' }}
+      >
+        Coordinates: {coordinates.latitude.toFixed(6)},{' '}
+        {coordinates.longitude.toFixed(6)}
       </Typography>
     </Paper>
   )

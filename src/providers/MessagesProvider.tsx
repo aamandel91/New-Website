@@ -9,7 +9,7 @@ import {
   useState
 } from 'react'
 
-import { APIMessages, type ApiMessage } from 'services/API'
+import { type ApiMessage, APIMessages } from 'services/API'
 import { useUser } from 'providers/UserProvider'
 
 type MessagesContextType = {
@@ -25,7 +25,9 @@ type MessagesContextType = {
   refresh: () => Promise<void>
 }
 
-const MessagesContext = createContext<MessagesContextType | undefined>(undefined)
+const MessagesContext = createContext<MessagesContextType | undefined>(
+  undefined
+)
 
 const MessagesProvider = ({ children }: { children: ReactNode }) => {
   const { logged, userRole } = useUser()

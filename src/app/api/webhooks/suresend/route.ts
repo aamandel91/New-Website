@@ -9,10 +9,7 @@ function verifySignature(body: string, signature: string): boolean {
     .createHmac('sha256', WEBHOOK_SECRET)
     .update(body)
     .digest('hex')
-  return crypto.timingSafeEqual(
-    Buffer.from(signature),
-    Buffer.from(expected)
-  )
+  return crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(expected))
 }
 
 const HANDLED_EVENTS = new Set([
@@ -22,7 +19,7 @@ const HANDLED_EVENTS = new Set([
   'peopleAssigned',
   'tasksCreated',
   'tasksCompleted',
-  'appointmentsCreated',
+  'appointmentsCreated'
 ])
 
 export async function POST(request: Request) {
@@ -51,7 +48,7 @@ export async function POST(request: Request) {
     JSON.stringify({
       event: body.event,
       timestamp: body.timestamp || new Date().toISOString(),
-      data: body.data,
+      data: body.data
     })
   )
 

@@ -1,6 +1,10 @@
 'use client'
 
 import React, { useEffect, useMemo, useState } from 'react'
+
+import DeleteIcon from '@mui/icons-material/Delete'
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
+import PlayArrowIcon from '@mui/icons-material/PlayArrow'
 import {
   Accordion,
   AccordionDetails,
@@ -33,9 +37,7 @@ import {
   Tooltip,
   Typography
 } from '@mui/material'
-import DeleteIcon from '@mui/icons-material/Delete'
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
-import PlayArrowIcon from '@mui/icons-material/PlayArrow'
+
 import APIAIContent, {
   type CityLocation,
   type KeywordQueueRow,
@@ -68,15 +70,19 @@ interface SuggestedKeyword {
   city: string
 }
 
-const SUGGESTED_KEYWORDS: SuggestedKeyword[] = DEFAULT_TARGET_CITIES.flatMap(city =>
-  KEYWORD_TEMPLATES.map(tpl => ({
-    key: `${city}|${tpl}`,
-    keyword: tpl.replace('[city]', city),
-    city
-  }))
+const SUGGESTED_KEYWORDS: SuggestedKeyword[] = DEFAULT_TARGET_CITIES.flatMap(
+  (city) =>
+    KEYWORD_TEMPLATES.map((tpl) => ({
+      key: `${city}|${tpl}`,
+      keyword: tpl.replace('[city]', city),
+      city
+    }))
 )
 
-const STATUS_COLORS: Record<KeywordQueueStatus, 'default' | 'info' | 'success' | 'error'> = {
+const STATUS_COLORS: Record<
+  KeywordQueueStatus,
+  'default' | 'info' | 'success' | 'error'
+> = {
   pending: 'default',
   generating: 'info',
   done: 'success',
@@ -97,7 +103,9 @@ export default function KeywordQueueTab() {
   const [adding, setAdding] = useState(false)
 
   // Suggested keywords
-  const [selectedSuggestions, setSelectedSuggestions] = useState<Set<string>>(new Set())
+  const [selectedSuggestions, setSelectedSuggestions] = useState<Set<string>>(
+    new Set()
+  )
 
   // Filters
   const [filterStatus, setFilterStatus] = useState<KeywordQueueStatus | ''>('')
@@ -137,13 +145,13 @@ export default function KeywordQueueTab() {
   const filteredRows = useMemo(() => {
     if (!search.trim()) return rows
     const s = search.trim().toLowerCase()
-    return rows.filter(r => r.keyword.toLowerCase().includes(s))
+    return rows.filter((r) => r.keyword.toLowerCase().includes(s))
   }, [rows, search])
 
   const handleAddManual = async () => {
     const lines = keywordsText
       .split('\n')
-      .map(l => l.trim())
+      .map((l) => l.trim())
       .filter(Boolean)
     if (lines.length === 0) {
       setError('Enter at least one keyword')
@@ -152,13 +160,15 @@ export default function KeywordQueueTab() {
     setAdding(true)
     setError(null)
     try {
-      const items = lines.map(keyword => ({
+      const items = lines.map((keyword) => ({
         keyword,
         ...(addCity ? { city: addCity } : {}),
         priority
       }))
       await APIAIContent.addKeywordsToQueue(items)
-      setSnack(`Added ${lines.length} keyword${lines.length === 1 ? '' : 's'} to queue`)
+      setSnack(
+        `Added ${lines.length} keyword${lines.length === 1 ? '' : 's'} to queue`
+      )
       setKeywordsText('')
       await refresh()
     } catch (err: any) {
@@ -173,14 +183,16 @@ export default function KeywordQueueTab() {
       setError('Select at least one suggested keyword')
       return
     }
-    const items = SUGGESTED_KEYWORDS
-      .filter(s => selectedSuggestions.has(s.key))
-      .map(s => ({ keyword: s.keyword, city: s.city, priority: 0 }))
+    const items = SUGGESTED_KEYWORDS.filter((s) =>
+      selectedSuggestions.has(s.key)
+    ).map((s) => ({ keyword: s.keyword, city: s.city, priority: 0 }))
     setAdding(true)
     setError(null)
     try {
       await APIAIContent.addKeywordsToQueue(items)
-      setSnack(`Added ${items.length} suggested keyword${items.length === 1 ? '' : 's'}`)
+      setSnack(
+        `Added ${items.length} suggested keyword${items.length === 1 ? '' : 's'}`
+      )
       setSelectedSuggestions(new Set())
       await refresh()
     } catch (err: any) {
@@ -191,7 +203,7 @@ export default function KeywordQueueTab() {
   }
 
   const toggleSuggestion = (key: string) => {
-    setSelectedSuggestions(prev => {
+    setSelectedSuggestions((prev) => {
       const next = new Set(prev)
       if (next.has(key)) next.delete(key)
       else next.add(key)
@@ -203,14 +215,14 @@ export default function KeywordQueueTab() {
     if (selectedSuggestions.size === SUGGESTED_KEYWORDS.length) {
       setSelectedSuggestions(new Set())
     } else {
-      setSelectedSuggestions(new Set(SUGGESTED_KEYWORDS.map(s => s.key)))
+      setSelectedSuggestions(new Set(SUGGESTED_KEYWORDS.map((s) => s.key)))
     }
   }
 
   const handleDelete = async (id: string) => {
     try {
       await APIAIContent.deleteKeywordQueueEntry(id)
-      setRows(prev => prev.filter(r => r.id !== id))
+      setRows((prev) => prev.filter((r) => r.id !== id))
     } catch (err: any) {
       setError(err?.message || 'Failed to delete entry')
     }
@@ -255,8 +267,10 @@ export default function KeywordQueueTab() {
                 minRows={4}
                 fullWidth
                 value={keywordsText}
-                onChange={e => setKeywordsText(e.target.value)}
-                placeholder={'homes for sale Boca Raton\nschools in Parkland\n...'}
+                onChange={(e) => setKeywordsText(e.target.value)}
+                placeholder={
+                  'homes for sale Boca Raton\nschools in Parkland\n...'
+                }
               />
             </Grid>
             <Grid item xs={12} md={4}>
@@ -266,12 +280,12 @@ export default function KeywordQueueTab() {
                   <Select
                     value={addCity}
                     label="City (applies to all)"
-                    onChange={e => setAddCity(e.target.value)}
+                    onChange={(e) => setAddCity(e.target.value)}
                   >
                     <MenuItem value="">
                       <em>None</em>
                     </MenuItem>
-                    {cities.map(c => (
+                    {cities.map((c) => (
                       <MenuItem key={c.id} value={c.name}>
                         {c.name} ({c.county})
                       </MenuItem>
@@ -283,7 +297,7 @@ export default function KeywordQueueTab() {
                   type="number"
                   fullWidth
                   value={priority}
-                  onChange={e => setPriority(Number(e.target.value) || 0)}
+                  onChange={(e) => setPriority(Number(e.target.value) || 0)}
                   helperText="Higher = generated first"
                 />
                 <Button
@@ -325,7 +339,7 @@ export default function KeywordQueueTab() {
             </Stack>
             <Box sx={{ maxHeight: 360, overflow: 'auto' }}>
               <Grid container spacing={1}>
-                {SUGGESTED_KEYWORDS.map(s => (
+                {SUGGESTED_KEYWORDS.map((s) => (
                   <Grid item xs={12} sm={6} md={4} key={s.key}>
                     <Stack
                       direction="row"
@@ -354,7 +368,11 @@ export default function KeywordQueueTab() {
       {/* Process panel */}
       <Card>
         <CardContent>
-          <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} alignItems="center">
+          <Stack
+            direction={{ xs: 'column', sm: 'row' }}
+            spacing={2}
+            alignItems="center"
+          >
             <Typography variant="h6" sx={{ flexShrink: 0 }}>
               Process Queue
             </Typography>
@@ -363,7 +381,7 @@ export default function KeywordQueueTab() {
               type="number"
               size="small"
               value={processCount}
-              onChange={e => {
+              onChange={(e) => {
                 const n = Number(e.target.value) || 1
                 setProcessCount(Math.max(1, Math.min(20, n)))
               }}
@@ -372,7 +390,9 @@ export default function KeywordQueueTab() {
             />
             <Button
               variant="contained"
-              startIcon={processing ? <CircularProgress size={18} /> : <PlayArrowIcon />}
+              startIcon={
+                processing ? <CircularProgress size={18} /> : <PlayArrowIcon />
+              }
               onClick={handleProcess}
               disabled={processing}
             >
@@ -402,7 +422,9 @@ export default function KeywordQueueTab() {
               <Select
                 value={filterStatus}
                 label="Status"
-                onChange={e => setFilterStatus(e.target.value as KeywordQueueStatus | '')}
+                onChange={(e) =>
+                  setFilterStatus(e.target.value as KeywordQueueStatus | '')
+                }
               >
                 <MenuItem value="">All</MenuItem>
                 <MenuItem value="pending">Pending</MenuItem>
@@ -416,10 +438,10 @@ export default function KeywordQueueTab() {
               <Select
                 value={filterCity}
                 label="City"
-                onChange={e => setFilterCity(e.target.value)}
+                onChange={(e) => setFilterCity(e.target.value)}
               >
                 <MenuItem value="">All</MenuItem>
-                {cities.map(c => (
+                {cities.map((c) => (
                   <MenuItem key={c.id} value={c.name}>
                     {c.name}
                   </MenuItem>
@@ -430,7 +452,7 @@ export default function KeywordQueueTab() {
               size="small"
               label="Search keyword"
               value={search}
-              onChange={e => setSearch(e.target.value)}
+              onChange={(e) => setSearch(e.target.value)}
               sx={{ minWidth: 200 }}
             />
             <Button size="small" onClick={refresh} disabled={loadingList}>
@@ -467,7 +489,7 @@ export default function KeywordQueueTab() {
                     </TableCell>
                   </TableRow>
                 )}
-                {filteredRows.map(row => (
+                {filteredRows.map((row) => (
                   <TableRow key={row.id}>
                     <TableCell>{row.keyword}</TableCell>
                     <TableCell>{row.city || '—'}</TableCell>

@@ -12,7 +12,7 @@ import type { Knex } from 'knex'
  *   and the editor UI.
  */
 export async function up(knex: Knex): Promise<void> {
-  await knex.schema.alterTable('blogs', table => {
+  await knex.schema.alterTable('blogs', (table) => {
     table.jsonb('suggested_tags').nullable()
     table.jsonb('rejected_tags').defaultTo('[]')
     table.timestamp('auto_tagged_at').nullable()
@@ -20,7 +20,7 @@ export async function up(knex: Knex): Promise<void> {
 }
 
 export async function down(knex: Knex): Promise<void> {
-  await knex.schema.alterTable('blogs', table => {
+  await knex.schema.alterTable('blogs', (table) => {
     table.dropColumn('suggested_tags')
     table.dropColumn('rejected_tags')
     table.dropColumn('auto_tagged_at')

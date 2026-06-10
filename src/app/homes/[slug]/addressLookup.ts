@@ -1,4 +1,5 @@
 import searchConfig from '@configs/search'
+
 import type { Property } from 'services/API'
 import APISearchCSR from 'services/API/APISearchCSR'
 import { parseAddressSlug } from 'utils/propertyUrls'
@@ -30,7 +31,7 @@ export async function fetchAddressListings(slug: string): Promise<{
 
   return {
     listings: (result?.listings as Property[]) || [],
-    parsed,
+    parsed
   }
 }
 

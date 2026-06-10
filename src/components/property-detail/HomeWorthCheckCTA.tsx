@@ -1,8 +1,9 @@
 'use client'
 
 import React from 'react'
-import { Box, Paper, Typography, Stack } from '@mui/material'
+
 import InfoIcon from '@mui/icons-material/Info'
+import { Box, Paper, Stack, Typography } from '@mui/material'
 
 interface HomeWorthCheckCTAProps {
   city?: string
@@ -40,7 +41,11 @@ const HomeWorthCheckCTA: React.FC<HomeWorthCheckCTAProps> = ({
             User will provide custom code to integrate here
           </Typography>
           {(city || state) && (
-            <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: 'block' }}>
+            <Typography
+              variant="caption"
+              color="text.secondary"
+              sx={{ mt: 1, display: 'block' }}
+            >
               Location: {city}, {state}
             </Typography>
           )}

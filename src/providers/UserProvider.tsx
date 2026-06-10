@@ -134,7 +134,10 @@ const UserProvider = ({ children }: { children: ReactNode }) => {
       const stored = localStorage.getItem(profileKey)
       return stored ? JSON.parse(stored) : {}
     } catch (error) {
-      console.error('Failed to parse stored profile, clearing corrupted data:', error)
+      console.error(
+        'Failed to parse stored profile, clearing corrupted data:',
+        error
+      )
       localStorage.removeItem(profileKey)
       return {}
     }

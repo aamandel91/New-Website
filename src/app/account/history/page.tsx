@@ -3,6 +3,8 @@
 import React, { useState } from 'react'
 import { useRouter } from 'next/navigation'
 
+import HistoryIcon from '@mui/icons-material/History'
+import SearchIcon from '@mui/icons-material/Search'
 import {
   Box,
   Button,
@@ -12,19 +14,21 @@ import {
   Stack,
   Typography
 } from '@mui/material'
-import HistoryIcon from '@mui/icons-material/History'
-import SearchIcon from '@mui/icons-material/Search'
+
+import LoginDialog from 'components/auth/LoginDialog'
 
 import { useSiteUser } from 'providers/SiteUserProvider'
-import LoginDialog from 'components/auth/LoginDialog'
 
 function formatFilters(filters: Record<string, any>): string {
   const parts: string[] = []
   if (filters.minBeds) parts.push(`${filters.minBeds}+ beds`)
   if (filters.minBaths) parts.push(`${filters.minBaths}+ baths`)
-  if (filters.minPrice) parts.push(`$${Number(filters.minPrice).toLocaleString()}+`)
-  if (filters.maxPrice) parts.push(`up to $${Number(filters.maxPrice).toLocaleString()}`)
-  if (filters.listingType && filters.listingType !== 'allListings') parts.push(filters.listingType)
+  if (filters.minPrice)
+    parts.push(`$${Number(filters.minPrice).toLocaleString()}+`)
+  if (filters.maxPrice)
+    parts.push(`up to $${Number(filters.maxPrice).toLocaleString()}`)
+  if (filters.listingType && filters.listingType !== 'allListings')
+    parts.push(filters.listingType)
   return parts.join(', ') || 'All properties'
 }
 
@@ -37,8 +41,14 @@ export default function SearchHistoryPage() {
     return (
       <Container maxWidth="md" sx={{ py: 6, textAlign: 'center' }}>
         <HistoryIcon sx={{ fontSize: 48, color: 'text.secondary', mb: 2 }} />
-        <Typography variant="h5" gutterBottom>Sign in to see your search history</Typography>
-        <Button variant="contained" onClick={() => setLoginOpen(true)} sx={{ mt: 2, bgcolor: '#0F1621' }}>
+        <Typography variant="h5" gutterBottom>
+          Sign in to see your search history
+        </Typography>
+        <Button
+          variant="contained"
+          onClick={() => setLoginOpen(true)}
+          sx={{ mt: 2, bgcolor: '#0F1621' }}
+        >
           Sign In / Register
         </Button>
         <LoginDialog open={loginOpen} onClose={() => setLoginOpen(false)} />
@@ -76,14 +86,21 @@ export default function SearchHistoryPage() {
           {history.map((entry, idx) => (
             <Card key={idx} variant="outlined">
               <CardContent sx={{ py: 1.5, '&:last-child': { pb: 1.5 } }}>
-                <Stack direction="row" justifyContent="space-between" alignItems="center">
+                <Stack
+                  direction="row"
+                  justifyContent="space-between"
+                  alignItems="center"
+                >
                   <Box>
                     <Typography variant="body1" fontWeight={500}>
                       {entry.label || formatFilters(entry.filters)}
                     </Typography>
                     <Typography variant="caption" color="text.secondary">
                       {new Date(entry.timestamp).toLocaleDateString()} at{' '}
-                      {new Date(entry.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      {new Date(entry.timestamp).toLocaleTimeString([], {
+                        hour: '2-digit',
+                        minute: '2-digit'
+                      })}
                     </Typography>
                   </Box>
                   <Button

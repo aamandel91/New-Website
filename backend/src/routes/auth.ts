@@ -433,7 +433,9 @@ router.post('/register', async (ctx) => {
   const db = ctx.state.container.resolve<Knex>('db')
 
   // Check if user already exists
-  const existing = await db('site_users').where({ email: email.toLowerCase() }).first()
+  const existing = await db('site_users')
+    .where({ email: email.toLowerCase() })
+    .first()
   if (existing) {
     ctx.throw(new ApiError('Email already registered', 409))
     return
@@ -456,35 +458,42 @@ router.post('/register', async (ctx) => {
   // Provision a Repliers client + agent assignment. Best-effort: failures
   // here MUST NOT block signup (RepliersClientsService logs and returns).
   try {
-    const { default: RepliersClientsServiceCtor } = await import('../services/repliersClients.js')
+    const { default: RepliersClientsServiceCtor } = await import(
+      '../services/repliersClients.js'
+    )
     const rcs = ctx.state.container.resolve(RepliersClientsServiceCtor)
     await rcs.provisionForUser({
       id: user.id,
       email: user.email,
       name: user.name,
-      phone: user.phone,
+      phone: user.phone
     })
   } catch (err) {
     const logger = ctx.state.container.resolve('logger') as any
-    logger.error({ err, data: { userId: user.id } }, '[auth.register]: Repliers provisioning threw; continuing')
+    logger.error(
+      { err, data: { userId: user.id } },
+      '[auth.register]: Repliers provisioning threw; continuing'
+    )
   }
 
   // Sign JWT for site user (role: 'site_user')
-  const keys = ctx.state.container.resolve<{ private: Buffer }>('middleware.jwt.config.keys')
+  const keys = ctx.state.container.resolve<{ private: Buffer }>(
+    'middleware.jwt.config.keys'
+  )
   const jwt = await import('jsonwebtoken')
   const token = jwt.default.sign(
     {
       email: user.email,
       sub: user.id.toString(),
       role: 'site_user',
-      userId: user.id,
+      userId: user.id
     },
     keys.private,
     {
       algorithm: 'RS256',
       expiresIn: '30d',
       issuer: process.env['JWT_ISSUER'] || 'http://repliers-proxy',
-      jwtid: crypto.randomUUID(),
+      jwtid: crypto.randomUUID()
     }
   )
 
@@ -494,21 +503,26 @@ router.post('/register', async (ctx) => {
       id: user.id,
       email: user.email,
       name: user.name,
-      phone: user.phone,
+      phone: user.phone
     }
   }
 })
 
 // ─── Site User Login ─────────────────────────────────────────────────────────
 router.post('/site-login', async (ctx) => {
-  const { email, password } = ctx.request.body as { email?: string; password?: string }
+  const { email, password } = ctx.request.body as {
+    email?: string
+    password?: string
+  }
   if (!email || !password) {
     ctx.throw(new ApiError('Email and password are required', 400))
     return
   }
 
   const db = ctx.state.container.resolve<Knex>('db')
-  const user = await db('site_users').where({ email: email.toLowerCase() }).first()
+  const user = await db('site_users')
+    .where({ email: email.toLowerCase() })
+    .first()
 
   if (!user || !user.password_hash) {
     ctx.throw(new ApiError('Invalid credentials', 401))
@@ -524,21 +538,23 @@ router.post('/site-login', async (ctx) => {
     return
   }
 
-  const keys = ctx.state.container.resolve<{ private: Buffer }>('middleware.jwt.config.keys')
+  const keys = ctx.state.container.resolve<{ private: Buffer }>(
+    'middleware.jwt.config.keys'
+  )
   const jwt = await import('jsonwebtoken')
   const token = jwt.default.sign(
     {
       email: user.email,
       sub: user.id.toString(),
       role: 'site_user',
-      userId: user.id,
+      userId: user.id
     },
     keys.private,
     {
       algorithm: 'RS256',
       expiresIn: '30d',
       issuer: process.env['JWT_ISSUER'] || 'http://repliers-proxy',
-      jwtid: crypto.randomUUID(),
+      jwtid: crypto.randomUUID()
     }
   )
 
@@ -548,7 +564,7 @@ router.post('/site-login', async (ctx) => {
       id: user.id,
       email: user.email,
       name: user.name,
-      phone: user.phone,
+      phone: user.phone
     }
   }
 })
@@ -575,7 +591,7 @@ router.get('/site-user/me', authMiddleware, async (ctx) => {
     phone: user.phone,
     favorites: user.favorites || [],
     search_history: user.search_history || [],
-    created_at: user.created_at,
+    created_at: user.created_at
   }
 })
 
@@ -621,7 +637,7 @@ router.patch('/site-user/me', authMiddleware, async (ctx) => {
     id: user.id,
     email: user.email,
     name: user.name,
-    phone: user.phone,
+    phone: user.phone
   }
 })
 
@@ -679,7 +695,7 @@ router.post('/site-saved-searches', authMiddleware, async (ctx) => {
       user_id: payload.userId,
       name,
       filters: JSON.stringify(filters),
-      alert_frequency: alertFrequency || 'daily',
+      alert_frequency: alertFrequency || 'daily'
     })
     .returning('*')
 
@@ -708,7 +724,9 @@ router.patch('/site-saved-searches/:id', authMiddleware, async (ctx) => {
   const db = ctx.state['container'].resolve<Knex>('db')
 
   // Verify ownership
-  const existing = await db('saved_searches').where({ id: searchId, user_id: payload.userId }).first()
+  const existing = await db('saved_searches')
+    .where({ id: searchId, user_id: payload.userId })
+    .first()
   if (!existing) {
     ctx.throw(new ApiError('Search not found', 404))
     return
@@ -740,7 +758,9 @@ router.delete('/site-saved-searches/:id', authMiddleware, async (ctx) => {
   const searchId = parseInt(idParam2, 10)
   const db = ctx.state['container'].resolve<Knex>('db')
 
-  const existing = await db('saved_searches').where({ id: searchId, user_id: payload.userId }).first()
+  const existing = await db('saved_searches')
+    .where({ id: searchId, user_id: payload.userId })
+    .first()
   if (!existing) {
     ctx.throw(new ApiError('Search not found', 404))
     return
@@ -793,7 +813,13 @@ router.post('/site-favorites', authMiddleware, async (ctx) => {
     return
   }
 
-  favorites.push({ mlsNumber, address, price, boardId, savedAt: new Date().toISOString() })
+  favorites.push({
+    mlsNumber,
+    address,
+    price,
+    boardId,
+    savedAt: new Date().toISOString()
+  })
   await db('site_users')
     .where({ id: payload.userId })
     .update({ favorites: JSON.stringify(favorites), updated_at: db.fn.now() })
@@ -811,7 +837,9 @@ router.delete('/site-favorites/:mlsNumber', authMiddleware, async (ctx) => {
   const { mlsNumber } = ctx.params
   const db = ctx.state.container.resolve<Knex>('db')
   const user = await db('site_users').where({ id: payload.userId }).first()
-  const favorites = (user?.favorites || []).filter((f: any) => f.mlsNumber !== mlsNumber)
+  const favorites = (user?.favorites || []).filter(
+    (f: any) => f.mlsNumber !== mlsNumber
+  )
 
   await db('site_users')
     .where({ id: payload.userId })
@@ -828,7 +856,10 @@ router.post('/site-search-history', authMiddleware, async (ctx) => {
     return
   }
 
-  const { filters, label } = ctx.request.body as { filters?: object; label?: string }
+  const { filters, label } = ctx.request.body as {
+    filters?: object
+    label?: string
+  }
   if (!filters) {
     ctx.throw(new ApiError('Filters are required', 400))
     return
@@ -844,7 +875,10 @@ router.post('/site-search-history', authMiddleware, async (ctx) => {
 
   await db('site_users')
     .where({ id: payload.userId })
-    .update({ search_history: JSON.stringify(history), updated_at: db.fn.now() })
+    .update({
+      search_history: JSON.stringify(history),
+      updated_at: db.fn.now()
+    })
 
   ctx.body = { search_history: history }
 })
@@ -864,14 +898,19 @@ router.get('/site-search-history', authMiddleware, async (ctx) => {
 
 // ─── Admin Login ─────────────────────────────────────────────────────────────
 router.post('/admin-login', async (ctx) => {
-  const { email, password } = ctx.request.body as { email?: string; password?: string }
+  const { email, password } = ctx.request.body as {
+    email?: string
+    password?: string
+  }
   if (!email || !password) {
     ctx.throw(new ApiError('Email and password are required', 400))
     return
   }
 
   const db = ctx.state.container.resolve<Knex>('db')
-  const user = await db('admin_users').where({ email: email.toLowerCase() }).first()
+  const user = await db('admin_users')
+    .where({ email: email.toLowerCase() })
+    .first()
 
   if (!user) {
     ctx.throw(new ApiError('Invalid credentials', 401))
@@ -892,21 +931,23 @@ router.post('/admin-login', async (ctx) => {
   const orgId = org?.id || 1
 
   // Sign JWT directly for admin login (bypasses ACL lookup)
-  const keys = ctx.state.container.resolve<{ private: Buffer }>('middleware.jwt.config.keys')
+  const keys = ctx.state.container.resolve<{ private: Buffer }>(
+    'middleware.jwt.config.keys'
+  )
   const jwt = await import('jsonwebtoken')
   const token = jwt.default.sign(
     {
       email: user.email,
       sub: user.id.toString(),
       role: UserRole.Admin,
-      orgId,
+      orgId
     },
     keys.private,
     {
       algorithm: 'RS256',
       expiresIn: '7d',
       issuer: process.env['JWT_ISSUER'] || 'http://repliers-proxy',
-      jwtid: crypto.randomUUID(),
+      jwtid: crypto.randomUUID()
     }
   )
 
@@ -946,21 +987,23 @@ router.post('/magic-link/redeem', async (ctx) => {
     ctx.body = { error: 'user-not-found' }
     return
   }
-  const keys = ctx.state.container.resolve<{ private: Buffer }>('middleware.jwt.config.keys')
+  const keys = ctx.state.container.resolve<{ private: Buffer }>(
+    'middleware.jwt.config.keys'
+  )
   const jwt = await import('jsonwebtoken')
   const jwtToken = jwt.default.sign(
     {
       email: user.email,
       sub: user.id.toString(),
       role: 'site_user',
-      userId: user.id,
+      userId: user.id
     },
     keys.private,
     {
       algorithm: 'RS256',
       expiresIn: '30d',
       issuer: process.env['JWT_ISSUER'] || 'http://repliers-proxy',
-      jwtid: crypto.randomUUID(),
+      jwtid: crypto.randomUUID()
     }
   )
   ctx.body = {
@@ -969,10 +1012,10 @@ router.post('/magic-link/redeem', async (ctx) => {
       id: user.id,
       email: user.email,
       name: user.name,
-      phone: user.phone,
+      phone: user.phone
     },
     destinationPath: result.destinationPath,
-    purpose: result.purpose,
+    purpose: result.purpose
   }
 })
 
@@ -984,7 +1027,9 @@ router.post('/admin/repliers-backfill', authMiddleware, async (ctx) => {
     return
   }
   const limit = Math.min(Number(ctx.query['limit']) || 50, 500)
-  const { default: RepliersClientsServiceCtor } = await import('../services/repliersClients.js')
+  const { default: RepliersClientsServiceCtor } = await import(
+    '../services/repliersClients.js'
+  )
   const rcs = ctx.state.container.resolve(RepliersClientsServiceCtor)
   const result = await rcs.backfillMissing(limit)
   ctx.body = result

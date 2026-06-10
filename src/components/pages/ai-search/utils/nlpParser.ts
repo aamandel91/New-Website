@@ -5,13 +5,18 @@ import type { AiSearchFilters } from '../types'
  * query string is exposed as `request.params` instead of `request.url`. We
  * map those params into our local filter shape.
  */
-export function parseNlpParams(params: Record<string, any> | undefined): Partial<AiSearchFilters> {
+export function parseNlpParams(
+  params: Record<string, any> | undefined
+): Partial<AiSearchFilters> {
   if (!params) return {}
   const out: Partial<AiSearchFilters> = {}
 
   const propertyType = params.propertyType
   if (propertyType) {
-    out.propertyTypes = String(propertyType).split(',').map((t) => t.trim()).filter(Boolean)
+    out.propertyTypes = String(propertyType)
+      .split(',')
+      .map((t) => t.trim())
+      .filter(Boolean)
   }
 
   const minBeds = params.minBeds ?? params.minBedrooms
@@ -70,7 +75,7 @@ export function filtersToSearchParams(
     minLongitude: bbox.minLng,
     maxLongitude: bbox.maxLng,
     status: 'A',
-    type: filters.listingType === 'lease' ? 'Lease' : 'Sale',
+    type: filters.listingType === 'lease' ? 'Lease' : 'Sale'
   }
 
   if (filters.propertyTypes.length > 0) {

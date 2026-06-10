@@ -15,8 +15,9 @@ import {
 } from '@mui/material'
 
 import Select from 'components/atoms/PatchedSelect'
-import { APIAggregates } from 'services/API'
+
 import type { AggregateItem } from 'services/API'
+import { APIAggregates } from 'services/API'
 
 export interface MoreFiltersValues {
   minSqft: number
@@ -190,23 +191,31 @@ const MoreFiltersPanel = ({
     ...initialValues
   })
 
-  const [cityOptions, setCityOptions] = useState<AggregateItem[]>(cachedCities || [])
-  const [neighborhoodOptions, setNeighborhoodOptions] = useState<AggregateItem[]>([])
+  const [cityOptions, setCityOptions] = useState<AggregateItem[]>(
+    cachedCities || []
+  )
+  const [neighborhoodOptions, setNeighborhoodOptions] = useState<
+    AggregateItem[]
+  >([])
   const [loadingCities, setLoadingCities] = useState(!cachedCities)
   const [loadingNeighborhoods, setLoadingNeighborhoods] = useState(false)
 
   useEffect(() => {
     if (cachedCities) return
     let cancelled = false
-    APIAggregates.getCities().then((items) => {
-      if (cancelled) return
-      cachedCities = items
-      setCityOptions(items)
-      setLoadingCities(false)
-    }).catch(() => {
-      if (!cancelled) setLoadingCities(false)
-    })
-    return () => { cancelled = true }
+    APIAggregates.getCities()
+      .then((items) => {
+        if (cancelled) return
+        cachedCities = items
+        setCityOptions(items)
+        setLoadingCities(false)
+      })
+      .catch(() => {
+        if (!cancelled) setLoadingCities(false)
+      })
+    return () => {
+      cancelled = true
+    }
   }, [])
 
   useEffect(() => {
@@ -217,14 +226,18 @@ const MoreFiltersPanel = ({
     let cancelled = false
     setLoadingNeighborhoods(true)
     // Fetch neighborhoods for the first selected city
-    APIAggregates.getNeighborhoods(state.cities[0]).then((items) => {
-      if (cancelled) return
-      setNeighborhoodOptions(items)
-      setLoadingNeighborhoods(false)
-    }).catch(() => {
-      if (!cancelled) setLoadingNeighborhoods(false)
-    })
-    return () => { cancelled = true }
+    APIAggregates.getNeighborhoods(state.cities[0])
+      .then((items) => {
+        if (cancelled) return
+        setNeighborhoodOptions(items)
+        setLoadingNeighborhoods(false)
+      })
+      .catch(() => {
+        if (!cancelled) setLoadingNeighborhoods(false)
+      })
+    return () => {
+      cancelled = true
+    }
   }, [state.cities])
 
   const set = <K extends keyof MoreFiltersValues>(
@@ -235,7 +248,13 @@ const MoreFiltersPanel = ({
   return (
     <Stack
       spacing={2}
-      sx={{ p: 2, minWidth: 480, maxWidth: 560, maxHeight: 540, overflow: 'auto' }}
+      sx={{
+        p: 2,
+        minWidth: 480,
+        maxWidth: 560,
+        maxHeight: 540,
+        overflow: 'auto'
+      }}
     >
       <Typography variant="subtitle1" fontWeight={700}>
         More Filters
@@ -258,7 +277,9 @@ const MoreFiltersPanel = ({
               renderTags={(val, getTagProps) =>
                 val.map((option, index) => {
                   const { key, ...tagProps } = getTagProps({ index })
-                  return <Chip key={key} label={option} size="small" {...tagProps} />
+                  return (
+                    <Chip key={key} label={option} size="small" {...tagProps} />
+                  )
                 })
               }
               renderOption={(props, option) => {
@@ -308,7 +329,9 @@ const MoreFiltersPanel = ({
               renderTags={(val, getTagProps) =>
                 val.map((option, index) => {
                   const { key, ...tagProps } = getTagProps({ index })
-                  return <Chip key={key} label={option} size="small" {...tagProps} />
+                  return (
+                    <Chip key={key} label={option} size="small" {...tagProps} />
+                  )
                 })
               }
               renderOption={(props, option) => {
@@ -323,13 +346,19 @@ const MoreFiltersPanel = ({
               renderInput={(params) => (
                 <TextField
                   {...params}
-                  placeholder={state.cities.length === 0 ? 'Select a city first' : 'Select neighborhoods'}
+                  placeholder={
+                    state.cities.length === 0
+                      ? 'Select a city first'
+                      : 'Select neighborhoods'
+                  }
                   slotProps={{
                     input: {
                       ...params.InputProps,
                       endAdornment: (
                         <>
-                          {loadingNeighborhoods && <CircularProgress size={16} />}
+                          {loadingNeighborhoods && (
+                            <CircularProgress size={16} />
+                          )}
                           {params.InputProps.endAdornment}
                         </>
                       )

@@ -28,14 +28,14 @@ export function organizationSchema(): StructuredDataProps {
     slogan: tenant.brand.slogan,
     numberOfEmployees: {
       '@type': 'QuantitativeValue',
-      value: 18,
+      value: 18
     },
     sameAs: [
       siteSettings.social.facebook,
       siteSettings.social.instagram,
       siteSettings.social.linkedin,
       siteSettings.social.youtube,
-      siteSettings.social.zillow,
+      siteSettings.social.zillow
     ],
     address: {
       '@type': 'PostalAddress',
@@ -43,21 +43,41 @@ export function organizationSchema(): StructuredDataProps {
       addressLocality: tenant.contact.address.city,
       addressRegion: tenant.contact.address.state,
       postalCode: tenant.contact.address.zip,
-      addressCountry: 'US',
+      addressCountry: 'US'
     },
     contactPoint: {
       '@type': 'ContactPoint',
       telephone: tenant.contact.phoneE164,
       contactType: 'Customer Service',
-      email: tenant.contact.email,
+      email: tenant.contact.email
     },
     areaServed: [
-      { '@type': 'AdministrativeArea', name: 'Miami-Dade County', containedIn: { '@type': 'State', name: 'Florida' } },
-      { '@type': 'AdministrativeArea', name: 'Broward County', containedIn: { '@type': 'State', name: 'Florida' } },
-      { '@type': 'AdministrativeArea', name: 'Palm Beach County', containedIn: { '@type': 'State', name: 'Florida' } },
-      { '@type': 'AdministrativeArea', name: 'Martin County', containedIn: { '@type': 'State', name: 'Florida' } },
-      { '@type': 'AdministrativeArea', name: 'St. Lucie County', containedIn: { '@type': 'State', name: 'Florida' } }
-    ],
+      {
+        '@type': 'AdministrativeArea',
+        name: 'Miami-Dade County',
+        containedIn: { '@type': 'State', name: 'Florida' }
+      },
+      {
+        '@type': 'AdministrativeArea',
+        name: 'Broward County',
+        containedIn: { '@type': 'State', name: 'Florida' }
+      },
+      {
+        '@type': 'AdministrativeArea',
+        name: 'Palm Beach County',
+        containedIn: { '@type': 'State', name: 'Florida' }
+      },
+      {
+        '@type': 'AdministrativeArea',
+        name: 'Martin County',
+        containedIn: { '@type': 'State', name: 'Florida' }
+      },
+      {
+        '@type': 'AdministrativeArea',
+        name: 'St. Lucie County',
+        containedIn: { '@type': 'State', name: 'Florida' }
+      }
+    ]
   }
 }
 
@@ -90,20 +110,20 @@ export function propertySchema(property: {
       '@type': 'PostalAddress',
       streetAddress: property.address,
       addressCountry: 'US',
-      addressRegion: 'FL',
+      addressRegion: 'FL'
     },
     numberOfRooms: property.bedrooms,
     numberOfBathroomsTotal: property.bathrooms,
     floorSize: {
       '@type': 'QuantitativeValue',
       value: property.squareFeet.toString(),
-      unitCode: 'FT2',
+      unitCode: 'FT2'
     },
     agent: {
       '@type': 'RealEstateAgent',
       name: property.agentName,
-      email: property.agentEmail,
-    },
+      email: property.agentEmail
+    }
   }
 }
 
@@ -131,8 +151,8 @@ export function agentSchema(agent: {
     knowsAbout: agent.specialties,
     areaServed: {
       '@type': 'State',
-      name: 'Florida',
-    },
+      name: 'Florida'
+    }
   }
 }
 
@@ -158,18 +178,22 @@ export function articleSchema(article: {
     articleBody: article.content,
     author: {
       '@type': 'Person',
-      name: article.author,
+      name: article.author
     },
     datePublished: article.publishedDate.toISOString(),
-    dateModified: article.modifiedDate?.toISOString() || article.publishedDate.toISOString(),
-    url: article.url,
+    dateModified:
+      article.modifiedDate?.toISOString() ||
+      article.publishedDate.toISOString(),
+    url: article.url
   }
 }
 
 /**
  * Breadcrumb schema for navigation hierarchy
  */
-export function breadcrumbSchema(items: Array<{ name: string; url: string }>): StructuredDataProps {
+export function breadcrumbSchema(
+  items: Array<{ name: string; url: string }>
+): StructuredDataProps {
   return {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
@@ -177,8 +201,8 @@ export function breadcrumbSchema(items: Array<{ name: string; url: string }>): S
       '@type': 'ListItem',
       position: index + 1,
       name: item.name,
-      item: item.url,
-    })),
+      item: item.url
+    }))
   }
 }
 
@@ -205,11 +229,11 @@ export function localBusinessSchema(location: {
       addressLocality: location.city,
       addressRegion: location.state,
       postalCode: location.zipCode,
-      addressCountry: 'US',
+      addressCountry: 'US'
     },
     areaServed: {
       '@type': 'City',
-      name: location.city,
+      name: location.city
     },
     openingHoursSpecification: [
       {
@@ -221,12 +245,12 @@ export function localBusinessSchema(location: {
           'Thursday',
           'Friday',
           'Saturday',
-          'Sunday',
+          'Sunday'
         ],
         opens: '08:00',
-        closes: '20:00',
-      },
-    ],
+        closes: '20:00'
+      }
+    ]
   }
 }
 
@@ -272,20 +296,20 @@ export function placeSchema(params: {
       '@type': 'PostalAddress',
       addressLocality: params.cityName,
       addressRegion: params.state || 'FL',
-      addressCountry: 'US',
-    },
+      addressCountry: 'US'
+    }
   }
   if (typeof params.lat === 'number' && typeof params.lng === 'number') {
     schema.geo = {
       '@type': 'GeoCoordinates',
       latitude: params.lat,
-      longitude: params.lng,
+      longitude: params.lng
     }
   }
   if (params.countyName) {
     schema.containedInPlace = {
       '@type': 'AdministrativeArea',
-      name: params.countyName,
+      name: params.countyName
     }
   }
   if (params.aggregateRating) {
@@ -294,7 +318,7 @@ export function placeSchema(params: {
       ratingValue: params.aggregateRating.ratingValue.toFixed(1),
       reviewCount: params.aggregateRating.reviewCount,
       bestRating: '5',
-      worstRating: '1',
+      worstRating: '1'
     }
   }
   return schema
@@ -313,14 +337,14 @@ export function educationalOrganizationSchema(params: {
   const schema: StructuredDataProps = {
     '@context': 'https://schema.org',
     '@type': 'EducationalOrganization',
-    name: params.name,
+    name: params.name
   }
   if (params.cityName) {
     schema.address = {
       '@type': 'PostalAddress',
       addressLocality: params.cityName,
       addressRegion: params.state || 'FL',
-      addressCountry: 'US',
+      addressCountry: 'US'
     }
   }
   if (params.level) {
@@ -332,7 +356,7 @@ export function educationalOrganizationSchema(params: {
       ratingValue: params.rating.toFixed(1),
       bestRating: '5',
       worstRating: '1',
-      reviewCount: 1,
+      reviewCount: 1
     }
   }
   return schema
@@ -350,13 +374,13 @@ export function faqSchema(
   return {
     '@context': 'https://schema.org',
     '@type': 'FAQPage',
-    mainEntity: faqs.map(faq => ({
+    mainEntity: faqs.map((faq) => ({
       '@type': 'Question',
       name: faq.question,
       acceptedAnswer: {
         '@type': 'Answer',
-        text: faq.answer,
-      },
-    })),
+        text: faq.answer
+      }
+    }))
   }
 }

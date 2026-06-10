@@ -14,7 +14,10 @@ export class NavigationRepository {
   /**
    * Create a navigation item
    */
-  async createItem(orgId: bigint, input: CreateNavigationItemInput): Promise<NavigationItem> {
+  async createItem(
+    orgId: bigint,
+    input: CreateNavigationItemInput
+  ): Promise<NavigationItem> {
     const now = new Date()
 
     const [item] = await this.db('navigation_items')
@@ -58,9 +61,11 @@ export class NavigationRepository {
     if (input.dropdown_items !== undefined)
       updateData.dropdown_items = JSON.stringify(input.dropdown_items)
     if (input.target !== undefined) updateData.target = input.target
-    if (input.css_classes !== undefined) updateData.css_classes = input.css_classes
+    if (input.css_classes !== undefined)
+      updateData.css_classes = input.css_classes
     if (input.visible !== undefined) updateData.visible = input.visible
-    if (input.order_index !== undefined) updateData.order_index = input.order_index
+    if (input.order_index !== undefined)
+      updateData.order_index = input.order_index
 
     const [item] = await this.db('navigation_items')
       .where({ id, org_id: orgId })
@@ -74,7 +79,9 @@ export class NavigationRepository {
    * Get item by ID
    */
   async getItemById(orgId: bigint, id: bigint): Promise<NavigationItem | null> {
-    const item = await this.db('navigation_items').where({ id, org_id: orgId }).first()
+    const item = await this.db('navigation_items')
+      .where({ id, org_id: orgId })
+      .first()
 
     return item ? this.formatItem(item) : null
   }
@@ -82,7 +89,10 @@ export class NavigationRepository {
   /**
    * Get items with filtering
    */
-  async getItems(orgId: bigint, filters: NavigationFilters = {}): Promise<NavigationItem[]> {
+  async getItems(
+    orgId: bigint,
+    filters: NavigationFilters = {}
+  ): Promise<NavigationItem[]> {
     let query = this.db('navigation_items').where({ org_id: orgId })
 
     if (filters.position) {
@@ -102,7 +112,9 @@ export class NavigationRepository {
    * Delete an item
    */
   async deleteItem(orgId: bigint, id: bigint): Promise<boolean> {
-    const deleted = await this.db('navigation_items').where({ id, org_id: orgId }).delete()
+    const deleted = await this.db('navigation_items')
+      .where({ id, org_id: orgId })
+      .delete()
 
     return deleted > 0
   }

@@ -1,8 +1,10 @@
 'use client'
 
 import React from 'react'
-import { Box, Typography, Paper } from '@mui/material'
 import Link from 'next/link'
+
+import { Box, Paper, Typography } from '@mui/material'
+
 import type { Property } from 'services/API/types'
 
 interface PropertyNarrativeProps {
@@ -14,7 +16,7 @@ const formatCurrency = (value: number): string =>
     style: 'currency',
     currency: 'USD',
     minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
+    maximumFractionDigits: 0
   }).format(value)
 
 function slugify(str: string): string {
@@ -70,7 +72,8 @@ const PropertyNarrative: React.FC<PropertyNarrativeProps> = ({ property }) => {
   if (sqft > 0) {
     parts.push(
       <React.Fragment key="sqft">
-        {' '}offers {sqft.toLocaleString()} sq ft of living space.
+        {' '}
+        offers {sqft.toLocaleString()} sq ft of living space.
       </React.Fragment>
     )
   } else {
@@ -97,17 +100,17 @@ const PropertyNarrative: React.FC<PropertyNarrativeProps> = ({ property }) => {
     )
   }
   if (builtParts.length > 0) {
-    parts.push(
-      <React.Fragment key="built">
-        {' '}{builtParts}
-      </React.Fragment>
-    )
+    parts.push(<React.Fragment key="built"> {builtParts}</React.Fragment>)
   }
 
   // Key features
   const featureList: string[] = []
   if (details?.swimmingPool && details.swimmingPool !== 'None') {
-    featureList.push(details.swimmingPool.toLowerCase().includes('pool') ? details.swimmingPool.toLowerCase() : `${details.swimmingPool.toLowerCase()} pool`)
+    featureList.push(
+      details.swimmingPool.toLowerCase().includes('pool')
+        ? details.swimmingPool.toLowerCase()
+        : `${details.swimmingPool.toLowerCase()} pool`
+    )
   }
   if (details?.numGarageSpaces && parseInt(details.numGarageSpaces) > 0) {
     featureList.push(`${details.numGarageSpaces}-car garage`)
@@ -116,7 +119,9 @@ const PropertyNarrative: React.FC<PropertyNarrativeProps> = ({ property }) => {
     featureList.push(`${details.basement1.toLowerCase()} basement`)
   }
   if (details?.numFireplaces && parseInt(details.numFireplaces) > 0) {
-    featureList.push(`${details.numFireplaces} fireplace${parseInt(details.numFireplaces) > 1 ? 's' : ''}`)
+    featureList.push(
+      `${details.numFireplaces} fireplace${parseInt(details.numFireplaces) > 1 ? 's' : ''}`
+    )
   }
 
   if (featureList.length > 0) {
@@ -140,22 +145,24 @@ const PropertyNarrative: React.FC<PropertyNarrativeProps> = ({ property }) => {
     const pricePerSqft = sqft > 0 ? Math.round(price / sqft) : 0
     parts.push(
       <React.Fragment key="price">
-        {' '}Listed at {formatCurrency(price)}
-        {pricePerSqft > 0 ? ` ($${pricePerSqft}/sq ft)` : ''}
-        , this home is competitively priced for the area.
+        {' '}
+        Listed at {formatCurrency(price)}
+        {pricePerSqft > 0 ? ` ($${pricePerSqft}/sq ft)` : ''}, this home is
+        competitively priced for the area.
       </React.Fragment>
     )
   }
 
   return (
-    <Paper
-      variant="outlined"
-      sx={{ p: 3 }}
-    >
+    <Paper variant="outlined" sx={{ p: 3 }}>
       <Typography variant="h6" fontWeight={600} gutterBottom>
         About This Property
       </Typography>
-      <Typography variant="body1" color="text.secondary" sx={{ lineHeight: 1.8 }}>
+      <Typography
+        variant="body1"
+        color="text.secondary"
+        sx={{ lineHeight: 1.8 }}
+      >
         {parts}
       </Typography>
     </Paper>

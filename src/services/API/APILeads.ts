@@ -162,7 +162,10 @@ class APILeads extends APIBase {
   /**
    * Add activity to lead
    */
-  async addActivity(leadId: string, data: CreateActivityInput): Promise<LeadActivity> {
+  async addActivity(
+    leadId: string,
+    data: CreateActivityInput
+  ): Promise<LeadActivity> {
     return this.fetchJSON<LeadActivity>(`/leads/${leadId}/activities`, {
       method: 'POST',
       body: JSON.stringify(data)
@@ -176,13 +179,16 @@ class APILeads extends APIBase {
     leadIds: string[],
     updates: UpdateLeadInput
   ): Promise<{ updated: number; results: Lead[] }> {
-    return this.fetchJSON<{ updated: number; results: Lead[] }>('/leads/bulk/update', {
-      method: 'POST',
-      body: JSON.stringify({
-        lead_ids: leadIds,
-        updates
-      })
-    })
+    return this.fetchJSON<{ updated: number; results: Lead[] }>(
+      '/leads/bulk/update',
+      {
+        method: 'POST',
+        body: JSON.stringify({
+          lead_ids: leadIds,
+          updates
+        })
+      }
+    )
   }
 }
 

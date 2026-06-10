@@ -127,14 +127,8 @@ export const getRadiusDecimal = (position: MapPosition) => {
 }
 
 export const prepareParams = (params: CreateSearchParams, clientId: number) => {
-  const {
-    filters,
-    polygon,
-    polygons,
-    bounds,
-    name,
-    notificationFrequency
-  } = params
+  const { filters, polygon, polygons, bounds, name, notificationFrequency } =
+    params
 
   const {
     listingType,
@@ -201,6 +195,7 @@ export const prepareParams = (params: CreateSearchParams, clientId: number) => {
     soldNotifications,
     notificationFrequency,
     schoolRating: schoolRating && schoolRating > 0 ? schoolRating : undefined,
-    schoolLevel: schoolRating && schoolRating > 0 ? schoolLevel || 'any' : undefined
+    schoolLevel:
+      schoolRating && schoolRating > 0 ? schoolLevel || 'any' : undefined
   }) as ApiSavedSearchCreateRequest
 }

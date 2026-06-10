@@ -66,8 +66,7 @@ const MlsDisclaimer = () => {
                 variant="caption"
                 color="text.secondary"
               >
-                <strong>{row.label}:</strong>{' '}
-                {joinNonEmpty([row.value], ' ')}
+                <strong>{row.label}:</strong> {joinNonEmpty([row.value], ' ')}
               </Typography>
             ))}
           </Box>

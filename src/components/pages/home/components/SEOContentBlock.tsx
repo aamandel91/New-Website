@@ -1,4 +1,5 @@
 import { Box, Typography } from '@mui/material'
+
 import { tenant } from '@/configs/tenant.config'
 
 const SEO_SECTIONS = [

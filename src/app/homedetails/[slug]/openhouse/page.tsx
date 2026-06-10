@@ -1,14 +1,25 @@
 import React from 'react'
-import type { Metadata } from 'next'
-import { Container, Box, Typography, Paper, Stack, Divider, Alert } from '@mui/material'
-import { notFound } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
+import { notFound } from 'next/navigation'
+import type { Metadata } from 'next'
+
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'
+import {
+  Alert,
+  Box,
+  Container,
+  Divider,
+  Paper,
+  Stack,
+  Typography
+} from '@mui/material'
+
+import searchConfig from '@configs/search'
+
+import OpenHouseForm from 'components/open-house/OpenHouseForm'
 
 import { APIPropertyDetails } from 'services/API'
-import searchConfig from '@configs/search'
-import OpenHouseForm from 'components/open-house/OpenHouseForm'
 import { parsePropertySlug } from 'utils/propertyUrls'
 
 interface PageProps {
@@ -23,10 +34,15 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
   const { mlsNumber } = parsePropertySlug(params.slug)
 
   try {
-    const property: any = await APIPropertyDetails.fetchProperty(mlsNumber, searchConfig.defaultBoardId)
+    const property: any = await APIPropertyDetails.fetchProperty(
+      mlsNumber,
+      searchConfig.defaultBoardId
+    )
 
     const addr = property.address || {}
-    const street = addr.street || `${addr.streetNumber || ''} ${addr.streetName || ''} ${addr.streetSuffix || ''}`.trim()
+    const street =
+      addr.street ||
+      `${addr.streetNumber || ''} ${addr.streetName || ''} ${addr.streetSuffix || ''}`.trim()
     const address = street
       ? `${street}, ${addr.city || ''}, ${addr.state || ''}`
       : 'Property'
@@ -37,8 +53,8 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
       robots: {
         index: false,
         follow: false,
-        nocache: true,
-      },
+        nocache: true
+      }
     }
   } catch {
     return {
@@ -46,8 +62,8 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
       robots: {
         index: false,
         follow: false,
-        nocache: true,
-      },
+        nocache: true
+      }
     }
   }
 }
@@ -79,7 +95,7 @@ export default async function OpenHousePage(props: PageProps) {
       style: 'currency',
       currency: 'USD',
       minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
+      maximumFractionDigits: 0
     }).format(price)
   }
 
@@ -94,7 +110,7 @@ export default async function OpenHousePage(props: PageProps) {
             alignItems: 'center',
             gap: '8px',
             color: 'inherit',
-            textDecoration: 'none',
+            textDecoration: 'none'
           }}
         >
           <ArrowBackIcon fontSize="small" />
@@ -113,7 +129,7 @@ export default async function OpenHousePage(props: PageProps) {
                 width: '100%',
                 height: 300,
                 borderRadius: 1,
-                overflow: 'hidden',
+                overflow: 'hidden'
               }}
             >
               <Image
@@ -159,7 +175,11 @@ export default async function OpenHousePage(props: PageProps) {
               </Typography>
             )}
 
-            <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 1 }}>
+            <Typography
+              variant="caption"
+              color="text.secondary"
+              sx={{ display: 'block', mt: 1 }}
+            >
               MLS# {property.mlsNumber}
             </Typography>
           </Box>
@@ -172,13 +192,17 @@ export default async function OpenHousePage(props: PageProps) {
           Welcome to our Open House!
         </Typography>
         <Typography variant="body2">
-          Please complete the form below to sign in. This helps us stay in touch with you about
-          this property and other homes that match your interests.
+          Please complete the form below to sign in. This helps us stay in touch
+          with you about this property and other homes that match your
+          interests.
         </Typography>
       </Alert>
 
       {/* Open House Sign-In Form */}
-      <OpenHouseForm propertyMls={property.mlsNumber} propertyAddress={address} />
+      <OpenHouseForm
+        propertyMls={property.mlsNumber}
+        propertyAddress={address}
+      />
 
       {/* Additional Information */}
       <Box sx={{ mt: 4, textAlign: 'center' }}>

@@ -64,7 +64,9 @@ export class ApiError extends Error {
   opts: Record<string, string | string[]> | undefined
   constructor(
     message: string,
-    statusOrOpts?: number | { status?: number; opts?: Record<string, string | string[]> },
+    statusOrOpts?:
+      | number
+      | { status?: number; opts?: Record<string, string | string[]> },
     opts?: Record<string, string | string[]>
   ) {
     super(message)

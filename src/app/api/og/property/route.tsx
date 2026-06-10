@@ -1,8 +1,9 @@
 import { ImageResponse } from 'next/og'
 import type { NextRequest } from 'next/server'
 
-import { parseAddressSlug } from 'utils/propertyUrls'
 import { tenant } from '@/configs/tenant.config'
+
+import { parseAddressSlug } from 'utils/propertyUrls'
 
 export const runtime = 'edge'
 
@@ -52,7 +53,7 @@ export async function GET(req: NextRequest) {
           backgroundColor: NAVY,
           backgroundImage: `radial-gradient(circle at 25% 30%, rgba(${GOLD_RGB}, 0.18) 0%, transparent 60%), radial-gradient(circle at 75% 70%, rgba(${GOLD_RGB}, 0.10) 0%, transparent 50%)`,
           padding: '80px',
-          fontFamily: OG_FONT,
+          fontFamily: OG_FONT
         }}
       >
         <div
@@ -63,7 +64,7 @@ export async function GET(req: NextRequest) {
             fontWeight: 600,
             letterSpacing: '0.15em',
             textTransform: 'uppercase',
-            marginBottom: '28px',
+            marginBottom: '28px'
           }}
         >
           South Florida Property
@@ -75,7 +76,7 @@ export async function GET(req: NextRequest) {
             width: '120px',
             height: '4px',
             backgroundColor: GOLD,
-            marginBottom: '36px',
+            marginBottom: '36px'
           }}
         />
 
@@ -88,7 +89,7 @@ export async function GET(req: NextRequest) {
             lineHeight: 1.1,
             textAlign: 'center',
             maxWidth: '1000px',
-            letterSpacing: '-0.02em',
+            letterSpacing: '-0.02em'
           }}
         >
           {addressLine1}
@@ -102,7 +103,7 @@ export async function GET(req: NextRequest) {
               fontSize: '36px',
               fontWeight: 500,
               marginTop: '24px',
-              textAlign: 'center',
+              textAlign: 'center'
             }}
           >
             {addressLine2}
@@ -116,7 +117,7 @@ export async function GET(req: NextRequest) {
             fontSize: '24px',
             fontWeight: 500,
             marginTop: '60px',
-            letterSpacing: '0.05em',
+            letterSpacing: '0.05em'
           }}
         >
           {tenant.brand.domainDisplay}
@@ -125,7 +126,7 @@ export async function GET(req: NextRequest) {
     ),
     {
       width: 1200,
-      height: 630,
+      height: 630
     }
   )
 }

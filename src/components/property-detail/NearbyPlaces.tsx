@@ -1,6 +1,11 @@
 'use client'
 
 import React, { useEffect, useState } from 'react'
+
+import TransitIcon from '@mui/icons-material/DirectionsBus'
+import ParkIcon from '@mui/icons-material/Park'
+import PlaceIcon from '@mui/icons-material/Place'
+import SchoolIcon from '@mui/icons-material/School'
 import {
   Box,
   Chip,
@@ -12,15 +17,11 @@ import {
   Paper,
   Tab,
   Tabs,
-  Typography,
+  Typography
 } from '@mui/material'
-import SchoolIcon from '@mui/icons-material/School'
-import ParkIcon from '@mui/icons-material/Park'
-import TransitIcon from '@mui/icons-material/DirectionsBus'
-import PlaceIcon from '@mui/icons-material/Place'
 
+import type { PlaceItem, PlacesResponse } from 'services/API'
 import { APIPlaces } from 'services/API'
-import type { PlacesResponse, PlaceItem } from 'services/API'
 
 interface NearbyPlacesProps {
   lat: number
@@ -39,15 +40,19 @@ const NearbyPlaces: React.FC<NearbyPlacesProps> = ({ lat, lng, address }) => {
       return
     }
     let cancelled = false
-    APIPlaces.getPlaces(lat, lng).then((res) => {
-      if (!cancelled) {
-        setData(res)
-        setLoading(false)
-      }
-    }).catch(() => {
-      if (!cancelled) setLoading(false)
-    })
-    return () => { cancelled = true }
+    APIPlaces.getPlaces(lat, lng)
+      .then((res) => {
+        if (!cancelled) {
+          setData(res)
+          setLoading(false)
+        }
+      })
+      .catch(() => {
+        if (!cancelled) setLoading(false)
+      })
+    return () => {
+      cancelled = true
+    }
   }, [lat, lng])
 
   if (loading) {
@@ -70,10 +75,14 @@ const NearbyPlaces: React.FC<NearbyPlacesProps> = ({ lat, lng, address }) => {
 
   const getIcon = (type: string) => {
     switch (type) {
-      case 'school': return <SchoolIcon fontSize="small" />
-      case 'park': return <ParkIcon fontSize="small" />
-      case 'transit': return <TransitIcon fontSize="small" />
-      default: return <PlaceIcon fontSize="small" />
+      case 'school':
+        return <SchoolIcon fontSize="small" />
+      case 'park':
+        return <ParkIcon fontSize="small" />
+      case 'transit':
+        return <TransitIcon fontSize="small" />
+      default:
+        return <PlaceIcon fontSize="small" />
     }
   }
 
@@ -98,7 +107,12 @@ const NearbyPlaces: React.FC<NearbyPlacesProps> = ({ lat, lng, address }) => {
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                   <Typography variant="body2">{item.name}</Typography>
                   {item.level && (
-                    <Chip label={item.level} size="small" variant="outlined" sx={{ height: 20, fontSize: '0.7rem' }} />
+                    <Chip
+                      label={item.level}
+                      size="small"
+                      variant="outlined"
+                      sx={{ height: 20, fontSize: '0.7rem' }}
+                    />
                   )}
                 </Box>
               }
@@ -123,7 +137,7 @@ const NearbyPlaces: React.FC<NearbyPlacesProps> = ({ lat, lng, address }) => {
   const tabs = [
     { label: 'Schools', items: schools, count: schools.length },
     { label: 'Parks', items: parks, count: parks.length },
-    { label: 'Transit', items: transit, count: transit.length },
+    { label: 'Transit', items: transit, count: transit.length }
   ].filter((tab) => tab.count > 0)
 
   return (
@@ -144,9 +158,7 @@ const NearbyPlaces: React.FC<NearbyPlacesProps> = ({ lat, lng, address }) => {
         ))}
       </Tabs>
 
-      <Box>
-        {tabs[activeTab] && renderList(tabs[activeTab].items)}
-      </Box>
+      <Box>{tabs[activeTab] && renderList(tabs[activeTab].items)}</Box>
     </Paper>
   )
 }

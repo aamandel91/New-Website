@@ -28,9 +28,7 @@ const DashboardMenu = () => {
         features.imageFavorites
           ? [ImageFavoritesMenuItem, routes.imageFavorites]
           : null,
-        features.messaging
-          ? [MessagesMenuItem, routes.messages]
-          : null,
+        features.messaging ? [MessagesMenuItem, routes.messages] : null,
         ['Recently Viewed', null]
       ].filter(Boolean) as [DashboardItemType, string | null][],
     [features]

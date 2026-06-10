@@ -1,8 +1,10 @@
 'use client'
 
 import React from 'react'
-import { Box, Typography, Link as MuiLink } from '@mui/material'
 import Link from 'next/link'
+
+import { Box, Link as MuiLink, Typography } from '@mui/material'
+
 import { displayNameToSlug } from 'utils/templateEngine'
 
 interface CommunityLinkProps {
@@ -11,13 +13,19 @@ interface CommunityLinkProps {
   county?: string
 }
 
-const CommunityLink: React.FC<CommunityLinkProps> = ({ city, state, county }) => {
+const CommunityLink: React.FC<CommunityLinkProps> = ({
+  city,
+  state,
+  county
+}) => {
   if (!city || !state) return null
 
   const citySlug = displayNameToSlug(city)
 
   const cityHref = `/${citySlug}`
-  const countyHref = county ? `/search?county=${encodeURIComponent(county)}` : '#'
+  const countyHref = county
+    ? `/search?county=${encodeURIComponent(county)}`
+    : '#'
 
   return (
     <Box component="section" sx={{ py: 3 }}>

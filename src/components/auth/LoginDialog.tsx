@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react'
 
+import CloseIcon from '@mui/icons-material/Close'
 import {
   Box,
   Button,
@@ -15,7 +16,6 @@ import {
   TextField,
   Typography
 } from '@mui/material'
-import CloseIcon from '@mui/icons-material/Close'
 
 import { useSiteUser } from 'providers/SiteUserProvider'
 import { ssIdentify } from 'utils/suresendTracking'
@@ -27,7 +27,12 @@ interface LoginDialogProps {
   defaultTab?: 0 | 1
 }
 
-const LoginDialog = ({ open, onClose, onSuccess, defaultTab = 0 }: LoginDialogProps) => {
+const LoginDialog = ({
+  open,
+  onClose,
+  onSuccess,
+  defaultTab = 0
+}: LoginDialogProps) => {
   const { login, register } = useSiteUser()
   const [tab, setTab] = useState<number>(defaultTab)
   const [loading, setLoading] = useState(false)
@@ -68,7 +73,12 @@ const LoginDialog = ({ open, onClose, onSuccess, defaultTab = 0 }: LoginDialogPr
     }
     setLoading(true)
     setError('')
-    const ok = await register(regEmail, regPassword, regName || undefined, regPhone || undefined)
+    const ok = await register(
+      regEmail,
+      regPassword,
+      regName || undefined,
+      regPhone || undefined
+    )
     setLoading(false)
     if (ok) {
       ssIdentify({ email: regEmail, name: regName, phone: regPhone })
@@ -83,8 +93,8 @@ const LoginDialog = ({ open, onClose, onSuccess, defaultTab = 0 }: LoginDialogPr
             phone: regPhone,
             formType: 'contact',
             source: 'site_registration',
-            message: 'New site user registration',
-          }),
+            message: 'New site user registration'
+          })
         })
       } catch {
         // non-critical
@@ -102,14 +112,30 @@ const LoginDialog = ({ open, onClose, onSuccess, defaultTab = 0 }: LoginDialogPr
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="xs" fullWidth>
-      <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', pb: 0 }}>
-        <Typography variant="h6" fontWeight={600}>Welcome</Typography>
+      <DialogTitle
+        sx={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          pb: 0
+        }}
+      >
+        <Typography variant="h6" fontWeight={600}>
+          Welcome
+        </Typography>
         <IconButton onClick={onClose} size="small">
           <CloseIcon />
         </IconButton>
       </DialogTitle>
       <DialogContent>
-        <Tabs value={tab} onChange={(_, v) => { setTab(v); setError('') }} sx={{ mb: 2 }}>
+        <Tabs
+          value={tab}
+          onChange={(_, v) => {
+            setTab(v)
+            setError('')
+          }}
+          sx={{ mb: 2 }}
+        >
           <Tab label="Sign In" />
           <Tab label="Create Account" />
         </Tabs>
@@ -144,8 +170,16 @@ const LoginDialog = ({ open, onClose, onSuccess, defaultTab = 0 }: LoginDialogPr
               fullWidth
               onClick={handleSignIn}
               disabled={loading}
-              startIcon={loading ? <CircularProgress size={18} color="inherit" /> : undefined}
-              sx={{ mt: 1, bgcolor: '#0F1621', '&:hover': { bgcolor: '#1a2433' } }}
+              startIcon={
+                loading ? (
+                  <CircularProgress size={18} color="inherit" />
+                ) : undefined
+              }
+              sx={{
+                mt: 1,
+                bgcolor: '#0F1621',
+                '&:hover': { bgcolor: '#1a2433' }
+              }}
             >
               {loading ? 'Signing In...' : 'Sign In'}
             </Button>
@@ -190,8 +224,16 @@ const LoginDialog = ({ open, onClose, onSuccess, defaultTab = 0 }: LoginDialogPr
               fullWidth
               onClick={handleRegister}
               disabled={loading}
-              startIcon={loading ? <CircularProgress size={18} color="inherit" /> : undefined}
-              sx={{ mt: 1, bgcolor: '#0F1621', '&:hover': { bgcolor: '#1a2433' } }}
+              startIcon={
+                loading ? (
+                  <CircularProgress size={18} color="inherit" />
+                ) : undefined
+              }
+              sx={{
+                mt: 1,
+                bgcolor: '#0F1621',
+                '&:hover': { bgcolor: '#1a2433' }
+              }}
             >
               {loading ? 'Creating Account...' : 'Create Account'}
             </Button>

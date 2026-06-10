@@ -5,10 +5,28 @@ export interface AreaPageScore {
 }
 
 // Major sub-types that always have search volume
-const MAJOR_SUBTYPES = ['single-family-homes', 'condos', 'townhomes', 'luxury', 'waterfront', 'new-construction', 'land']
+const MAJOR_SUBTYPES = [
+  'single-family-homes',
+  'condos',
+  'townhomes',
+  'luxury',
+  'waterfront',
+  'new-construction',
+  'land'
+]
 
 // Niche sub-types with lower search volume
-const NICHE_SUBTYPES = ['va-approved', 'fha-approved', 'pet-friendly-condos', 'one-story', 'two-story', 'one-acre-plus', 'foreclosures', 'country-club', 'ocean-access']
+const NICHE_SUBTYPES = [
+  'va-approved',
+  'fha-approved',
+  'pet-friendly-condos',
+  'one-story',
+  'two-story',
+  'one-acre-plus',
+  'foreclosures',
+  'country-club',
+  'ocean-access'
+]
 
 export function scoreAreaPage(params: {
   pageType: 'city' | 'subType' | 'neighborhood' | 'zip' | 'schools'

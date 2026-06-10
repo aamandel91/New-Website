@@ -1,21 +1,21 @@
 import type {
+  SureSendApiResponse,
+  SureSendAppointment,
+  SureSendAppointmentInput,
+  SureSendCustomField,
+  SureSendCustomFieldInput,
+  SureSendEvent,
+  SureSendEventInput,
+  SureSendNote,
+  SureSendNoteInput,
   SureSendPerson,
   SureSendPersonInput,
   SureSendPersonSearchResult,
-  SureSendEventInput,
-  SureSendEvent,
-  SureSendNoteInput,
-  SureSendNote,
-  SureSendTaskInput,
   SureSendTask,
-  SureSendAppointmentInput,
-  SureSendAppointment,
-  SureSendWebhookInput,
+  SureSendTaskInput,
   SureSendWebhook,
   SureSendWebhookEvent,
-  SureSendCustomFieldInput,
-  SureSendCustomField,
-  SureSendApiResponse,
+  SureSendWebhookInput
 } from './types'
 
 const BASE_URL = 'https://api.suresend.ai/api/partner'
@@ -30,7 +30,7 @@ function getHeaders(): HeadersInit {
 
   const headers: HeadersInit = {
     'Content-Type': 'application/json',
-    Authorization: `Bearer ${token}`,
+    Authorization: `Bearer ${token}`
   }
 
   if (systemId) {
@@ -40,18 +40,15 @@ function getHeaders(): HeadersInit {
   return headers
 }
 
-async function request<T>(
-  path: string,
-  options: RequestInit = {}
-): Promise<T> {
+async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   const url = `${BASE_URL}${path}`
 
   const response = await fetch(url, {
     ...options,
     headers: {
       ...getHeaders(),
-      ...(options.headers as Record<string, string> | undefined),
-    },
+      ...(options.headers as Record<string, string> | undefined)
+    }
   })
 
   // Handle rate limiting
@@ -84,7 +81,7 @@ export async function createPerson(
 ): Promise<SureSendApiResponse<SureSendPerson>> {
   return request<SureSendApiResponse<SureSendPerson>>('/people', {
     method: 'POST',
-    body: JSON.stringify(data),
+    body: JSON.stringify(data)
   })
 }
 
@@ -94,7 +91,7 @@ export async function updatePerson(
 ): Promise<SureSendApiResponse<SureSendPerson>> {
   return request<SureSendApiResponse<SureSendPerson>>(`/people/${id}`, {
     method: 'PUT',
-    body: JSON.stringify(data),
+    body: JSON.stringify(data)
   })
 }
 
@@ -111,7 +108,9 @@ export async function searchPeople(
   const params = new URLSearchParams()
   if (email) params.set('email', email)
   if (phone) params.set('phone', phone)
-  return request<SureSendPersonSearchResult>(`/people/search?${params.toString()}`)
+  return request<SureSendPersonSearchResult>(
+    `/people/search?${params.toString()}`
+  )
 }
 
 // ─── Tags ──────────────────────────────────────────────────────
@@ -122,7 +121,7 @@ export async function applyTags(
 ): Promise<SureSendApiResponse<void>> {
   return request<SureSendApiResponse<void>>(`/people/${personId}/tags`, {
     method: 'POST',
-    body: JSON.stringify({ tags }),
+    body: JSON.stringify({ tags })
   })
 }
 
@@ -132,7 +131,7 @@ export async function removeTags(
 ): Promise<SureSendApiResponse<void>> {
   return request<SureSendApiResponse<void>>(`/people/${personId}/tags`, {
     method: 'DELETE',
-    body: JSON.stringify({ tags }),
+    body: JSON.stringify({ tags })
   })
 }
 
@@ -143,7 +142,7 @@ export async function createEvent(
 ): Promise<SureSendApiResponse<SureSendEvent>> {
   return request<SureSendApiResponse<SureSendEvent>>('/events', {
     method: 'POST',
-    body: JSON.stringify(data),
+    body: JSON.stringify(data)
   })
 }
 
@@ -156,7 +155,11 @@ export async function createNote(
 ): Promise<SureSendApiResponse<SureSendNote>> {
   return request<SureSendApiResponse<SureSendNote>>('/notes', {
     method: 'POST',
-    body: JSON.stringify({ personId, subject, body } satisfies SureSendNoteInput),
+    body: JSON.stringify({
+      personId,
+      subject,
+      body
+    } satisfies SureSendNoteInput)
   })
 }
 
@@ -170,7 +173,12 @@ export async function createTask(
 ): Promise<SureSendApiResponse<SureSendTask>> {
   return request<SureSendApiResponse<SureSendTask>>('/tasks', {
     method: 'POST',
-    body: JSON.stringify({ personId, name, type, dueDateTime } satisfies SureSendTaskInput),
+    body: JSON.stringify({
+      personId,
+      name,
+      type,
+      dueDateTime
+    } satisfies SureSendTaskInput)
   })
 }
 
@@ -190,11 +198,11 @@ export async function createAppointment(
     startsAt,
     ...(endsAt && { endsAt }),
     ...(type && { type }),
-    ...(location && { location }),
+    ...(location && { location })
   }
   return request<SureSendApiResponse<SureSendAppointment>>('/appointments', {
     method: 'POST',
-    body: JSON.stringify(payload),
+    body: JSON.stringify(payload)
   })
 }
 
@@ -207,17 +215,23 @@ export async function createWebhook(
 ): Promise<SureSendApiResponse<SureSendWebhook>> {
   return request<SureSendApiResponse<SureSendWebhook>>('/webhooks', {
     method: 'POST',
-    body: JSON.stringify({ name, url, events } satisfies SureSendWebhookInput),
+    body: JSON.stringify({ name, url, events } satisfies SureSendWebhookInput)
   })
 }
 
-export async function listWebhookEvents(): Promise<SureSendApiResponse<SureSendWebhookEvent[]>> {
-  return request<SureSendApiResponse<SureSendWebhookEvent[]>>('/webhooks/events')
+export async function listWebhookEvents(): Promise<
+  SureSendApiResponse<SureSendWebhookEvent[]>
+> {
+  return request<SureSendApiResponse<SureSendWebhookEvent[]>>(
+    '/webhooks/events'
+  )
 }
 
 // ─── Custom Fields ─────────────────────────────────────────────
 
-export async function listCustomFields(): Promise<SureSendApiResponse<SureSendCustomField[]>> {
+export async function listCustomFields(): Promise<
+  SureSendApiResponse<SureSendCustomField[]>
+> {
   return request<SureSendApiResponse<SureSendCustomField[]>>('/custom-fields')
 }
 
@@ -226,7 +240,7 @@ export async function createCustomField(
 ): Promise<SureSendApiResponse<SureSendCustomField>> {
   return request<SureSendApiResponse<SureSendCustomField>>('/custom-fields', {
     method: 'POST',
-    body: JSON.stringify(data),
+    body: JSON.stringify(data)
   })
 }
 

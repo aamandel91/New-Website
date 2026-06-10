@@ -1,7 +1,7 @@
 import { type NextRequest, NextResponse } from 'next/server'
 
-import { fetchMarketTimeline } from 'services/marketTimeline'
 import type { MarketTimelineParams } from 'services/marketTimeline'
+import { fetchMarketTimeline } from 'services/marketTimeline'
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url)
@@ -22,15 +22,15 @@ export async function GET(request: NextRequest) {
     baths: searchParams.get('baths') ?? undefined,
     minPrice: searchParams.get('minPrice') ?? undefined,
     maxPrice: searchParams.get('maxPrice') ?? undefined,
-    months: months ? parseInt(months, 10) : 12,
+    months: months ? parseInt(months, 10) : 12
   }
 
   try {
     const result = await fetchMarketTimeline(params)
     return NextResponse.json(result, {
       headers: {
-        'Cache-Control': 'public, s-maxage=3600, stale-while-revalidate=7200',
-      },
+        'Cache-Control': 'public, s-maxage=3600, stale-while-revalidate=7200'
+      }
     })
   } catch {
     return NextResponse.json(

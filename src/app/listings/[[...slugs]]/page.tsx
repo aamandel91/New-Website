@@ -1,6 +1,7 @@
 import { features } from 'features'
 
 import { Page404Template, PageTemplate } from '@templates'
+import { tenant } from '@/configs/tenant.config'
 import CatalogPageContent from '@pages/catalog'
 import StructuredData from '@shared/StructuredData'
 
@@ -8,9 +9,8 @@ import { generateMetadata as generatePropertyMetadata } from 'app/listing/[slug]
 import PropertyPage from 'app/listing/[slug]/page'
 
 import { type ApiBoardCity } from 'services/API'
-import { localBusinessSchema, breadcrumbSchema } from 'utils/structuredData'
+import { breadcrumbSchema, localBusinessSchema } from 'utils/structuredData'
 import { getCatalogUrl } from 'utils/urls'
-import { tenant } from '@/configs/tenant.config'
 
 import { parseUrlFilters, parseUrlParams } from './_parsers'
 import { fetchListings, fetchLocations } from './_requests'
@@ -111,10 +111,16 @@ const LocationsCatalogPage = async (props: {
     { name: 'Listings', url: `${baseUrl}/listings` }
   ]
   if (city) {
-    breadcrumbItems.push({ name: city, url: `${baseUrl}${getCatalogUrl(city)}` })
+    breadcrumbItems.push({
+      name: city,
+      url: `${baseUrl}${getCatalogUrl(city)}`
+    })
   }
   if (hood) {
-    breadcrumbItems.push({ name: hood, url: `${baseUrl}${getCatalogUrl(city, hood)}` })
+    breadcrumbItems.push({
+      name: hood,
+      url: `${baseUrl}${getCatalogUrl(city, hood)}`
+    })
   }
 
   return (

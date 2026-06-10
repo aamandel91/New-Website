@@ -1,6 +1,5 @@
-import type { ApiMessage, ApiMessageResponse } from './types'
-
 import APIBase from './APIBase'
+import type { ApiMessage, ApiMessageResponse } from './types'
 
 class APIMessages extends APIBase {
   fetchList(pageNum: number = 1): Promise<ApiMessageResponse> {

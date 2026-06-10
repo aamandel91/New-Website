@@ -101,8 +101,8 @@ export class RepliersLocationsService {
       method: 'GET',
       headers: {
         'REPLIERS-API-KEY': config.repliers.api_key,
-        'content-type': 'application/json',
-      },
+        'content-type': 'application/json'
+      }
     })
 
     if (!res.ok) {
@@ -164,7 +164,7 @@ export class RepliersLocationsService {
     return pairs.map(({ county, city }, index) => ({
       id: index + 1,
       name: city.name,
-      county,
+      county
     }))
   }
 
@@ -199,13 +199,15 @@ export class RepliersLocationsService {
           id: next,
           zip: cleaned,
           city: city.name,
-          county,
+          county
         })
         next += 1
       }
     }
 
-    return Array.from(zipMap.values()).sort((a, b) => a.zip.localeCompare(b.zip))
+    return Array.from(zipMap.values()).sort((a, b) =>
+      a.zip.localeCompare(b.zip)
+    )
   }
 
   /**
@@ -235,7 +237,7 @@ export class RepliersLocationsService {
           id: next,
           name: n.name,
           city: city.name,
-          county,
+          county
         })
         next += 1
       }

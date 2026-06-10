@@ -14,6 +14,6 @@ export const teamMembers: TeamMember[] = [
     name: tenant.brand.leaderName,
     role: 'Team Leader',
     phone: tenant.contact.phone,
-    license: '3284048',
-  },
+    license: '3284048'
+  }
 ]

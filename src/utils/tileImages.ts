@@ -1,7 +1,12 @@
-import 'server-only'
 import { promises as fs } from 'fs'
 import path from 'path'
-import { exploreTileImages, lifestyleTileImages } from '@/configs/defaults/tile-images'
+
+import {
+  exploreTileImages,
+  lifestyleTileImages
+} from '@/configs/defaults/tile-images'
+
+import 'server-only'
 
 export interface TileImages {
   explore: Record<string, string>
@@ -13,14 +18,14 @@ const TILE_IMAGES_PATH = path.join(process.cwd(), 'data', 'tile-images.json')
 export async function loadTileImages(): Promise<TileImages> {
   const defaults: TileImages = {
     explore: { ...exploreTileImages },
-    lifestyle: { ...lifestyleTileImages },
+    lifestyle: { ...lifestyleTileImages }
   }
   try {
     const raw = await fs.readFile(TILE_IMAGES_PATH, 'utf-8')
     const saved = JSON.parse(raw)
     return {
       explore: { ...defaults.explore, ...saved.explore },
-      lifestyle: { ...defaults.lifestyle, ...saved.lifestyle },
+      lifestyle: { ...defaults.lifestyle, ...saved.lifestyle }
     }
   } catch {
     return defaults

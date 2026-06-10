@@ -1,7 +1,11 @@
 'use client'
 
+import React from 'react'
+
 import { useEffect, useRef, useState } from 'react'
 
+import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline'
+import SendIcon from '@mui/icons-material/Send'
 import {
   Avatar,
   Box,
@@ -14,8 +18,6 @@ import {
   TextField,
   Typography
 } from '@mui/material'
-import SendIcon from '@mui/icons-material/Send'
-import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline'
 
 import type { ApiMessage } from 'services/API'
 import { useMessages } from 'providers/MessagesProvider'
@@ -111,24 +113,23 @@ const MessageBubble = ({
               {message.content.message}
             </Typography>
           )}
-          {message.content?.listings &&
-            message.content.listings.length > 0 && (
-              <Box sx={{ mt: 1 }}>
-                {message.content.listings.map((mls) => (
-                  <Typography
-                    key={mls}
-                    variant="caption"
-                    sx={{
-                      display: 'block',
-                      opacity: 0.85,
-                      textDecoration: 'underline'
-                    }}
-                  >
-                    Listing: {mls}
-                  </Typography>
-                ))}
-              </Box>
-            )}
+          {message.content?.listings && message.content.listings.length > 0 && (
+            <Box sx={{ mt: 1 }}>
+              {message.content.listings.map((mls) => (
+                <Typography
+                  key={mls}
+                  variant="caption"
+                  sx={{
+                    display: 'block',
+                    opacity: 0.85,
+                    textDecoration: 'underline'
+                  }}
+                >
+                  Listing: {mls}
+                </Typography>
+              ))}
+            </Box>
+          )}
           {message.content?.links && message.content.links.length > 0 && (
             <Box sx={{ mt: 1 }}>
               {message.content.links.map((link, i) => (
@@ -362,11 +363,7 @@ const MessagesPageContent = () => {
                       color="primary"
                       size="small"
                     >
-                      {sending ? (
-                        <CircularProgress size={20} />
-                      ) : (
-                        <SendIcon />
-                      )}
+                      {sending ? <CircularProgress size={20} /> : <SendIcon />}
                     </IconButton>
                   </InputAdornment>
                 )

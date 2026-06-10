@@ -5,15 +5,15 @@ import { Property404Template } from '@templates'
 
 import {
   extractMlsFromSlug,
-  generateStaticPropertyUrl,
+  generateStaticPropertyUrl
 } from 'utils/propertyUrls'
 
-import { fetchProperty, fetchNearbies } from '../utils'
+import { fetchNearbies, fetchProperty } from '../utils'
 
 export const revalidate = 300
 
 export const metadata = {
-  robots: { index: false, follow: false },
+  robots: { index: false, follow: false }
 }
 
 interface PageProps {

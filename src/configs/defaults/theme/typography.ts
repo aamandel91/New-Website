@@ -1,5 +1,6 @@
-import { toRem } from 'utils/theme'
 import { tenant } from '@/configs/tenant.config'
+
+import { toRem } from 'utils/theme'
 
 import { type TypographyOptions } from '@mui/material/styles/createTypography'
 

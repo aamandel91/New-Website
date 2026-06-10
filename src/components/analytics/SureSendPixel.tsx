@@ -19,7 +19,7 @@ document.head.appendChild(s);
 })(window,"https://suresend.ai/pixel/${SURESEND_PIXEL_ID}.js","ssPixel");
 window.ssPixel("init", "${SURESEND_PIXEL_ID}");
 window.ssPixel("track", "pageview");
-        `.trim(),
+        `.trim()
       }}
     />
   )

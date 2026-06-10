@@ -1,11 +1,21 @@
 import React from 'react'
-import type { Metadata } from 'next'
-import { Container, Box, Typography, Paper, Stack, Alert, Button } from '@mui/material'
 import Image from 'next/image'
 import Link from 'next/link'
+import type { Metadata } from 'next'
+
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'
+import {
+  Alert,
+  Box,
+  Button,
+  Container,
+  Paper,
+  Stack,
+  Typography
+} from '@mui/material'
 
 import OpenHouseForm from 'components/open-house/OpenHouseForm'
+
 import { fetchAddressListings, findActiveListing } from '../addressLookup'
 
 interface PageProps {
@@ -46,8 +56,8 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
     robots: {
       index: false,
       follow: false,
-      nocache: true,
-    },
+      nocache: true
+    }
   }
 }
 
@@ -68,7 +78,9 @@ export default async function OpenHousePage(props: PageProps) {
             <Alert severity="warning">
               The address in this URL could not be parsed.
             </Alert>
-            <Button variant="contained" href="/homes">Browse Florida Homes for Sale</Button>
+            <Button variant="contained" href="/homes">
+              Browse Florida Homes for Sale
+            </Button>
           </Stack>
         </Paper>
       </Container>
@@ -128,7 +140,7 @@ export default async function OpenHousePage(props: PageProps) {
       style: 'currency',
       currency: 'USD',
       minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
+      maximumFractionDigits: 0
     }).format(num)
   }
 
@@ -154,7 +166,7 @@ export default async function OpenHousePage(props: PageProps) {
             alignItems: 'center',
             gap: '8px',
             color: 'inherit',
-            textDecoration: 'none',
+            textDecoration: 'none'
           }}
         >
           <ArrowBackIcon fontSize="small" />
@@ -172,7 +184,7 @@ export default async function OpenHousePage(props: PageProps) {
                 width: '100%',
                 height: 300,
                 borderRadius: 1,
-                overflow: 'hidden',
+                overflow: 'hidden'
               }}
             >
               <Image
@@ -206,7 +218,8 @@ export default async function OpenHousePage(props: PageProps) {
               )}
               {propertyAny.details?.sqft && (
                 <Typography variant="body1">
-                  <strong>{propertyAny.details.sqft.toLocaleString()}</strong> Sq Ft
+                  <strong>{propertyAny.details.sqft.toLocaleString()}</strong>{' '}
+                  Sq Ft
                 </Typography>
               )}
             </Stack>
@@ -217,7 +230,11 @@ export default async function OpenHousePage(props: PageProps) {
               </Typography>
             )}
 
-            <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 1 }}>
+            <Typography
+              variant="caption"
+              color="text.secondary"
+              sx={{ display: 'block', mt: 1 }}
+            >
               MLS# {propertyAny.mlsNumber}
             </Typography>
           </Box>
@@ -230,13 +247,17 @@ export default async function OpenHousePage(props: PageProps) {
           Welcome to our Open House!
         </Typography>
         <Typography variant="body2">
-          Please complete the form below to sign in. This helps us stay in touch with you about
-          this property and other homes that match your interests.
+          Please complete the form below to sign in. This helps us stay in touch
+          with you about this property and other homes that match your
+          interests.
         </Typography>
       </Alert>
 
       {/* Open House Sign-In Form */}
-      <OpenHouseForm propertyMls={propertyAny.mlsNumber} propertyAddress={fullAddress} />
+      <OpenHouseForm
+        propertyMls={propertyAny.mlsNumber}
+        propertyAddress={fullAddress}
+      />
 
       {/* Additional Information */}
       <Box sx={{ mt: 4, textAlign: 'center' }}>

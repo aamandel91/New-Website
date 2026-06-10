@@ -1,11 +1,18 @@
 'use client'
 
-import React, { createContext, type ReactNode, useContext, useEffect, useState } from 'react'
+import React, {
+  createContext,
+  type ReactNode,
+  useContext,
+  useEffect,
+  useState
+} from 'react'
+
 import APIOrganization, {
+  type AgentSubdomain,
   type Organization,
   type OrganizationMember,
-  type UpdateOrganizationInput,
-  type AgentSubdomain
+  type UpdateOrganizationInput
 } from '@/services/API/APIOrganization'
 
 export type OrganizationContextType = {
@@ -17,14 +24,21 @@ export type OrganizationContextType = {
   isAgentSubdomain: boolean
   currentAgent: AgentSubdomain | null
   refresh: () => Promise<void>
-  updateOrganization: (data: UpdateOrganizationInput) => Promise<Organization | null>
+  updateOrganization: (
+    data: UpdateOrganizationInput
+  ) => Promise<Organization | null>
   fetchMembers: () => Promise<void>
   addMember: (email: string, role: string) => Promise<OrganizationMember | null>
   removeMember: (email: string) => Promise<boolean>
-  updateMemberRole: (email: string, role: string) => Promise<OrganizationMember | null>
+  updateMemberRole: (
+    email: string,
+    role: string
+  ) => Promise<OrganizationMember | null>
 }
 
-const OrganizationContext = createContext<OrganizationContextType | undefined>(undefined)
+const OrganizationContext = createContext<OrganizationContextType | undefined>(
+  undefined
+)
 
 export const OrganizationProvider = ({ children }: { children: ReactNode }) => {
   const [organization, setOrganization] = useState<Organization | null>(null)
@@ -46,7 +60,10 @@ export const OrganizationProvider = ({ children }: { children: ReactNode }) => {
       const possibleSubdomain = parts[0]
 
       try {
-        const agent = await APIOrganization.findAgentBySubdomain(org.id, possibleSubdomain)
+        const agent = await APIOrganization.findAgentBySubdomain(
+          org.id,
+          possibleSubdomain
+        )
         setCurrentAgent(agent)
       } catch (err) {
         // Not an agent subdomain, that's fine
@@ -96,7 +113,9 @@ export const OrganizationProvider = ({ children }: { children: ReactNode }) => {
     }
   }
 
-  const updateOrganization = async (data: UpdateOrganizationInput): Promise<Organization | null> => {
+  const updateOrganization = async (
+    data: UpdateOrganizationInput
+  ): Promise<Organization | null> => {
     if (!organization) return null
 
     try {
@@ -109,11 +128,17 @@ export const OrganizationProvider = ({ children }: { children: ReactNode }) => {
     }
   }
 
-  const addMember = async (email: string, role: string): Promise<OrganizationMember | null> => {
+  const addMember = async (
+    email: string,
+    role: string
+  ): Promise<OrganizationMember | null> => {
     if (!organization) return null
 
     try {
-      const member = await APIOrganization.addMember(organization.id, { email, role })
+      const member = await APIOrganization.addMember(organization.id, {
+        email,
+        role
+      })
       setMembers((prev) => [...prev, member])
       return member
     } catch (err: any) {
@@ -137,11 +162,18 @@ export const OrganizationProvider = ({ children }: { children: ReactNode }) => {
     }
   }
 
-  const updateMemberRole = async (email: string, role: string): Promise<OrganizationMember | null> => {
+  const updateMemberRole = async (
+    email: string,
+    role: string
+  ): Promise<OrganizationMember | null> => {
     if (!organization) return null
 
     try {
-      const updated = await APIOrganization.updateMemberRole(organization.id, email, role)
+      const updated = await APIOrganization.updateMemberRole(
+        organization.id,
+        email,
+        role
+      )
       setMembers((prev) => prev.map((m) => (m.email === email ? updated : m)))
       return updated
     } catch (err: any) {
@@ -174,13 +206,19 @@ export const OrganizationProvider = ({ children }: { children: ReactNode }) => {
     updateMemberRole
   }
 
-  return <OrganizationContext.Provider value={value}>{children}</OrganizationContext.Provider>
+  return (
+    <OrganizationContext.Provider value={value}>
+      {children}
+    </OrganizationContext.Provider>
+  )
 }
 
 export const useOrganization = (): OrganizationContextType => {
   const context = useContext(OrganizationContext)
   if (!context) {
-    throw new Error('useOrganization must be used within an OrganizationProvider')
+    throw new Error(
+      'useOrganization must be used within an OrganizationProvider'
+    )
   }
   return context
 }

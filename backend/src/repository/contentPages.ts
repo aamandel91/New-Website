@@ -14,7 +14,10 @@ export class ContentPagesRepository {
   /**
    * Create a new content page
    */
-  async createPage(orgId: bigint, input: CreateContentPageInput): Promise<ContentPage> {
+  async createPage(
+    orgId: bigint,
+    input: CreateContentPageInput
+  ): Promise<ContentPage> {
     const now = new Date()
     const slug = input.slug || this.generateSlug(input.title)
 
@@ -26,7 +29,8 @@ export class ContentPagesRepository {
         content: JSON.stringify(input.content || { modules: [], sidebar: [] }),
         status: input.status || 'draft',
         featured_image_url: input.featured_image_url || null,
-        featured_image_cloudinary_id: input.featured_image_cloudinary_id || null,
+        featured_image_cloudinary_id:
+          input.featured_image_cloudinary_id || null,
         is_template: input.is_template || false,
         template_name: input.template_name || null,
         parent_page_id: input.parent_page_id || null,
@@ -48,7 +52,11 @@ export class ContentPagesRepository {
   /**
    * Update a content page
    */
-  async updatePage(orgId: bigint, id: bigint, input: UpdateContentPageInput): Promise<ContentPage> {
+  async updatePage(
+    orgId: bigint,
+    id: bigint,
+    input: UpdateContentPageInput
+  ): Promise<ContentPage> {
     const updateData: any = {
       updated_at: new Date()
     }
@@ -58,15 +66,20 @@ export class ContentPagesRepository {
       updateData.slug = this.generateSlug(input.title)
     }
     if (input.slug !== undefined) updateData.slug = input.slug
-    if (input.content !== undefined) updateData.content = JSON.stringify(input.content)
+    if (input.content !== undefined)
+      updateData.content = JSON.stringify(input.content)
     if (input.status !== undefined) updateData.status = input.status
     if (input.featured_image_url !== undefined)
       updateData.featured_image_url = input.featured_image_url
     if (input.featured_image_cloudinary_id !== undefined)
-      updateData.featured_image_cloudinary_id = input.featured_image_cloudinary_id
-    if (input.is_template !== undefined) updateData.is_template = input.is_template
-    if (input.template_name !== undefined) updateData.template_name = input.template_name
-    if (input.parent_page_id !== undefined) updateData.parent_page_id = input.parent_page_id
+      updateData.featured_image_cloudinary_id =
+        input.featured_image_cloudinary_id
+    if (input.is_template !== undefined)
+      updateData.is_template = input.is_template
+    if (input.template_name !== undefined)
+      updateData.template_name = input.template_name
+    if (input.parent_page_id !== undefined)
+      updateData.parent_page_id = input.parent_page_id
     if (input.category !== undefined) updateData.category = input.category
     if (input.meta_title !== undefined) updateData.meta_title = input.meta_title
     if (input.meta_description !== undefined)
@@ -76,7 +89,8 @@ export class ContentPagesRepository {
     if (input.robots !== undefined) updateData.robots = input.robots
     if (input.custom_css !== undefined) updateData.custom_css = input.custom_css
     if (input.custom_js !== undefined) updateData.custom_js = input.custom_js
-    if (input.published_at !== undefined) updateData.published_at = input.published_at
+    if (input.published_at !== undefined)
+      updateData.published_at = input.published_at
 
     const [page] = await this.db('content_pages')
       .where({ id, org_id: orgId })
@@ -90,7 +104,9 @@ export class ContentPagesRepository {
    * Get page by ID
    */
   async getPageById(orgId: bigint, id: bigint): Promise<ContentPage | null> {
-    const page = await this.db('content_pages').where({ id, org_id: orgId }).first()
+    const page = await this.db('content_pages')
+      .where({ id, org_id: orgId })
+      .first()
 
     return page ? this.formatPage(page) : null
   }
@@ -98,8 +114,13 @@ export class ContentPagesRepository {
   /**
    * Get page by slug
    */
-  async getPageBySlug(orgId: bigint, slug: string): Promise<ContentPage | null> {
-    const page = await this.db('content_pages').where({ slug, org_id: orgId }).first()
+  async getPageBySlug(
+    orgId: bigint,
+    slug: string
+  ): Promise<ContentPage | null> {
+    const page = await this.db('content_pages')
+      .where({ slug, org_id: orgId })
+      .first()
 
     return page ? this.formatPage(page) : null
   }
@@ -127,7 +148,9 @@ export class ContentPagesRepository {
 
     if (filters.search) {
       query = query.where((builder) => {
-        builder.where('title', 'ilike', `%${filters.search}%`).orWhere('slug', 'ilike', `%${filters.search}%`)
+        builder
+          .where('title', 'ilike', `%${filters.search}%`)
+          .orWhere('slug', 'ilike', `%${filters.search}%`)
       })
     }
 
@@ -139,7 +162,10 @@ export class ContentPagesRepository {
     const limit = filters.limit || 50
     const offset = filters.offset || 0
 
-    const pages = await query.orderBy('created_at', 'desc').limit(limit).offset(offset)
+    const pages = await query
+      .orderBy('created_at', 'desc')
+      .limit(limit)
+      .offset(offset)
 
     return {
       pages: pages.map((page) => this.formatPage(page)),
@@ -151,7 +177,9 @@ export class ContentPagesRepository {
    * Delete a page
    */
   async deletePage(orgId: bigint, id: bigint): Promise<boolean> {
-    const deleted = await this.db('content_pages').where({ id, org_id: orgId }).delete()
+    const deleted = await this.db('content_pages')
+      .where({ id, org_id: orgId })
+      .delete()
 
     return deleted > 0
   }
@@ -171,7 +199,14 @@ export class ContentPagesRepository {
    */
   async getSitemapPages(
     orgId: bigint
-  ): Promise<Array<{ id: string; slug: string; updated_at: Date; published_at: Date | null }>> {
+  ): Promise<
+    Array<{
+      id: string
+      slug: string
+      updated_at: Date
+      published_at: Date | null
+    }>
+  > {
     const rows = await this.db('content_pages')
       .select('id', 'slug', 'updated_at', 'published_at')
       .where({ org_id: orgId, status: 'published' })

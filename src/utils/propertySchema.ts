@@ -23,7 +23,7 @@ export function generatePropertyJsonLd(property: Property, url: string) {
     images = [],
     listingDate,
     propertyType,
-    status,
+    status
   } = property
 
   const fullAddress = address
@@ -57,10 +57,12 @@ export function generatePropertyJsonLd(property: Property, url: string) {
             : 'https://schema.org/OutOfStock',
         ...(listingDate && {
           priceValidUntil: new Date(
-            new Date(listingDate).setFullYear(new Date(listingDate).getFullYear() + 1)
-          ).toISOString(),
-        }),
-      },
+            new Date(listingDate).setFullYear(
+              new Date(listingDate).getFullYear() + 1
+            )
+          ).toISOString()
+        })
+      }
     }),
 
     // Property details
@@ -72,7 +74,7 @@ export function generatePropertyJsonLd(property: Property, url: string) {
           '@type': 'QuantitativeValue',
           value: sqft,
           unitCode: 'FTK', // Square foot
-          unitText: 'sq ft',
+          unitText: 'sq ft'
         }
       : undefined,
 
@@ -84,7 +86,7 @@ export function generatePropertyJsonLd(property: Property, url: string) {
           addressLocality: address.city || '',
           addressRegion: address.state || '',
           postalCode: address.zip || '',
-          addressCountry: 'US',
+          addressCountry: 'US'
         }
       : undefined,
 
@@ -94,8 +96,8 @@ export function generatePropertyJsonLd(property: Property, url: string) {
           geo: {
             '@type': 'GeoCoordinates',
             latitude: property.map.latitude,
-            longitude: property.map.longitude,
-          },
+            longitude: property.map.longitude
+          }
         }
       : {}),
 
@@ -109,9 +111,9 @@ export function generatePropertyJsonLd(property: Property, url: string) {
               '@type': 'PostalAddress',
               addressLocality: address.city,
               addressRegion: address.state || 'FL',
-              addressCountry: 'US',
-            },
-          },
+              addressCountry: 'US'
+            }
+          }
         }
       : {}),
 
@@ -122,8 +124,8 @@ export function generatePropertyJsonLd(property: Property, url: string) {
       areaServed: {
         '@type': 'QuantitativeValue',
         value: lotSize,
-        unitText: 'acres',
-      },
+        unitText: 'acres'
+      }
     }),
 
     // Images
@@ -132,13 +134,13 @@ export function generatePropertyJsonLd(property: Property, url: string) {
       photo: images.map((img: any) => ({
         '@type': 'ImageObject',
         url: img.url,
-        ...(img.caption && { caption: img.caption }),
-      })),
+        ...(img.caption && { caption: img.caption })
+      }))
     }),
 
     // MLS information
     identifier: mlsNumber,
-    productID: mlsNumber,
+    productID: mlsNumber
   }
 
   // Remove undefined values
@@ -160,8 +162,8 @@ export function generatePropertyBreadcrumbJsonLd(
       '@type': 'ListItem',
       position: 1,
       name: 'Home',
-      item: baseUrl,
-    },
+      item: baseUrl
+    }
   ]
 
   if (address?.state) {
@@ -169,7 +171,7 @@ export function generatePropertyBreadcrumbJsonLd(
       '@type': 'ListItem',
       position: items.length + 1,
       name: address.state,
-      item: `${baseUrl}/search?state=${address.state}`,
+      item: `${baseUrl}/search?state=${address.state}`
     })
   }
 
@@ -178,7 +180,7 @@ export function generatePropertyBreadcrumbJsonLd(
       '@type': 'ListItem',
       position: items.length + 1,
       name: address.city,
-      item: `${baseUrl}/search?city=${address.city}&state=${address.state}`,
+      item: `${baseUrl}/search?city=${address.city}&state=${address.state}`
     })
   }
 
@@ -186,12 +188,12 @@ export function generatePropertyBreadcrumbJsonLd(
     '@type': 'ListItem',
     position: items.length + 1,
     name: address?.street || `Property ${property.mlsNumber}`,
-    item: `${baseUrl}${generatePropertyUrl(address || {}, property.mlsNumber)}`,
+    item: `${baseUrl}${generatePropertyUrl(address || {}, property.mlsNumber)}`
   })
 
   return {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
-    itemListElement: items,
+    itemListElement: items
   }
 }

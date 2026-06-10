@@ -1,15 +1,17 @@
 'use client'
 
 import React from 'react'
+import Link from 'next/link'
+
 import {
   Box,
-  Typography,
-  Paper,
-  Link as MuiLink,
-  Stack,
   Divider,
+  Link as MuiLink,
+  Paper,
+  Stack,
+  Typography
 } from '@mui/material'
-import Link from 'next/link'
+
 import { type Property } from 'services/API'
 import { generatePropertyUrl } from 'utils/propertyUrls'
 
@@ -28,7 +30,7 @@ const MoreProperties: React.FC<MorePropertiesProps> = ({
   city,
   state,
   neighborhood,
-  priceRange,
+  priceRange
 }) => {
   // Filter out current property
   const filteredProperties = currentPropertyMls
@@ -45,11 +47,14 @@ const MoreProperties: React.FC<MorePropertiesProps> = ({
       style: 'currency',
       currency: 'USD',
       minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
+      maximumFractionDigits: 0
     }).format(price)
   }
 
-  const truncateDescription = (text: string | undefined, maxLength: number = 150) => {
+  const truncateDescription = (
+    text: string | undefined,
+    maxLength: number = 150
+  ) => {
     if (!text) return ''
     if (text.length <= maxLength) return text
     return text.substring(0, maxLength).trim() + '...'
@@ -80,8 +85,8 @@ const MoreProperties: React.FC<MorePropertiesProps> = ({
       </Typography>
 
       <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-        Explore additional homes that match your search criteria. Each listing includes a
-        preview to help you find your perfect property faster.
+        Explore additional homes that match your search criteria. Each listing
+        includes a preview to help you find your perfect property faster.
       </Typography>
 
       <Stack spacing={2} divider={<Divider />}>
@@ -91,7 +96,7 @@ const MoreProperties: React.FC<MorePropertiesProps> = ({
             property.mlsNumber
           )
           const address = property.address
-            ? `${[property.address.streetNumber, property.address.streetName, property.address.streetSuffix].filter(Boolean).join(" ")}, ${property.address.city}, ${property.address.state} ${property.address.zip}`
+            ? `${[property.address.streetNumber, property.address.streetName, property.address.streetSuffix].filter(Boolean).join(' ')}, ${property.address.city}, ${property.address.state} ${property.address.zip}`
             : 'Address not available'
 
           return (
@@ -102,8 +107,8 @@ const MoreProperties: React.FC<MorePropertiesProps> = ({
                   sx={{
                     display: 'block',
                     '&:hover h6': {
-                      color: 'primary.main',
-                    },
+                      color: 'primary.main'
+                    }
                   }}
                 >
                   {/* Property Title with Price and Address */}
@@ -114,8 +119,8 @@ const MoreProperties: React.FC<MorePropertiesProps> = ({
                     color="text.primary"
                     sx={{ mb: 0.5 }}
                   >
-                    {formatPrice(property.price)} - {property.beds} Bed, {property.baths}{' '}
-                    Bath {property.propertyType || 'Home'} in{' '}
+                    {formatPrice(property.price)} - {property.beds} Bed,{' '}
+                    {property.baths} Bath {property.propertyType || 'Home'} in{' '}
                     {property.address?.city || 'City'}
                   </Typography>
 
@@ -138,7 +143,7 @@ const MoreProperties: React.FC<MorePropertiesProps> = ({
                         WebkitLineClamp: 2,
                         WebkitBoxOrient: 'vertical',
                         overflow: 'hidden',
-                        lineHeight: 1.6,
+                        lineHeight: 1.6
                       }}
                     >
                       {truncateDescription(property.description, 150)}
@@ -175,7 +180,9 @@ const MoreProperties: React.FC<MorePropertiesProps> = ({
 
       {/* Footer with additional search link */}
       {filteredProperties.length > 10 && (
-        <Box sx={{ mt: 3, pt: 2, borderTop: '1px solid', borderColor: 'divider' }}>
+        <Box
+          sx={{ mt: 3, pt: 2, borderTop: '1px solid', borderColor: 'divider' }}
+        >
           <Link
             href={`/search${city ? `?city=${encodeURIComponent(city)}` : ''}`}
             passHref

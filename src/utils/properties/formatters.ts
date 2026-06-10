@@ -76,15 +76,15 @@ export const formatMetadata = (property: Property, host?: string | null) => {
       url: host + getSeoUrl(property),
       type: 'website' as const,
       ...(ogImage && {
-        images: [{ url: ogImage, width: 1200, height: 630 }],
-      }),
+        images: [{ url: ogImage, width: 1200, height: 630 }]
+      })
     },
     twitter: {
       card: 'summary_large_image' as const,
       title: metaTitle,
       description: metaDescription,
-      ...(ogImage && { images: [ogImage] }),
-    },
+      ...(ogImage && { images: [ogImage] })
+    }
   }
 }
 

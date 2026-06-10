@@ -45,7 +45,7 @@ const Logo = () => {
           px: 0.5,
           minWidth: 0,
           alignContent: 'center',
-          '&:hover': { bgcolor: 'transparent' },
+          '&:hover': { bgcolor: 'transparent' }
         }}
       >
         <Stack direction="row" alignItems="center" spacing={1}>
@@ -58,7 +58,7 @@ const Logo = () => {
                 fontSize: '14px',
                 letterSpacing: '2px',
                 lineHeight: 1.2,
-                whiteSpace: 'nowrap',
+                whiteSpace: 'nowrap'
               }}
             >
               FLORIDA
@@ -70,7 +70,7 @@ const Logo = () => {
                 fontSize: '10px',
                 letterSpacing: '3px',
                 lineHeight: 1.2,
-                whiteSpace: 'nowrap',
+                whiteSpace: 'nowrap'
               }}
             >
               HOME FINDER

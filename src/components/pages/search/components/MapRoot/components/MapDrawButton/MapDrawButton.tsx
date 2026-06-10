@@ -96,8 +96,7 @@ const MapDrawButton = ({
   const onDrawCreate = (e: any) => {
     const feature = e.features?.[0]
     if (feature && mapDrawRef.current) {
-      const zoneType =
-        editMode === 'draw-exclude' ? 'exclude' : 'include'
+      const zoneType = editMode === 'draw-exclude' ? 'exclude' : 'include'
       mapDrawRef.current.setFeatureProperty(feature.id, 'zoneType', zoneType)
     }
     flushZones()
@@ -198,9 +197,7 @@ const MapDrawButton = ({
       return
     }
 
-    setTitle(
-      zoneType === 'exclude' ? excludeWelcomeTitle : includeWelcomeTitle
-    )
+    setTitle(zoneType === 'exclude' ? excludeWelcomeTitle : includeWelcomeTitle)
     setEditMode(targetMode)
   }
 

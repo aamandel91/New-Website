@@ -1,28 +1,29 @@
 'use client'
 
 import React from 'react'
+
+import CalendarIcon from '@mui/icons-material/CalendarToday'
+import HomeIcon from '@mui/icons-material/Home'
+import TrendingDownIcon from '@mui/icons-material/TrendingDown'
+import TrendingUpIcon from '@mui/icons-material/TrendingUp'
 import {
   Box,
-  Typography,
-  Paper,
-  Grid,
-  Stack,
+  Card,
+  CardContent,
+  CardMedia,
   Chip,
   Divider,
+  Grid,
+  Paper,
+  Stack,
   Table,
   TableBody,
   TableCell,
   TableContainer,
   TableHead,
   TableRow,
-  Card,
-  CardMedia,
-  CardContent,
+  Typography
 } from '@mui/material'
-import HomeIcon from '@mui/icons-material/Home'
-import CalendarIcon from '@mui/icons-material/CalendarToday'
-import TrendingUpIcon from '@mui/icons-material/TrendingUp'
-import TrendingDownIcon from '@mui/icons-material/TrendingDown'
 
 import { type Property } from 'services/API'
 import { formatEnglishPrice } from 'utils/formatters'
@@ -35,7 +36,7 @@ interface PropertyComparablesProps {
 
 const PropertyComparables: React.FC<PropertyComparablesProps> = ({
   comparables,
-  currentProperty,
+  currentProperty
 }) => {
   if (!comparables || comparables.length === 0) {
     return (
@@ -52,13 +53,15 @@ const PropertyComparables: React.FC<PropertyComparablesProps> = ({
     )
   }
 
-  const currentPrice = typeof currentProperty.listPrice === 'string' ?
-    parseFloat(currentProperty.listPrice) :
-    currentProperty.listPrice || 0
+  const currentPrice =
+    typeof currentProperty.listPrice === 'string'
+      ? parseFloat(currentProperty.listPrice)
+      : currentProperty.listPrice || 0
 
   const calculatePriceDifference = (compPrice: string | number | undefined) => {
     if (!compPrice) return null
-    const price = typeof compPrice === 'string' ? parseFloat(compPrice) : compPrice
+    const price =
+      typeof compPrice === 'string' ? parseFloat(compPrice) : compPrice
     if (price === 0 || currentPrice === 0) return null
     const diff = ((price - currentPrice) / currentPrice) * 100
     return diff
@@ -71,19 +74,24 @@ const PropertyComparables: React.FC<PropertyComparablesProps> = ({
       </Typography>
 
       <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-        These properties are similar to the current listing and can help you understand market value.
+        These properties are similar to the current listing and can help you
+        understand market value.
       </Typography>
 
       {/* Card View for Mobile/Tablet */}
       <Box sx={{ display: { xs: 'block', md: 'none' }, mb: 3 }}>
         <Grid container spacing={2}>
           {comparables.slice(0, 6).map((comp, index) => {
-            const soldPrice = comp.soldPrice ?
-              (typeof comp.soldPrice === 'string' ? parseFloat(comp.soldPrice) : comp.soldPrice) :
-              null
-            const listPrice = comp.listPrice ?
-              (typeof comp.listPrice === 'string' ? parseFloat(comp.listPrice) : comp.listPrice) :
-              null
+            const soldPrice = comp.soldPrice
+              ? typeof comp.soldPrice === 'string'
+                ? parseFloat(comp.soldPrice)
+                : comp.soldPrice
+              : null
+            const listPrice = comp.listPrice
+              ? typeof comp.listPrice === 'string'
+                ? parseFloat(comp.listPrice)
+                : comp.listPrice
+              : null
             const price = soldPrice || listPrice || 0
             const priceDiff = calculatePriceDifference(price)
 
@@ -95,7 +103,11 @@ const PropertyComparables: React.FC<PropertyComparablesProps> = ({
                       component="img"
                       height="200"
                       image={comp.images[0]}
-                      alt={comp.address ? formatFullAddress(comp.address) : 'Property'}
+                      alt={
+                        comp.address
+                          ? formatFullAddress(comp.address)
+                          : 'Property'
+                      }
                     />
                   )}
                   <CardContent>
@@ -104,7 +116,13 @@ const PropertyComparables: React.FC<PropertyComparablesProps> = ({
                       {priceDiff !== null && (
                         <Chip
                           size="small"
-                          icon={priceDiff > 0 ? <TrendingUpIcon /> : <TrendingDownIcon />}
+                          icon={
+                            priceDiff > 0 ? (
+                              <TrendingUpIcon />
+                            ) : (
+                              <TrendingDownIcon />
+                            )
+                          }
                           label={`${priceDiff > 0 ? '+' : ''}${priceDiff.toFixed(1)}%`}
                           color={priceDiff > 0 ? 'success' : 'error'}
                           sx={{ ml: 1 }}
@@ -112,7 +130,11 @@ const PropertyComparables: React.FC<PropertyComparablesProps> = ({
                       )}
                     </Typography>
                     {comp.address && (
-                      <Typography variant="body2" color="text.secondary" gutterBottom>
+                      <Typography
+                        variant="body2"
+                        color="text.secondary"
+                        gutterBottom
+                      >
                         {formatFullAddress(comp.address)}
                       </Typography>
                     )}
@@ -137,7 +159,11 @@ const PropertyComparables: React.FC<PropertyComparablesProps> = ({
                       <Chip
                         label={comp.status}
                         size="small"
-                        color={comp.status.toLowerCase() === 'sold' ? 'success' : 'default'}
+                        color={
+                          comp.status.toLowerCase() === 'sold'
+                            ? 'success'
+                            : 'default'
+                        }
                         sx={{ mt: 1 }}
                       />
                     )}
@@ -150,7 +176,10 @@ const PropertyComparables: React.FC<PropertyComparablesProps> = ({
       </Box>
 
       {/* Table View for Desktop */}
-      <TableContainer component={Paper} sx={{ display: { xs: 'none', md: 'block' } }}>
+      <TableContainer
+        component={Paper}
+        sx={{ display: { xs: 'none', md: 'block' } }}
+      >
         <Table>
           <TableHead>
             <TableRow sx={{ bgcolor: 'grey.100' }}>
@@ -165,12 +194,16 @@ const PropertyComparables: React.FC<PropertyComparablesProps> = ({
           </TableHead>
           <TableBody>
             {comparables.slice(0, 10).map((comp, index) => {
-              const soldPrice = comp.soldPrice ?
-                (typeof comp.soldPrice === 'string' ? parseFloat(comp.soldPrice) : comp.soldPrice) :
-                null
-              const listPrice = comp.listPrice ?
-                (typeof comp.listPrice === 'string' ? parseFloat(comp.listPrice) : comp.listPrice) :
-                null
+              const soldPrice = comp.soldPrice
+                ? typeof comp.soldPrice === 'string'
+                  ? parseFloat(comp.soldPrice)
+                  : comp.soldPrice
+                : null
+              const listPrice = comp.listPrice
+                ? typeof comp.listPrice === 'string'
+                  ? parseFloat(comp.listPrice)
+                  : comp.listPrice
+                : null
               const price = soldPrice || listPrice || 0
               const priceDiff = calculatePriceDifference(price)
 
@@ -190,7 +223,13 @@ const PropertyComparables: React.FC<PropertyComparablesProps> = ({
                     {priceDiff !== null ? (
                       <Chip
                         size="small"
-                        icon={priceDiff > 0 ? <TrendingUpIcon /> : <TrendingDownIcon />}
+                        icon={
+                          priceDiff > 0 ? (
+                            <TrendingUpIcon />
+                          ) : (
+                            <TrendingDownIcon />
+                          )
+                        }
                         label={`${priceDiff > 0 ? '+' : ''}${priceDiff.toFixed(1)}%`}
                         color={priceDiff > 0 ? 'success' : 'error'}
                       />
@@ -205,14 +244,20 @@ const PropertyComparables: React.FC<PropertyComparablesProps> = ({
                     {comp.details?.numBathrooms || '-'}
                   </TableCell>
                   <TableCell align="center">
-                    {comp.details?.sqft ? parseInt(comp.details.sqft).toLocaleString() : '-'}
+                    {comp.details?.sqft
+                      ? parseInt(comp.details.sqft).toLocaleString()
+                      : '-'}
                   </TableCell>
                   <TableCell align="center">
                     {comp.status ? (
                       <Chip
                         label={comp.status}
                         size="small"
-                        color={comp.status.toLowerCase() === 'sold' ? 'success' : 'default'}
+                        color={
+                          comp.status.toLowerCase() === 'sold'
+                            ? 'success'
+                            : 'default'
+                        }
                       />
                     ) : (
                       '-'
@@ -225,8 +270,13 @@ const PropertyComparables: React.FC<PropertyComparablesProps> = ({
         </Table>
       </TableContainer>
 
-      <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 2 }}>
-        * Comparables are automatically selected based on similar location, size, and features.
+      <Typography
+        variant="caption"
+        color="text.secondary"
+        sx={{ display: 'block', mt: 2 }}
+      >
+        * Comparables are automatically selected based on similar location,
+        size, and features.
       </Typography>
     </Box>
   )

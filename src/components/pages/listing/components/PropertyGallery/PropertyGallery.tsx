@@ -5,10 +5,11 @@ import queryString from 'query-string'
 
 import { Stack } from '@mui/material'
 
+import VideoDialog from '@shared/Dialogs/VideoDialog'
+
 import { useProperty } from 'providers/PropertyProvider'
 import useBreakpoints from 'hooks/useBreakpoints'
 import useClientSide from 'hooks/useClientSide'
-import VideoDialog from '@shared/Dialogs/VideoDialog'
 
 import {
   DesktopGallery,

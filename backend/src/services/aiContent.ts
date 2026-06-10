@@ -23,7 +23,9 @@ export class AIContentService {
   /**
    * Generate a complete blog post
    */
-  async generateBlogPost(request: AIBlogPostRequest): Promise<AIBlogPostResponse> {
+  async generateBlogPost(
+    request: AIBlogPostRequest
+  ): Promise<AIBlogPostResponse> {
     const cityContext = request.city ? ` in ${request.city}` : ''
     const toneInstruction = request.tone || 'professional and informative'
     const lengthTarget = request.length || 1500
@@ -102,7 +104,10 @@ Respond with a JSON object containing:
   /**
    * Suggest keywords for a topic
    */
-  async suggestKeywords(topic: string, city?: string): Promise<AIKeywordSuggestion[]> {
+  async suggestKeywords(
+    topic: string,
+    city?: string
+  ): Promise<AIKeywordSuggestion[]> {
     const cityContext = city ? ` in ${city}` : ''
 
     const prompt = `Suggest 10 high-value SEO keywords related to "${topic}"${cityContext}, specifically targeting South Florida buyer and seller intent (Broward County and Palm Beach County).
@@ -163,14 +168,18 @@ Respond with a JSON array of keyword objects.`
    *   - propertyType: optional property type (e.g. 'condos').
    *   - tone:         optional voice instruction (default: professional and informative).
    */
-  async generatePageContent(request: AIPageContentRequest): Promise<AIPageContentResponse> {
+  async generatePageContent(
+    request: AIPageContentRequest
+  ): Promise<AIPageContentResponse> {
     const toneInstruction = request.tone || 'professional and informative'
     const marketContext = getMarketContext(request.marketId ?? 'south-florida')
     const locationLine = request.location ? `Location: ${request.location}` : ''
     const propertyTypeLine = request.propertyType
       ? `Property type: ${request.propertyType}`
       : ''
-    const contextLines = [locationLine, propertyTypeLine].filter(Boolean).join('\n')
+    const contextLines = [locationLine, propertyTypeLine]
+      .filter(Boolean)
+      .join('\n')
     const contextBlock = contextLines ? `\nContext:\n${contextLines}\n` : ''
 
     const prompt = `Generate structured page content for a "${request.pageType}" page that can be saved directly into a CMS.
@@ -250,7 +259,8 @@ Rules for the body 'text' module:
           ? result.meta_keywords
           : []
       }
-      if (result.structured_data) response.structured_data = result.structured_data
+      if (result.structured_data)
+        response.structured_data = result.structured_data
       return response
     } catch (error) {
       console.error('Error parsing page content response:', error)

@@ -1,4 +1,5 @@
 import React from 'react'
+
 import { Paper, Stack } from '@mui/material'
 
 interface SidebarProps {
@@ -15,7 +16,7 @@ export default function Sidebar({ widgets }: SidebarProps) {
           sx={{
             p: 2.5,
             borderRadius: 2,
-            borderColor: 'divider',
+            borderColor: 'divider'
           }}
         >
           {widget}

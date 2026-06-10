@@ -1,14 +1,26 @@
 'use client'
 
 import React, { useCallback, useEffect, useRef, useState } from 'react'
-import { Box, Button, ButtonGroup, Paper, Stack, Typography } from '@mui/material'
-import TrendingUpIcon from '@mui/icons-material/TrendingUp'
-import TrendingDownIcon from '@mui/icons-material/TrendingDown'
-import BarChartIcon from '@mui/icons-material/BarChart'
 
-import MarketGraphFilters from '@shared/MarketGraphFilters'
+import BarChartIcon from '@mui/icons-material/BarChart'
+import TrendingDownIcon from '@mui/icons-material/TrendingDown'
+import TrendingUpIcon from '@mui/icons-material/TrendingUp'
+import {
+  Box,
+  Button,
+  ButtonGroup,
+  Paper,
+  Stack,
+  Typography
+} from '@mui/material'
+
 import type { MarketGraphFilterValues } from '@shared/MarketGraphFilters'
-import type { MonthlyDataPoint, MarketTimelineResult } from 'services/marketTimeline'
+import MarketGraphFilters from '@shared/MarketGraphFilters'
+
+import type {
+  MarketTimelineResult,
+  MonthlyDataPoint
+} from 'services/marketTimeline'
 
 // ---------------------------------------------------------------------------
 // Types
@@ -25,7 +37,7 @@ const RANGE_MONTHS: Record<RangeKey, number> = {
   '6M': 6,
   '1Y': 12,
   '2Y': 24,
-  '5Y': 60,
+  '5Y': 60
 }
 
 // ---------------------------------------------------------------------------
@@ -51,7 +63,7 @@ function formatPriceFull(value: number): string {
     style: 'currency',
     currency: 'USD',
     minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
+    maximumFractionDigits: 0
   }).format(value)
 }
 
@@ -76,7 +88,12 @@ interface InlineSVGChartProps {
   height: number
 }
 
-function InlineSVGChart({ data, trendDirection, width, height }: InlineSVGChartProps) {
+function InlineSVGChart({
+  data,
+  trendDirection,
+  width,
+  height
+}: InlineSVGChartProps) {
   const [hoveredIdx, setHoveredIdx] = useState<number | null>(null)
 
   if (data.length === 0) {
@@ -88,7 +105,13 @@ function InlineSVGChart({ data, trendDirection, width, height }: InlineSVGChartP
         role="img"
         aria-label="No market data available"
       >
-        <text x={width / 2} y={height / 2} textAnchor="middle" fill="#999" fontSize={14}>
+        <text
+          x={width / 2}
+          y={height / 2}
+          textAnchor="middle"
+          fill="#999"
+          fontSize={14}
+        >
           No data available for this period
         </text>
       </svg>
@@ -117,7 +140,9 @@ function InlineSVGChart({ data, trendDirection, width, height }: InlineSVGChartP
 
   // Build path
   const points = data.map((d, i) => ({ x: xScale(i), y: yScale(d.avgPrice) }))
-  const linePath = points.map((p, i) => `${i === 0 ? 'M' : 'L'}${p.x},${p.y}`).join(' ')
+  const linePath = points
+    .map((p, i) => `${i === 0 ? 'M' : 'L'}${p.x},${p.y}`)
+    .join(' ')
 
   // Fill area path (close to bottom)
   const areaPath =
@@ -197,7 +222,13 @@ function InlineSVGChart({ data, trendDirection, width, height }: InlineSVGChartP
       <path d={areaPath} fill={`url(#${gradientId})`} />
 
       {/* Line */}
-      <path d={linePath} fill="none" stroke={lineColor} strokeWidth={2.5} strokeLinejoin="round" />
+      <path
+        d={linePath}
+        fill="none"
+        stroke={lineColor}
+        strokeWidth={2.5}
+        strokeLinejoin="round"
+      />
 
       {/* Data points */}
       {points.map((p, i) => (
@@ -214,7 +245,8 @@ function InlineSVGChart({ data, trendDirection, width, height }: InlineSVGChartP
             onMouseLeave={() => setHoveredIdx(null)}
           >
             <title>
-              {formatMonthLong(data[i].date)}: Avg {formatPriceFull(data[i].avgPrice)} | Median{' '}
+              {formatMonthLong(data[i].date)}: Avg{' '}
+              {formatPriceFull(data[i].avgPrice)} | Median{' '}
               {formatPriceFull(data[i].medPrice)} | {data[i].count} sales
             </title>
           </circle>
@@ -240,7 +272,7 @@ function InlineSVGChart({ data, trendDirection, width, height }: InlineSVGChartP
       {points.map((p, i) => (
         <rect
           key={`hit-${i}`}
-          x={p.x - (chartW / data.length) / 2}
+          x={p.x - chartW / data.length / 2}
           y={PADDING.top}
           width={chartW / data.length}
           height={chartH}
@@ -249,7 +281,8 @@ function InlineSVGChart({ data, trendDirection, width, height }: InlineSVGChartP
           onMouseLeave={() => setHoveredIdx(null)}
         >
           <title>
-            {formatMonthLong(data[i].date)}: Avg {formatPriceFull(data[i].avgPrice)} | Median{' '}
+            {formatMonthLong(data[i].date)}: Avg{' '}
+            {formatPriceFull(data[i].avgPrice)} | Median{' '}
             {formatPriceFull(data[i].medPrice)} | {data[i].count} sales
           </title>
         </rect>
@@ -264,13 +297,15 @@ function InlineSVGChart({ data, trendDirection, width, height }: InlineSVGChartP
 
 const MarketTimelineGraph: React.FC<MarketTimelineGraphProps> = ({
   city,
-  initialData,
+  initialData
 }) => {
   const containerRef = useRef<HTMLDivElement>(null)
   const [containerWidth, setContainerWidth] = useState(700)
   const [range, setRange] = useState<RangeKey>('1Y')
   const [filters, setFilters] = useState<MarketGraphFilterValues>({})
-  const [result, setResult] = useState<MarketTimelineResult | null>(initialData ?? null)
+  const [result, setResult] = useState<MarketTimelineResult | null>(
+    initialData ?? null
+  )
   const [loading, setLoading] = useState(!initialData)
 
   // Measure container width for responsive SVG
@@ -291,7 +326,10 @@ const MarketTimelineGraph: React.FC<MarketTimelineGraphProps> = ({
   const fetchData = useCallback(async () => {
     setLoading(true)
     try {
-      const params = new URLSearchParams({ city, months: String(RANGE_MONTHS[range]) })
+      const params = new URLSearchParams({
+        city,
+        months: String(RANGE_MONTHS[range])
+      })
       if (filters.beds) params.set('beds', filters.beds)
       if (filters.baths) params.set('baths', filters.baths)
       if (filters.minPrice) params.set('minPrice', filters.minPrice)
@@ -316,7 +354,11 @@ const MarketTimelineGraph: React.FC<MarketTimelineGraphProps> = ({
 
   const data = result?.data ?? []
   const trend = result?.trend ?? { direction: 'flat' as const, percentage: 0 }
-  const summary = result?.summary ?? { avgPrice: 0, medPrice: 0, avgDaysOnMarket: 0 }
+  const summary = result?.summary ?? {
+    avgPrice: 0,
+    medPrice: 0,
+    avgDaysOnMarket: 0
+  }
 
   const svgHeight = Math.max(250, Math.min(350, containerWidth * 0.45))
 
@@ -356,7 +398,7 @@ const MarketTimelineGraph: React.FC<MarketTimelineGraphProps> = ({
           position: 'relative',
           minHeight: 250,
           opacity: loading ? 0.5 : 1,
-          transition: 'opacity 0.3s',
+          transition: 'opacity 0.3s'
         }}
       >
         {data.length === 0 && !loading ? (
@@ -368,15 +410,20 @@ const MarketTimelineGraph: React.FC<MarketTimelineGraphProps> = ({
               justifyContent: 'center',
               minHeight: 250,
               color: 'text.secondary',
-              gap: 1.5,
+              gap: 1.5
             }}
           >
             <BarChartIcon sx={{ fontSize: 48, color: 'grey.400' }} />
             <Typography variant="body1" fontWeight={500} color="text.secondary">
               No market data available yet
             </Typography>
-            <Typography variant="body2" color="text.disabled" textAlign="center">
-              Market trend data for {city} will appear here once enough sales data is collected.
+            <Typography
+              variant="body2"
+              color="text.disabled"
+              textAlign="center"
+            >
+              Market trend data for {city} will appear here once enough sales
+              data is collected.
             </Typography>
           </Box>
         ) : (
@@ -415,7 +462,11 @@ const MarketTimelineGraph: React.FC<MarketTimelineGraphProps> = ({
                       : 'text.secondary'
                 }
               >
-                {trend.direction === 'up' ? '\u2191' : trend.direction === 'down' ? '\u2193' : '\u2194'}{' '}
+                {trend.direction === 'up'
+                  ? '\u2191'
+                  : trend.direction === 'down'
+                    ? '\u2193'
+                    : '\u2194'}{' '}
                 {trend.direction === 'flat'
                   ? 'Flat'
                   : `${trend.direction === 'up' ? 'Up' : 'Down'} ${trend.percentage}%`}

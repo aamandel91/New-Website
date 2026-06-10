@@ -1,7 +1,9 @@
 'use client'
 
 import React, { useEffect, useState } from 'react'
+
 import { Box, Button, Skeleton, Typography } from '@mui/material'
+
 import type { Blog } from '@/types/blog'
 
 const NAVY = '#0F1621'
@@ -22,7 +24,10 @@ export default function RecentBlogs({ city, limit = 3 }: RecentBlogsProps) {
     async function fetchBlogs() {
       try {
         const apiUrl = process.env.NEXT_PUBLIC_API_URL || ''
-        const params = new URLSearchParams({ limit: String(limit + 5), status: 'published' })
+        const params = new URLSearchParams({
+          limit: String(limit + 5),
+          status: 'published'
+        })
         const res = await fetch(`${apiUrl}/api/blogs?${params}`)
         if (!res.ok) throw new Error('Failed to fetch blogs')
         const data = await res.json()
@@ -33,7 +38,8 @@ export default function RecentBlogs({ city, limit = 3 }: RecentBlogsProps) {
           const filtered = posts.filter(
             (b) =>
               b.title.toLowerCase().includes(cityLower) ||
-              (b.tags && b.tags.some((t) => t.toLowerCase().includes(cityLower)))
+              (b.tags &&
+                b.tags.some((t) => t.toLowerCase().includes(cityLower)))
           )
           posts = filtered.length > 0 ? filtered : posts
         }
@@ -47,17 +53,28 @@ export default function RecentBlogs({ city, limit = 3 }: RecentBlogsProps) {
     }
 
     fetchBlogs()
-    return () => { cancelled = true }
+    return () => {
+      cancelled = true
+    }
   }, [city, limit])
 
   if (loading) {
     return (
       <Box>
-        <Typography variant="subtitle1" fontWeight={700} sx={{ mb: 1.5, color: NAVY }}>
+        <Typography
+          variant="subtitle1"
+          fontWeight={700}
+          sx={{ mb: 1.5, color: NAVY }}
+        >
           Recent Blog Posts
         </Typography>
         {[0, 1, 2].map((i) => (
-          <Skeleton key={i} variant="rectangular" height={60} sx={{ borderRadius: 1, mb: 1 }} />
+          <Skeleton
+            key={i}
+            variant="rectangular"
+            height={60}
+            sx={{ borderRadius: 1, mb: 1 }}
+          />
         ))}
       </Box>
     )
@@ -66,7 +83,11 @@ export default function RecentBlogs({ city, limit = 3 }: RecentBlogsProps) {
   if (blogs.length === 0) {
     return (
       <Box>
-        <Typography variant="subtitle1" fontWeight={700} sx={{ mb: 1, color: NAVY }}>
+        <Typography
+          variant="subtitle1"
+          fontWeight={700}
+          sx={{ mb: 1, color: NAVY }}
+        >
           Recent Blog Posts
         </Typography>
         <Typography variant="body2" color="text.secondary">
@@ -82,7 +103,11 @@ export default function RecentBlogs({ city, limit = 3 }: RecentBlogsProps) {
 
   return (
     <Box>
-      <Typography variant="subtitle1" fontWeight={700} sx={{ mb: 1.5, color: NAVY }}>
+      <Typography
+        variant="subtitle1"
+        fontWeight={700}
+        sx={{ mb: 1.5, color: NAVY }}
+      >
         Recent Blog Posts
       </Typography>
       {blogs.map((blog) => (
@@ -96,7 +121,7 @@ export default function RecentBlogs({ city, limit = 3 }: RecentBlogsProps) {
             mb: 1.5,
             textDecoration: 'none',
             color: 'inherit',
-            '&:hover .blog-title': { color: 'primary.main' },
+            '&:hover .blog-title': { color: 'primary.main' }
           }}
         >
           {blog.featured_image_url && (
@@ -109,7 +134,7 @@ export default function RecentBlogs({ city, limit = 3 }: RecentBlogsProps) {
                 height: 60,
                 borderRadius: 1,
                 objectFit: 'cover',
-                flexShrink: 0,
+                flexShrink: 0
               }}
             />
           )}
@@ -124,16 +149,18 @@ export default function RecentBlogs({ city, limit = 3 }: RecentBlogsProps) {
                 WebkitBoxOrient: 'vertical',
                 overflow: 'hidden',
                 lineHeight: 1.3,
-                transition: 'color 0.2s',
+                transition: 'color 0.2s'
               }}
             >
               {blog.title}
             </Typography>
             <Typography variant="caption" color="text.secondary">
-              {new Date(blog.published_at || blog.created_at).toLocaleDateString('en-US', {
+              {new Date(
+                blog.published_at || blog.created_at
+              ).toLocaleDateString('en-US', {
                 month: 'short',
                 day: 'numeric',
-                year: 'numeric',
+                year: 'numeric'
               })}
             </Typography>
           </Box>
@@ -150,7 +177,10 @@ export default function RecentBlogs({ city, limit = 3 }: RecentBlogsProps) {
           color: NAVY,
           fontWeight: 600,
           fontSize: '0.75rem',
-          '&:hover': { bgcolor: 'rgba(196,169,110,0.08)', borderColor: '#a8903e' },
+          '&:hover': {
+            bgcolor: 'rgba(196,169,110,0.08)',
+            borderColor: '#a8903e'
+          }
         }}
       >
         VIEW ALL BLOG POSTS

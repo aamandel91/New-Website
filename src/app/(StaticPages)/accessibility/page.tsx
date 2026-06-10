@@ -3,9 +3,10 @@ import { type Metadata } from 'next'
 
 import Markdown from '@content/accessibility'
 import { StaticPageTemplate } from '@templates'
-import StructuredData from '@shared/StructuredData'
-import { breadcrumbSchema } from 'utils/structuredData'
 import { tenant } from '@/configs/tenant.config'
+import StructuredData from '@shared/StructuredData'
+
+import { breadcrumbSchema } from 'utils/structuredData'
 
 const title = 'Accessibility Statement'
 const url = `${tenant.brand.siteUrl}/accessibility`
@@ -21,13 +22,13 @@ export const metadata: Metadata = {
     title: `${title} | ${tenant.brand.siteName}`,
     description,
     url,
-    siteName: tenant.brand.siteName,
+    siteName: tenant.brand.siteName
   },
   twitter: {
     card: 'summary',
     title: `${title} | ${tenant.brand.siteName}`,
-    description,
-  },
+    description
+  }
 }
 
 const AccessibilityPage = () => {
@@ -36,7 +37,7 @@ const AccessibilityPage = () => {
       <StructuredData
         data={breadcrumbSchema([
           { name: 'Home', url: tenant.brand.siteUrl },
-          { name: title, url },
+          { name: title, url }
         ])}
       />
       <Markdown />

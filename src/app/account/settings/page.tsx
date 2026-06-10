@@ -18,11 +18,13 @@ import {
   Typography
 } from '@mui/material'
 
-import { useSiteUser } from 'providers/SiteUserProvider'
 import LoginDialog from 'components/auth/LoginDialog'
 
+import { useSiteUser } from 'providers/SiteUserProvider'
+
 export default function AccountSettingsPage() {
-  const { isLoggedIn, user, updateProfile, deleteAccount, logout } = useSiteUser()
+  const { isLoggedIn, user, updateProfile, deleteAccount, logout } =
+    useSiteUser()
   const [loginOpen, setLoginOpen] = useState(false)
   const [saving, setSaving] = useState(false)
   const [success, setSuccess] = useState(false)
@@ -37,8 +39,14 @@ export default function AccountSettingsPage() {
   if (!isLoggedIn) {
     return (
       <Container maxWidth="sm" sx={{ py: 6, textAlign: 'center' }}>
-        <Typography variant="h5" gutterBottom>Sign in to manage your account</Typography>
-        <Button variant="contained" onClick={() => setLoginOpen(true)} sx={{ mt: 2, bgcolor: '#0F1621' }}>
+        <Typography variant="h5" gutterBottom>
+          Sign in to manage your account
+        </Typography>
+        <Button
+          variant="contained"
+          onClick={() => setLoginOpen(true)}
+          sx={{ mt: 2, bgcolor: '#0F1621' }}
+        >
           Sign In / Register
         </Button>
         <LoginDialog open={loginOpen} onClose={() => setLoginOpen(false)} />
@@ -86,8 +94,16 @@ export default function AccountSettingsPage() {
         Account Settings
       </Typography>
 
-      {success && <Alert severity="success" sx={{ mb: 2 }}>Profile updated successfully.</Alert>}
-      {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
+      {success && (
+        <Alert severity="success" sx={{ mb: 2 }}>
+          Profile updated successfully.
+        </Alert>
+      )}
+      {error && (
+        <Alert severity="error" sx={{ mb: 2 }}>
+          {error}
+        </Alert>
+      )}
 
       <Stack spacing={2.5}>
         <TextField
@@ -126,7 +142,9 @@ export default function AccountSettingsPage() {
           variant="contained"
           onClick={handleSave}
           disabled={saving}
-          startIcon={saving ? <CircularProgress size={18} color="inherit" /> : undefined}
+          startIcon={
+            saving ? <CircularProgress size={18} color="inherit" /> : undefined
+          }
           sx={{ bgcolor: '#0F1621', '&:hover': { bgcolor: '#1a2433' } }}
         >
           {saving ? 'Saving...' : 'Save Changes'}
@@ -152,8 +170,8 @@ export default function AccountSettingsPage() {
         <DialogTitle>Delete Account?</DialogTitle>
         <DialogContent>
           <Typography>
-            This will permanently delete your account, saved searches, favorites, and search history.
-            This action cannot be undone.
+            This will permanently delete your account, saved searches,
+            favorites, and search history. This action cannot be undone.
           </Typography>
         </DialogContent>
         <DialogActions>

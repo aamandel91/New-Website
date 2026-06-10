@@ -22,7 +22,7 @@ export const sortImagesByQuality = (
   const photos: EnhancedPhoto[] = images.map((url, index) => {
     const photo: EnhancedPhoto = {
       url,
-      order: index,
+      order: index
     }
 
     // Add quality score if available
@@ -67,13 +67,13 @@ export const groupImagesByRoom = (
   imageInsights?: { images: PropertyImageInsights[] }
 ): Record<string, EnhancedPhoto[]> => {
   const grouped: Record<string, EnhancedPhoto[]> = {
-    'All Photos': [],
+    'All Photos': []
   }
 
   images.forEach((url, index) => {
     const photo: EnhancedPhoto = {
       url,
-      order: index,
+      order: index
     }
 
     if (imageInsights?.images) {
@@ -85,7 +85,11 @@ export const groupImagesByRoom = (
         photo.roomConfidence = insight.classification?.prediction
 
         // Group by room type if confidence is high enough
-        if (photo.roomType && photo.roomConfidence && photo.roomConfidence > 0.7) {
+        if (
+          photo.roomType &&
+          photo.roomConfidence &&
+          photo.roomConfidence > 0.7
+        ) {
           const roomLabel = formatRoomType(photo.roomType)
           if (!grouped[roomLabel]) {
             grouped[roomLabel] = []
@@ -124,7 +128,7 @@ export const formatRoomType = (roomType: string): string => {
     'front of structure': 'Exterior',
     pool: 'Pool & Outdoor',
     backyard: 'Backyard',
-    garage: 'Garage',
+    garage: 'Garage'
   }
 
   return roomMap[roomType.toLowerCase()] || roomType

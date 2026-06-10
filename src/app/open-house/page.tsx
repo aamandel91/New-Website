@@ -1,28 +1,29 @@
 'use client'
 
 import { useState } from 'react'
-import {
-  Box,
-  Container,
-  Typography,
-  TextField,
-  Button,
-  Stack,
-  Paper,
-  CircularProgress,
-  Alert,
-  Snackbar,
-  MenuItem,
-  Select,
-  FormControl,
-  InputLabel
-} from '@mui/material'
-import type { SelectChangeEvent } from '@mui/material'
-import SearchIcon from '@mui/icons-material/Search'
-import HomeIcon from '@mui/icons-material/Home'
-import QrCodeIcon from '@mui/icons-material/QrCode2'
+
 import CopyIcon from '@mui/icons-material/ContentCopy'
+import HomeIcon from '@mui/icons-material/Home'
 import PrintIcon from '@mui/icons-material/Print'
+import QrCodeIcon from '@mui/icons-material/QrCode2'
+import SearchIcon from '@mui/icons-material/Search'
+import type { SelectChangeEvent } from '@mui/material'
+import {
+  Alert,
+  Box,
+  Button,
+  CircularProgress,
+  Container,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Paper,
+  Select,
+  Snackbar,
+  Stack,
+  TextField,
+  Typography
+} from '@mui/material'
 
 interface PropertyData {
   mlsNumber: string
@@ -48,7 +49,10 @@ export default function OpenHouseSetupPage() {
   const [agentName, setAgentName] = useState('')
   const [agentEmail, setAgentEmail] = useState('')
   const [creating, setCreating] = useState(false)
-  const [sessionResult, setSessionResult] = useState<{ sessionId: string; signInUrl: string } | null>(null)
+  const [sessionResult, setSessionResult] = useState<{
+    sessionId: string
+    signInUrl: string
+  } | null>(null)
   const [copySuccess, setCopySuccess] = useState(false)
 
   const formatAddress = (addr: PropertyData['address']) => {
@@ -81,7 +85,9 @@ export default function OpenHouseSetupPage() {
     setProperty(null)
 
     try {
-      const res = await fetch(`/api/open-house/lookup?mls=${encodeURIComponent(mlsNumber.trim())}`)
+      const res = await fetch(
+        `/api/open-house/lookup?mls=${encodeURIComponent(mlsNumber.trim())}`
+      )
       if (!res.ok) {
         const data = await res.json()
         throw new Error(data.error || 'Property not found')
@@ -89,7 +95,9 @@ export default function OpenHouseSetupPage() {
       const data = await res.json()
       setProperty(data.property)
     } catch (err) {
-      setLookupError(err instanceof Error ? err.message : 'Failed to look up property')
+      setLookupError(
+        err instanceof Error ? err.message : 'Failed to look up property'
+      )
     } finally {
       setLookingUp(false)
     }
@@ -123,7 +131,9 @@ export default function OpenHouseSetupPage() {
       const data = await res.json()
       setSessionResult(data)
     } catch (err) {
-      setLookupError(err instanceof Error ? err.message : 'Failed to create open house')
+      setLookupError(
+        err instanceof Error ? err.message : 'Failed to create open house'
+      )
     } finally {
       setCreating(false)
     }
@@ -195,7 +205,9 @@ export default function OpenHouseSetupPage() {
     return (
       <Container maxWidth="sm">
         <Box sx={{ py: 6, textAlign: 'center' }}>
-          <Typography variant="h3" sx={{ mb: 1 }}>Open House Created!</Typography>
+          <Typography variant="h3" sx={{ mb: 1 }}>
+            Open House Created!
+          </Typography>
           <Typography color="text.secondary" sx={{ mb: 4 }}>
             Share this link or QR code with visitors
           </Typography>
@@ -208,7 +220,12 @@ export default function OpenHouseSetupPage() {
                     component="img"
                     src={property.images[0]}
                     alt="Property"
-                    sx={{ width: 80, height: 60, objectFit: 'cover', borderRadius: 1 }}
+                    sx={{
+                      width: 80,
+                      height: 60,
+                      objectFit: 'cover',
+                      borderRadius: 1
+                    }}
                   />
                 )}
                 <Box>
@@ -216,7 +233,8 @@ export default function OpenHouseSetupPage() {
                     {formatAddress(property.address)}
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
-                    {formatPrice(property.listPrice)} &bull; MLS# {property.mlsNumber}
+                    {formatPrice(property.listPrice)} &bull; MLS#{' '}
+                    {property.mlsNumber}
                   </Typography>
                 </Box>
               </Stack>
@@ -300,14 +318,20 @@ export default function OpenHouseSetupPage() {
         </Typography>
 
         {lookupError && (
-          <Alert severity="error" sx={{ mb: 3 }} onClose={() => setLookupError(null)}>
+          <Alert
+            severity="error"
+            sx={{ mb: 3 }}
+            onClose={() => setLookupError(null)}
+          >
             {lookupError}
           </Alert>
         )}
 
         {/* Step 1: Look up property */}
         <Paper sx={{ p: 3, mb: 3 }}>
-          <Typography variant="h6" sx={{ mb: 2 }}>1. Find Your Property</Typography>
+          <Typography variant="h6" sx={{ mb: 2 }}>
+            1. Find Your Property
+          </Typography>
           <Stack direction="row" spacing={2}>
             <TextField
               fullWidth
@@ -322,7 +346,9 @@ export default function OpenHouseSetupPage() {
               variant="contained"
               onClick={handleLookup}
               disabled={!mlsNumber.trim() || lookingUp}
-              startIcon={lookingUp ? <CircularProgress size={20} /> : <SearchIcon />}
+              startIcon={
+                lookingUp ? <CircularProgress size={20} /> : <SearchIcon />
+              }
               sx={{ minWidth: 140 }}
             >
               {lookingUp ? 'Looking...' : 'Look Up'}
@@ -333,7 +359,14 @@ export default function OpenHouseSetupPage() {
         {/* Property confirmation */}
         {property && (
           <>
-            <Paper sx={{ p: 3, mb: 3, border: '2px solid', borderColor: 'success.main' }}>
+            <Paper
+              sx={{
+                p: 3,
+                mb: 3,
+                border: '2px solid',
+                borderColor: 'success.main'
+              }}
+            >
               <Typography variant="h6" sx={{ mb: 2, color: 'success.main' }}>
                 Property Found
               </Typography>
@@ -367,14 +400,18 @@ export default function OpenHouseSetupPage() {
 
             {/* Step 2: Agent info */}
             <Paper sx={{ p: 3, mb: 3 }}>
-              <Typography variant="h6" sx={{ mb: 2 }}>2. Agent Information</Typography>
+              <Typography variant="h6" sx={{ mb: 2 }}>
+                2. Agent Information
+              </Typography>
               <Stack spacing={2}>
                 <FormControl fullWidth>
                   <InputLabel>Agent Name</InputLabel>
                   <Select
                     value={agentName}
                     label="Agent Name"
-                    onChange={(e: SelectChangeEvent) => setAgentName(e.target.value)}
+                    onChange={(e: SelectChangeEvent) =>
+                      setAgentName(e.target.value)
+                    }
                   >
                     <MenuItem value="Site Owner">Site Owner</MenuItem>
                     <MenuItem value="Agent 1">Agent 1</MenuItem>
@@ -399,7 +436,9 @@ export default function OpenHouseSetupPage() {
               fullWidth
               onClick={handleCreate}
               disabled={!agentName || creating}
-              startIcon={creating ? <CircularProgress size={20} /> : <QrCodeIcon />}
+              startIcon={
+                creating ? <CircularProgress size={20} /> : <QrCodeIcon />
+              }
               sx={{ py: 1.5, fontSize: '1.1rem' }}
             >
               {creating ? 'Creating...' : 'Create Open House'}

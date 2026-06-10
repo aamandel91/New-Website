@@ -1,12 +1,13 @@
 'use client'
 
 import React from 'react'
-import Sidebar from './Sidebar'
-import SearchWidget from './SearchWidget'
-import ReadyToChat from './ReadyToChat'
-import SellerResources from './SellerResources'
+
 import BuyerResources from './BuyerResources'
+import ReadyToChat from './ReadyToChat'
 import RecentBlogs from './RecentBlogs'
+import SearchWidget from './SearchWidget'
+import SellerResources from './SellerResources'
+import Sidebar from './Sidebar'
 
 export default function SellPageSidebar() {
   return (
@@ -16,7 +17,7 @@ export default function SellPageSidebar() {
         <ReadyToChat key="chat" />,
         <SellerResources key="seller" />,
         <BuyerResources key="buyer" />,
-        <RecentBlogs key="blogs" />,
+        <RecentBlogs key="blogs" />
       ]}
     />
   )

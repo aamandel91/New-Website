@@ -1,20 +1,21 @@
 import React from 'react'
+
+import CalendarTodayIcon from '@mui/icons-material/CalendarToday'
+import HomeIcon from '@mui/icons-material/Home'
+import InventoryIcon from '@mui/icons-material/Inventory2'
+import TrendingDownIcon from '@mui/icons-material/TrendingDown'
+import TrendingUpIcon from '@mui/icons-material/TrendingUp'
 import {
+  Alert,
   Box,
-  Paper,
-  Typography,
-  Grid,
   Card,
   CardContent,
   Chip,
+  Grid,
+  Paper,
   Skeleton,
-  Alert,
+  Typography
 } from '@mui/material'
-import TrendingUpIcon from '@mui/icons-material/TrendingUp'
-import TrendingDownIcon from '@mui/icons-material/TrendingDown'
-import HomeIcon from '@mui/icons-material/Home'
-import CalendarTodayIcon from '@mui/icons-material/CalendarToday'
-import InventoryIcon from '@mui/icons-material/Inventory2'
 
 import { formatEnglishPrice } from 'utils/formatters'
 import { pluralize } from 'utils/strings'
@@ -41,9 +42,14 @@ const MarketTrendsWidget: React.FC<MarketTrendsWidgetProps> = async ({
   boardId,
   monthsBack = 12,
   showDaysOnMarket = true,
-  title = 'Market Trends',
+  title = 'Market Trends'
 }) => {
-  const { chartData, summary } = await fetchMarketTrends(city, state, boardId, monthsBack)
+  const { chartData, summary } = await fetchMarketTrends(
+    city,
+    state,
+    boardId,
+    monthsBack
+  )
 
   if (!summary || chartData.length === 0) {
     return (
@@ -79,7 +85,10 @@ const MarketTrendsWidget: React.FC<MarketTrendsWidgetProps> = async ({
           <Card variant="outlined">
             <CardContent>
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                <HomeIcon fontSize="small" sx={{ mr: 1, color: 'primary.main' }} />
+                <HomeIcon
+                  fontSize="small"
+                  sx={{ mr: 1, color: 'primary.main' }}
+                />
                 <Typography variant="caption" color="text.secondary">
                   Median Price
                 </Typography>
@@ -99,16 +108,26 @@ const MarketTrendsWidget: React.FC<MarketTrendsWidgetProps> = async ({
                       )
                     }
                     label={`${summary.monthOverMonthChange > 0 ? '+' : ''}${summary.monthOverMonthChange}%`}
-                    color={summary.monthOverMonthChange > 0 ? 'success' : 'error'}
+                    color={
+                      summary.monthOverMonthChange > 0 ? 'success' : 'error'
+                    }
                     sx={{ height: 20, fontSize: '0.7rem' }}
                   />
-                  <Typography variant="caption" color="text.secondary" sx={{ ml: 1 }}>
+                  <Typography
+                    variant="caption"
+                    color="text.secondary"
+                    sx={{ ml: 1 }}
+                  >
                     vs last month
                   </Typography>
                 </Box>
               )}
               {summary.yearOverYearChange !== undefined && (
-                <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5, display: 'block' }}>
+                <Typography
+                  variant="caption"
+                  color="text.secondary"
+                  sx={{ mt: 0.5, display: 'block' }}
+                >
                   {summary.yearOverYearChange > 0 ? '+' : ''}
                   {summary.yearOverYearChange}% YoY
                 </Typography>
@@ -122,13 +141,19 @@ const MarketTrendsWidget: React.FC<MarketTrendsWidgetProps> = async ({
           <Card variant="outlined">
             <CardContent>
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                <CalendarTodayIcon fontSize="small" sx={{ mr: 1, color: 'primary.main' }} />
+                <CalendarTodayIcon
+                  fontSize="small"
+                  sx={{ mr: 1, color: 'primary.main' }}
+                />
                 <Typography variant="caption" color="text.secondary">
                   Avg. Days on Market
                 </Typography>
               </Box>
               <Typography variant="h6" fontWeight="bold">
-                {pluralize(summary.averageDaysOnMarket, { one: '$ day', many: '$ days' })}
+                {pluralize(summary.averageDaysOnMarket, {
+                  one: '$ day',
+                  many: '$ days'
+                })}
               </Typography>
             </CardContent>
           </Card>
@@ -139,7 +164,10 @@ const MarketTrendsWidget: React.FC<MarketTrendsWidgetProps> = async ({
           <Card variant="outlined">
             <CardContent>
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                <InventoryIcon fontSize="small" sx={{ mr: 1, color: 'primary.main' }} />
+                <InventoryIcon
+                  fontSize="small"
+                  sx={{ mr: 1, color: 'primary.main' }}
+                />
                 <Typography variant="caption" color="text.secondary">
                   Active Listings
                 </Typography>
@@ -166,10 +194,14 @@ const MarketTrendsWidget: React.FC<MarketTrendsWidgetProps> = async ({
                   bgcolor: marketCondition.color,
                   color: 'white',
                   fontWeight: 'bold',
-                  mb: 1,
+                  mb: 1
                 }}
               />
-              <Typography variant="caption" color="text.secondary" sx={{ display: 'block' }}>
+              <Typography
+                variant="caption"
+                color="text.secondary"
+                sx={{ display: 'block' }}
+              >
                 {summary.inventoryMonths} months of inventory
               </Typography>
             </CardContent>
@@ -194,7 +226,7 @@ const MarketTrendsWidget: React.FC<MarketTrendsWidgetProps> = async ({
               width: 20,
               height: 3,
               bgcolor: '#1976d2',
-              mr: 1,
+              mr: 1
             }}
           />
           <Typography variant="caption" color="text.secondary">
@@ -208,7 +240,7 @@ const MarketTrendsWidget: React.FC<MarketTrendsWidgetProps> = async ({
                 width: 20,
                 height: 3,
                 bgcolor: '#f57c00',
-                mr: 1,
+                mr: 1
               }}
             />
             <Typography variant="caption" color="text.secondary">
@@ -219,7 +251,11 @@ const MarketTrendsWidget: React.FC<MarketTrendsWidgetProps> = async ({
       </Box>
 
       {/* Footer Note */}
-      <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 2 }}>
+      <Typography
+        variant="caption"
+        color="text.secondary"
+        sx={{ display: 'block', mt: 2 }}
+      >
         * Data reflects the last {monthsBack} months of market activity
       </Typography>
     </Paper>
@@ -242,7 +278,12 @@ export const MarketTrendsWidgetSkeleton: React.FC = () => {
           <Grid item xs={12} sm={6} md={3} key={i}>
             <Card variant="outlined">
               <CardContent>
-                <Skeleton variant="text" width={120} height={20} sx={{ mb: 1 }} />
+                <Skeleton
+                  variant="text"
+                  width={120}
+                  height={20}
+                  sx={{ mb: 1 }}
+                />
                 <Skeleton variant="text" width={100} height={32} />
               </CardContent>
             </Card>

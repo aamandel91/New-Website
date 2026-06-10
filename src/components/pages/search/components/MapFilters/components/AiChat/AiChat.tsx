@@ -73,14 +73,13 @@ const AiChat = () => {
       }
       setToken(nlpId) // update token
       setHistory((prev) => [...prev, aiAnswer])
-
     } catch (e) {
       console.error('AI chat request failed', { value, error: e })
       const backendMessage =
         typeof e === 'object' && e !== null && 'data' in e
-          ? (e as { data?: { message?: string; error?: string } }).data
+          ? ((e as { data?: { message?: string; error?: string } }).data
               ?.message ??
-            (e as { data?: { message?: string; error?: string } }).data?.error
+            (e as { data?: { message?: string; error?: string } }).data?.error)
           : undefined
       showSnackbar(
         backendMessage || 'Failed to get a response. Please try again.',

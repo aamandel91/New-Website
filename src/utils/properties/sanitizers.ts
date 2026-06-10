@@ -1,7 +1,7 @@
-import parsePhoneNumber from 'libphonenumber-js/min'
-
 import i18nConfig from '@configs/i18n'
 import propsConfig from '@configs/properties'
+
+import parsePhoneNumber from 'libphonenumber-js/min'
 
 import { type PropertyAddress } from 'services/API'
 

@@ -2,17 +2,20 @@
 
 import React, { useCallback, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Box, Button, Typography } from '@mui/material'
+
 import SearchIcon from '@mui/icons-material/Search'
-import LocationAutocomplete from '@shared/LocationAutocomplete'
+import { Box, Button, Typography } from '@mui/material'
+
 import type { LocationResult } from '@shared/LocationAutocomplete'
+import LocationAutocomplete from '@shared/LocationAutocomplete'
 
 const NAVY = '#0F1621'
 const GOLD = '#C4A96E'
 
 export default function SearchWidget() {
   const router = useRouter()
-  const [selectedLocation, setSelectedLocation] = useState<LocationResult | null>(null)
+  const [selectedLocation, setSelectedLocation] =
+    useState<LocationResult | null>(null)
 
   const handleSelect = useCallback((location: LocationResult) => {
     setSelectedLocation(location)
@@ -21,7 +24,10 @@ export default function SearchWidget() {
   const handleSearch = () => {
     if (selectedLocation) {
       const city = selectedLocation.address?.city || selectedLocation.name
-      const slug = city.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
+      const slug = city
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-|-$/g, '')
       router.push(`/search/gallery?city=${encodeURIComponent(city)}`)
     } else {
       router.push('/search/gallery')
@@ -30,7 +36,11 @@ export default function SearchWidget() {
 
   return (
     <Box>
-      <Typography variant="subtitle1" fontWeight={700} sx={{ mb: 1.5, color: NAVY }}>
+      <Typography
+        variant="subtitle1"
+        fontWeight={700}
+        sx={{ mb: 1.5, color: NAVY }}
+      >
         Search Homes
       </Typography>
       <LocationAutocomplete
@@ -49,7 +59,7 @@ export default function SearchWidget() {
           bgcolor: GOLD,
           color: '#fff',
           fontWeight: 700,
-          '&:hover': { bgcolor: '#a8903e' },
+          '&:hover': { bgcolor: '#a8903e' }
         }}
       >
         SEARCH HOMES
@@ -59,7 +69,11 @@ export default function SearchWidget() {
           component="a"
           href="/search/gallery"
           variant="body2"
-          sx={{ color: 'primary.main', textDecoration: 'none', '&:hover': { textDecoration: 'underline' } }}
+          sx={{
+            color: 'primary.main',
+            textDecoration: 'none',
+            '&:hover': { textDecoration: 'underline' }
+          }}
         >
           Advanced Search
         </Typography>

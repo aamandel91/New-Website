@@ -20,7 +20,10 @@ function mapAvailability(
 ): RemarketingPropertyData['availability'] {
   if (status === 'U' && lastStatus === 'Sld') return 'sold'
   if (status === 'U' && lastStatus === 'Lsd') return 'sold'
-  if (status === 'U' && (lastStatus === 'Sc' || lastStatus === 'Pc' || lastStatus === 'Lc'))
+  if (
+    status === 'U' &&
+    (lastStatus === 'Sc' || lastStatus === 'Pc' || lastStatus === 'Lc')
+  )
     return 'pending'
   if (status === 'A') return 'for sale'
   return 'for sale'
@@ -40,7 +43,7 @@ function mapPropertyToRemarketing(property: Property): RemarketingPropertyData {
       street,
       city: addr.city,
       state: addr.state,
-      zip: addr.zip,
+      zip: addr.zip
     },
     property.mlsNumber
   )
@@ -56,7 +59,8 @@ function mapPropertyToRemarketing(property: Property): RemarketingPropertyData {
     postal_code: addr.zip || '',
     price: parseFloat(property.listPrice) || 0,
     currency: 'USD',
-    property_type: property.details?.propertyType || property.details?.style || '',
+    property_type:
+      property.details?.propertyType || property.details?.style || '',
     bedrooms: parseInt(property.details?.numBedrooms) || 0,
     bathrooms: parseInt(property.details?.numBathrooms) || 0,
     square_feet: parseFloat(property.details?.sqft) || 0,
@@ -64,7 +68,7 @@ function mapPropertyToRemarketing(property: Property): RemarketingPropertyData {
     url: `${baseUrl}${url}`,
     availability: mapAvailability(property.status, property.lastStatus),
     latitude: property.map?.latitude,
-    longitude: property.map?.longitude,
+    longitude: property.map?.longitude
   }
 }
 
@@ -88,7 +92,7 @@ export async function fetchFeedProperties(
     propertyType,
     status = 'A',
     minPrice,
-    maxPrice,
+    maxPrice
   } = options
 
   const page = Math.floor(offset / limit) + 1
@@ -106,7 +110,7 @@ export async function fetchFeedProperties(
         ...(city && { city }),
         ...(propertyType && { propertyType }),
         ...(minPrice && { minPrice }),
-        ...(maxPrice && { maxPrice }),
+        ...(maxPrice && { maxPrice })
       })
     } else {
       const getParams: Record<string, string | number> = {
@@ -114,7 +118,7 @@ export async function fetchFeedProperties(
         pageNum: page,
         resultsPerPage: limit,
         status,
-        type: 'sale',
+        type: 'sale'
       }
 
       if (city) getParams.city = city
@@ -122,10 +126,9 @@ export async function fetchFeedProperties(
       if (minPrice) getParams.minPrice = minPrice
       if (maxPrice) getParams.maxPrice = maxPrice
 
-      response = await APISearch.fetch(
-        { get: getParams },
-        { next: { revalidate: 3600 } } as any
-      )
+      response = await APISearch.fetch({ get: getParams }, {
+        next: { revalidate: 3600 }
+      } as any)
     }
 
     if (!response?.listings) return []

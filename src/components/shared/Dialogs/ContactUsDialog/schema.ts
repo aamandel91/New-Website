@@ -24,14 +24,10 @@ const schema = Joi.object({
     'any.required': 'Incorrect phone format'
   }),
   message: Joi.string().trim().min(10).max(1024).required().messages({
-    'string.empty':
-      'Message is required and should be more than 10 symbols',
-    'any.required':
-      'Message is required and should be more than 10 symbols',
-    'string.min':
-      'Message is required and should be more than 10 symbols',
-    'string.max':
-      'Message is required and should be more than 1024 symbols'
+    'string.empty': 'Message is required and should be more than 10 symbols',
+    'any.required': 'Message is required and should be more than 10 symbols',
+    'string.min': 'Message is required and should be more than 10 symbols',
+    'string.max': 'Message is required and should be more than 1024 symbols'
   })
 })
 

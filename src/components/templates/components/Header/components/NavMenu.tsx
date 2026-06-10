@@ -26,8 +26,8 @@ const NAV_LINK_SX = {
   py: 0.5,
   minWidth: 0,
   '&:hover': {
-    bgcolor: 'rgba(255,255,255,0.08)',
-  },
+    bgcolor: 'rgba(255,255,255,0.08)'
+  }
 }
 
 export const NavLink = ({ label, href }: { label: string; href: string }) => (
@@ -50,7 +50,7 @@ export const NavDropdown = ({ label, items }: NavDropdownProps) => {
               fontSize: '18px !important',
               color: 'white',
               transition: 'transform 0.2s',
-              transform: open ? 'rotate(180deg)' : 'rotate(0deg)',
+              transform: open ? 'rotate(180deg)' : 'rotate(0deg)'
             }}
           />
         }
@@ -69,9 +69,9 @@ export const NavDropdown = ({ label, items }: NavDropdownProps) => {
             sx: {
               mt: 1,
               maxHeight: 400,
-              borderRadius: '4px',
-            },
-          },
+              borderRadius: '4px'
+            }
+          }
         }}
       >
         {items.map((item) => (

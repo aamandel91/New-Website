@@ -1,15 +1,16 @@
 'use client'
 
 import React from 'react'
-import { Box, Container, Typography, Stack, Button } from '@mui/material'
 import { useRouter } from 'next/navigation'
-import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline'
 
-import { PageTemplate } from '@templates'
-import { PropertyCard } from '@shared/Property'
-import { EmptyListings } from '@shared/EmptyStates'
-import { useRecentlyViewed } from '@/hooks/useRecentlyViewed'
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline'
+import { Box, Button, Container, Stack, Typography } from '@mui/material'
+
 import gridConfig from '@configs/cards-grids'
+import { PageTemplate } from '@templates'
+import { useRecentlyViewed } from '@/hooks/useRecentlyViewed'
+import { EmptyListings } from '@shared/EmptyStates'
+import { PropertyCard } from '@shared/Property'
 
 const RecentlyViewedPage = () => {
   const { properties, clearAll } = useRecentlyViewed()
@@ -18,7 +19,12 @@ const RecentlyViewedPage = () => {
   return (
     <PageTemplate>
       <Container maxWidth="lg" sx={{ py: 4 }}>
-        <Stack direction="row" justifyContent="space-between" alignItems="center" mb={3}>
+        <Stack
+          direction="row"
+          justifyContent="space-between"
+          alignItems="center"
+          mb={3}
+        >
           <Typography variant="h4" component="h1">
             Recently Viewed
           </Typography>

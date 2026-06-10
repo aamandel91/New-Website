@@ -1,12 +1,13 @@
 import { NextResponse } from 'next/server'
+
 import {
-  searchPeople,
-  createPerson,
-  updatePerson,
   applyTags,
   createEvent,
   createNote,
+  createPerson,
   createTask,
+  searchPeople,
+  updatePerson
 } from '@/services/suresend/client'
 import type { LeadFormType } from '@/services/suresend/types'
 
@@ -14,7 +15,7 @@ const TAG_MAP: Record<LeadFormType, string[]> = {
   tour_request: ['website_lead', 'tour_request', 'high_intent'],
   contact: ['website_lead', 'contact_form'],
   open_house: ['website_lead', 'open_house', 'in_person'],
-  offer: ['website_lead', 'offer_interest', 'hot_lead'],
+  offer: ['website_lead', 'offer_interest', 'hot_lead']
 }
 
 function getNextBusinessDay(): string {
@@ -46,7 +47,7 @@ export async function POST(request: Request) {
       formType,
       propertyAddress,
       mlsNumber,
-      source,
+      source
     } = body as {
       name: string
       email: string
@@ -78,7 +79,7 @@ export async function POST(request: Request) {
           firstName,
           lastName,
           phone,
-          source: source || 'website',
+          source: source || 'website'
         })
       } else {
         const created = await createPerson({
@@ -86,7 +87,7 @@ export async function POST(request: Request) {
           lastName,
           email,
           phone,
-          source: source || 'website',
+          source: source || 'website'
         })
         personId = created.data.id
       }
@@ -115,14 +116,14 @@ export async function POST(request: Request) {
           ? {
               property: {
                 address: propertyAddress,
-                mlsNumber,
-              },
+                mlsNumber
+              }
             }
           : {}),
         metadata: {
           formType,
-          source: source || 'website',
-        },
+          source: source || 'website'
+        }
       })
     } catch (err) {
       console.error('[SureSend] Failed to create event:', err)

@@ -1,14 +1,34 @@
 'use client'
 
 import React from 'react'
-import { Box, Container, Grid, Paper, Skeleton, Stack, Divider } from '@mui/material'
+
+import {
+  Box,
+  Container,
+  Divider,
+  Grid,
+  Paper,
+  Skeleton,
+  Stack
+} from '@mui/material'
 
 const PropertyDetailSkeleton: React.FC = () => {
   return (
     <Box>
       {/* Photo Gallery Skeleton */}
-      <Box sx={{ width: '100%', height: { xs: 400, md: 600 }, bgcolor: 'grey.200' }}>
-        <Skeleton variant="rectangular" width="100%" height="100%" animation="wave" />
+      <Box
+        sx={{
+          width: '100%',
+          height: { xs: 400, md: 600 },
+          bgcolor: 'grey.200'
+        }}
+      >
+        <Skeleton
+          variant="rectangular"
+          width="100%"
+          height="100%"
+          animation="wave"
+        />
       </Box>
 
       <Container maxWidth="xl" sx={{ py: 4 }}>
@@ -59,7 +79,12 @@ const PropertyDetailSkeleton: React.FC = () => {
             <Stack spacing={3}>
               {/* Description */}
               <Paper elevation={2} sx={{ p: 3 }}>
-                <Skeleton variant="text" width={150} height={32} sx={{ mb: 2 }} />
+                <Skeleton
+                  variant="text"
+                  width={150}
+                  height={32}
+                  sx={{ mb: 2 }}
+                />
                 <Skeleton variant="text" width="100%" />
                 <Skeleton variant="text" width="100%" />
                 <Skeleton variant="text" width="90%" />
@@ -68,7 +93,12 @@ const PropertyDetailSkeleton: React.FC = () => {
 
               {/* Key Facts */}
               <Paper elevation={2} sx={{ p: 3 }}>
-                <Skeleton variant="text" width={120} height={32} sx={{ mb: 2 }} />
+                <Skeleton
+                  variant="text"
+                  width={120}
+                  height={32}
+                  sx={{ mb: 2 }}
+                />
                 <Grid container spacing={2}>
                   {[1, 2, 3, 4, 5, 6].map((i) => (
                     <Grid item xs={12} sm={6} key={i}>
@@ -86,7 +116,12 @@ const PropertyDetailSkeleton: React.FC = () => {
 
               {/* Features */}
               <Paper elevation={2} sx={{ p: 3 }}>
-                <Skeleton variant="text" width={100} height={32} sx={{ mb: 2 }} />
+                <Skeleton
+                  variant="text"
+                  width={100}
+                  height={32}
+                  sx={{ mb: 2 }}
+                />
                 <Grid container spacing={2}>
                   {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
                     <Grid item xs={12} sm={6} key={i}>
@@ -101,7 +136,12 @@ const PropertyDetailSkeleton: React.FC = () => {
 
               {/* History */}
               <Paper elevation={2} sx={{ p: 3 }}>
-                <Skeleton variant="text" width={180} height={32} sx={{ mb: 2 }} />
+                <Skeleton
+                  variant="text"
+                  width={180}
+                  height={32}
+                  sx={{ mb: 2 }}
+                />
                 <Stack spacing={2}>
                   {[1, 2, 3].map((i) => (
                     <Stack direction="row" spacing={2} key={i}>
@@ -117,17 +157,31 @@ const PropertyDetailSkeleton: React.FC = () => {
 
               {/* Location/Map */}
               <Paper elevation={2} sx={{ p: 3 }}>
-                <Skeleton variant="text" width={100} height={32} sx={{ mb: 2 }} />
+                <Skeleton
+                  variant="text"
+                  width={100}
+                  height={32}
+                  sx={{ mb: 2 }}
+                />
                 <Skeleton variant="rectangular" width="100%" height={400} />
               </Paper>
 
               {/* Similar Properties */}
               <Paper elevation={2} sx={{ p: 3 }}>
-                <Skeleton variant="text" width={180} height={32} sx={{ mb: 2 }} />
+                <Skeleton
+                  variant="text"
+                  width={180}
+                  height={32}
+                  sx={{ mb: 2 }}
+                />
                 <Stack direction="row" spacing={2}>
                   {[1, 2, 3].map((i) => (
                     <Box key={i} sx={{ width: 320, flex: '0 0 auto' }}>
-                      <Skeleton variant="rectangular" width="100%" height={200} />
+                      <Skeleton
+                        variant="rectangular"
+                        width="100%"
+                        height={200}
+                      />
                       <Box sx={{ p: 2 }}>
                         <Skeleton variant="text" width="60%" />
                         <Skeleton variant="text" width="80%" />

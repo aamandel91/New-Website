@@ -3,7 +3,6 @@
 import React, { useEffect, useRef } from 'react'
 import { type Position } from 'geojson'
 import { type LngLatLike, Map as MapboxMap } from 'mapbox-gl'
-import 'mapbox-gl/dist/mapbox-gl.css'
 
 import { Box } from '@mui/material'
 
@@ -18,6 +17,8 @@ import {
   getPositionBounds,
   removePolygon
 } from 'utils/map'
+
+import 'mapbox-gl/dist/mapbox-gl.css'
 
 const { fallbackAreaZoom, mapboxDefaults } = mapConfig
 
@@ -60,7 +61,8 @@ const CatalogMap = ({
       } else {
         removePolygon(map)
         // Reset map position
-        if (position.bounds) map.fitBounds(position.bounds.toArray(), { curve: 1 })
+        if (position.bounds)
+          map.fitBounds(position.bounds.toArray(), { curve: 1 })
       }
     }
   }, [coordinates, center])

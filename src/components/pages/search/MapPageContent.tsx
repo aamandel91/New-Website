@@ -1,11 +1,13 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { useSearchParams } from 'next/navigation'
 import dynamic from 'next/dynamic'
-import type { LngLat, LngLatBounds } from 'utils/lngLat'
+import { useSearchParams } from 'next/navigation'
 
 import { Skeleton } from '@mui/material'
+
+import { trackSearch } from '@/utils/analytics'
+import { ssTrackEvent } from '@/utils/suresendTracking'
 
 import MapService from 'services/Map'
 import {
@@ -20,6 +22,7 @@ import {
 } from 'services/Search'
 import { type MapPosition, useMapOptions } from 'providers/MapOptionsProvider'
 import { useSearch } from 'providers/SearchProvider'
+import type { LngLat, LngLatBounds } from 'utils/lngLat'
 import { type PolygonZone } from 'utils/map'
 import {
   decodePolygons,
@@ -29,26 +32,25 @@ import {
   polygonToZones
 } from 'utils/map'
 import { updateWindowHistory } from 'utils/urls'
-import { trackSearch } from '@/utils/analytics'
-import { ssTrackEvent } from '@/utils/suresendTracking'
 
 import MapFilters from './components/MapFilters'
 
 const MapRoot = dynamic(() => import('./components/MapRoot'), {
   ssr: false,
-  loading: () => <Skeleton variant="rectangular" width="100%" height="100%" sx={{ borderRadius: 1 }} />,
+  loading: () => (
+    <Skeleton
+      variant="rectangular"
+      width="100%"
+      height="100%"
+      sx={{ borderRadius: 1 }}
+    />
+  )
 })
 
 const MapPageContent = () => {
   const searchParams = useSearchParams()
   const [mapLoaded, setMapLoaded] = useState(false)
-  const {
-    search,
-    save,
-    filters,
-    polygons,
-    setPolygons
-  } = useSearch()
+  const { search, save, filters, polygons, setPolygons } = useSearch()
   const { layout, position, setPosition } = useMapOptions()
 
   const query = searchParams.get('q')
@@ -130,10 +132,7 @@ const MapPageContent = () => {
       })
       const hidden = response.listings.length - filteredListings.length
       ;(response as any).listings = filteredListings
-      ;(response as any).count = Math.max(
-        0,
-        (response.count || 0) - hidden
-      )
+      ;(response as any).count = Math.max(0, (response.count || 0) - hidden)
     }
 
     const { list, clusters, count } = save(response)
@@ -145,7 +144,7 @@ const MapPageContent = () => {
       minPrice: filters.minPrice,
       maxPrice: filters.maxPrice,
       beds: filters.minBeds,
-      propertyType: filters.propertyType,
+      propertyType: filters.propertyType
     })
   }
 

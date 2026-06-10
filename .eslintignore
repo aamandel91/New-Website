@@ -3,3 +3,8 @@ jest.config.js
 next.config.mjs
 scripts/**/*
 coverage/**/*
+addresser
+backend
+dev-playgrounds
+mcp-server
+pocs

@@ -1,16 +1,17 @@
 'use client'
 
-import React, { useState, useMemo } from 'react'
+import React, { useMemo, useState } from 'react'
+
 import {
   Box,
+  Divider,
+  Grid,
+  InputAdornment,
   Paper,
-  Typography,
-  TextField,
   Slider,
   Stack,
-  Divider,
-  InputAdornment,
-  Grid,
+  TextField,
+  Typography
 } from '@mui/material'
 
 interface CashFlowCalculatorProps {
@@ -26,7 +27,7 @@ const COLORS = {
   hoa: '#9c27b0',
   maintenance: '#00838f',
   other: '#546e7a',
-  income: '#43a047',
+  income: '#43a047'
 }
 
 const formatCurrency = (value: number): string => {
@@ -35,7 +36,7 @@ const formatCurrency = (value: number): string => {
     style: 'currency',
     currency: 'USD',
     minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
+    maximumFractionDigits: 0
   }).format(value)
 }
 
@@ -55,7 +56,14 @@ const CashFlowDonut: React.FC<{
   let cumulativeOffset = 0
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        gap: 2
+      }}
+    >
       <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
         {segments
           .filter((s) => s.value > 0)
@@ -99,18 +107,28 @@ const CashFlowDonut: React.FC<{
           {centerValue}
         </text>
       </svg>
-      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, justifyContent: 'center' }}>
+      <Box
+        sx={{
+          display: 'flex',
+          flexWrap: 'wrap',
+          gap: 1,
+          justifyContent: 'center'
+        }}
+      >
         {segments
           .filter((s) => s.value > 0)
           .map((segment, i) => (
-            <Box key={i} sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+            <Box
+              key={i}
+              sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}
+            >
               <Box
                 sx={{
                   width: 10,
                   height: 10,
                   borderRadius: '50%',
                   bgcolor: segment.color,
-                  flexShrink: 0,
+                  flexShrink: 0
                 }}
               />
               <Typography variant="caption" color="text.secondary" noWrap>
@@ -126,7 +144,7 @@ const CashFlowDonut: React.FC<{
 const CashFlowCalculator: React.FC<CashFlowCalculatorProps> = ({
   listPrice,
   propertyTaxAnnual = 0,
-  hoaMonthly = 0,
+  hoaMonthly = 0
 }) => {
   const [downPaymentPercent, setDownPaymentPercent] = useState(20)
   const [interestRate, setInterestRate] = useState(7.0)
@@ -148,8 +166,8 @@ const CashFlowCalculator: React.FC<CashFlowCalculatorProps> = ({
 
     const mortgagePayment =
       monthlyRate > 0
-        ? loanAmount *
-          (monthlyRate * Math.pow(1 + monthlyRate, numPayments)) /
+        ? (loanAmount *
+            (monthlyRate * Math.pow(1 + monthlyRate, numPayments))) /
           (Math.pow(1 + monthlyRate, numPayments) - 1)
         : loanAmount / numPayments
 
@@ -168,14 +186,21 @@ const CashFlowCalculator: React.FC<CashFlowCalculatorProps> = ({
     const annualExpenses = totalExpenses * 12
     const capRate =
       listPrice > 0
-        ? ((annualRentalIncome - annualExpenses + mortgagePayment * 12) / listPrice) * 100
+        ? ((annualRentalIncome - annualExpenses + mortgagePayment * 12) /
+            listPrice) *
+          100
         : 0
 
     // Calculate break-even down payment %
     // Cash flow = 0 when rentalIncome = totalExpenses
     // totalExpenses = mortgagePayment + fixedCosts
     // So mortgagePayment = rentalIncome - fixedCosts
-    const fixedCosts = propertyTaxMonthly + maintenanceCost + insuranceMonthly + hoaCost + otherCosts
+    const fixedCosts =
+      propertyTaxMonthly +
+      maintenanceCost +
+      insuranceMonthly +
+      hoaCost +
+      otherCosts
     const targetMortgage = rentalIncome - fixedCosts
     let breakEvenDownPayment: number | null = null
 
@@ -206,7 +231,7 @@ const CashFlowCalculator: React.FC<CashFlowCalculatorProps> = ({
       monthlyCashFlow,
       annualCashFlow,
       capRate,
-      breakEvenDownPayment,
+      breakEvenDownPayment
     }
   }, [
     listPrice,
@@ -218,29 +243,37 @@ const CashFlowCalculator: React.FC<CashFlowCalculatorProps> = ({
     insuranceMonthly,
     hoaCost,
     otherCosts,
-    rentalIncome,
+    rentalIncome
   ])
 
   const chartSegments = [
-    { label: 'Mortgage', value: calculations.mortgagePayment, color: COLORS.mortgage },
+    {
+      label: 'Mortgage',
+      value: calculations.mortgagePayment,
+      color: COLORS.mortgage
+    },
     { label: 'Property Tax', value: propertyTaxMonthly, color: COLORS.tax },
     { label: 'Insurance', value: insuranceMonthly, color: COLORS.insurance },
     { label: 'HOA', value: hoaCost, color: COLORS.hoa },
     { label: 'Maintenance', value: maintenanceCost, color: COLORS.maintenance },
-    { label: 'Other', value: otherCosts, color: COLORS.other },
+    { label: 'Other', value: otherCosts, color: COLORS.other }
   ]
 
-  const handleNumericChange = (
-    setter: (val: number) => void
-  ) => (e: React.ChangeEvent<HTMLInputElement>) => {
-    const val = parseFloat(e.target.value)
-    if (!isNaN(val) && val >= 0) setter(val)
-  }
+  const handleNumericChange =
+    (setter: (val: number) => void) =>
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const val = parseFloat(e.target.value)
+      if (!isNaN(val) && val >= 0) setter(val)
+    }
 
-  const cashFlowColor = calculations.monthlyCashFlow >= 0 ? '#2e7d32' : '#d32f2f'
+  const cashFlowColor =
+    calculations.monthlyCashFlow >= 0 ? '#2e7d32' : '#d32f2f'
 
   return (
-    <Paper elevation={0} sx={{ p: 3, border: '1px solid', borderColor: 'divider', mt: 3 }}>
+    <Paper
+      elevation={0}
+      sx={{ p: 3, border: '1px solid', borderColor: 'divider', mt: 3 }}
+    >
       <Typography variant="h5" fontWeight="bold" gutterBottom>
         Cash Flow Analysis
       </Typography>
@@ -256,12 +289,18 @@ const CashFlowCalculator: React.FC<CashFlowCalculatorProps> = ({
           <Stack spacing={3}>
             {/* Down Payment Slider */}
             <Box>
-              <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 1 }}>
+              <Stack
+                direction="row"
+                justifyContent="space-between"
+                alignItems="center"
+                sx={{ mb: 1 }}
+              >
                 <Typography variant="body2" fontWeight="medium">
                   Down Payment
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
-                  {downPaymentPercent}% ({formatCurrency((listPrice * downPaymentPercent) / 100)})
+                  {downPaymentPercent}% (
+                  {formatCurrency((listPrice * downPaymentPercent) / 100)})
                 </Typography>
               </Stack>
               <Slider
@@ -277,7 +316,7 @@ const CashFlowCalculator: React.FC<CashFlowCalculatorProps> = ({
                 sx={{
                   '& .MuiSlider-thumb': { backgroundColor: 'primary.main' },
                   '& .MuiSlider-track': { backgroundColor: 'primary.main' },
-                  '& .MuiSlider-rail': { opacity: 0.3 },
+                  '& .MuiSlider-rail': { opacity: 0.3 }
                 }}
               />
             </Box>
@@ -297,7 +336,9 @@ const CashFlowCalculator: React.FC<CashFlowCalculatorProps> = ({
                 fullWidth
                 size="small"
                 InputProps={{
-                  endAdornment: <InputAdornment position="end">%</InputAdornment>,
+                  endAdornment: (
+                    <InputAdornment position="end">%</InputAdornment>
+                  )
                 }}
                 inputProps={{ step: 0.125, min: 0, max: 20 }}
               />
@@ -305,7 +346,12 @@ const CashFlowCalculator: React.FC<CashFlowCalculatorProps> = ({
 
             {/* Loan Term */}
             <Box>
-              <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 1 }}>
+              <Stack
+                direction="row"
+                justifyContent="space-between"
+                alignItems="center"
+                sx={{ mb: 1 }}
+              >
                 <Typography variant="body2" fontWeight="medium">
                   Loan Term
                 </Typography>
@@ -324,14 +370,14 @@ const CashFlowCalculator: React.FC<CashFlowCalculatorProps> = ({
                   { value: 10, label: '10' },
                   { value: 15, label: '15' },
                   { value: 20, label: '20' },
-                  { value: 30, label: '30' },
+                  { value: 30, label: '30' }
                 ]}
                 min={10}
                 max={30}
                 sx={{
                   '& .MuiSlider-thumb': { backgroundColor: 'primary.main' },
                   '& .MuiSlider-track': { backgroundColor: 'primary.main' },
-                  '& .MuiSlider-rail': { opacity: 0.3 },
+                  '& .MuiSlider-rail': { opacity: 0.3 }
                 }}
               />
             </Box>
@@ -362,7 +408,9 @@ const CashFlowCalculator: React.FC<CashFlowCalculatorProps> = ({
                 fullWidth
                 size="small"
                 InputProps={{
-                  startAdornment: <InputAdornment position="start">$</InputAdornment>,
+                  startAdornment: (
+                    <InputAdornment position="start">$</InputAdornment>
+                  )
                 }}
                 inputProps={{ step: 50, min: 0 }}
               />
@@ -380,7 +428,9 @@ const CashFlowCalculator: React.FC<CashFlowCalculatorProps> = ({
                 fullWidth
                 size="small"
                 InputProps={{
-                  startAdornment: <InputAdornment position="start">$</InputAdornment>,
+                  startAdornment: (
+                    <InputAdornment position="start">$</InputAdornment>
+                  )
                 }}
                 inputProps={{ step: 50, min: 0 }}
               />
@@ -398,7 +448,9 @@ const CashFlowCalculator: React.FC<CashFlowCalculatorProps> = ({
                 fullWidth
                 size="small"
                 InputProps={{
-                  startAdornment: <InputAdornment position="start">$</InputAdornment>,
+                  startAdornment: (
+                    <InputAdornment position="start">$</InputAdornment>
+                  )
                 }}
                 inputProps={{ step: 25, min: 0 }}
               />
@@ -416,7 +468,9 @@ const CashFlowCalculator: React.FC<CashFlowCalculatorProps> = ({
                 fullWidth
                 size="small"
                 InputProps={{
-                  startAdornment: <InputAdornment position="start">$</InputAdornment>,
+                  startAdornment: (
+                    <InputAdornment position="start">$</InputAdornment>
+                  )
                 }}
                 inputProps={{ step: 50, min: 0 }}
               />
@@ -434,7 +488,9 @@ const CashFlowCalculator: React.FC<CashFlowCalculatorProps> = ({
                 fullWidth
                 size="small"
                 InputProps={{
-                  startAdornment: <InputAdornment position="start">$</InputAdornment>,
+                  startAdornment: (
+                    <InputAdornment position="start">$</InputAdornment>
+                  )
                 }}
                 inputProps={{ step: 25, min: 0 }}
               />
@@ -452,7 +508,9 @@ const CashFlowCalculator: React.FC<CashFlowCalculatorProps> = ({
                 fullWidth
                 size="small"
                 InputProps={{
-                  startAdornment: <InputAdornment position="start">$</InputAdornment>,
+                  startAdornment: (
+                    <InputAdornment position="start">$</InputAdornment>
+                  )
                 }}
                 inputProps={{ step: 100, min: 0 }}
                 placeholder="Enter expected monthly rent"
@@ -499,7 +557,11 @@ const CashFlowCalculator: React.FC<CashFlowCalculatorProps> = ({
                   </Typography>
                 </Grid>
                 <Grid item xs={5} sx={{ textAlign: 'right' }}>
-                  <Typography variant="body2" fontWeight="medium" color={COLORS.income}>
+                  <Typography
+                    variant="body2"
+                    fontWeight="medium"
+                    color={COLORS.income}
+                  >
                     {formatCurrency(rentalIncome)}
                   </Typography>
                 </Grid>
@@ -514,7 +576,11 @@ const CashFlowCalculator: React.FC<CashFlowCalculatorProps> = ({
                   </Typography>
                 </Grid>
                 <Grid item xs={5} sx={{ textAlign: 'right' }}>
-                  <Typography variant="body1" fontWeight="bold" sx={{ color: cashFlowColor }}>
+                  <Typography
+                    variant="body1"
+                    fontWeight="bold"
+                    sx={{ color: cashFlowColor }}
+                  >
                     {formatCurrency(calculations.monthlyCashFlow)}
                   </Typography>
                 </Grid>
@@ -525,7 +591,11 @@ const CashFlowCalculator: React.FC<CashFlowCalculatorProps> = ({
                   </Typography>
                 </Grid>
                 <Grid item xs={5} sx={{ textAlign: 'right' }}>
-                  <Typography variant="body2" fontWeight="medium" sx={{ color: cashFlowColor }}>
+                  <Typography
+                    variant="body2"
+                    fontWeight="medium"
+                    sx={{ color: cashFlowColor }}
+                  >
                     {formatCurrency(calculations.annualCashFlow)}
                   </Typography>
                 </Grid>
@@ -565,12 +635,13 @@ const CashFlowCalculator: React.FC<CashFlowCalculatorProps> = ({
                 bgcolor: 'grey.50',
                 borderRadius: 1,
                 border: '1px solid',
-                borderColor: 'divider',
+                borderColor: 'divider'
               }}
             >
               <Typography variant="caption" color="text.secondary">
-                This calculator provides estimates only. Actual rental income and expenses may vary.
-                Consult a financial advisor before making investment decisions.
+                This calculator provides estimates only. Actual rental income
+                and expenses may vary. Consult a financial advisor before making
+                investment decisions.
               </Typography>
             </Box>
           </Stack>

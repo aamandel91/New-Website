@@ -1,8 +1,10 @@
 'use client'
 
 import React from 'react'
-import { Box, Typography, Link as MuiLink, Stack, Paper } from '@mui/material'
 import Link from 'next/link'
+
+import { Box, Link as MuiLink, Paper, Stack, Typography } from '@mui/material'
+
 import type { Property } from 'services/API'
 import { displayNameToSlug } from 'utils/templateEngine'
 
@@ -15,8 +17,10 @@ function getPropertyTypeSlug(propertyType?: string): string | null {
   if (!propertyType) return null
   const lower = propertyType.toLowerCase()
   if (lower.includes('apartment') || lower.includes('condo')) return 'condos'
-  if (lower.includes('detached') || lower.includes('single')) return 'single-family-homes'
-  if (lower.includes('townhouse') || lower.includes('att/row')) return 'townhomes'
+  if (lower.includes('detached') || lower.includes('single'))
+    return 'single-family-homes'
+  if (lower.includes('townhouse') || lower.includes('att/row'))
+    return 'townhomes'
   if (lower.includes('multi')) return 'multi-family'
   if (lower.includes('land')) return 'land'
   return null
@@ -26,8 +30,10 @@ function getPropertyTypeLabel(propertyType?: string): string | null {
   if (!propertyType) return null
   const lower = propertyType.toLowerCase()
   if (lower.includes('apartment') || lower.includes('condo')) return 'Condos'
-  if (lower.includes('detached') || lower.includes('single')) return 'Single Family Homes'
-  if (lower.includes('townhouse') || lower.includes('att/row')) return 'Townhomes'
+  if (lower.includes('detached') || lower.includes('single'))
+    return 'Single Family Homes'
+  if (lower.includes('townhouse') || lower.includes('att/row'))
+    return 'Townhomes'
   if (lower.includes('multi')) return 'Multi-Family Homes'
   if (lower.includes('land')) return 'Lots & Land'
   return null
@@ -35,21 +41,26 @@ function getPropertyTypeLabel(propertyType?: string): string | null {
 
 function getNextPriceTier(price: number): number | null {
   if (price <= 0) return null
-  const tiers = [200000, 300000, 400000, 500000, 600000, 750000, 1000000, 1500000, 2000000]
+  const tiers = [
+    200000, 300000, 400000, 500000, 600000, 750000, 1000000, 1500000, 2000000
+  ]
   return tiers.find((t) => t > price) ?? null
 }
 
 function formatCompactPrice(price: number): string {
-  if (price >= 1000000) return `${(price / 1000000).toFixed(price % 1000000 === 0 ? 0 : 1)}M`
+  if (price >= 1000000)
+    return `${(price / 1000000).toFixed(price % 1000000 === 0 ? 0 : 1)}M`
   return `${Math.round(price / 1000)}K`
 }
 
 function MiniPropertyCard({ property }: { property: Property }) {
   const address = property.address
-  const street = `${address?.streetNumber || ''} ${address?.streetName || ''} ${address?.streetSuffix || ''}`.trim()
+  const street =
+    `${address?.streetNumber || ''} ${address?.streetName || ''} ${address?.streetSuffix || ''}`.trim()
   const price = property.listPrice ? parseFloat(property.listPrice) : 0
   const description = property.details?.description || ''
-  const snippet = description.length > 120 ? `${description.slice(0, 120)}...` : description
+  const snippet =
+    description.length > 120 ? `${description.slice(0, 120)}...` : description
 
   return (
     <Paper variant="outlined" sx={{ p: 2 }}>
@@ -58,7 +69,11 @@ function MiniPropertyCard({ property }: { property: Property }) {
       </Typography>
       <Typography variant="body2" color="primary.main" fontWeight={600}>
         {price > 0
-          ? new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(price)
+          ? new Intl.NumberFormat('en-US', {
+              style: 'currency',
+              currency: 'USD',
+              maximumFractionDigits: 0
+            }).format(price)
           : 'Price TBD'}
       </Typography>
       {snippet && (
@@ -70,7 +85,7 @@ function MiniPropertyCard({ property }: { property: Property }) {
             WebkitLineClamp: 2,
             WebkitBoxOrient: 'vertical',
             overflow: 'hidden',
-            mt: 0.5,
+            mt: 0.5
           }}
         >
           {snippet}
@@ -80,7 +95,10 @@ function MiniPropertyCard({ property }: { property: Property }) {
   )
 }
 
-const ExploreMore: React.FC<ExploreMoreProps> = ({ property, similarProperties = [] }) => {
+const ExploreMore: React.FC<ExploreMoreProps> = ({
+  property,
+  similarProperties = []
+}) => {
   const city = property.address?.city
   const neighborhood = property.address?.neighborhood
   const propertyType = property.details?.propertyType
@@ -136,11 +154,7 @@ const ExploreMore: React.FC<ExploreMoreProps> = ({ property, similarProperties =
             <Typography variant="h6" component="h3" gutterBottom>
               {typeLabel} in {city}
             </Typography>
-            <Link
-              href={`/${citySlug}/${typeSlug}`}
-              passHref
-              legacyBehavior
-            >
+            <Link href={`/${citySlug}/${typeSlug}`} passHref legacyBehavior>
               <MuiLink variant="body2" underline="hover" fontWeight="bold">
                 {city} {typeLabel} for Sale →
               </MuiLink>

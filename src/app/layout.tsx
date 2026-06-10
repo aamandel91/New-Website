@@ -1,4 +1,4 @@
-import React, { Suspense, type ComponentType } from 'react'
+import React, { type ComponentType, Suspense } from 'react'
 import { type Metadata, type Viewport } from 'next'
 import { Montserrat } from 'next/font/google'
 import Script from 'next/script'
@@ -9,16 +9,19 @@ import { GlobalStyles } from '@mui/material'
 const montserrat = Montserrat({
   subsets: ['latin'],
   display: 'swap',
-  variable: '--font-montserrat',
+  variable: '--font-montserrat'
 })
 
 import content from '@configs/content'
 import globalStyles from '@configs/theme/global'
 import TrackingInline from '@templates/TrackingInline'
-import GoogleTagManager, { GoogleTagManagerNoscript } from '@/components/analytics/GoogleTagManager'
+import GoogleTagManager, {
+  GoogleTagManagerNoscript
+} from '@/components/analytics/GoogleTagManager'
 import GTMPageView from '@/components/analytics/GTMPageView'
 import RemarketingPixels from '@/components/analytics/RemarketingPixels'
 import SureSendPixel from '@/components/analytics/SureSendPixel'
+import AgentSubdomainSEO from '@/components/shared/AgentSubdomainSEO'
 
 import { APISearch } from 'services/API'
 import { fetchFeatureOptions } from 'utils/features'
@@ -26,11 +29,17 @@ import { fetchFeatureOptions } from 'utils/features'
 import 'styles/globals.css'
 
 import Providers from './_providers'
-import AgentSubdomainSEO from '@/components/shared/AgentSubdomainSEO'
 
 const gbInitMode = process.env.NEXT_PUBLIC_GROWTHBOOK_INIT || 'ssg'
 
-export const metadata: Metadata = content.siteMetadata
+export const metadata: Metadata = {
+  // Absolute base URL so Open Graph / Twitter images and relative
+  // metadata URLs resolve correctly for social sharing and crawlers.
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_APP_DOMAIN || 'https://www.floridahomefinder.com'
+  ),
+  ...content.siteMetadata
+}
 
 export const viewport: Viewport = {
   themeColor: 'white',
@@ -85,7 +94,8 @@ const Layout = async ({ children }: { children: React.ReactNode }) => {
       <body suppressHydrationWarning>
         <script
           dangerouslySetInnerHTML={{
-            __html: `if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('/sw.js')})}`
+            __html:
+              "if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('/sw.js')})}"
           }}
         />
         <GoogleTagManagerNoscript />

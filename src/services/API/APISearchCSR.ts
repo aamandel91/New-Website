@@ -1,5 +1,5 @@
-import type { ApiQueryResponse, Property } from './types'
 import APIClientSide from './APIClientSide'
+import type { ApiQueryResponse, Property } from './types'
 
 const DEFAULT_BOARD_ID = 110
 
@@ -18,8 +18,8 @@ export interface CSRSearchParams {
   maxPrice?: number
   minBedrooms?: number
   maxBedrooms?: number
-  minBeds?: number   // alias — mapped to minBedrooms
-  maxBeds?: number   // alias — mapped to maxBedrooms
+  minBeds?: number // alias — mapped to minBedrooms
+  maxBeds?: number // alias — mapped to maxBedrooms
   minBaths?: number
   maxBaths?: number
   minSqft?: number
@@ -60,17 +60,27 @@ export interface CSRSearchParams {
 }
 
 class APISearchCSR extends APIClientSide {
-  async searchListings(params: CSRSearchParams): Promise<ApiQueryResponse | null> {
-    const { boardId = DEFAULT_BOARD_ID, resultsPerPage = 20, minBeds, maxBeds, ...rest } = params
+  async searchListings(
+    params: CSRSearchParams
+  ): Promise<ApiQueryResponse | null> {
+    const {
+      boardId = DEFAULT_BOARD_ID,
+      resultsPerPage = 20,
+      minBeds,
+      maxBeds,
+      ...rest
+    } = params
     // Map aliases to correct API parameter names
     const mapped: Record<string, unknown> = {
       boardId,
       resultsPerPage,
-      ...rest,
+      ...rest
     }
     // The Repliers API uses minBedrooms/maxBedrooms (not minBeds/maxBeds)
-    if (minBeds !== undefined && mapped.minBedrooms === undefined) mapped.minBedrooms = minBeds
-    if (maxBeds !== undefined && mapped.maxBedrooms === undefined) mapped.maxBedrooms = maxBeds
+    if (minBeds !== undefined && mapped.minBedrooms === undefined)
+      mapped.minBedrooms = minBeds
+    if (maxBeds !== undefined && mapped.maxBedrooms === undefined)
+      mapped.maxBedrooms = maxBeds
     return this.fetch('/listings', mapped)
   }
 
@@ -88,7 +98,7 @@ class APISearchCSR extends APIClientSide {
     return this.fetch('/listings', {
       boardId,
       listings: false,
-      aggregates: 'address.city',
+      aggregates: 'address.city'
     })
   }
 
@@ -105,7 +115,7 @@ class APISearchCSR extends APIClientSide {
       'address.city': city,
       status: 'A,U',
       sortBy: 'updatedOnDesc',
-      resultsPerPage: 50,
+      resultsPerPage: 50
     })
   }
 }

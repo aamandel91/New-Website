@@ -1,8 +1,9 @@
 import { NextResponse } from 'next/server'
-import { readFile, writeFile, mkdir } from 'fs/promises'
 import path from 'path'
 
 import type { OpenHouseSession, OpenHouseVisitor } from '@/types/openHouse'
+
+import { mkdir, readFile, writeFile } from 'fs/promises'
 
 const DATA_DIR = path.join(process.cwd(), 'data')
 const DATA_FILE = path.join(DATA_DIR, 'open-house-sessions.json')
@@ -18,7 +19,10 @@ async function getSessions(): Promise<OpenHouseSession[]> {
   }
 }
 
-function visitorsToCsv(visitors: OpenHouseVisitor[], propertyAddress: string): string {
+function visitorsToCsv(
+  visitors: OpenHouseVisitor[],
+  propertyAddress: string
+): string {
   const headers = [
     'Name',
     'Email',
@@ -30,7 +34,7 @@ function visitorsToCsv(visitors: OpenHouseVisitor[], propertyAddress: string): s
     'Property Address'
   ]
 
-  const rows = visitors.map(v => [
+  const rows = visitors.map((v) => [
     v.name,
     v.email,
     v.phone,
@@ -66,13 +70,10 @@ export async function GET(
     const format = searchParams.get('format')
 
     const sessions = await getSessions()
-    const session = sessions.find(s => s.id === sessionId)
+    const session = sessions.find((s) => s.id === sessionId)
 
     if (!session) {
-      return NextResponse.json(
-        { error: 'Session not found' },
-        { status: 404 }
-      )
+      return NextResponse.json({ error: 'Session not found' }, { status: 404 })
     }
 
     if (format === 'csv') {

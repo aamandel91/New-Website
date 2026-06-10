@@ -1,38 +1,43 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
+
 import {
+  Alert,
   Box,
-  Container,
-  Typography,
   Button,
+  Chip,
+  CircularProgress,
+  Container,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Paper,
+  Stack,
   Table,
   TableBody,
   TableCell,
   TableContainer,
   TableHead,
   TableRow,
-  Paper,
-  Chip,
-  Stack,
-  CircularProgress,
-  Alert,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions
+  Typography
 } from '@mui/material'
-import type { Blog } from '@/types/blog'
+
 import APIBlogs from '@/services/API/APIBlogs'
+import type { Blog } from '@/types/blog'
 
 export default function AdminBlogPage() {
   const router = useRouter()
   const [blogs, setBlogs] = useState<Blog[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [deleteDialog, setDeleteDialog] = useState<{ open: boolean; blogId?: number }>({ open: false })
+  const [deleteDialog, setDeleteDialog] = useState<{
+    open: boolean
+    blogId?: number
+  }>({ open: false })
   const [deleting, setDeleting] = useState(false)
 
   useEffect(() => {
@@ -59,7 +64,7 @@ export default function AdminBlogPage() {
       await APIBlogs.deleteBlog(deleteDialog.blogId)
 
       // Remove from list
-      setBlogs(blogs.filter(b => b.id !== deleteDialog.blogId))
+      setBlogs(blogs.filter((b) => b.id !== deleteDialog.blogId))
       setDeleteDialog({ open: false })
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to delete blog')
@@ -73,7 +78,13 @@ export default function AdminBlogPage() {
       await APIBlogs.publishBlog(blogId)
 
       // Update blog status
-      setBlogs(blogs.map(b => (b.id === blogId ? { ...b, status: 'published', published_at: new Date() } : b)))
+      setBlogs(
+        blogs.map((b) =>
+          b.id === blogId
+            ? { ...b, status: 'published', published_at: new Date() }
+            : b
+        )
+      )
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to publish blog')
     }
@@ -82,7 +93,12 @@ export default function AdminBlogPage() {
   return (
     <Container maxWidth="lg">
       <Box sx={{ py: 4 }}>
-        <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 4 }}>
+        <Stack
+          direction="row"
+          justifyContent="space-between"
+          alignItems="center"
+          sx={{ mb: 4 }}
+        >
           <Typography variant="h3">Blog Management</Typography>
           <Stack direction="row" spacing={2}>
             <Link href="/admin/blog/import" style={{ textDecoration: 'none' }}>
@@ -94,14 +110,20 @@ export default function AdminBlogPage() {
           </Stack>
         </Stack>
 
-        {error && <Alert severity="error" sx={{ mb: 3 }}>{error}</Alert>}
+        {error && (
+          <Alert severity="error" sx={{ mb: 3 }}>
+            {error}
+          </Alert>
+        )}
 
         {loading ? (
           <Box display="flex" justifyContent="center" py={8}>
             <CircularProgress />
           </Box>
         ) : blogs.length === 0 ? (
-          <Alert severity="info">No blogs yet. Create your first blog post!</Alert>
+          <Alert severity="info">
+            No blogs yet. Create your first blog post!
+          </Alert>
         ) : (
           <TableContainer component={Paper}>
             <Table>
@@ -117,7 +139,7 @@ export default function AdminBlogPage() {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {blogs.map(blog => (
+                {blogs.map((blog) => (
                   <TableRow key={blog.id} hover>
                     <TableCell>
                       <Typography variant="subtitle2">{blog.title}</Typography>
@@ -128,30 +150,51 @@ export default function AdminBlogPage() {
                     <TableCell>
                       <Chip
                         label={blog.status}
-                        color={blog.status === 'published' ? 'success' : 'default'}
+                        color={
+                          blog.status === 'published' ? 'success' : 'default'
+                        }
                         size="small"
                       />
                     </TableCell>
                     <TableCell>
                       {blog.published_at
-                        ? new Date(blog.published_at).toLocaleDateString('en-US', {
-                            year: 'numeric',
-                            month: 'short',
-                            day: 'numeric'
-                          })
+                        ? new Date(blog.published_at).toLocaleDateString(
+                            'en-US',
+                            {
+                              year: 'numeric',
+                              month: 'short',
+                              day: 'numeric'
+                            }
+                          )
                         : 'Not published'}
                     </TableCell>
                     <TableCell>
-                      {blog.tags.slice(0, 2).map(tag => (
-                        <Chip key={tag} label={tag} size="small" sx={{ mr: 0.5 }} />
+                      {blog.tags.slice(0, 2).map((tag) => (
+                        <Chip
+                          key={tag}
+                          label={tag}
+                          size="small"
+                          sx={{ mr: 0.5 }}
+                        />
                       ))}
                       {blog.tags.length > 2 && (
-                        <Chip label={`+${blog.tags.length - 2}`} size="small" variant="outlined" />
+                        <Chip
+                          label={`+${blog.tags.length - 2}`}
+                          size="small"
+                          variant="outlined"
+                        />
                       )}
                     </TableCell>
                     <TableCell align="right">
-                      <Stack direction="row" spacing={1} justifyContent="flex-end">
-                        <Link href={`/admin/blog/${blog.id}/edit`} style={{ textDecoration: 'none' }}>
+                      <Stack
+                        direction="row"
+                        spacing={1}
+                        justifyContent="flex-end"
+                      >
+                        <Link
+                          href={`/admin/blog/${blog.id}/edit`}
+                          style={{ textDecoration: 'none' }}
+                        >
                           <Button size="small" variant="outlined">
                             Edit
                           </Button>
@@ -170,7 +213,9 @@ export default function AdminBlogPage() {
                           size="small"
                           variant="outlined"
                           color="error"
-                          onClick={() => setDeleteDialog({ open: true, blogId: blog.id })}
+                          onClick={() =>
+                            setDeleteDialog({ open: true, blogId: blog.id })
+                          }
                         >
                           Delete
                         </Button>
@@ -184,14 +229,27 @@ export default function AdminBlogPage() {
         )}
 
         {/* Delete Confirmation Dialog */}
-        <Dialog open={deleteDialog.open} onClose={() => setDeleteDialog({ open: false })}>
+        <Dialog
+          open={deleteDialog.open}
+          onClose={() => setDeleteDialog({ open: false })}
+        >
           <DialogTitle>Delete Blog?</DialogTitle>
           <DialogContent>
-            <Typography>Are you sure you want to delete this blog post? This action cannot be undone.</Typography>
+            <Typography>
+              Are you sure you want to delete this blog post? This action cannot
+              be undone.
+            </Typography>
           </DialogContent>
           <DialogActions>
-            <Button onClick={() => setDeleteDialog({ open: false })}>Cancel</Button>
-            <Button onClick={handleDelete} variant="contained" color="error" disabled={deleting}>
+            <Button onClick={() => setDeleteDialog({ open: false })}>
+              Cancel
+            </Button>
+            <Button
+              onClick={handleDelete}
+              variant="contained"
+              color="error"
+              disabled={deleting}
+            >
               {deleting ? 'Deleting...' : 'Delete'}
             </Button>
           </DialogActions>

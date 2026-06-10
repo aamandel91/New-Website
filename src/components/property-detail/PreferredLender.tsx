@@ -1,7 +1,9 @@
 'use client'
 
 import React from 'react'
+
 import { Box, Button, Card, CardContent, Chip, Typography } from '@mui/material'
+
 import lenderConfig from '@/configs/defaults/lender'
 
 const PreferredLender: React.FC = () => {
@@ -17,7 +19,7 @@ const PreferredLender: React.FC = () => {
             fontSize: '0.7rem',
             letterSpacing: '0.05em',
             bgcolor: 'primary.main',
-            color: 'primary.contrastText',
+            color: 'primary.contrastText'
           }}
         />
 
@@ -30,7 +32,8 @@ const PreferredLender: React.FC = () => {
             Loan Officer: {lenderConfig.loanOfficer}
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            NMLS# {lenderConfig.nmls} &middot; Company NMLS# {lenderConfig.companyNmls}
+            NMLS# {lenderConfig.nmls} &middot; Company NMLS#{' '}
+            {lenderConfig.companyNmls}
           </Typography>
         </Box>
 

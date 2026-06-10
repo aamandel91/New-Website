@@ -3,6 +3,10 @@
 import React, { useState } from 'react'
 import { useRouter } from 'next/navigation'
 
+import BookmarkIcon from '@mui/icons-material/Bookmark'
+import DeleteIcon from '@mui/icons-material/Delete'
+import EditIcon from '@mui/icons-material/Edit'
+import SearchIcon from '@mui/icons-material/Search'
 import {
   Box,
   Button,
@@ -24,22 +28,23 @@ import {
   TextField,
   Typography
 } from '@mui/material'
-import BookmarkIcon from '@mui/icons-material/Bookmark'
-import DeleteIcon from '@mui/icons-material/Delete'
-import EditIcon from '@mui/icons-material/Edit'
-import SearchIcon from '@mui/icons-material/Search'
 
-import { useSiteUser } from 'providers/SiteUserProvider'
-import type { SavedSearch } from 'providers/SiteUserProvider'
 import LoginDialog from 'components/auth/LoginDialog'
+
+import type { SavedSearch } from 'providers/SiteUserProvider'
+import { useSiteUser } from 'providers/SiteUserProvider'
 
 function filterSummary(filters: Record<string, any>): string {
   const parts: string[] = []
   if (filters.minBeds) parts.push(`${filters.minBeds}+ beds`)
   if (filters.minBaths) parts.push(`${filters.minBaths}+ baths`)
   if (filters.minPrice || filters.maxPrice) {
-    const min = filters.minPrice ? `$${Number(filters.minPrice).toLocaleString()}` : ''
-    const max = filters.maxPrice ? `$${Number(filters.maxPrice).toLocaleString()}` : ''
+    const min = filters.minPrice
+      ? `$${Number(filters.minPrice).toLocaleString()}`
+      : ''
+    const max = filters.maxPrice
+      ? `$${Number(filters.maxPrice).toLocaleString()}`
+      : ''
     if (min && max) parts.push(`${min} - ${max}`)
     else if (min) parts.push(`${min}+`)
     else parts.push(`Up to ${max}`)
@@ -55,12 +60,13 @@ const frequencyLabels: Record<string, string> = {
   instant: 'Instant',
   daily: 'Daily',
   weekly: 'Weekly',
-  none: 'Off',
+  none: 'Off'
 }
 
 export default function SavedSearchesPage() {
   const router = useRouter()
-  const { isLoggedIn, savedSearches, updateSavedSearch, deleteSavedSearch } = useSiteUser()
+  const { isLoggedIn, savedSearches, updateSavedSearch, deleteSavedSearch } =
+    useSiteUser()
   const [loginOpen, setLoginOpen] = useState(false)
   const [editSearch, setEditSearch] = useState<SavedSearch | null>(null)
   const [editName, setEditName] = useState('')
@@ -70,8 +76,14 @@ export default function SavedSearchesPage() {
     return (
       <Container maxWidth="md" sx={{ py: 6, textAlign: 'center' }}>
         <BookmarkIcon sx={{ fontSize: 48, color: 'text.secondary', mb: 2 }} />
-        <Typography variant="h5" gutterBottom>Sign in to see your saved searches</Typography>
-        <Button variant="contained" onClick={() => setLoginOpen(true)} sx={{ mt: 2, bgcolor: '#0F1621' }}>
+        <Typography variant="h5" gutterBottom>
+          Sign in to see your saved searches
+        </Typography>
+        <Button
+          variant="contained"
+          onClick={() => setLoginOpen(true)}
+          sx={{ mt: 2, bgcolor: '#0F1621' }}
+        >
           Sign In / Register
         </Button>
         <LoginDialog open={loginOpen} onClose={() => setLoginOpen(false)} />
@@ -87,7 +99,10 @@ export default function SavedSearchesPage() {
 
   const handleSaveEdit = async () => {
     if (!editSearch) return
-    await updateSavedSearch(editSearch.id, { name: editName, alertFrequency: editFrequency })
+    await updateSavedSearch(editSearch.id, {
+      name: editName,
+      alertFrequency: editFrequency
+    })
     setEditSearch(null)
   }
 
@@ -112,7 +127,8 @@ export default function SavedSearchesPage() {
         <Box sx={{ textAlign: 'center', py: 8 }}>
           <BookmarkIcon sx={{ fontSize: 48, color: 'text.secondary', mb: 2 }} />
           <Typography color="text.secondary">
-            No saved searches yet. Use the &quot;Save Search&quot; button when searching to save your criteria.
+            No saved searches yet. Use the &quot;Save Search&quot; button when
+            searching to save your criteria.
           </Typography>
         </Box>
       ) : (
@@ -120,7 +136,11 @@ export default function SavedSearchesPage() {
           {savedSearches.map((search) => (
             <Card key={search.id} variant="outlined">
               <CardContent sx={{ pb: 1 }}>
-                <Stack direction="row" justifyContent="space-between" alignItems="flex-start">
+                <Stack
+                  direction="row"
+                  justifyContent="space-between"
+                  alignItems="flex-start"
+                >
                   <Box>
                     <Typography variant="h6" fontWeight={600}>
                       {search.name}
@@ -133,7 +153,11 @@ export default function SavedSearchesPage() {
                         />
                       )}
                     </Typography>
-                    <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+                    <Typography
+                      variant="body2"
+                      color="text.secondary"
+                      sx={{ mt: 0.5 }}
+                    >
                       {filterSummary(search.filters)}
                     </Typography>
                     <Chip
@@ -147,7 +171,11 @@ export default function SavedSearchesPage() {
                     <IconButton size="small" onClick={() => handleEdit(search)}>
                       <EditIcon fontSize="small" />
                     </IconButton>
-                    <IconButton size="small" onClick={() => deleteSavedSearch(search.id)} color="error">
+                    <IconButton
+                      size="small"
+                      onClick={() => deleteSavedSearch(search.id)}
+                      color="error"
+                    >
                       <DeleteIcon fontSize="small" />
                     </IconButton>
                   </Stack>
@@ -168,7 +196,12 @@ export default function SavedSearchesPage() {
       )}
 
       {/* Edit Dialog */}
-      <Dialog open={Boolean(editSearch)} onClose={() => setEditSearch(null)} maxWidth="xs" fullWidth>
+      <Dialog
+        open={Boolean(editSearch)}
+        onClose={() => setEditSearch(null)}
+        maxWidth="xs"
+        fullWidth
+      >
         <DialogTitle>Edit Saved Search</DialogTitle>
         <DialogContent>
           <TextField
@@ -194,7 +227,9 @@ export default function SavedSearchesPage() {
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setEditSearch(null)}>Cancel</Button>
-          <Button variant="contained" onClick={handleSaveEdit}>Save</Button>
+          <Button variant="contained" onClick={handleSaveEdit}>
+            Save
+          </Button>
         </DialogActions>
       </Dialog>
     </Container>

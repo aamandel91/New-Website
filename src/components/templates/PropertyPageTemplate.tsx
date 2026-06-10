@@ -5,14 +5,14 @@ import React, { useEffect } from 'react'
 import { Box } from '@mui/material'
 
 import { PropertyDetailLayout } from '@/components/property-detail'
+import PropertyRegistrationDialog from '@/components/shared/Dialogs/PropertyRegistrationDialog'
+import { usePropertyViewTracking } from '@/hooks/useTrafficSource'
 
 import { type HistoryItemType, type Property } from 'services/API'
 import { useFeatures } from 'providers/FeaturesProvider'
 import PropertyDetailsProvider from 'providers/PropertyDetailsProvider'
 import PropertyProvider from 'providers/PropertyProvider'
 import { useUser } from 'providers/UserProvider'
-import { usePropertyViewTracking } from '@/hooks/useTrafficSource'
-import PropertyRegistrationDialog from '@/components/shared/Dialogs/PropertyRegistrationDialog'
 
 import { PageTemplate } from '.'
 
@@ -37,7 +37,7 @@ const PropertyPageTemplate = ({
     shouldShowRegistration,
     trackPropertyView,
     dismissRegistration,
-    isRequiredRegistration,
+    isRequiredRegistration
   } = usePropertyViewTracking()
 
   // Track property view on mount
@@ -48,7 +48,7 @@ const PropertyPageTemplate = ({
   }, [user])
 
   const propertyAddress = property.address
-    ? `${[property.address.streetNumber, property.address.streetName, property.address.streetSuffix].filter(Boolean).join(" ")}, ${property.address.city}, ${property.address.state} ${property.address.zip}`
+    ? `${[property.address.streetNumber, property.address.streetName, property.address.streetSuffix].filter(Boolean).join(' ')}, ${property.address.city}, ${property.address.state} ${property.address.zip}`
     : 'this property'
 
   return (

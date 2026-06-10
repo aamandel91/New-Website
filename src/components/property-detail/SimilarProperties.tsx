@@ -1,19 +1,21 @@
 'use client'
 
 import React, { useRef } from 'react'
-import {
-  Box,
-  Typography,
-  Paper,
-  IconButton,
-  useTheme,
-  useMediaQuery,
-} from '@mui/material'
+
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
 import ChevronRightIcon from '@mui/icons-material/ChevronRight'
+import {
+  Box,
+  IconButton,
+  Paper,
+  Typography,
+  useMediaQuery,
+  useTheme
+} from '@mui/material'
+
+import PropertyCard from '@shared/Property/Card/Card'
 
 import { type Property } from 'services/API'
-import PropertyCard from '@shared/Property/Card/Card'
 
 interface SimilarPropertiesProps {
   properties: Property[]
@@ -34,7 +36,7 @@ const SimilarProperties: React.FC<SimilarPropertiesProps> = ({
   state,
   address,
   zipCode,
-  propertyType,
+  propertyType
 }) => {
   // Build SEO-optimized heading with keywords
   const buildTitle = () => {
@@ -86,7 +88,7 @@ const SimilarProperties: React.FC<SimilarPropertiesProps> = ({
 
     container.scrollTo({
       left: targetScroll,
-      behavior: 'smooth',
+      behavior: 'smooth'
     })
   }
 
@@ -97,17 +99,19 @@ const SimilarProperties: React.FC<SimilarPropertiesProps> = ({
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          mb: 2,
+          mb: 2
         }}
       >
-        <Typography variant="h5" component="h2" fontWeight="bold">{headingTitle}</Typography>
+        <Typography variant="h5" component="h2" fontWeight="bold">
+          {headingTitle}
+        </Typography>
         <Box sx={{ display: 'flex', gap: 1 }}>
           <IconButton
             onClick={() => scroll('left')}
             size="small"
             sx={{
               border: 1,
-              borderColor: 'divider',
+              borderColor: 'divider'
             }}
           >
             <ChevronLeftIcon />
@@ -117,7 +121,7 @@ const SimilarProperties: React.FC<SimilarPropertiesProps> = ({
             size="small"
             sx={{
               border: 1,
-              borderColor: 'divider',
+              borderColor: 'divider'
             }}
           >
             <ChevronRightIcon />
@@ -135,21 +139,21 @@ const SimilarProperties: React.FC<SimilarPropertiesProps> = ({
           scrollbarWidth: 'thin',
           scrollbarColor: `${theme.palette.divider} transparent`,
           '&::-webkit-scrollbar': {
-            height: 8,
+            height: 8
           },
           '&::-webkit-scrollbar-track': {
-            backgroundColor: 'transparent',
+            backgroundColor: 'transparent'
           },
           '&::-webkit-scrollbar-thumb': {
             backgroundColor: theme.palette.divider,
-            borderRadius: 4,
+            borderRadius: 4
           },
           '&::-webkit-scrollbar-thumb:hover': {
-            backgroundColor: theme.palette.action.hover,
+            backgroundColor: theme.palette.action.hover
           },
           // Snap scrolling for better UX
           scrollSnapType: 'x mandatory',
-          WebkitOverflowScrolling: 'touch',
+          WebkitOverflowScrolling: 'touch'
         }}
       >
         {filteredProperties.map((property) => (
@@ -160,9 +164,9 @@ const SimilarProperties: React.FC<SimilarPropertiesProps> = ({
               width: {
                 xs: '280px',
                 sm: '320px',
-                md: '360px',
+                md: '360px'
               },
-              scrollSnapAlign: 'start',
+              scrollSnapAlign: 'start'
             }}
           >
             <PropertyCard property={property} size="normal" />

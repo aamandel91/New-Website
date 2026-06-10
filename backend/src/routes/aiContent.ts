@@ -22,104 +22,136 @@ import type {
 const router = new Router({
   prefix: '/ai-content'
 })
-const authMiddleware = container.resolve<Middleware>("middleware.jwt")
-const roleMiddleware = container.resolve<RoleMiddlewareCreator>("middleware.role")
+const authMiddleware = container.resolve<Middleware>('middleware.jwt')
+const roleMiddleware =
+  container.resolve<RoleMiddlewareCreator>('middleware.role')
 
 /**
  * POST /api/ai-content/blog
  * Generate a blog post with AI
  */
-router.post('/blog', authMiddleware, roleMiddleware([UserRole.Admin, UserRole.Root]), async (ctx) => {
-  const service = ctx.state.container.resolve(AIContentService)
-  const request = ctx.request.body as AIBlogPostRequest
+router.post(
+  '/blog',
+  authMiddleware,
+  roleMiddleware([UserRole.Admin, UserRole.Root]),
+  async (ctx) => {
+    const service = ctx.state.container.resolve(AIContentService)
+    const request = ctx.request.body as AIBlogPostRequest
 
-  if (!request.keyword) {
-    ctx.status = 400
-    ctx.body = { error: 'Keyword is required' }
-    return
+    if (!request.keyword) {
+      ctx.status = 400
+      ctx.body = { error: 'Keyword is required' }
+      return
+    }
+
+    const result = await service.generateBlogPost(request)
+    ctx.body = result
   }
-
-  const result = await service.generateBlogPost(request)
-  ctx.body = result
-})
+)
 
 /**
  * POST /api/ai-content/keywords
  * Suggest keywords for a topic
  */
-router.post('/keywords', authMiddleware, roleMiddleware([UserRole.Admin, UserRole.Root]), async (ctx) => {
-  const service = ctx.state.container.resolve(AIContentService)
-  const { topic, city } = ctx.request.body as { topic: string; city?: string }
+router.post(
+  '/keywords',
+  authMiddleware,
+  roleMiddleware([UserRole.Admin, UserRole.Root]),
+  async (ctx) => {
+    const service = ctx.state.container.resolve(AIContentService)
+    const { topic, city } = ctx.request.body as { topic: string; city?: string }
 
-  if (!topic) {
-    ctx.status = 400
-    ctx.body = { error: 'Topic is required' }
-    return
+    if (!topic) {
+      ctx.status = 400
+      ctx.body = { error: 'Topic is required' }
+      return
+    }
+
+    const keywords = await service.suggestKeywords(topic, city)
+    ctx.body = { keywords }
   }
-
-  const keywords = await service.suggestKeywords(topic, city)
-  ctx.body = { keywords }
-})
+)
 
 /**
  * POST /api/ai-content/page
  * Generate page content with AI
  */
-router.post('/page', authMiddleware, roleMiddleware([UserRole.Admin, UserRole.Root]), async (ctx) => {
-  const service = ctx.state.container.resolve(AIContentService)
-  const request = ctx.request.body as AIPageContentRequest
+router.post(
+  '/page',
+  authMiddleware,
+  roleMiddleware([UserRole.Admin, UserRole.Root]),
+  async (ctx) => {
+    const service = ctx.state.container.resolve(AIContentService)
+    const request = ctx.request.body as AIPageContentRequest
 
-  if (!request.pageType || !request.keyword) {
-    ctx.status = 400
-    ctx.body = { error: 'Page type and keyword are required' }
-    return
+    if (!request.pageType || !request.keyword) {
+      ctx.status = 400
+      ctx.body = { error: 'Page type and keyword are required' }
+      return
+    }
+
+    const result = await service.generatePageContent(request)
+    ctx.body = result
   }
-
-  const result = await service.generatePageContent(request)
-  ctx.body = result
-})
+)
 
 /**
  * POST /api/ai-content/batch
  * Generate multiple pages with AI
  */
-router.post('/batch', authMiddleware, roleMiddleware([UserRole.Admin, UserRole.Root]), async (ctx) => {
-  const service = ctx.state.container.resolve(AIContentService)
-  const { requests } = ctx.request.body as { requests: AIPageContentRequest[] }
+router.post(
+  '/batch',
+  authMiddleware,
+  roleMiddleware([UserRole.Admin, UserRole.Root]),
+  async (ctx) => {
+    const service = ctx.state.container.resolve(AIContentService)
+    const { requests } = ctx.request.body as {
+      requests: AIPageContentRequest[]
+    }
 
-  if (!requests || !Array.isArray(requests) || requests.length === 0) {
-    ctx.status = 400
-    ctx.body = { error: 'Requests array is required' }
-    return
+    if (!requests || !Array.isArray(requests) || requests.length === 0) {
+      ctx.status = 400
+      ctx.body = { error: 'Requests array is required' }
+      return
+    }
+
+    if (requests.length > 50) {
+      ctx.status = 400
+      ctx.body = { error: 'Maximum 50 pages per batch' }
+      return
+    }
+
+    const results = await service.generateBatchContent(requests)
+    ctx.body = { results }
   }
-
-  if (requests.length > 50) {
-    ctx.status = 400
-    ctx.body = { error: 'Maximum 50 pages per batch' }
-    return
-  }
-
-  const results = await service.generateBatchContent(requests)
-  ctx.body = { results }
-})
+)
 
 /**
  * POST /api/ai-content/bulk-pages/preview
  * Preview bulk page generation
  */
-router.post('/bulk-pages/preview', authMiddleware, roleMiddleware([UserRole.Admin, UserRole.Root]), async (ctx) => {
-  const service = ctx.state.container.resolve(BulkPageGenerationService)
-  const request = ctx.request.body as BulkPageGenerationRequest
+router.post(
+  '/bulk-pages/preview',
+  authMiddleware,
+  roleMiddleware([UserRole.Admin, UserRole.Root]),
+  async (ctx) => {
+    const service = ctx.state.container.resolve(BulkPageGenerationService)
+    const request = ctx.request.body as BulkPageGenerationRequest
 
-  if (!request.pageType || !request.selectedIds || request.selectedIds.length === 0) {
-    ctx.status = 400
-    ctx.body = { error: 'Page type and selected IDs are required' }
-    return
+    if (
+      !request.pageType ||
+      !request.selectedIds ||
+      request.selectedIds.length === 0
+    ) {
+      ctx.status = 400
+      ctx.body = { error: 'Page type and selected IDs are required' }
+      return
+    }
+
+    const preview = await service.previewPages(request)
+    ctx.body = { preview }
   }
-
-  const preview = await service.previewPages(request)
-  ctx.body = { preview }
-})
+)
 
 /**
  * POST /api/ai-content/bulk-pages/generate
@@ -133,60 +165,78 @@ router.post('/bulk-pages/preview', authMiddleware, roleMiddleware([UserRole.Admi
  *     body shape is CrossProductGenerationRequest. Used by the SEO
  *     Coverage dashboard's "Generate Missing" handoff.
  */
-router.post('/bulk-pages/generate', authMiddleware, roleMiddleware([UserRole.Admin, UserRole.Root]), async (ctx) => {
-  const service = ctx.state['container'].resolve(BulkPageGenerationService)
-  const orgId = ctx.state['orgId']
-  const body = ctx.request.body as
-    | (BulkPageGenerationRequest & { mode?: 'singleAxis' })
-    | (CrossProductGenerationRequest & { mode: 'crossProduct' })
+router.post(
+  '/bulk-pages/generate',
+  authMiddleware,
+  roleMiddleware([UserRole.Admin, UserRole.Root]),
+  async (ctx) => {
+    const service = ctx.state['container'].resolve(BulkPageGenerationService)
+    const orgId = ctx.state['orgId']
+    const body = ctx.request.body as
+      | (BulkPageGenerationRequest & { mode?: 'singleAxis' })
+      | (CrossProductGenerationRequest & { mode: 'crossProduct' })
 
-  if (body && (body as any).mode === 'crossProduct') {
-    const cpReq = body as CrossProductGenerationRequest
-    if (!Array.isArray(cpReq.combinations) || cpReq.combinations.length === 0) {
-      ctx.status = 400
-      ctx.body = { error: 'combinations array is required for crossProduct mode' }
-      return
-    }
-    if (cpReq.combinations.length > 200) {
-      ctx.status = 400
-      ctx.body = { error: 'Maximum 200 combinations per cross-product generation' }
-      return
-    }
-    const invalid = cpReq.combinations.find(
-      (c: CrossProductCombination) =>
-        !c ||
-        typeof c.city !== 'string' ||
-        typeof c.subtype !== 'string' ||
-        c.city.trim() === '' ||
-        c.subtype.trim() === ''
-    )
-    if (invalid) {
-      ctx.status = 400
-      ctx.body = { error: 'Each combination must have non-empty city and subtype strings' }
+    if (body && (body as any).mode === 'crossProduct') {
+      const cpReq = body as CrossProductGenerationRequest
+      if (
+        !Array.isArray(cpReq.combinations) ||
+        cpReq.combinations.length === 0
+      ) {
+        ctx.status = 400
+        ctx.body = {
+          error: 'combinations array is required for crossProduct mode'
+        }
+        return
+      }
+      if (cpReq.combinations.length > 200) {
+        ctx.status = 400
+        ctx.body = {
+          error: 'Maximum 200 combinations per cross-product generation'
+        }
+        return
+      }
+      const invalid = cpReq.combinations.find(
+        (c: CrossProductCombination) =>
+          !c ||
+          typeof c.city !== 'string' ||
+          typeof c.subtype !== 'string' ||
+          c.city.trim() === '' ||
+          c.subtype.trim() === ''
+      )
+      if (invalid) {
+        ctx.status = 400
+        ctx.body = {
+          error: 'Each combination must have non-empty city and subtype strings'
+        }
+        return
+      }
+
+      const result = await service.generateCrossProductPages(orgId, cpReq)
+      ctx.body = result
       return
     }
 
-    const result = await service.generateCrossProductPages(orgId, cpReq)
+    const request = body as BulkPageGenerationRequest
+    if (
+      !request.pageType ||
+      !request.selectedIds ||
+      request.selectedIds.length === 0
+    ) {
+      ctx.status = 400
+      ctx.body = { error: 'Page type and selected IDs are required' }
+      return
+    }
+
+    if (request.selectedIds.length > 100) {
+      ctx.status = 400
+      ctx.body = { error: 'Maximum 100 pages per bulk generation' }
+      return
+    }
+
+    const result = await service.generatePages(orgId, request)
     ctx.body = result
-    return
   }
-
-  const request = body as BulkPageGenerationRequest
-  if (!request.pageType || !request.selectedIds || request.selectedIds.length === 0) {
-    ctx.status = 400
-    ctx.body = { error: 'Page type and selected IDs are required' }
-    return
-  }
-
-  if (request.selectedIds.length > 100) {
-    ctx.status = 400
-    ctx.body = { error: 'Maximum 100 pages per bulk generation' }
-    return
-  }
-
-  const result = await service.generatePages(orgId, request)
-  ctx.body = result
-})
+)
 
 /**
  * GET /api/ai-content/locations/cities
@@ -263,16 +313,16 @@ router.get(
       return
     }
 
-    const priorityMin = priorityMinRaw !== undefined
-      ? Number(priorityMinRaw)
-      : undefined
+    const priorityMin =
+      priorityMinRaw !== undefined ? Number(priorityMinRaw) : undefined
     if (priorityMinRaw !== undefined && Number.isNaN(priorityMin)) {
       ctx.status = 400
       ctx.body = { error: 'priority_min must be a number' }
       return
     }
 
-    const filters: import('../types/keywordQueue.js').KeywordQueueListFilters = {}
+    const filters: import('../types/keywordQueue.js').KeywordQueueListFilters =
+      {}
     if (status) filters.status = status as KeywordQueueStatus
     if (city) filters.city = city
     if (priorityMin !== undefined) filters.priority_min = priorityMin

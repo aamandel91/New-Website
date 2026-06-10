@@ -1,15 +1,13 @@
 'use client'
 
+import React from 'react'
+
 import { useCallback, useRef, useState } from 'react'
 
-import {
-  InputAdornment,
-  TextField,
-  Tooltip
-} from '@mui/material'
 import SearchIcon from '@mui/icons-material/Search'
+import { InputAdornment, TextField, Tooltip } from '@mui/material'
 
-import { parseKeywordQuery, type KeywordParseResult } from 'utils/keywordSearch'
+import { type KeywordParseResult, parseKeywordQuery } from 'utils/keywordSearch'
 
 const DEBOUNCE_MS = 300
 

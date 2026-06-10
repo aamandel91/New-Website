@@ -35,7 +35,9 @@ export class KeywordQueueService {
     @inject(BlogService) private blogService: BlogService
   ) {}
 
-  async list(filters: KeywordQueueListFilters = {}): Promise<KeywordQueueRow[]> {
+  async list(
+    filters: KeywordQueueListFilters = {}
+  ): Promise<KeywordQueueRow[]> {
     const limit = Math.min(filters.limit ?? 500, 500)
     let query = this.db(TABLE).select('*')
 
@@ -57,7 +59,7 @@ export class KeywordQueueService {
     if (items.length === 0) return []
 
     const now = new Date()
-    const toInsert = items.map(item => ({
+    const toInsert = items.map((item) => ({
       keyword: item.keyword.trim(),
       city: item.city?.trim() || null,
       priority: item.priority ?? 0,
@@ -93,7 +95,7 @@ export class KeywordQueueService {
     count: number,
     authorEmail: string
   ): Promise<KeywordQueueProcessResult> {
-    const claimed = await this.db.transaction(async trx => {
+    const claimed = await this.db.transaction(async (trx) => {
       const rows = await trx(TABLE)
         .select('*')
         .where('status', 'pending')
@@ -105,7 +107,7 @@ export class KeywordQueueService {
 
       if (rows.length === 0) return []
 
-      const ids = rows.map(r => r.id)
+      const ids = rows.map((r) => r.id)
       await trx(TABLE)
         .whereIn('id', ids)
         .update({ status: 'generating', updated_at: new Date() })
@@ -123,13 +125,11 @@ export class KeywordQueueService {
     for (const row of claimed) {
       try {
         const blogPostId = await this.generateAndPersistBlog(row, authorEmail)
-        await this.db(TABLE)
-          .where({ id: row.id })
-          .update({
-            status: 'done',
-            blog_post_id: blogPostId,
-            updated_at: new Date()
-          })
+        await this.db(TABLE).where({ id: row.id }).update({
+          status: 'done',
+          blog_post_id: blogPostId,
+          updated_at: new Date()
+        })
         result.succeeded += 1
         result.results.push({
           id: row.id,
@@ -142,13 +142,11 @@ export class KeywordQueueService {
         const appendedNotes = row.notes
           ? `${row.notes}\n[${new Date().toISOString()}] ${message}`
           : `[${new Date().toISOString()}] ${message}`
-        await this.db(TABLE)
-          .where({ id: row.id })
-          .update({
-            status: 'failed',
-            notes: appendedNotes,
-            updated_at: new Date()
-          })
+        await this.db(TABLE).where({ id: row.id }).update({
+          status: 'failed',
+          notes: appendedNotes,
+          updated_at: new Date()
+        })
         result.failed += 1
         result.results.push({
           id: row.id,

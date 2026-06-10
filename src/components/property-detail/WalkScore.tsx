@@ -1,8 +1,9 @@
 'use client'
 
 import React, { useState } from 'react'
-import { Box, Paper, Typography } from '@mui/material'
+
 import WalkIcon from '@mui/icons-material/DirectionsWalk'
+import { Box, Paper, Typography } from '@mui/material'
 
 interface WalkScoreProps {
   lat: number
@@ -24,7 +25,8 @@ const WalkScore: React.FC<WalkScoreProps> = ({ lat, lng, address }) => {
         Walk Score
       </Typography>
       <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-        Walk Score measures the walkability of any address based on the distance to nearby amenities.
+        Walk Score measures the walkability of any address based on the distance
+        to nearby amenities.
       </Typography>
 
       {imgError ? (
@@ -37,7 +39,7 @@ const WalkScore: React.FC<WalkScoreProps> = ({ lat, lng, address }) => {
             py: 3,
             px: 2,
             bgcolor: 'grey.50',
-            borderRadius: 1,
+            borderRadius: 1
           }}
         >
           <WalkIcon sx={{ fontSize: 36, color: 'grey.400' }} />
@@ -61,7 +63,7 @@ const WalkScore: React.FC<WalkScoreProps> = ({ lat, lng, address }) => {
             style={{
               maxWidth: '100%',
               height: 'auto',
-              borderRadius: 4,
+              borderRadius: 4
             }}
           />
         </Box>
@@ -75,7 +77,10 @@ const WalkScore: React.FC<WalkScoreProps> = ({ lat, lng, address }) => {
           rel="noopener noreferrer"
           variant="body2"
           color="primary"
-          sx={{ textDecoration: 'none', '&:hover': { textDecoration: 'underline' } }}
+          sx={{
+            textDecoration: 'none',
+            '&:hover': { textDecoration: 'underline' }
+          }}
         >
           View Walk Score details
         </Typography>

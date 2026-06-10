@@ -8,8 +8,8 @@ import {
   mapperAssociationFeeIncludes,
   mapperAssociationFeePOTL,
   mapperBasementDevelopment,
-  mapperBaths,
   mapperBathroomsTotal,
+  mapperBaths,
   mapperBuilderModel,
   mapperCategory,
   mapperCommunityFeatures,
@@ -405,7 +405,8 @@ const sections = {
           },
           {
             label: 'pdp.fields.petsAllowed',
-            fn: (p: Property) => mapperYesNo(p, 'PetsAllowed') || p.raw?.PetsAllowed
+            fn: (p: Property) =>
+              mapperYesNo(p, 'PetsAllowed') || p.raw?.PetsAllowed
           },
           { label: 'pdp.fields.view', fn: mapperView },
           {
@@ -432,9 +433,7 @@ const sections = {
       },
       {
         title: 'pdp.sections.propertyUnitInfo.groups.bedroomDetails',
-        items: [
-          { label: 'pdp.fields.bedroomsTotal', fn: mapperTotalBeds }
-        ]
+        items: [{ label: 'pdp.fields.bedroomsTotal', fn: mapperTotalBeds }]
       },
       {
         title: 'pdp.sections.propertyUnitInfo.groups.bathroomDetails',
@@ -494,7 +493,10 @@ const sections = {
         title: 'pdp.sections.hoaLocationSchools.groups.hoa',
         items: [
           { label: 'pdp.fields.associationFee', fn: mapperAssociationFee },
-          { label: 'pdp.fields.associationFeeFrequency', path: 'raw.AssocFeeFrequency' },
+          {
+            label: 'pdp.fields.associationFeeFrequency',
+            path: 'raw.AssocFeeFrequency'
+          },
           { label: 'pdp.fields.associationName', path: 'raw.AssociationName' },
           {
             label: 'pdp.fields.associationFeeIncludes',

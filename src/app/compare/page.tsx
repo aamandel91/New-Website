@@ -1,40 +1,43 @@
 'use client'
 
-import React, { useEffect, useState, Suspense } from 'react'
-import { useSearchParams, useRouter } from 'next/navigation'
+import React, { Suspense, useEffect, useState } from 'react'
+import Image from 'next/image'
+import { useRouter, useSearchParams } from 'next/navigation'
+
+import ArrowBackIcon from '@mui/icons-material/ArrowBack'
+import CloseIcon from '@mui/icons-material/Close'
 import {
+  Alert,
   Box,
+  Button,
+  Chip,
+  CircularProgress,
   Container,
-  Typography,
+  Divider,
+  IconButton,
   Paper,
+  Stack,
   Table,
   TableBody,
   TableCell,
   TableContainer,
   TableHead,
   TableRow,
-  Button,
-  IconButton,
-  Stack,
-  Chip,
-  Divider,
-  Alert,
-  CircularProgress,
+  Typography
 } from '@mui/material'
-import CloseIcon from '@mui/icons-material/Close'
-import ArrowBackIcon from '@mui/icons-material/ArrowBack'
-import Image from 'next/image'
+
+import searchConfig from '@configs/search'
+import { usePropertyComparison } from '@/hooks/usePropertyComparison'
 
 import { type Property } from 'services/API'
 import { APIPropertyDetails } from 'services/API'
 import { generatePropertyUrl } from 'utils/propertyUrls'
-import { usePropertyComparison } from '@/hooks/usePropertyComparison'
-import searchConfig from '@configs/search'
 
 const ComparisonPageContent: React.FC = () => {
   const searchParams = useSearchParams()
   const router = useRouter()
-  const { properties: storedProperties, removeProperty } = usePropertyComparison()
+  const { properties: storedProperties, removeProperty } =
+    usePropertyComparison()
 
   const [properties, setProperties] = useState<Property[]>([])
   const [loading, setLoading] = useState(true)
@@ -63,7 +66,10 @@ const ComparisonPageContent: React.FC = () => {
         const fetchedProperties = await Promise.all(
           mlsNumbers.map(async (mls) => {
             try {
-              return await APIPropertyDetails.fetchProperty(mls, searchConfig.defaultBoardId)
+              return await APIPropertyDetails.fetchProperty(
+                mls,
+                searchConfig.defaultBoardId
+              )
             } catch (err) {
               console.error(`Failed to fetch property ${mls}:`, err)
               return null
@@ -71,7 +77,9 @@ const ComparisonPageContent: React.FC = () => {
           })
         )
 
-        const validProperties = fetchedProperties.filter((p): p is Property => p !== null)
+        const validProperties = fetchedProperties.filter(
+          (p): p is Property => p !== null
+        )
         setProperties(validProperties)
         setLoading(false)
       } catch (err) {
@@ -99,7 +107,7 @@ const ComparisonPageContent: React.FC = () => {
       style: 'currency',
       currency: 'USD',
       minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
+      maximumFractionDigits: 0
     }).format(price)
   }
 
@@ -120,7 +128,8 @@ const ComparisonPageContent: React.FC = () => {
     return (
       <Container maxWidth="xl" sx={{ py: 4 }}>
         <Alert severity="warning" sx={{ mb: 2 }}>
-          {error || 'No properties to compare. Please add properties to comparison first.'}
+          {error ||
+            'No properties to compare. Please add properties to comparison first.'}
         </Alert>
         <Button
           variant="contained"
@@ -141,34 +150,64 @@ const ComparisonPageContent: React.FC = () => {
   const comparisonData = [
     { label: 'Price', getValue: (p: Property) => formatPrice(getPrice(p)) },
     { label: 'Status', getValue: (p: Property) => p.status || 'N/A' },
-    { label: 'Beds', getValue: (p: Property) => getBeds(p)?.toString() || 'N/A' },
-    { label: 'Baths', getValue: (p: Property) => getBaths(p)?.toString() || 'N/A' },
-    { label: 'Square Feet', getValue: (p: Property) => formatNumber(getSqft(p)) },
+    {
+      label: 'Beds',
+      getValue: (p: Property) => getBeds(p)?.toString() || 'N/A'
+    },
+    {
+      label: 'Baths',
+      getValue: (p: Property) => getBaths(p)?.toString() || 'N/A'
+    },
+    {
+      label: 'Square Feet',
+      getValue: (p: Property) => formatNumber(getSqft(p))
+    },
     {
       label: 'Price per Sq Ft',
       getValue: (p: Property) => {
         const price = getPrice(p)
         const sqft = getSqft(p)
         return price && sqft ? formatPrice(price / sqft) : 'N/A'
-      },
+      }
     },
-    { label: 'Year Built', getValue: (p: Property) => p.details?.yearBuilt?.toString() || 'N/A' },
-    { label: 'Lot Size', getValue: (p: Property) => (p.lot?.acres ? `${p.lot.acres} acres` : 'N/A') },
-    { label: 'Property Type', getValue: (p: Property) => p.details?.propertyType || 'N/A' },
-    { label: 'HOA', getValue: (p: Property) => (p.condominium?.fees?.maintenance ? formatPrice(Number(p.condominium.fees.maintenance)) : 'N/A') },
+    {
+      label: 'Year Built',
+      getValue: (p: Property) => p.details?.yearBuilt?.toString() || 'N/A'
+    },
+    {
+      label: 'Lot Size',
+      getValue: (p: Property) => (p.lot?.acres ? `${p.lot.acres} acres` : 'N/A')
+    },
+    {
+      label: 'Property Type',
+      getValue: (p: Property) => p.details?.propertyType || 'N/A'
+    },
+    {
+      label: 'HOA',
+      getValue: (p: Property) =>
+        p.condominium?.fees?.maintenance
+          ? formatPrice(Number(p.condominium.fees.maintenance))
+          : 'N/A'
+    },
     {
       label: 'Annual Taxes',
-      getValue: (p: Property) => (p.taxes?.annualAmount ? formatPrice(p.taxes.annualAmount) : 'N/A'),
+      getValue: (p: Property) =>
+        p.taxes?.annualAmount ? formatPrice(p.taxes.annualAmount) : 'N/A'
     },
     {
       label: 'Days on Market',
-      getValue: (p: Property) => (p.daysOnMarket?.toString() || 'N/A'),
-    },
+      getValue: (p: Property) => p.daysOnMarket?.toString() || 'N/A'
+    }
   ]
 
   return (
     <Container maxWidth="xl" sx={{ py: 4 }}>
-      <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 3 }}>
+      <Stack
+        direction="row"
+        justifyContent="space-between"
+        alignItems="center"
+        sx={{ mb: 3 }}
+      >
         <Typography variant="h4" fontWeight="bold">
           Compare Properties
         </Typography>
@@ -185,7 +224,9 @@ const ComparisonPageContent: React.FC = () => {
         <Table>
           <TableHead>
             <TableRow sx={{ bgcolor: 'grey.100' }}>
-              <TableCell sx={{ fontWeight: 'bold', minWidth: 180 }}>Feature</TableCell>
+              <TableCell sx={{ fontWeight: 'bold', minWidth: 180 }}>
+                Feature
+              </TableCell>
               {properties.map((property) => (
                 <TableCell key={property.mlsNumber} sx={{ minWidth: 250 }}>
                   <Stack spacing={2}>
@@ -196,12 +237,16 @@ const ComparisonPageContent: React.FC = () => {
                         height: 200,
                         bgcolor: 'grey.200',
                         borderRadius: 1,
-                        overflow: 'hidden',
+                        overflow: 'hidden'
                       }}
                     >
                       {property.images?.[0] ? (
                         <Image
-                          src={typeof property.images[0] === 'string' ? property.images[0] : (property.images[0] as any)?.url || ''}
+                          src={
+                            typeof property.images[0] === 'string'
+                              ? property.images[0]
+                              : (property.images[0] as any)?.url || ''
+                          }
                           alt={`Property ${property.mlsNumber}`}
                           fill
                           style={{ objectFit: 'cover' }}
@@ -212,7 +257,7 @@ const ComparisonPageContent: React.FC = () => {
                             height: '100%',
                             display: 'flex',
                             alignItems: 'center',
-                            justifyContent: 'center',
+                            justifyContent: 'center'
                           }}
                         >
                           <Typography variant="caption" color="text.secondary">
@@ -229,8 +274,8 @@ const ComparisonPageContent: React.FC = () => {
                           right: 8,
                           bgcolor: 'rgba(255,255,255,0.9)',
                           '&:hover': {
-                            bgcolor: 'rgba(255,255,255,1)',
-                          },
+                            bgcolor: 'rgba(255,255,255,1)'
+                          }
                         }}
                       >
                         <CloseIcon fontSize="small" />
@@ -240,7 +285,10 @@ const ComparisonPageContent: React.FC = () => {
                     {/* Address */}
                     <Box>
                       <Typography variant="body2" fontWeight="bold" noWrap>
-                        {property.address ? `${property.address.streetNumber || ''} ${property.address.streetName || ''}`.trim() || 'Address N/A' : 'Address N/A'}
+                        {property.address
+                          ? `${property.address.streetNumber || ''} ${property.address.streetName || ''}`.trim() ||
+                            'Address N/A'
+                          : 'Address N/A'}
                       </Typography>
                       <Typography variant="caption" color="text.secondary">
                         {property.address?.city}, {property.address?.state}{' '}
@@ -267,10 +315,15 @@ const ComparisonPageContent: React.FC = () => {
           </TableHead>
           <TableBody>
             {comparisonData.map((row, index) => (
-              <TableRow key={row.label} sx={{ '&:nth-of-type(even)': { bgcolor: 'grey.50' } }}>
+              <TableRow
+                key={row.label}
+                sx={{ '&:nth-of-type(even)': { bgcolor: 'grey.50' } }}
+              >
                 <TableCell sx={{ fontWeight: 'bold' }}>{row.label}</TableCell>
                 {properties.map((property) => (
-                  <TableCell key={property.mlsNumber}>{row.getValue(property)}</TableCell>
+                  <TableCell key={property.mlsNumber}>
+                    {row.getValue(property)}
+                  </TableCell>
                 ))}
               </TableRow>
             ))}
@@ -280,7 +333,8 @@ const ComparisonPageContent: React.FC = () => {
 
       {properties.length < 4 && (
         <Alert severity="info" sx={{ mt: 3 }}>
-          You can compare up to 4 properties. Add more properties from search results to compare.
+          You can compare up to 4 properties. Add more properties from search
+          results to compare.
         </Alert>
       )}
     </Container>
@@ -289,11 +343,16 @@ const ComparisonPageContent: React.FC = () => {
 
 const ComparisonPage: React.FC = () => {
   return (
-    <Suspense fallback={
-      <Container maxWidth="xl" sx={{ py: 4, display: 'flex', justifyContent: 'center' }}>
-        <CircularProgress />
-      </Container>
-    }>
+    <Suspense
+      fallback={
+        <Container
+          maxWidth="xl"
+          sx={{ py: 4, display: 'flex', justifyContent: 'center' }}
+        >
+          <CircularProgress />
+        </Container>
+      }
+    >
       <ComparisonPageContent />
     </Suspense>
   )

@@ -71,11 +71,14 @@ class APINavigation extends APIBase {
   /**
    * Get navigation items with filtering
    */
-  async getItems(filters?: NavigationFilters): Promise<NavigationItemsResponse> {
+  async getItems(
+    filters?: NavigationFilters
+  ): Promise<NavigationItemsResponse> {
     const params = new URLSearchParams()
 
     if (filters?.position) params.append('position', filters.position)
-    if (filters?.is_visible !== undefined) params.append('is_visible', filters.is_visible.toString())
+    if (filters?.is_visible !== undefined)
+      params.append('is_visible', filters.is_visible.toString())
 
     const queryString = params.toString()
     const url = queryString ? `/navigation?${queryString}` : '/navigation'
@@ -87,7 +90,9 @@ class APINavigation extends APIBase {
    * Get navigation item by ID
    */
   async getItemById(id: string): Promise<NavigationItem> {
-    const response = await this.fetchJSON<{ item: NavigationItem }>(`/navigation/${id}`)
+    const response = await this.fetchJSON<{ item: NavigationItem }>(
+      `/navigation/${id}`
+    )
     return response.item
   }
 
@@ -95,21 +100,30 @@ class APINavigation extends APIBase {
    * Create navigation item
    */
   async createItem(data: CreateNavigationItemInput): Promise<NavigationItem> {
-    const response = await this.fetchJSON<{ item: NavigationItem }>('/navigation', {
-      method: 'POST',
-      body: JSON.stringify(data)
-    })
+    const response = await this.fetchJSON<{ item: NavigationItem }>(
+      '/navigation',
+      {
+        method: 'POST',
+        body: JSON.stringify(data)
+      }
+    )
     return response.item
   }
 
   /**
    * Update navigation item
    */
-  async updateItem(id: string, data: UpdateNavigationItemInput): Promise<NavigationItem> {
-    const response = await this.fetchJSON<{ item: NavigationItem }>(`/navigation/${id}`, {
-      method: 'PATCH',
-      body: JSON.stringify(data)
-    })
+  async updateItem(
+    id: string,
+    data: UpdateNavigationItemInput
+  ): Promise<NavigationItem> {
+    const response = await this.fetchJSON<{ item: NavigationItem }>(
+      `/navigation/${id}`,
+      {
+        method: 'PATCH',
+        body: JSON.stringify(data)
+      }
+    )
     return response.item
   }
 
@@ -125,11 +139,17 @@ class APINavigation extends APIBase {
   /**
    * Reorder navigation items
    */
-  async reorderItems(position: string, itemIds: string[]): Promise<NavigationItem[]> {
-    const response = await this.fetchJSON<{ items: NavigationItem[] }>('/navigation/reorder', {
-      method: 'POST',
-      body: JSON.stringify({ position, itemIds })
-    })
+  async reorderItems(
+    position: string,
+    itemIds: string[]
+  ): Promise<NavigationItem[]> {
+    const response = await this.fetchJSON<{ items: NavigationItem[] }>(
+      '/navigation/reorder',
+      {
+        method: 'POST',
+        body: JSON.stringify({ position, itemIds })
+      }
+    )
     return response.items
   }
 
@@ -137,9 +157,12 @@ class APINavigation extends APIBase {
    * Duplicate navigation item
    */
   async duplicateItem(id: string): Promise<NavigationItem> {
-    const response = await this.fetchJSON<{ item: NavigationItem }>(`/navigation/${id}/duplicate`, {
-      method: 'POST'
-    })
+    const response = await this.fetchJSON<{ item: NavigationItem }>(
+      `/navigation/${id}/duplicate`,
+      {
+        method: 'POST'
+      }
+    )
     return response.item
   }
 

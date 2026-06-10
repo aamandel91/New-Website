@@ -11,7 +11,9 @@ import { ApiError } from '../lib/errors.js'
 
 @injectable()
 export class OrganizationService {
-  constructor(@inject(OrganizationRepository) private orgRepo: OrganizationRepository) {}
+  constructor(
+    @inject(OrganizationRepository) private orgRepo: OrganizationRepository
+  ) {}
 
   /**
    * Get organization by ID
@@ -30,21 +32,27 @@ export class OrganizationService {
   /**
    * Get organization by primary domain
    */
-  async getOrganizationByPrimaryDomain(domain: string): Promise<Organization | null> {
+  async getOrganizationByPrimaryDomain(
+    domain: string
+  ): Promise<Organization | null> {
     return this.orgRepo.findByPrimaryDomain(domain)
   }
 
   /**
    * Get organization by custom domain
    */
-  async getOrganizationByCustomDomain(domain: string): Promise<Organization | null> {
+  async getOrganizationByCustomDomain(
+    domain: string
+  ): Promise<Organization | null> {
     return this.orgRepo.findByCustomDomain(domain)
   }
 
   /**
    * Resolve organization from hostname (primary domain or custom domain)
    */
-  async resolveOrganizationByHostname(hostname: string): Promise<Organization | null> {
+  async resolveOrganizationByHostname(
+    hostname: string
+  ): Promise<Organization | null> {
     // Try custom domain first
     let org = await this.orgRepo.findByCustomDomain(hostname)
     if (org) return org
@@ -68,7 +76,10 @@ export class OrganizationService {
   /**
    * Update organization
    */
-  async updateOrganization(id: bigint, input: UpdateOrganizationInput): Promise<Organization> {
+  async updateOrganization(
+    id: bigint,
+    input: UpdateOrganizationInput
+  ): Promise<Organization> {
     const org = await this.orgRepo.findById(id)
     if (!org) {
       throw new ApiError('Organization not found', { status: 404 })
@@ -96,7 +107,12 @@ export class OrganizationService {
   /**
    * Add member to organization
    */
-  async addMember(orgId: bigint, email: string, role: string, invitedBy: string): Promise<OrganizationMember> {
+  async addMember(
+    orgId: bigint,
+    email: string,
+    role: string,
+    invitedBy: string
+  ): Promise<OrganizationMember> {
     const org = await this.orgRepo.findById(orgId)
     if (!org) {
       throw new ApiError('Organization not found', { status: 404 })
@@ -108,7 +124,11 @@ export class OrganizationService {
   /**
    * Update member role
    */
-  async updateMemberRole(orgId: bigint, email: string, role: string): Promise<OrganizationMember> {
+  async updateMemberRole(
+    orgId: bigint,
+    email: string,
+    role: string
+  ): Promise<OrganizationMember> {
     return this.orgRepo.updateMemberRole(orgId, email, role)
   }
 
@@ -130,7 +150,12 @@ export class OrganizationService {
   /**
    * Create invitation
    */
-  async createInvitation(orgId: bigint, email: string, role: string, invitedBy: string): Promise<Invitation> {
+  async createInvitation(
+    orgId: bigint,
+    email: string,
+    role: string,
+    invitedBy: string
+  ): Promise<Invitation> {
     return this.orgRepo.createInvitation(orgId, email, role, invitedBy)
   }
 
@@ -144,7 +169,10 @@ export class OrganizationService {
   /**
    * Accept invitation
    */
-  async acceptInvitation(token: string, userEmail: string): Promise<{ organization: Organization; member: OrganizationMember }> {
+  async acceptInvitation(
+    token: string,
+    userEmail: string
+  ): Promise<{ organization: Organization; member: OrganizationMember }> {
     const invitation = await this.orgRepo.findInvitationByToken(token)
 
     if (!invitation) {
@@ -159,10 +187,19 @@ export class OrganizationService {
     await this.orgRepo.acceptInvitation(token)
 
     // Add member
-    const member = await this.orgRepo.addMember(invitation.org_id, invitation.email, invitation.role, invitation.invited_by!)
+    const member = await this.orgRepo.addMember(
+      invitation.org_id,
+      invitation.email,
+      invitation.role,
+      invitation.invited_by!
+    )
 
     // Mark as joined
-    await this.orgRepo.updateMemberRole(invitation.org_id, invitation.email, invitation.role)
+    await this.orgRepo.updateMemberRole(
+      invitation.org_id,
+      invitation.email,
+      invitation.role
+    )
 
     const organization = await this.orgRepo.findById(invitation.org_id)
 
@@ -182,7 +219,10 @@ export class OrganizationService {
   /**
    * Find agent by subdomain
    */
-  async findAgentBySubdomain(orgId: bigint, subdomain: string): Promise<AgentSubdomain | null> {
+  async findAgentBySubdomain(
+    orgId: bigint,
+    subdomain: string
+  ): Promise<AgentSubdomain | null> {
     return this.orgRepo.findAgentBySubdomain(orgId, subdomain)
   }
 

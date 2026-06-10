@@ -10,10 +10,10 @@ import { type Position } from 'geojson'
 
 import { defaultFilters } from '@configs/filters'
 
-import { APISearch, type ApiQueryResponse, type Property } from 'services/API'
+import { type ApiQueryResponse, APISearch, type Property } from 'services/API'
 import SearchService, { type Filters } from 'services/Search'
 import { type KeywordParseResult } from 'utils/keywordSearch'
-import { type PolygonZone, polygonToZones } from 'utils/map'
+import { polygonToZones, type PolygonZone } from 'utils/map'
 import { sortPropertyScoredImages } from 'utils/properties'
 
 import {
@@ -22,7 +22,9 @@ import {
   type SearchContextType
 } from './types'
 
-const isSchoolFilterActive = (filters: Record<string, unknown> = {}): boolean => {
+const isSchoolFilterActive = (
+  filters: Record<string, unknown> = {}
+): boolean => {
   const r = filters['schoolRating']
   return typeof r === 'number' && r > 0
 }
@@ -64,8 +66,9 @@ const SearchProvider = ({
   const [searchPolygons, setSearchPolygons] =
     useState<PolygonZone[]>(initialZones)
 
-  const [keywordFilter, setKeywordFilter] =
-    useState<KeywordParseResult | null>(null)
+  const [keywordFilter, setKeywordFilter] = useState<KeywordParseResult | null>(
+    null
+  )
 
   const setFilter = (key: keyof Filters, value: any) =>
     setFilters((prev) => ({ ...prev, [key]: value }))

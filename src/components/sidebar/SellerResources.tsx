@@ -1,4 +1,5 @@
 import React from 'react'
+
 import { Box, List, ListItem, ListItemText, Typography } from '@mui/material'
 
 const NAVY = '#0F1621'
@@ -8,17 +9,23 @@ const defaultLinks = [
   { label: 'Marketing Your Home', href: '/sell' },
   { label: 'Pricing Your Home', href: '/sell' },
   { label: 'Adding Value', href: '/sell' },
-  { label: 'Showing Your Home', href: '/sell' },
+  { label: 'Showing Your Home', href: '/sell' }
 ]
 
 interface SellerResourcesProps {
   links?: Array<{ label: string; href: string }>
 }
 
-export default function SellerResources({ links = defaultLinks }: SellerResourcesProps) {
+export default function SellerResources({
+  links = defaultLinks
+}: SellerResourcesProps) {
   return (
     <Box>
-      <Typography variant="subtitle1" fontWeight={700} sx={{ mb: 1, color: NAVY }}>
+      <Typography
+        variant="subtitle1"
+        fontWeight={700}
+        sx={{ mb: 1, color: NAVY }}
+      >
         Seller Resources
       </Typography>
       <List dense disablePadding>
@@ -33,7 +40,7 @@ export default function SellerResources({ links = defaultLinks }: SellerResource
                   sx={{
                     color: 'primary.main',
                     textDecoration: 'none',
-                    '&:hover': { textDecoration: 'underline' },
+                    '&:hover': { textDecoration: 'underline' }
                   }}
                 >
                   {link.label}

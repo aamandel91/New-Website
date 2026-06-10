@@ -9,7 +9,7 @@ import {
   Container,
   Stack,
   TextField,
-  Typography,
+  Typography
 } from '@mui/material'
 
 const HomeValueWidget = () => {
@@ -30,7 +30,7 @@ const HomeValueWidget = () => {
     <Box
       sx={{
         bgcolor: '#0F1621',
-        py: { xs: 6, md: 8 },
+        py: { xs: 6, md: 8 }
       }}
     >
       <Container maxWidth="md">
@@ -70,12 +70,12 @@ const HomeValueWidget = () => {
                   borderRadius: 1,
                   '& fieldset': { borderColor: 'transparent' },
                   '&:hover fieldset': { borderColor: '#c8a951' },
-                  '&.Mui-focused fieldset': { borderColor: '#c8a951' },
+                  '&.Mui-focused fieldset': { borderColor: '#c8a951' }
                 },
                 '& .MuiInputBase-input': {
                   color: '#0F1621',
-                  '&::placeholder': { color: 'rgba(0,0,0,0.5)', opacity: 1 },
-                },
+                  '&::placeholder': { color: 'rgba(0,0,0,0.5)', opacity: 1 }
+                }
               }}
             />
             <Button
@@ -89,7 +89,7 @@ const HomeValueWidget = () => {
                 whiteSpace: 'nowrap',
                 px: 4,
                 py: 1.5,
-                '&:hover': { bgcolor: '#b89941' },
+                '&:hover': { bgcolor: '#b89941' }
               }}
             >
               GET ESTIMATE

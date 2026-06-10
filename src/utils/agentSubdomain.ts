@@ -12,7 +12,15 @@ export function isAgentSubdomain(): boolean {
   const parts = hostname.split('.')
 
   // Exclude common non-agent subdomains
-  const excludedSubdomains = ['www', 'admin', 'api', 'staging', 'dev', 'test', 'localhost']
+  const excludedSubdomains = [
+    'www',
+    'admin',
+    'api',
+    'staging',
+    'dev',
+    'test',
+    'localhost'
+  ]
 
   if (parts.length >= 2) {
     const firstPart = parts[0]
@@ -31,7 +39,15 @@ export function getAgentSubdomain(): string | null {
   const hostname = window.location.hostname
   const parts = hostname.split('.')
 
-  const excludedSubdomains = ['www', 'admin', 'api', 'staging', 'dev', 'test', 'localhost']
+  const excludedSubdomains = [
+    'www',
+    'admin',
+    'api',
+    'staging',
+    'dev',
+    'test',
+    'localhost'
+  ]
 
   if (parts.length >= 2) {
     const firstPart = parts[0]
@@ -48,7 +64,15 @@ export function getAgentSubdomain(): string | null {
  */
 export function isAgentSubdomainServer(hostname: string): boolean {
   const parts = hostname.split('.')
-  const excludedSubdomains = ['www', 'admin', 'api', 'staging', 'dev', 'test', 'localhost']
+  const excludedSubdomains = [
+    'www',
+    'admin',
+    'api',
+    'staging',
+    'dev',
+    'test',
+    'localhost'
+  ]
 
   if (parts.length >= 2) {
     const firstPart = parts[0]
@@ -63,7 +87,15 @@ export function isAgentSubdomainServer(hostname: string): boolean {
  */
 export function getAgentSubdomainServer(hostname: string): string | null {
   const parts = hostname.split('.')
-  const excludedSubdomains = ['www', 'admin', 'api', 'staging', 'dev', 'test', 'localhost']
+  const excludedSubdomains = [
+    'www',
+    'admin',
+    'api',
+    'staging',
+    'dev',
+    'test',
+    'localhost'
+  ]
 
   if (parts.length >= 2) {
     const firstPart = parts[0]

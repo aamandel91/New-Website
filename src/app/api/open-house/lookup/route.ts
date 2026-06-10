@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server'
 
-import { APIPropertyDetails } from 'services/API'
 import searchConfig from '@configs/search'
+
+import { APIPropertyDetails } from 'services/API'
 
 export async function GET(request: Request) {
   try {
@@ -21,10 +22,7 @@ export async function GET(request: Request) {
     )
 
     if (!property) {
-      return NextResponse.json(
-        { error: 'Property not found' },
-        { status: 404 }
-      )
+      return NextResponse.json({ error: 'Property not found' }, { status: 404 })
     }
 
     return NextResponse.json({
@@ -39,10 +37,7 @@ export async function GET(request: Request) {
     console.error('Failed to look up property:', error)
 
     if (error?.status === 404) {
-      return NextResponse.json(
-        { error: 'Property not found' },
-        { status: 404 }
-      )
+      return NextResponse.json({ error: 'Property not found' }, { status: 404 })
     }
 
     return NextResponse.json(

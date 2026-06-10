@@ -1,22 +1,24 @@
 'use client'
 
 import React, { useEffect, useState } from 'react'
-import {
-  Box,
-  Container,
-  Paper,
-  Typography,
-  Switch,
-  FormControlLabel,
-  Button,
-  Stack,
-  Chip,
-  TextField,
-  Alert,
-  CircularProgress,
-} from '@mui/material'
-import { useUser } from '@/providers/UserProvider'
 import { useRouter } from 'next/navigation'
+
+import {
+  Alert,
+  Box,
+  Button,
+  Chip,
+  CircularProgress,
+  Container,
+  FormControlLabel,
+  Paper,
+  Stack,
+  Switch,
+  TextField,
+  Typography
+} from '@mui/material'
+
+import { useUser } from '@/providers/UserProvider'
 import APIBase from '@/services/API/APIBase'
 
 interface PpcSettings {
@@ -41,12 +43,12 @@ const AdminSettingsPage = () => {
   const [ppcSettings, setPpcSettings] = useState<PpcSettings>({
     enabled: true,
     sources: ['ppc', 'cpc', 'paid'],
-    viewThreshold: 1,
+    viewThreshold: 1
   })
 
   const [organicSettings, setOrganicSettings] = useState<OrganicSettings>({
     enabled: true,
-    viewThreshold: 4,
+    viewThreshold: 4
   })
 
   const [newSource, setNewSource] = useState('')
@@ -68,7 +70,7 @@ const AdminSettingsPage = () => {
 
       const [ppcResponse, organicResponse] = await Promise.all([
         api.fetchJSON<PpcSettings>('/admin/settings/ppc/registration'),
-        api.fetchJSON<OrganicSettings>('/admin/settings/organic/registration'),
+        api.fetchJSON<OrganicSettings>('/admin/settings/organic/registration')
       ])
 
       setPpcSettings(ppcResponse)
@@ -92,12 +94,12 @@ const AdminSettingsPage = () => {
       await Promise.all([
         api.fetchJSON('/admin/settings/ppc/registration', {
           method: 'PATCH',
-          body: JSON.stringify(ppcSettings),
+          body: JSON.stringify(ppcSettings)
         }),
         api.fetchJSON('/admin/settings/organic/registration', {
           method: 'PATCH',
-          body: JSON.stringify(organicSettings),
-        }),
+          body: JSON.stringify(organicSettings)
+        })
       ])
 
       setSuccess(true)
@@ -114,7 +116,7 @@ const AdminSettingsPage = () => {
     if (newSource && !ppcSettings.sources.includes(newSource.toLowerCase())) {
       setPpcSettings({
         ...ppcSettings,
-        sources: [...ppcSettings.sources, newSource.toLowerCase()],
+        sources: [...ppcSettings.sources, newSource.toLowerCase()]
       })
       setNewSource('')
     }
@@ -123,14 +125,19 @@ const AdminSettingsPage = () => {
   const handleRemoveSource = (source: string) => {
     setPpcSettings({
       ...ppcSettings,
-      sources: ppcSettings.sources.filter((s) => s !== source),
+      sources: ppcSettings.sources.filter((s) => s !== source)
     })
   }
 
   if (loading) {
     return (
       <Container maxWidth="md" sx={{ py: 8 }}>
-        <Box display="flex" justifyContent="center" alignItems="center" minHeight="400px">
+        <Box
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+          minHeight="400px"
+        >
           <CircularProgress />
         </Box>
       </Container>
@@ -165,7 +172,8 @@ const AdminSettingsPage = () => {
             PPC Traffic Registration
           </Typography>
           <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-            Force registration on first property details view for paid traffic sources
+            Force registration on first property details view for paid traffic
+            sources
           </Typography>
 
           <Stack spacing={3}>
@@ -174,7 +182,10 @@ const AdminSettingsPage = () => {
                 <Switch
                   checked={ppcSettings.enabled}
                   onChange={(e) =>
-                    setPpcSettings({ ...ppcSettings, enabled: e.target.checked })
+                    setPpcSettings({
+                      ...ppcSettings,
+                      enabled: e.target.checked
+                    })
                   }
                 />
               }
@@ -185,7 +196,12 @@ const AdminSettingsPage = () => {
               <Typography variant="subtitle2" gutterBottom>
                 Property View Threshold
               </Typography>
-              <Typography variant="caption" color="text.secondary" display="block" sx={{ mb: 2 }}>
+              <Typography
+                variant="caption"
+                color="text.secondary"
+                display="block"
+                sx={{ mb: 2 }}
+              >
                 Show registration modal on property view number:
               </Typography>
               <TextField
@@ -193,7 +209,10 @@ const AdminSettingsPage = () => {
                 size="small"
                 value={ppcSettings.viewThreshold}
                 onChange={(e) =>
-                  setPpcSettings({ ...ppcSettings, viewThreshold: parseInt(e.target.value) || 1 })
+                  setPpcSettings({
+                    ...ppcSettings,
+                    viewThreshold: parseInt(e.target.value) || 1
+                  })
                 }
                 inputProps={{ min: 1, max: 100 }}
                 sx={{ width: 120 }}
@@ -205,7 +224,12 @@ const AdminSettingsPage = () => {
               <Typography variant="subtitle2" gutterBottom>
                 PPC Traffic Sources
               </Typography>
-              <Typography variant="caption" color="text.secondary" display="block" sx={{ mb: 2 }}>
+              <Typography
+                variant="caption"
+                color="text.secondary"
+                display="block"
+                sx={{ mb: 2 }}
+              >
                 Traffic with these utm_medium values will require registration
               </Typography>
 
@@ -255,7 +279,10 @@ const AdminSettingsPage = () => {
                 <Switch
                   checked={organicSettings.enabled}
                   onChange={(e) =>
-                    setOrganicSettings({ ...organicSettings, enabled: e.target.checked })
+                    setOrganicSettings({
+                      ...organicSettings,
+                      enabled: e.target.checked
+                    })
                   }
                 />
               }
@@ -266,7 +293,12 @@ const AdminSettingsPage = () => {
               <Typography variant="subtitle2" gutterBottom>
                 Property View Threshold
               </Typography>
-              <Typography variant="caption" color="text.secondary" display="block" sx={{ mb: 2 }}>
+              <Typography
+                variant="caption"
+                color="text.secondary"
+                display="block"
+                sx={{ mb: 2 }}
+              >
                 Show registration modal on property view number:
               </Typography>
               <TextField
@@ -274,7 +306,10 @@ const AdminSettingsPage = () => {
                 size="small"
                 value={organicSettings.viewThreshold}
                 onChange={(e) =>
-                  setOrganicSettings({ ...organicSettings, viewThreshold: parseInt(e.target.value) || 4 })
+                  setOrganicSettings({
+                    ...organicSettings,
+                    viewThreshold: parseInt(e.target.value) || 4
+                  })
                 }
                 inputProps={{ min: 1, max: 100 }}
                 sx={{ width: 120 }}

@@ -1,8 +1,10 @@
 import { type Metadata } from 'next'
-import { Box, Container, Typography, Breadcrumbs, Link } from '@mui/material'
+
+import { Box, Breadcrumbs, Container, Link, Typography } from '@mui/material'
+
+import searchConfig from '@configs/search'
 import { PageTemplate } from '@templates'
 import { MarketTrendsWidget } from '@shared/MarketTrends'
-import searchConfig from '@configs/search'
 
 interface CityPageProps {
   params: Promise<{
@@ -14,7 +16,9 @@ interface CityPageProps {
   }>
 }
 
-export async function generateMetadata(props: CityPageProps): Promise<Metadata> {
+export async function generateMetadata(
+  props: CityPageProps
+): Promise<Metadata> {
   const params = await props.params
   const { city, state } = params
 
@@ -27,7 +31,7 @@ export async function generateMetadata(props: CityPageProps): Promise<Metadata> 
 
   return {
     title: `${cityName}, ${stateName} Real Estate Market Trends`,
-    description: `View current market trends, statistics, and housing data for ${cityName}, ${stateName}. See median prices, days on market, and market conditions.`,
+    description: `View current market trends, statistics, and housing data for ${cityName}, ${stateName}. See median prices, days on market, and market conditions.`
   }
 }
 
@@ -67,7 +71,8 @@ export default async function CityPage(props: CityPageProps) {
             {cityName}, {stateName} Real Estate
           </Typography>
           <Typography variant="body1" color="text.secondary">
-            Discover current market trends, housing statistics, and valuable insights for {cityName}.
+            Discover current market trends, housing statistics, and valuable
+            insights for {cityName}.
           </Typography>
         </Box>
 
@@ -87,9 +92,9 @@ export default async function CityPage(props: CityPageProps) {
             About {cityName}
           </Typography>
           <Typography variant="body1" color="text.secondary" paragraph>
-            {cityName}, {stateName} is a vibrant community with a diverse real estate market.
-            Use the market trends above to understand current pricing, inventory levels, and
-            market conditions.
+            {cityName}, {stateName} is a vibrant community with a diverse real
+            estate market. Use the market trends above to understand current
+            pricing, inventory levels, and market conditions.
           </Typography>
         </Box>
 
@@ -99,7 +104,8 @@ export default async function CityPage(props: CityPageProps) {
             Looking for Properties in {cityName}?
           </Typography>
           <Typography variant="body2" color="text.secondary" paragraph>
-            Browse active listings, saved searches, and get personalized property recommendations.
+            Browse active listings, saved searches, and get personalized
+            property recommendations.
           </Typography>
           <Link href={`/search/map?city=${city}&state=${state}`}>
             <Typography variant="body2" color="primary" fontWeight="bold">

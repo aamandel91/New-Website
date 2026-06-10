@@ -67,7 +67,10 @@ export default {
             const possibleSubdomain = parts[0]
             if (possibleSubdomain) {
               // Check if this is an agent subdomain
-              const agent = await orgService.findAgentBySubdomain(org.id, possibleSubdomain)
+              const agent = await orgService.findAgentBySubdomain(
+                org.id,
+                possibleSubdomain
+              )
               if (agent) {
                 ctx.state['agentSubdomain'] = possibleSubdomain
                 ctx.state['agent'] = agent

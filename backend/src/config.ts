@@ -564,10 +564,8 @@ const config: AppConfig = {
       process.env['SENDGRID_INBOUND_REPLY_DOMAIN'] ||
       'reply.floridahomefinder.com',
     fallback_agent_email:
-      process.env['LISTING_ALERTS_FALLBACK_EMAIL'] ||
-      'andy@mandelteam.com',
-    inbound_signing_secret:
-      process.env['SENDGRID_INBOUND_SIGNING_SECRET'] || ''
+      process.env['LISTING_ALERTS_FALLBACK_EMAIL'] || 'andy@mandelteam.com',
+    inbound_signing_secret: process.env['SENDGRID_INBOUND_SIGNING_SECRET'] || ''
   }
 }
 

@@ -44,7 +44,7 @@ export function generateMetaDescription(
 ): string {
   return (
     `Browse ${count} ${subType} for sale in ${city}, ${county} County, FL. ` +
-    `View photos, prices, and property details. Updated daily on Florida Home Finder.`
+    'View photos, prices, and property details. Updated daily on Florida Home Finder.'
   )
 }
 
@@ -127,7 +127,12 @@ export function parseSlug(slugs: string[]): ParsedSlug | null {
 
   // Neighborhood page
   if (segment3 === 'neighborhoods' && slugs.length >= 4) {
-    return { pageType: 'city-neighborhood', county, city, neighborhood: slugs[3] }
+    return {
+      pageType: 'city-neighborhood',
+      county,
+      city,
+      neighborhood: slugs[3]
+    }
   }
 
   // Sub-type page (default for 3rd segment)
@@ -278,6 +283,6 @@ export function generateHeadingVariations(
     h1: `${prefix}${subType} in ${city}, ${stateCode}`,
     h2: `${county} County ${subType} Market`,
     h3: `${city} Florida Real Estate — ${subType}`,
-    h4: `Browse ${subType} for Sale in ${city}, ${stateCode}`,
+    h4: `Browse ${subType} for Sale in ${city}, ${stateCode}`
   }
 }

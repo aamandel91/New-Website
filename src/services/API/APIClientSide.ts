@@ -3,27 +3,68 @@ const CSR_API_KEY = process.env.NEXT_PUBLIC_REPLIERS_CSR_KEY || ''
 
 // Valid Repliers CSR API parameters — anything not in this list gets stripped
 const VALID_CSR_PARAMS = new Set([
-  'boardId', 'resultsPerPage', 'pageNum', 'sortBy', 'fields',
-  'status', 'lastStatus', 'type', 'class',
-  'city', 'area', 'neighborhood', 'zip',
-  'address.city', 'address.area', 'address.neighborhood', 'address.zip',
-  'address.streetNumber', 'address.streetName',
-  'minPrice', 'maxPrice', 'minBedrooms', 'maxBedrooms',
-  'minBathrooms', 'maxBathrooms', 'minSqft', 'maxSqft',
-  'minLotSize', 'maxLotSize', 'minYearBuilt', 'maxYearBuilt',
-  'propertyType', 'style',
-  'minOpenHouseDate', 'maxOpenHouseDate',
-  'listings', 'aggregates', 'statistics',
-  'clusterPrecision', 'clusterFields',
-  'lat', 'long', 'radius',
-  'minLatitude', 'maxLatitude', 'minLongitude', 'maxLongitude',
-  'hasImages', 'updatedOnMin', 'updatedOnMax',
-  'keywords', 'operator',
-  'search', 'state', 'resultType',
+  'boardId',
+  'resultsPerPage',
+  'pageNum',
+  'sortBy',
+  'fields',
+  'status',
+  'lastStatus',
+  'type',
+  'class',
+  'city',
+  'area',
+  'neighborhood',
+  'zip',
+  'address.city',
+  'address.area',
+  'address.neighborhood',
+  'address.zip',
+  'address.streetNumber',
+  'address.streetName',
+  'minPrice',
+  'maxPrice',
+  'minBedrooms',
+  'maxBedrooms',
+  'minBathrooms',
+  'maxBathrooms',
+  'minSqft',
+  'maxSqft',
+  'minLotSize',
+  'maxLotSize',
+  'minYearBuilt',
+  'maxYearBuilt',
+  'propertyType',
+  'style',
+  'minOpenHouseDate',
+  'maxOpenHouseDate',
+  'listings',
+  'aggregates',
+  'statistics',
+  'clusterPrecision',
+  'clusterFields',
+  'lat',
+  'long',
+  'radius',
+  'minLatitude',
+  'maxLatitude',
+  'minLongitude',
+  'maxLongitude',
+  'hasImages',
+  'updatedOnMin',
+  'updatedOnMax',
+  'keywords',
+  'operator',
+  'search',
+  'state',
+  'resultType'
 ])
 
 class APIClientSide {
-  async fetch(endpoint: string, params?: Record<string, unknown>): Promise<any> {
+  async fetch(
+    endpoint: string,
+    params?: Record<string, unknown>
+  ): Promise<any> {
     const searchParams = new URLSearchParams()
     if (params) {
       Object.entries(params).forEach(([key, value]) => {
@@ -53,8 +94,8 @@ class APIClientSide {
         method: 'GET',
         headers: {
           'REPLIERS-API-KEY': CSR_API_KEY,
-          'Content-Type': 'application/json',
-        },
+          'Content-Type': 'application/json'
+        }
       })
 
       if (!response.ok) {
@@ -64,7 +105,7 @@ class APIClientSide {
 
       return response.json()
     } catch (error) {
-      console.error(`CSR API fetch error:`, endpoint, error)
+      console.error('CSR API fetch error:', endpoint, error)
       return null
     }
   }

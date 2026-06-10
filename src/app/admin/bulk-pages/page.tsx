@@ -2,51 +2,65 @@
 
 import React, { useEffect, useMemo, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
+
+import CheckIcon from '@mui/icons-material/CheckCircle'
+import ErrorIcon from '@mui/icons-material/Error'
+import BulkIcon from '@mui/icons-material/LibraryAdd'
 import {
-  Box,
-  Container,
-  Paper,
-  Typography,
-  Button,
-  Select,
-  MenuItem,
-  FormControl,
-  InputLabel,
-  Stack,
   Alert,
   AlertTitle,
-  CircularProgress,
+  Box,
+  Button,
   Card,
   CardContent,
   Checkbox,
-  FormControlLabel,
   Chip,
+  CircularProgress,
+  Container,
+  Divider,
+  FormControl,
+  FormControlLabel,
   Grid,
+  InputLabel,
   List,
   ListItem,
   ListItemButton,
-  ListItemText,
   ListItemIcon,
-  Divider,
-  TextField
+  ListItemText,
+  MenuItem,
+  Paper,
+  Select,
+  Stack,
+  TextField,
+  Typography
 } from '@mui/material'
-import BulkIcon from '@mui/icons-material/LibraryAdd'
-import CheckIcon from '@mui/icons-material/CheckCircle'
-import ErrorIcon from '@mui/icons-material/Error'
+
 import APIAIContent, {
-  type BulkPagePreview,
   type BulkPageGenerationResult,
+  type BulkPagePreview,
   type CityLocation,
-  type ZipLocation,
+  type CrossProductGenerationResult,
   type NeighborhoodLocation,
-  type CrossProductGenerationResult
+  type ZipLocation
 } from '@/services/API/APIAIContent'
 
 const PAGE_TYPES = [
   { value: 'city', label: 'City Pages', example: 'Real Estate in Miami' },
-  { value: 'zipcode', label: 'Zip Code Pages', example: 'Homes for Sale in 33101' },
-  { value: 'neighborhood', label: 'Neighborhood Pages', example: 'Downtown Miami Homes' },
-  { value: 'property_type', label: 'Property Type Pages', example: 'Condos for Sale' }
+  {
+    value: 'zipcode',
+    label: 'Zip Code Pages',
+    example: 'Homes for Sale in 33101'
+  },
+  {
+    value: 'neighborhood',
+    label: 'Neighborhood Pages',
+    example: 'Downtown Miami Homes'
+  },
+  {
+    value: 'property_type',
+    label: 'Property Type Pages',
+    example: 'Condos for Sale'
+  }
 ]
 
 const PROPERTY_TYPES = [
@@ -74,7 +88,9 @@ export default function BulkPagesPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState<string | null>(null)
-  const [seoPrefill, setSeoPrefill] = useState<SeoCoveragePrefill[] | null>(null)
+  const [seoPrefill, setSeoPrefill] = useState<SeoCoveragePrefill[] | null>(
+    null
+  )
 
   // Form state
   const [pageType, setPageType] = useState<string>('city')
@@ -85,7 +101,8 @@ export default function BulkPagesPage() {
 
   // Preview and results
   const [preview, setPreview] = useState<BulkPagePreview[]>([])
-  const [generationResult, setGenerationResult] = useState<BulkPageGenerationResult | null>(null)
+  const [generationResult, setGenerationResult] =
+    useState<BulkPageGenerationResult | null>(null)
   const [crossProductResult, setCrossProductResult] =
     useState<CrossProductGenerationResult | null>(null)
   const [crossProductLoading, setCrossProductLoading] = useState(false)
@@ -96,7 +113,8 @@ export default function BulkPagesPage() {
   const [neighborhoods, setNeighborhoods] = useState<NeighborhoodLocation[]>([])
   const [locationsLoading, setLocationsLoading] = useState(false)
   // Filter for the neighborhoods picker — narrows by parent city.
-  const [neighborhoodCityFilter, setNeighborhoodCityFilter] = useState<string>('')
+  const [neighborhoodCityFilter, setNeighborhoodCityFilter] =
+    useState<string>('')
   // Free-text filter to search the visible list.
   const [filterText, setFilterText] = useState('')
 
@@ -202,7 +220,7 @@ export default function BulkPagesPage() {
         .map((c) => ({
           id: c.id,
           primary: c.name,
-          secondary: `${c.county} County`,
+          secondary: `${c.county} County`
         }))
     }
     if (pageType === 'zipcode') {
@@ -211,7 +229,7 @@ export default function BulkPagesPage() {
         .map((z) => ({
           id: z.id,
           primary: z.zip,
-          secondary: `${z.city}, ${z.county} County`,
+          secondary: `${z.city}, ${z.county} County`
         }))
     }
     if (pageType === 'neighborhood') {
@@ -220,7 +238,7 @@ export default function BulkPagesPage() {
         .map((n) => ({
           id: n.id,
           primary: n.name,
-          secondary: `${n.city}, ${n.county} County`,
+          secondary: `${n.city}, ${n.county} County`
         }))
     }
     return []
@@ -287,9 +305,9 @@ export default function BulkPagesPage() {
           city: p.city,
           county: p.county,
           subtype: p.subtypeSlug,
-          subtypeLabel: p.subtypeLabel,
+          subtypeLabel: p.subtypeLabel
         })),
-        autoPublish,
+        autoPublish
       })
       setCrossProductResult(result)
       setSuccess(
@@ -315,7 +333,11 @@ export default function BulkPagesPage() {
       return
     }
 
-    if (!confirm(`Generate ${preview.length} pages? This action cannot be undone.`)) {
+    if (
+      !confirm(
+        `Generate ${preview.length} pages? This action cannot be undone.`
+      )
+    ) {
       return
     }
 
@@ -361,7 +383,11 @@ export default function BulkPagesPage() {
         )}
 
         {success && (
-          <Alert severity="success" sx={{ mb: 2 }} onClose={() => setSuccess(null)}>
+          <Alert
+            severity="success"
+            sx={{ mb: 2 }}
+            onClose={() => setSuccess(null)}
+          >
             {success}
           </Alert>
         )}
@@ -378,7 +404,11 @@ export default function BulkPagesPage() {
                 variant="outlined"
                 disabled={crossProductLoading}
                 startIcon={
-                  crossProductLoading ? <CircularProgress size={16} /> : <BulkIcon />
+                  crossProductLoading ? (
+                    <CircularProgress size={16} />
+                  ) : (
+                    <BulkIcon />
+                  )
                 }
                 onClick={handleGenerateCrossProduct}
               >
@@ -390,10 +420,13 @@ export default function BulkPagesPage() {
           >
             <AlertTitle>Cross-product mode — from SEO Coverage</AlertTitle>
             {seoPrefill.length} missing (city × subtype) combinations were
-            queued. Click <strong>Generate</strong> to create one draft page
-            per pair (slug <code>{'{city}/{subtype}'}</code>). Existing pages
-            are skipped. Subtypes:{' '}
-            {Array.from(new Set(seoPrefill.map((p) => p.subtypeLabel))).join(', ')}.
+            queued. Click <strong>Generate</strong> to create one draft page per
+            pair (slug <code>{'{city}/{subtype}'}</code>). Existing pages are
+            skipped. Subtypes:{' '}
+            {Array.from(new Set(seoPrefill.map((p) => p.subtypeLabel))).join(
+              ', '
+            )}
+            .
           </Alert>
         )}
 
@@ -523,7 +556,8 @@ export default function BulkPagesPage() {
                 </FormControl>
 
                 <Alert severity="info">
-                  Example: {PAGE_TYPES.find((t) => t.value === pageType)?.example}
+                  Example:{' '}
+                  {PAGE_TYPES.find((t) => t.value === pageType)?.example}
                 </Alert>
 
                 {pageType === 'property_type' ? (
@@ -601,7 +635,13 @@ export default function BulkPagesPage() {
                     />
 
                     {locationsLoading ? (
-                      <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
+                      <Box
+                        sx={{
+                          display: 'flex',
+                          justifyContent: 'center',
+                          py: 4
+                        }}
+                      >
                         <CircularProgress size={24} />
                       </Box>
                     ) : visibleItems.length === 0 ? (
@@ -629,7 +669,7 @@ export default function BulkPagesPage() {
                             overflow: 'auto',
                             border: '1px solid',
                             borderColor: 'divider',
-                            borderRadius: 1,
+                            borderRadius: 1
                           }}
                         >
                           {visibleItems.map((item) => (
@@ -706,7 +746,9 @@ export default function BulkPagesPage() {
                     variant="contained"
                     onClick={handleGenerate}
                     disabled={loading || preview.length === 0}
-                    startIcon={loading ? <CircularProgress size={20} /> : <BulkIcon />}
+                    startIcon={
+                      loading ? <CircularProgress size={20} /> : <BulkIcon />
+                    }
                     fullWidth
                   >
                     {loading ? 'Generating...' : 'Generate'}
@@ -775,7 +817,11 @@ export default function BulkPagesPage() {
 
                   {generationResult.errors.length > 0 && (
                     <Box>
-                      <Typography variant="subtitle2" gutterBottom color="error">
+                      <Typography
+                        variant="subtitle2"
+                        gutterBottom
+                        color="error"
+                      >
                         Failed Pages
                       </Typography>
                       <List>
@@ -829,7 +875,9 @@ export default function BulkPagesPage() {
                     bgcolor: 'grey.50'
                   }}
                 >
-                  <BulkIcon sx={{ fontSize: 64, color: 'text.secondary', mb: 2 }} />
+                  <BulkIcon
+                    sx={{ fontSize: 64, color: 'text.secondary', mb: 2 }}
+                  />
                   <Typography variant="h6" color="text.secondary">
                     Configure and preview pages
                   </Typography>

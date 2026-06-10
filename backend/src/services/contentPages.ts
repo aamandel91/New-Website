@@ -11,12 +11,17 @@ import { deleteFromCloudinary } from '../utils/cloudinary.js'
 
 @injectable()
 export class ContentPagesService {
-  constructor(@inject(ContentPagesRepository) private pagesRepo: ContentPagesRepository) {}
+  constructor(
+    @inject(ContentPagesRepository) private pagesRepo: ContentPagesRepository
+  ) {}
 
   /**
    * Create a new page
    */
-  async createPage(orgId: bigint, input: CreateContentPageInput): Promise<ContentPage> {
+  async createPage(
+    orgId: bigint,
+    input: CreateContentPageInput
+  ): Promise<ContentPage> {
     // Validate title
     if (!input.title) {
       throw new ApiError('Title is required', { status: 400 })
@@ -26,7 +31,9 @@ export class ContentPagesService {
     if (input.slug) {
       const existing = await this.pagesRepo.getPageBySlug(orgId, input.slug)
       if (existing) {
-        throw new ApiError('A page with this slug already exists', { status: 409 })
+        throw new ApiError('A page with this slug already exists', {
+          status: 409
+        })
       }
     }
 
@@ -36,7 +43,11 @@ export class ContentPagesService {
   /**
    * Update a page
    */
-  async updatePage(orgId: bigint, id: bigint, input: UpdateContentPageInput): Promise<ContentPage> {
+  async updatePage(
+    orgId: bigint,
+    id: bigint,
+    input: UpdateContentPageInput
+  ): Promise<ContentPage> {
     const existing = await this.pagesRepo.getPageById(orgId, id)
 
     if (!existing) {
@@ -47,7 +58,9 @@ export class ContentPagesService {
     if (input.slug && input.slug !== existing.slug) {
       const conflict = await this.pagesRepo.getPageBySlug(orgId, input.slug)
       if (conflict) {
-        throw new ApiError('A page with this slug already exists', { status: 409 })
+        throw new ApiError('A page with this slug already exists', {
+          status: 409
+        })
       }
     }
 
@@ -64,7 +77,10 @@ export class ContentPagesService {
   /**
    * Get page by slug
    */
-  async getPageBySlug(orgId: bigint, slug: string): Promise<ContentPage | null> {
+  async getPageBySlug(
+    orgId: bigint,
+    slug: string
+  ): Promise<ContentPage | null> {
     return this.pagesRepo.getPageBySlug(orgId, slug)
   }
 

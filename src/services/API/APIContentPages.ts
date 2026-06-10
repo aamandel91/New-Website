@@ -81,7 +81,8 @@ class APIContentPages extends APIBase {
     const params = new URLSearchParams()
 
     if (filters?.status) params.append('status', filters.status)
-    if (filters?.is_template !== undefined) params.append('is_template', filters.is_template.toString())
+    if (filters?.is_template !== undefined)
+      params.append('is_template', filters.is_template.toString())
 
     const queryString = params.toString()
     const url = queryString ? `/content-pages?${queryString}` : '/content-pages'
@@ -93,7 +94,9 @@ class APIContentPages extends APIBase {
    * Get page templates
    */
   async getTemplates(): Promise<ContentPage[]> {
-    const response = await this.fetchJSON<{ templates: ContentPage[] }>('/content-pages/templates')
+    const response = await this.fetchJSON<{ templates: ContentPage[] }>(
+      '/content-pages/templates'
+    )
     return response.templates
   }
 
@@ -101,7 +104,9 @@ class APIContentPages extends APIBase {
    * Get page by ID
    */
   async getPageById(id: string): Promise<ContentPage> {
-    const response = await this.fetchJSON<{ page: ContentPage }>(`/content-pages/${id}`)
+    const response = await this.fetchJSON<{ page: ContentPage }>(
+      `/content-pages/${id}`
+    )
     return response.page
   }
 
@@ -109,7 +114,9 @@ class APIContentPages extends APIBase {
    * Get page by slug
    */
   async getPageBySlug(slug: string): Promise<ContentPage> {
-    const response = await this.fetchJSON<{ page: ContentPage }>(`/content-pages/slug/${slug}`)
+    const response = await this.fetchJSON<{ page: ContentPage }>(
+      `/content-pages/slug/${slug}`
+    )
     return response.page
   }
 
@@ -117,21 +124,30 @@ class APIContentPages extends APIBase {
    * Create page
    */
   async createPage(data: CreateContentPageInput): Promise<ContentPage> {
-    const response = await this.fetchJSON<{ page: ContentPage }>('/content-pages', {
-      method: 'POST',
-      body: JSON.stringify(data)
-    })
+    const response = await this.fetchJSON<{ page: ContentPage }>(
+      '/content-pages',
+      {
+        method: 'POST',
+        body: JSON.stringify(data)
+      }
+    )
     return response.page
   }
 
   /**
    * Update page
    */
-  async updatePage(id: string, data: UpdateContentPageInput): Promise<ContentPage> {
-    const response = await this.fetchJSON<{ page: ContentPage }>(`/content-pages/${id}`, {
-      method: 'PATCH',
-      body: JSON.stringify(data)
-    })
+  async updatePage(
+    id: string,
+    data: UpdateContentPageInput
+  ): Promise<ContentPage> {
+    const response = await this.fetchJSON<{ page: ContentPage }>(
+      `/content-pages/${id}`,
+      {
+        method: 'PATCH',
+        body: JSON.stringify(data)
+      }
+    )
     return response.page
   }
 
@@ -148,16 +164,22 @@ class APIContentPages extends APIBase {
    * Publish page
    */
   async publishPage(id: string): Promise<ContentPage> {
-    const response = await this.fetchJSON<{ page: ContentPage }>(`/content-pages/${id}/publish`, {
-      method: 'POST'
-    })
+    const response = await this.fetchJSON<{ page: ContentPage }>(
+      `/content-pages/${id}/publish`,
+      {
+        method: 'POST'
+      }
+    )
     return response.page
   }
 
   /**
    * Duplicate page from template
    */
-  async duplicateFromTemplate(templateId: string, title: string): Promise<ContentPage> {
+  async duplicateFromTemplate(
+    templateId: string,
+    title: string
+  ): Promise<ContentPage> {
     const response = await this.fetchJSON<{ page: ContentPage }>(
       `/content-pages/${templateId}/duplicate`,
       {

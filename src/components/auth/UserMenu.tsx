@@ -3,6 +3,12 @@
 import React, { useState } from 'react'
 import { useRouter } from 'next/navigation'
 
+import BookmarkIcon from '@mui/icons-material/Bookmark'
+import FavoriteIcon from '@mui/icons-material/Favorite'
+import HistoryIcon from '@mui/icons-material/History'
+import LogoutIcon from '@mui/icons-material/Logout'
+import PersonIcon from '@mui/icons-material/Person'
+import SettingsIcon from '@mui/icons-material/Settings'
 import {
   Avatar,
   Box,
@@ -11,16 +17,11 @@ import {
   ListItemIcon,
   ListItemText,
   Menu,
-  MenuItem,
+  MenuItem
 } from '@mui/material'
-import BookmarkIcon from '@mui/icons-material/Bookmark'
-import FavoriteIcon from '@mui/icons-material/Favorite'
-import HistoryIcon from '@mui/icons-material/History'
-import LogoutIcon from '@mui/icons-material/Logout'
-import PersonIcon from '@mui/icons-material/Person'
-import SettingsIcon from '@mui/icons-material/Settings'
 
 import { useSiteUser } from 'providers/SiteUserProvider'
+
 import LoginDialog from './LoginDialog'
 
 const NAV_TEXT_SX = {
@@ -34,8 +35,8 @@ const NAV_TEXT_SX = {
   py: 0.5,
   minWidth: 0,
   '&:hover': {
-    bgcolor: 'rgba(255,255,255,0.08)',
-  },
+    bgcolor: 'rgba(255,255,255,0.08)'
+  }
 }
 
 const UserMenu = () => {
@@ -50,10 +51,7 @@ const UserMenu = () => {
         <Button onClick={() => setLoginOpen(true)} sx={NAV_TEXT_SX}>
           Sign In
         </Button>
-        <LoginDialog
-          open={loginOpen}
-          onClose={() => setLoginOpen(false)}
-        />
+        <LoginDialog open={loginOpen} onClose={() => setLoginOpen(false)} />
       </>
     )
   }
@@ -80,7 +78,7 @@ const UserMenu = () => {
             bgcolor: '#c8a951',
             color: '#0F1621',
             fontSize: '0.875rem',
-            fontWeight: 700,
+            fontWeight: 700
           }}
         >
           {initial}
@@ -95,8 +93,8 @@ const UserMenu = () => {
         transformOrigin={{ vertical: 'top', horizontal: 'right' }}
         slotProps={{
           paper: {
-            sx: { minWidth: 200, mt: 1 },
-          },
+            sx: { minWidth: 200, mt: 1 }
+          }
         }}
       >
         <MenuItem disabled sx={{ opacity: '1 !important' }}>
@@ -134,7 +132,12 @@ const UserMenu = () => {
           <ListItemText primary="Account Settings" />
         </MenuItem>
         <Divider />
-        <MenuItem onClick={() => { handleMenuClose(); logout() }}>
+        <MenuItem
+          onClick={() => {
+            handleMenuClose()
+            logout()
+          }}
+        >
           <ListItemIcon>
             <LogoutIcon fontSize="small" />
           </ListItemIcon>

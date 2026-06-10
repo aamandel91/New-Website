@@ -1,8 +1,18 @@
 import { type Metadata } from 'next'
-import { Box, Container, Typography, Breadcrumbs, Link, Grid, Paper } from '@mui/material'
+
+import {
+  Box,
+  Breadcrumbs,
+  Container,
+  Grid,
+  Link,
+  Paper,
+  Typography
+} from '@mui/material'
+
+import searchConfig from '@configs/search'
 import { PageTemplate } from '@templates'
 import { MarketTrendsWidget } from '@shared/MarketTrends'
-import searchConfig from '@configs/search'
 
 interface NeighborhoodPageProps {
   params: Promise<{
@@ -15,7 +25,9 @@ interface NeighborhoodPageProps {
   }>
 }
 
-export async function generateMetadata(props: NeighborhoodPageProps): Promise<Metadata> {
+export async function generateMetadata(
+  props: NeighborhoodPageProps
+): Promise<Metadata> {
   const params = await props.params
   const { city, state, neighborhood } = params
 
@@ -32,7 +44,7 @@ export async function generateMetadata(props: NeighborhoodPageProps): Promise<Me
 
   return {
     title: `${neighborhoodName}, ${cityName}, ${stateName} - Real Estate Market Trends`,
-    description: `Explore ${neighborhoodName} neighborhood in ${cityName}, ${stateName}. View market trends, median prices, and housing statistics.`,
+    description: `Explore ${neighborhoodName} neighborhood in ${cityName}, ${stateName}. View market trends, median prices, and housing statistics.`
   }
 }
 
@@ -82,8 +94,8 @@ export default async function NeighborhoodPage(props: NeighborhoodPageProps) {
             {cityName}, {stateName}
           </Typography>
           <Typography variant="body1" color="text.secondary">
-            Explore real estate market trends and housing statistics for the {neighborhoodName}{' '}
-            neighborhood.
+            Explore real estate market trends and housing statistics for the{' '}
+            {neighborhoodName} neighborhood.
           </Typography>
         </Box>
 
@@ -105,12 +117,13 @@ export default async function NeighborhoodPage(props: NeighborhoodPageProps) {
                 About {neighborhoodName}
               </Typography>
               <Typography variant="body2" color="text.secondary" paragraph>
-                {neighborhoodName} is a desirable neighborhood in {cityName}, {stateName}.
-                The area offers a unique blend of community charm and modern amenities.
+                {neighborhoodName} is a desirable neighborhood in {cityName},{' '}
+                {stateName}. The area offers a unique blend of community charm
+                and modern amenities.
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                Market trends shown above reflect the broader {cityName} area. Contact a local
-                agent for neighborhood-specific insights.
+                Market trends shown above reflect the broader {cityName} area.
+                Contact a local agent for neighborhood-specific insights.
               </Typography>
             </Paper>
           </Grid>
@@ -121,16 +134,35 @@ export default async function NeighborhoodPage(props: NeighborhoodPageProps) {
                 Neighborhood Highlights
               </Typography>
               <Box component="ul" sx={{ pl: 2 }}>
-                <Typography component="li" variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+                <Typography
+                  component="li"
+                  variant="body2"
+                  color="text.secondary"
+                  sx={{ mb: 1 }}
+                >
                   Close proximity to schools and parks
                 </Typography>
-                <Typography component="li" variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+                <Typography
+                  component="li"
+                  variant="body2"
+                  color="text.secondary"
+                  sx={{ mb: 1 }}
+                >
                   Convenient access to shopping and dining
                 </Typography>
-                <Typography component="li" variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+                <Typography
+                  component="li"
+                  variant="body2"
+                  color="text.secondary"
+                  sx={{ mb: 1 }}
+                >
                   Active community with local events
                 </Typography>
-                <Typography component="li" variant="body2" color="text.secondary">
+                <Typography
+                  component="li"
+                  variant="body2"
+                  color="text.secondary"
+                >
                   Variety of housing styles and price ranges
                 </Typography>
               </Box>
@@ -144,7 +176,8 @@ export default async function NeighborhoodPage(props: NeighborhoodPageProps) {
             Find Your Dream Home in {neighborhoodName}
           </Typography>
           <Typography variant="body2" color="text.secondary" paragraph>
-            Browse available properties and discover what makes {neighborhoodName} special.
+            Browse available properties and discover what makes{' '}
+            {neighborhoodName} special.
           </Typography>
           <Link href={`/search/map?city=${city}&state=${state}`}>
             <Typography variant="body2" color="primary" fontWeight="bold">

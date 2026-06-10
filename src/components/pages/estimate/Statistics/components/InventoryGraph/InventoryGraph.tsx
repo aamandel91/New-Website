@@ -13,7 +13,9 @@ import { labels } from './constants'
 
 const InventoryChart = dynamic(() => import('./InventoryChart'), {
   ssr: false,
-  loading: () => <Skeleton variant="rectangular" height={170} sx={{ borderRadius: 1 }} />,
+  loading: () => (
+    <Skeleton variant="rectangular" height={170} sx={{ borderRadius: 1 }} />
+  )
 })
 
 const InventoryGraph = ({ value }: { value: number }) => {

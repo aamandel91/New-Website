@@ -23,16 +23,13 @@ import { useMapOptions } from 'providers/MapOptionsProvider'
 import { useSearch } from 'providers/SearchProvider'
 import useBreakpoints from 'hooks/useBreakpoints'
 import { matchesKeyword } from 'utils/keywordSearch'
-import {
-  filterPriceReduced,
-  sortPropertiesClientSide
-} from 'utils/properties'
 import { getMarkerName, isPropertyExcluded } from 'utils/map'
 import {
   slicePropertiesPerPage,
   toServerPage,
   updatePageParam
 } from 'utils/pagination'
+import { filterPriceReduced, sortPropertiesClientSide } from 'utils/properties'
 import { getUniqueKey } from 'utils/properties'
 import { updateWindowHistory } from 'utils/urls'
 
@@ -208,7 +205,11 @@ const GridContent = ({
     if (!keywordFilter?.regex) return properties
     return properties.filter((p) => {
       const text = p.details?.description || p.details?.extras || ''
-      return matchesKeyword(text, keywordFilter.regex, keywordFilter.excludeTerms)
+      return matchesKeyword(
+        text,
+        keywordFilter.regex,
+        keywordFilter.excludeTerms
+      )
     })
   }
 
@@ -275,8 +276,7 @@ const GridContent = ({
             schoolMeta?.active && filters.schoolRating ? (
               <Box sx={{ p: 3, maxWidth: 480 }}>
                 <Typography variant="body1" color="text.primary" gutterBottom>
-                  No listings found with schools rated{' '}
-                  {filters.schoolRating}+.
+                  No listings found with schools rated {filters.schoolRating}+.
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
                   Try lowering the school rating, switching the school level to

@@ -1,44 +1,66 @@
 'use client'
 
 import React, { useEffect, useState } from 'react'
+
+import AddIcon from '@mui/icons-material/Add'
+import DeleteIcon from '@mui/icons-material/Delete'
+import EditIcon from '@mui/icons-material/Edit'
+import VisibilityIcon from '@mui/icons-material/Visibility'
 import {
+  Alert,
   Box,
-  Container,
-  Paper,
-  Typography,
   Button,
-  TextField,
-  Select,
-  MenuItem,
+  Chip,
+  CircularProgress,
+  Container,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
   FormControl,
+  IconButton,
   InputLabel,
+  MenuItem,
+  Pagination,
+  Paper,
+  Select,
+  Stack,
   Table,
   TableBody,
   TableCell,
   TableContainer,
   TableHead,
   TableRow,
-  Chip,
-  IconButton,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Stack,
-  Alert,
-  CircularProgress,
-  Pagination
+  TextField,
+  Typography
 } from '@mui/material'
-import AddIcon from '@mui/icons-material/Add'
-import EditIcon from '@mui/icons-material/Edit'
-import DeleteIcon from '@mui/icons-material/Delete'
-import VisibilityIcon from '@mui/icons-material/Visibility'
+
 import APILeads, { type Lead, type LeadFilters } from '@/services/API/APILeads'
 
-const STATUSES = ['new', 'contacted', 'qualified', 'showing', 'offer', 'under_contract', 'closed', 'lost']
-const SOURCES = ['ppc', 'organic', 'direct', 'referral', 'website', 'facebook', 'zillow']
+const STATUSES = [
+  'new',
+  'contacted',
+  'qualified',
+  'showing',
+  'offer',
+  'under_contract',
+  'closed',
+  'lost'
+]
+const SOURCES = [
+  'ppc',
+  'organic',
+  'direct',
+  'referral',
+  'website',
+  'facebook',
+  'zillow'
+]
 
-const STATUS_COLORS: Record<string, 'default' | 'primary' | 'secondary' | 'error' | 'warning' | 'info' | 'success'> = {
+const STATUS_COLORS: Record<
+  string,
+  'default' | 'primary' | 'secondary' | 'error' | 'warning' | 'info' | 'success'
+> = {
   new: 'primary',
   contacted: 'info',
   qualified: 'secondary',
@@ -121,7 +143,12 @@ export default function LeadsPage() {
   return (
     <Container maxWidth="xl">
       <Box sx={{ mb: 4 }}>
-        <Stack direction="row" justifyContent="space-between" alignItems="center" mb={3}>
+        <Stack
+          direction="row"
+          justifyContent="space-between"
+          alignItems="center"
+          mb={3}
+        >
           <Typography variant="h4" component="h1">
             Leads
           </Typography>
@@ -230,7 +257,11 @@ export default function LeadsPage() {
                       <TableCell>{lead.phone || '-'}</TableCell>
                       <TableCell>
                         {lead.source ? (
-                          <Chip label={lead.source.toUpperCase()} size="small" variant="outlined" />
+                          <Chip
+                            label={lead.source.toUpperCase()}
+                            size="small"
+                            variant="outlined"
+                          />
                         ) : (
                           '-'
                         )}
@@ -243,12 +274,20 @@ export default function LeadsPage() {
                         />
                       </TableCell>
                       <TableCell>{lead.assigned_to || 'Unassigned'}</TableCell>
-                      <TableCell>{new Date(lead.created_at).toLocaleDateString()}</TableCell>
+                      <TableCell>
+                        {new Date(lead.created_at).toLocaleDateString()}
+                      </TableCell>
                       <TableCell align="right">
-                        <IconButton size="small" onClick={() => handleViewLead(lead)}>
+                        <IconButton
+                          size="small"
+                          onClick={() => handleViewLead(lead)}
+                        >
                           <VisibilityIcon fontSize="small" />
                         </IconButton>
-                        <IconButton size="small" onClick={() => alert('Edit not implemented yet')}>
+                        <IconButton
+                          size="small"
+                          onClick={() => alert('Edit not implemented yet')}
+                        >
                           <EditIcon fontSize="small" />
                         </IconButton>
                         <IconButton
@@ -270,13 +309,22 @@ export default function LeadsPage() {
         {/* Pagination */}
         {totalPages > 1 && (
           <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3 }}>
-            <Pagination count={totalPages} page={page} onChange={(e, value) => setPage(value)} />
+            <Pagination
+              count={totalPages}
+              page={page}
+              onChange={(e, value) => setPage(value)}
+            />
           </Box>
         )}
       </Box>
 
       {/* View Lead Dialog */}
-      <Dialog open={viewDialogOpen} onClose={() => setViewDialogOpen(false)} maxWidth="sm" fullWidth>
+      <Dialog
+        open={viewDialogOpen}
+        onClose={() => setViewDialogOpen(false)}
+        maxWidth="sm"
+        fullWidth
+      >
         <DialogTitle>Lead Details</DialogTitle>
         <DialogContent>
           {selectedLead && (

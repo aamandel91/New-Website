@@ -1,5 +1,6 @@
 import { type Metadata } from 'next'
 import { headers } from 'next/headers'
+
 import { isAgentSubdomainServer } from './agentSubdomain'
 
 /**
@@ -14,7 +15,9 @@ import { isAgentSubdomainServer } from './agentSubdomain'
  *   })
  * }
  */
-export async function generateAgentMetadata(baseMetadata: Metadata = {}): Promise<Metadata> {
+export async function generateAgentMetadata(
+  baseMetadata: Metadata = {}
+): Promise<Metadata> {
   const headersList = await headers()
   const hostname = headersList.get('host') || ''
 
@@ -57,7 +60,15 @@ export async function getAgentSubdomainName(): Promise<string | null> {
   const hostname = headersList.get('host') || ''
 
   const parts = hostname.split('.')
-  const excludedSubdomains = ['www', 'admin', 'api', 'staging', 'dev', 'test', 'localhost']
+  const excludedSubdomains = [
+    'www',
+    'admin',
+    'api',
+    'staging',
+    'dev',
+    'test',
+    'localhost'
+  ]
 
   if (parts.length >= 2) {
     const firstPart = parts[0]

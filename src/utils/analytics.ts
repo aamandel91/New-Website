@@ -38,8 +38,8 @@ export function trackFormSubmission(
       email: formData.email,
       phone_number: formData.phone,
       first_name: firstName,
-      last_name: lastName,
-    },
+      last_name: lastName
+    }
   })
 }
 
@@ -58,17 +58,17 @@ export function trackPropertyView(property: PropertyData) {
           item_name: address,
           price: parseFloat(property.listPrice),
           item_category: property.details?.propertyType,
-          item_category2: property.address?.city,
-        },
-      ],
-    },
+          item_category2: property.address?.city
+        }
+      ]
+    }
   })
 }
 
 export function trackSearch(searchParams: Record<string, unknown>) {
   pushToDataLayer({
     event: 'search',
-    search_params: searchParams,
+    search_params: searchParams
   })
 }
 
@@ -88,10 +88,10 @@ export function trackPropertyListView(properties: PropertyData[]) {
           price: parseFloat(p.listPrice),
           item_category: p.details?.propertyType,
           item_category2: p.address?.city,
-          index: i,
+          index: i
         }
-      }),
-    },
+      })
+    }
   })
 }
 
@@ -111,9 +111,9 @@ export function trackPropertyClick(property: PropertyData, index: number) {
           price: parseFloat(property.listPrice),
           item_category: property.details?.propertyType,
           item_category2: property.address?.city,
-          index,
-        },
-      ],
-    },
+          index
+        }
+      ]
+    }
   })
 }

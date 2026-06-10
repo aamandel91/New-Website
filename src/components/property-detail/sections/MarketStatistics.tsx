@@ -2,33 +2,26 @@
 
 import React, { useEffect, useState } from 'react'
 import {
-  Box,
-  Grid,
-  Paper,
-  Skeleton,
-  Stack,
-  Typography,
-} from '@mui/material'
-import HomeIcon from '@mui/icons-material/Home'
-import MoneyIcon from '@mui/icons-material/AttachMoney'
-import CalendarIcon from '@mui/icons-material/CalendarToday'
-import PercentIcon from '@mui/icons-material/Percent'
-import {
   CartesianGrid,
   Line,
   LineChart,
   ResponsiveContainer,
   Tooltip,
   XAxis,
-  YAxis,
+  YAxis
 } from 'recharts'
 
+import MoneyIcon from '@mui/icons-material/AttachMoney'
+import CalendarIcon from '@mui/icons-material/CalendarToday'
+import HomeIcon from '@mui/icons-material/Home'
+import PercentIcon from '@mui/icons-material/Percent'
+import { Box, Grid, Paper, Skeleton, Stack, Typography } from '@mui/material'
+
 import { tenant } from '@/configs/tenant.config'
+
 import useSnackbar from 'hooks/useSnackbar'
-import {
-  fetchAreaMarketStats,
-  type AreaMarketStats,
-} from './areaDataFetch'
+
+import { type AreaMarketStats, fetchAreaMarketStats } from './areaDataFetch'
 
 interface MarketStatisticsProps {
   cityName?: string
@@ -41,7 +34,7 @@ function formatCurrency(value?: number): string {
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: 'USD',
-    maximumFractionDigits: 0,
+    maximumFractionDigits: 0
   }).format(value)
 }
 
@@ -63,7 +56,7 @@ function KpiCard({
   icon,
   label,
   value,
-  hint,
+  hint
 }: {
   icon: React.ReactNode
   label: string
@@ -97,7 +90,7 @@ function KpiCard({
 
 const MarketStatistics: React.FC<MarketStatisticsProps> = ({
   cityName,
-  initialData,
+  initialData
 }) => {
   const { showSnackbar } = useSnackbar()
   const [data, setData] = useState<AreaMarketStats | null>(initialData ?? null)
@@ -152,7 +145,7 @@ const MarketStatistics: React.FC<MarketStatisticsProps> = ({
   const trendData =
     data.trend?.map((d) => ({
       label: formatMonthLabel(d.month),
-      medianPrice: d.medianPrice,
+      medianPrice: d.medianPrice
     })) ?? []
 
   return (

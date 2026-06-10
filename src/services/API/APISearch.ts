@@ -54,7 +54,9 @@ class APISearch extends APIBase {
     )
   }
 
-  private async fetchCSR(getParams: Record<string, unknown>): Promise<ApiQueryResponse> {
+  private async fetchCSR(
+    getParams: Record<string, unknown>
+  ): Promise<ApiQueryResponse> {
     // Map any proxy-specific param names to CSR API names
     const params = { ...getParams }
 
@@ -133,7 +135,12 @@ class APISearch extends APIBase {
       totalAfterSchoolFilter: number
       schoolDataByMlsNumber: Record<
         string,
-        Partial<Record<'elementary' | 'middle' | 'high', { name: string; rating?: number }>>
+        Partial<
+          Record<
+            'elementary' | 'middle' | 'high',
+            { name: string; rating?: number }
+          >
+        >
       >
     }
   > {

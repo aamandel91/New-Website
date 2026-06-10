@@ -1,15 +1,16 @@
 import { NextResponse } from 'next/server'
 
-import APISearchCSR from 'services/API/APISearchCSR'
-import { generateStaticPropertyUrl } from 'utils/propertyUrls'
 import { scorePropertyPage } from '@/utils/propertyPageScoring'
-import {
-  loadPropertyIndex,
-  savePropertyIndex,
-} from 'services/propertyIndex'
-import type { PropertyIndexEntry } from 'services/propertyIndex'
 
-function scoreListing(listing: any): { score: ReturnType<typeof scorePropertyPage>; slug: string } {
+import APISearchCSR from 'services/API/APISearchCSR'
+import type { PropertyIndexEntry } from 'services/propertyIndex'
+import { loadPropertyIndex, savePropertyIndex } from 'services/propertyIndex'
+import { generateStaticPropertyUrl } from 'utils/propertyUrls'
+
+function scoreListing(listing: any): {
+  score: ReturnType<typeof scorePropertyPage>
+  slug: string
+} {
   const pageScore = scorePropertyPage({
     status: listing.status,
     lastStatus: listing.lastStatus,
@@ -23,7 +24,7 @@ function scoreListing(listing: any): { score: ReturnType<typeof scorePropertyPag
       : null,
     address: listing.address
       ? { city: listing.address.city, area: listing.address.area }
-      : null,
+      : null
   })
 
   const slug = generateStaticPropertyUrl(listing.address || {}).replace(
@@ -66,7 +67,7 @@ export async function GET(request: Request) {
       resultsPerPage: 500,
       sortBy: 'updatedOnDesc',
       fields:
-        'mlsNumber,status,lastStatus,soldDate,soldPrice,images[1],updatedOn,address,details.description,history,estimate.value',
+        'mlsNumber,status,lastStatus,soldDate,soldPrice,images[1],updatedOn,address,details.description,history,estimate.value'
     })
 
     if (activeResult?.listings) {
@@ -78,7 +79,7 @@ export async function GET(request: Request) {
           lastUpdated: listing.updatedOn || new Date().toISOString(),
           score: score.score,
           indexDirective: score.indexDirective,
-          mlsNumber: listing.mlsNumber,
+          mlsNumber: listing.mlsNumber
         })
       }
     }
@@ -95,7 +96,7 @@ export async function GET(request: Request) {
       sortBy: 'updatedOnDesc',
       minSoldDate,
       fields:
-        'mlsNumber,status,lastStatus,soldDate,soldPrice,images[1],updatedOn,address,details.description,history,estimate.value',
+        'mlsNumber,status,lastStatus,soldDate,soldPrice,images[1],updatedOn,address,details.description,history,estimate.value'
     })
 
     if (soldResult?.listings) {
@@ -104,12 +105,15 @@ export async function GET(request: Request) {
         newEntries.push({
           slug,
           status: 'sold',
-          lastUpdated: listing.updatedOn || listing.soldDate || new Date().toISOString(),
+          lastUpdated:
+            listing.updatedOn || listing.soldDate || new Date().toISOString(),
           score: score.score,
           indexDirective: score.indexDirective,
           mlsNumber: listing.mlsNumber,
-          soldPrice: listing.soldPrice ? parseFloat(listing.soldPrice) : undefined,
-          soldDate: listing.soldDate ?? undefined,
+          soldPrice: listing.soldPrice
+            ? parseFloat(listing.soldPrice)
+            : undefined,
+          soldDate: listing.soldDate ?? undefined
         })
       }
     }
@@ -132,7 +136,7 @@ export async function GET(request: Request) {
       total: merged.length,
       newEntries: newEntries.length,
       activeFound: activeResult?.listings?.length ?? 0,
-      soldFound: soldResult?.listings?.length ?? 0,
+      soldFound: soldResult?.listings?.length ?? 0
     })
   } catch (error) {
     console.error('Property sync error:', error)

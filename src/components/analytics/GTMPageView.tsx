@@ -12,7 +12,7 @@ const GTMPageView = () => {
     window.dataLayer = window.dataLayer || []
     window.dataLayer.push({
       event: 'page_view',
-      page_path: pathname,
+      page_path: pathname
     })
   }, [pathname, searchParams])
 

@@ -1,6 +1,8 @@
 'use client'
 
 import React, { useEffect, useMemo, useState } from 'react'
+
+import SchoolIcon from '@mui/icons-material/School'
 import {
   Box,
   Button,
@@ -10,12 +12,12 @@ import {
   Rating,
   Skeleton,
   Stack,
-  Typography,
+  Typography
 } from '@mui/material'
-import SchoolIcon from '@mui/icons-material/School'
 
 import useSnackbar from 'hooks/useSnackbar'
-import { fetchAreaSchools, type AreaSchool } from './areaDataFetch'
+
+import { type AreaSchool, fetchAreaSchools } from './areaDataFetch'
 
 interface LocalSchoolsProps {
   coordinates?: { lat: number; lng: number }
@@ -30,7 +32,7 @@ const DEFAULT_VISIBLE = 5
 const LocalSchools: React.FC<LocalSchoolsProps> = ({
   coordinates,
   initialData,
-  title = 'Local Schools',
+  title = 'Local Schools'
 }) => {
   const { showSnackbar } = useSnackbar()
   const [data, setData] = useState<AreaSchool[] | null>(initialData ?? null)
@@ -84,12 +86,7 @@ const LocalSchools: React.FC<LocalSchoolsProps> = ({
 
   return (
     <Paper elevation={2} sx={{ p: 3, mb: 3 }}>
-      <Stack
-        direction="row"
-        spacing={1}
-        alignItems="center"
-        sx={{ mb: 2 }}
-      >
+      <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 2 }}>
         <SchoolIcon color="primary" />
         <Typography variant="h6" component="h3" fontWeight="bold">
           {title}
@@ -107,7 +104,7 @@ const LocalSchools: React.FC<LocalSchoolsProps> = ({
                 flexDirection: { xs: 'column', sm: 'row' },
                 gap: 2,
                 alignItems: { sm: 'center' },
-                justifyContent: 'space-between',
+                justifyContent: 'space-between'
               }}
             >
               <Box sx={{ flex: 1, minWidth: 0 }}>

@@ -29,13 +29,20 @@ export const ppcFeedConfig: PPCFeedConfig = {
   includeSubTypes: true,
   includeNeighborhoods: true,
   includeCities: false,
-  excludeSubTypes: ['foreclosures', 'va-approved', 'fha-approved', 'rentals', 'land', 'one-acre-plus'],
-  targetAreas: activeMarkets.flatMap(m => m.counties),
+  excludeSubTypes: [
+    'foreclosures',
+    'va-approved',
+    'fha-approved',
+    'rentals',
+    'land',
+    'one-acre-plus'
+  ],
+  targetAreas: activeMarkets.flatMap((m) => m.counties),
   priceTiers: [
     { label: '$750K-$1M', min: 750000, max: 1000000 },
     { label: '$1M-$1.5M', min: 1000000, max: 1500000 },
     { label: '$1.5M-$2M', min: 1500000, max: 2000000 },
-    { label: '$2M+', min: 2000000, max: Infinity },
+    { label: '$2M+', min: 2000000, max: Infinity }
   ],
-  baseUrl: 'https://floridahomefinder.com',
+  baseUrl: 'https://floridahomefinder.com'
 }

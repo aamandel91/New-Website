@@ -1,23 +1,27 @@
 'use client'
 
 import React from 'react'
+
 import {
   Box,
-  Typography,
+  Paper,
   Table,
   TableBody,
   TableCell,
   TableContainer,
   TableRow,
-  Paper,
+  Typography
 } from '@mui/material'
+
 import type { Property } from 'services/API'
 
 interface PropertyPublicRecordsProps {
   property: Property
 }
 
-const PropertyPublicRecords: React.FC<PropertyPublicRecordsProps> = ({ property }) => {
+const PropertyPublicRecords: React.FC<PropertyPublicRecordsProps> = ({
+  property
+}) => {
   const rows: { label: string; value: string }[] = []
 
   if (property.details?.yearBuilt) {
@@ -32,7 +36,7 @@ const PropertyPublicRecords: React.FC<PropertyPublicRecordsProps> = ({ property 
   if (property.details?.sqft) {
     rows.push({
       label: 'Total Living Area',
-      value: `${Number(property.details.sqft).toLocaleString()} sq ft`,
+      value: `${Number(property.details.sqft).toLocaleString()} sq ft`
     })
   }
   if (property.details?.numBedrooms) {
@@ -50,7 +54,7 @@ const PropertyPublicRecords: React.FC<PropertyPublicRecordsProps> = ({ property 
   if (property.lot?.depth && property.lot?.width) {
     rows.push({
       label: 'Lot Dimensions',
-      value: `${property.lot.width} x ${property.lot.depth}`,
+      value: `${property.lot.width} x ${property.lot.depth}`
     })
   }
   if (property.taxes?.annualAmount) {
@@ -60,18 +64,21 @@ const PropertyPublicRecords: React.FC<PropertyPublicRecordsProps> = ({ property 
         style: 'currency',
         currency: 'USD',
         minimumFractionDigits: 0,
-        maximumFractionDigits: 0,
-      }).format(property.taxes.annualAmount),
+        maximumFractionDigits: 0
+      }).format(property.taxes.annualAmount)
     })
   }
   if (property.taxes?.assessmentYear) {
     rows.push({
       label: 'Tax Assessment Year',
-      value: String(property.taxes.assessmentYear),
+      value: String(property.taxes.assessmentYear)
     })
   }
   if (property.lot?.legalDescription) {
-    rows.push({ label: 'Legal Description', value: property.lot.legalDescription })
+    rows.push({
+      label: 'Legal Description',
+      value: property.lot.legalDescription
+    })
   }
 
   if (rows.length === 0) return null
@@ -89,7 +96,11 @@ const PropertyPublicRecords: React.FC<PropertyPublicRecordsProps> = ({ property 
                 <TableCell
                   component="th"
                   scope="row"
-                  sx={{ fontWeight: 600, color: 'text.secondary', width: '40%' }}
+                  sx={{
+                    fontWeight: 600,
+                    color: 'text.secondary',
+                    width: '40%'
+                  }}
                 >
                   {row.label}
                 </TableCell>

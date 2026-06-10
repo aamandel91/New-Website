@@ -1,34 +1,34 @@
-import { inject, injectable } from "tsyringe";
-import type { Logger } from "pino";
-import type { AppConfig } from "../config.js";
-import type { Knex } from "knex";
-import _debug from "debug";
+import { inject, injectable } from 'tsyringe'
+import type { Logger } from 'pino'
+import type { AppConfig } from '../config.js'
+import type { Knex } from 'knex'
+import _debug from 'debug'
 
-const debug = _debug("repliers:services:trafficSource");
+const debug = _debug('repliers:services:trafficSource')
 
 export interface TrafficSourceData {
-  clientId: number;
-  utmSource?: string;
-  utmMedium?: string;
-  utmCampaign?: string;
-  utmTerm?: string;
-  utmContent?: string;
-  trafficType: string;
-  referer?: string;
-  landingPage?: string;
+  clientId: number
+  utmSource?: string
+  utmMedium?: string
+  utmCampaign?: string
+  utmTerm?: string
+  utmContent?: string
+  trafficType: string
+  referer?: string
+  landingPage?: string
 }
 
 export interface TrafficSourceRecord extends TrafficSourceData {
-  id: number;
-  createdAt: Date;
+  id: number
+  createdAt: Date
 }
 
 @injectable()
 export default class TrafficSourceService {
   constructor(
-    @inject("logger") private logger: Logger,
-    @inject("config") private config: AppConfig,
-    @inject("knex") private knex: Knex
+    @inject('logger') private logger: Logger,
+    @inject('config') private config: AppConfig,
+    @inject('knex') private knex: Knex
   ) {}
 
   /**
@@ -36,61 +36,77 @@ export default class TrafficSourceService {
    */
   private determineTrafficType(utmSource?: string, utmMedium?: string): string {
     if (!utmSource && !utmMedium) {
-      return "direct";
+      return 'direct'
     }
 
-    const source = (utmSource || "").toLowerCase();
-    const medium = (utmMedium || "").toLowerCase();
+    const source = (utmSource || '').toLowerCase()
+    const medium = (utmMedium || '').toLowerCase()
 
     // Check for paid traffic indicators
-    const paidMediums = ["cpc", "ppc", "paid", "paidsearch", "cpm", "banner"];
-    const paidSources = ["google", "bing", "facebook", "linkedin", "twitter", "instagram"];
+    const paidMediums = ['cpc', 'ppc', 'paid', 'paidsearch', 'cpm', 'banner']
+    const paidSources = [
+      'google',
+      'bing',
+      'facebook',
+      'linkedin',
+      'twitter',
+      'instagram'
+    ]
 
     if (paidMediums.includes(medium)) {
-      return "ppc";
+      return 'ppc'
     }
 
     // If source is a known ad platform and medium suggests paid
-    if (paidSources.includes(source) && medium.includes("ad")) {
-      return "ppc";
+    if (paidSources.includes(source) && medium.includes('ad')) {
+      return 'ppc'
     }
 
     // Organic traffic
-    if (medium === "organic" || source === "google" || source === "bing") {
-      return "organic";
+    if (medium === 'organic' || source === 'google' || source === 'bing') {
+      return 'organic'
     }
 
     // Referral traffic
-    if (medium === "referral") {
-      return "referral";
+    if (medium === 'referral') {
+      return 'referral'
     }
 
     // Social traffic
-    if (["social", "facebook", "twitter", "linkedin", "instagram"].includes(source)) {
-      return "social";
+    if (
+      ['social', 'facebook', 'twitter', 'linkedin', 'instagram'].includes(
+        source
+      )
+    ) {
+      return 'social'
     }
 
     // Email traffic
-    if (medium === "email") {
-      return "email";
+    if (medium === 'email') {
+      return 'email'
     }
 
-    return "other";
+    return 'other'
   }
 
   /**
    * Stores traffic source information for a client
    */
-  async storeTrafficSource(data: Omit<TrafficSourceData, "trafficType">): Promise<TrafficSourceRecord | null> {
+  async storeTrafficSource(
+    data: Omit<TrafficSourceData, 'trafficType'>
+  ): Promise<TrafficSourceRecord | null> {
     try {
       if (this.config.app.disable_persistence) {
-        debug("Persistence disabled, skipping traffic source storage");
-        return null;
+        debug('Persistence disabled, skipping traffic source storage')
+        return null
       }
 
-      const trafficType = this.determineTrafficType(data.utmSource, data.utmMedium);
+      const trafficType = this.determineTrafficType(
+        data.utmSource,
+        data.utmMedium
+      )
 
-      const [record] = await this.knex("client_traffic_sources")
+      const [record] = await this.knex('client_traffic_sources')
         .insert({
           client_id: data.clientId,
           utm_source: data.utmSource,
@@ -102,34 +118,36 @@ export default class TrafficSourceService {
           referer: data.referer,
           landing_page: data.landingPage
         })
-        .returning("*");
+        .returning('*')
 
-      return this.mapRecord(record);
+      return this.mapRecord(record)
     } catch (err) {
-      this.logger.error({ err, data }, "Failed to store traffic source");
-      debug("Error storing traffic source: %O", err);
-      return null;
+      this.logger.error({ err, data }, 'Failed to store traffic source')
+      debug('Error storing traffic source: %O', err)
+      return null
     }
   }
 
   /**
    * Gets traffic source for a client
    */
-  async getTrafficSource(clientId: number): Promise<TrafficSourceRecord | null> {
+  async getTrafficSource(
+    clientId: number
+  ): Promise<TrafficSourceRecord | null> {
     try {
       if (this.config.app.disable_persistence) {
-        return null;
+        return null
       }
 
-      const record = await this.knex("client_traffic_sources")
-        .where("client_id", clientId)
-        .orderBy("created_at", "desc")
-        .first();
+      const record = await this.knex('client_traffic_sources')
+        .where('client_id', clientId)
+        .orderBy('created_at', 'desc')
+        .first()
 
-      return record ? this.mapRecord(record) : null;
+      return record ? this.mapRecord(record) : null
     } catch (err) {
-      this.logger.error({ err, clientId }, "Failed to get traffic source");
-      return null;
+      this.logger.error({ err, clientId }, 'Failed to get traffic source')
+      return null
     }
   }
 
@@ -139,18 +157,21 @@ export default class TrafficSourceService {
   async getClientsByTrafficType(trafficType: string): Promise<number[]> {
     try {
       if (this.config.app.disable_persistence) {
-        return [];
+        return []
       }
 
-      const records = await this.knex("client_traffic_sources")
-        .where("traffic_type", trafficType)
-        .select("client_id")
-        .distinct();
+      const records = await this.knex('client_traffic_sources')
+        .where('traffic_type', trafficType)
+        .select('client_id')
+        .distinct()
 
-      return records.map((r) => r.client_id);
+      return records.map((r) => r.client_id)
     } catch (err) {
-      this.logger.error({ err, trafficType }, "Failed to get clients by traffic type");
-      return [];
+      this.logger.error(
+        { err, trafficType },
+        'Failed to get clients by traffic type'
+      )
+      return []
     }
   }
 
@@ -158,8 +179,8 @@ export default class TrafficSourceService {
    * Checks if a client is from PPC traffic
    */
   async isPpcTraffic(clientId: number): Promise<boolean> {
-    const trafficSource = await this.getTrafficSource(clientId);
-    return trafficSource?.trafficType === "ppc";
+    const trafficSource = await this.getTrafficSource(clientId)
+    return trafficSource?.trafficType === 'ppc'
   }
 
   private mapRecord(record: any): TrafficSourceRecord {
@@ -175,6 +196,6 @@ export default class TrafficSourceService {
       referer: record.referer,
       landingPage: record.landing_page,
       createdAt: record.created_at
-    };
+    }
   }
 }

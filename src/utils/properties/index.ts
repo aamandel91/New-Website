@@ -311,22 +311,16 @@ export const sortPropertiesClientSide = (
   switch (sortBy) {
     case 'bedsDesc':
       return sorted.sort(
-        (a, b) =>
-          getBedrooms(b.details).count - getBedrooms(a.details).count
+        (a, b) => getBedrooms(b.details).count - getBedrooms(a.details).count
       )
     case 'bathsDesc':
       return sorted.sort(
-        (a, b) =>
-          getBathrooms(b.details).count - getBathrooms(a.details).count
+        (a, b) => getBathrooms(b.details).count - getBathrooms(a.details).count
       )
     case 'sqftDesc':
-      return sorted.sort(
-        (a, b) => getSqft(b).number - getSqft(a).number
-      )
+      return sorted.sort((a, b) => getSqft(b).number - getSqft(a).number)
     case 'lotSizeDesc':
-      return sorted.sort(
-        (a, b) => getLotSize(b).number - getLotSize(a).number
-      )
+      return sorted.sort((a, b) => getLotSize(b).number - getLotSize(a).number)
     default:
       return properties
   }
@@ -337,7 +331,5 @@ export const filterPriceReduced = (properties: Property[]): Property[] =>
   properties.filter((p) => {
     const list = parseFloat(p.listPrice)
     const original = parseFloat(p.originalPrice)
-    return (
-      !isNaN(list) && !isNaN(original) && original > 0 && list < original
-    )
+    return !isNaN(list) && !isNaN(original) && original > 0 && list < original
   })

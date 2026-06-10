@@ -20,38 +20,54 @@ export async function GET(request: Request) {
   const token = url.searchParams.get('token')
 
   if (!token) {
-    return NextResponse.redirect(new URL('/login?error=missing-token', url.origin))
+    return NextResponse.redirect(
+      new URL('/login?error=missing-token', url.origin)
+    )
   }
 
   const apiBase =
-    process.env.NEXT_PUBLIC_API_URL ||
-    process.env.API_URL ||
-    `${url.origin}`
+    process.env.NEXT_PUBLIC_API_URL || process.env.API_URL || `${url.origin}`
 
   let result: {
     token: string
-    user: { id: number; email: string; name: string | null; phone: string | null }
+    user: {
+      id: number
+      email: string
+      name: string | null
+      phone: string | null
+    }
     destinationPath: string | null
   } | null = null
 
   try {
-    const res = await fetch(`${apiBase.replace(/\/$/, '')}/api/auth/magic-link/redeem`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ token }),
-    })
+    const res = await fetch(
+      `${apiBase.replace(/\/$/, '')}/api/auth/magic-link/redeem`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token })
+      }
+    )
     if (!res.ok) {
-      console.warn('[magic-link] backend rejected token', { status: res.status })
-      return NextResponse.redirect(new URL('/login?error=invalid-token', url.origin))
+      console.warn('[magic-link] backend rejected token', {
+        status: res.status
+      })
+      return NextResponse.redirect(
+        new URL('/login?error=invalid-token', url.origin)
+      )
     }
     result = await res.json()
   } catch (err) {
     console.error('[magic-link] backend redeem failed', err)
-    return NextResponse.redirect(new URL('/login?error=server-error', url.origin))
+    return NextResponse.redirect(
+      new URL('/login?error=server-error', url.origin)
+    )
   }
 
   if (!result?.token) {
-    return NextResponse.redirect(new URL('/login?error=invalid-token', url.origin))
+    return NextResponse.redirect(
+      new URL('/login?error=invalid-token', url.origin)
+    )
   }
 
   const destination = result.destinationPath || '/'
@@ -63,7 +79,7 @@ export async function GET(request: Request) {
     path: '/',
     maxAge: COOKIE_MAX_AGE_SEC,
     sameSite: 'lax',
-    secure: process.env.NODE_ENV === 'production',
+    secure: process.env.NODE_ENV === 'production'
   })
   return response
 }

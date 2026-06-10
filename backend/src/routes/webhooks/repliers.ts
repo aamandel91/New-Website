@@ -61,7 +61,7 @@ router.post('/subscriptions', authMiddleware, async (ctx) => {
       target_url: targetUrl,
       hook_secret: '', // populated at handshake
       configuration: configuration ? JSON.stringify(configuration) : null,
-      active: true,
+      active: true
     })
     .returning('*')
   ctx.body = { subscription: redactSecret(row) }
@@ -95,7 +95,10 @@ router.get('/events', authMiddleware, async (ctx) => {
 router.post('/', async (ctx) => {
   const logger = ctx.state.container.resolve<Logger>('logger')
   const db = ctx.state.container.resolve<Knex>('db')
-  const headers = ctx.request.headers as Record<string, string | string[] | undefined>
+  const headers = ctx.request.headers as Record<
+    string,
+    string | string[] | undefined
+  >
 
   const hookSecret = headerStr(headers, 'x-hook-secret')
   const apiKey = headerStr(headers, 'x-api-key')
@@ -126,7 +129,11 @@ router.post('/', async (ctx) => {
     if (row) {
       await db('repliers_webhooks')
         .where({ id: row.id })
-        .update({ hook_secret: hookSecret, active: true, updated_at: db.fn.now() })
+        .update({
+          hook_secret: hookSecret,
+          active: true,
+          updated_at: db.fn.now()
+        })
     } else {
       logger.warn(
         { data: { headerWebhookId: webhookIdHeader } },
@@ -168,7 +175,7 @@ router.post('/', async (ctx) => {
     webhook_subscription_id: sub.id,
     event: eventName,
     payload: JSON.stringify(body),
-    status: 'received',
+    status: 'received'
   })
 
   logger.info(

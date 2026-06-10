@@ -18,8 +18,9 @@ import {
   Typography
 } from '@mui/material'
 
-import { useSiteUser } from 'providers/SiteUserProvider'
 import LoginDialog from 'components/auth/LoginDialog'
+
+import { useSiteUser } from 'providers/SiteUserProvider'
 import { ssTrackEvent } from 'utils/suresendTracking'
 
 interface SaveSearchDialogProps {
@@ -29,7 +30,12 @@ interface SaveSearchDialogProps {
   autoName?: string
 }
 
-const SaveSearchDialog = ({ open, onClose, filters, autoName }: SaveSearchDialogProps) => {
+const SaveSearchDialog = ({
+  open,
+  onClose,
+  filters,
+  autoName
+}: SaveSearchDialogProps) => {
   const { isLoggedIn, createSavedSearch } = useSiteUser()
   const [name, setName] = useState(autoName || '')
   const [frequency, setFrequency] = useState('daily')
@@ -91,11 +97,30 @@ const SaveSearchDialog = ({ open, onClose, filters, autoName }: SaveSearchDialog
             Alert Frequency
           </Typography>
           <FormControl>
-            <RadioGroup value={frequency} onChange={(e) => setFrequency(e.target.value)}>
-              <FormControlLabel value="instant" control={<Radio size="small" />} label="Instant" />
-              <FormControlLabel value="daily" control={<Radio size="small" />} label="Daily" />
-              <FormControlLabel value="weekly" control={<Radio size="small" />} label="Weekly" />
-              <FormControlLabel value="none" control={<Radio size="small" />} label="None" />
+            <RadioGroup
+              value={frequency}
+              onChange={(e) => setFrequency(e.target.value)}
+            >
+              <FormControlLabel
+                value="instant"
+                control={<Radio size="small" />}
+                label="Instant"
+              />
+              <FormControlLabel
+                value="daily"
+                control={<Radio size="small" />}
+                label="Daily"
+              />
+              <FormControlLabel
+                value="weekly"
+                control={<Radio size="small" />}
+                label="Weekly"
+              />
+              <FormControlLabel
+                value="none"
+                control={<Radio size="small" />}
+                label="None"
+              />
             </RadioGroup>
           </FormControl>
         </DialogContent>
@@ -105,7 +130,11 @@ const SaveSearchDialog = ({ open, onClose, filters, autoName }: SaveSearchDialog
             variant="contained"
             onClick={handleSave}
             disabled={saving || !name.trim() || !isLoggedIn}
-            startIcon={saving ? <CircularProgress size={18} color="inherit" /> : undefined}
+            startIcon={
+              saving ? (
+                <CircularProgress size={18} color="inherit" />
+              ) : undefined
+            }
             sx={{ bgcolor: '#c8a951', '&:hover': { bgcolor: '#b89941' } }}
           >
             {saving ? 'Saving...' : 'Save Search'}

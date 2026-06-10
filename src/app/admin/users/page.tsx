@@ -1,7 +1,13 @@
 'use client'
 
-import { useEffect, useState, useCallback } from 'react'
+import { useCallback, useEffect, useState } from 'react'
+
+import AddIcon from '@mui/icons-material/Add'
+import DeleteIcon from '@mui/icons-material/Delete'
+import EditIcon from '@mui/icons-material/Edit'
+import type { SelectChangeEvent } from '@mui/material'
 import {
+  Alert,
   Box,
   Button,
   Dialog,
@@ -19,13 +25,9 @@ import {
   TableHead,
   TableRow,
   TextField,
-  Typography,
-  Alert
+  Typography
 } from '@mui/material'
-import type { SelectChangeEvent } from '@mui/material'
-import AddIcon from '@mui/icons-material/Add'
-import EditIcon from '@mui/icons-material/Edit'
-import DeleteIcon from '@mui/icons-material/Delete'
+
 import { getTokenSync } from 'utils/tokens'
 
 const API_URL = `${process.env.NEXT_PUBLIC_API_URL}/api`
@@ -87,7 +89,8 @@ export default function AdminUsersPage() {
       setUsers(data)
       setError('')
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'Failed to load users'
+      const message =
+        err instanceof Error ? err.message : 'Failed to load users'
       setError(message)
     } finally {
       setLoading(false)
@@ -124,8 +127,10 @@ export default function AdminUsersPage() {
       if (editingUser) {
         const body: Record<string, string> = {}
         if (form.email !== editingUser.email) body.email = form.email
-        if (form.first_name !== (editingUser.first_name || '')) body.first_name = form.first_name
-        if (form.last_name !== (editingUser.last_name || '')) body.last_name = form.last_name
+        if (form.first_name !== (editingUser.first_name || ''))
+          body.first_name = form.first_name
+        if (form.last_name !== (editingUser.last_name || ''))
+          body.last_name = form.last_name
         if (form.role !== editingUser.role) body.role = form.role
         if (form.password) body.password = form.password
 
@@ -157,7 +162,8 @@ export default function AdminUsersPage() {
       setDeleteConfirmId(null)
       fetchUsers()
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'Failed to delete user'
+      const message =
+        err instanceof Error ? err.message : 'Failed to delete user'
       setError(message)
     }
   }
@@ -200,10 +206,18 @@ export default function AdminUsersPage() {
         <Table>
           <TableHead>
             <TableRow sx={{ bgcolor: '#0F1621' }}>
-              <TableCell sx={{ color: '#fff', fontWeight: 600 }}>Email</TableCell>
-              <TableCell sx={{ color: '#fff', fontWeight: 600 }}>Name</TableCell>
-              <TableCell sx={{ color: '#fff', fontWeight: 600 }}>Role</TableCell>
-              <TableCell sx={{ color: '#fff', fontWeight: 600 }}>Created</TableCell>
+              <TableCell sx={{ color: '#fff', fontWeight: 600 }}>
+                Email
+              </TableCell>
+              <TableCell sx={{ color: '#fff', fontWeight: 600 }}>
+                Name
+              </TableCell>
+              <TableCell sx={{ color: '#fff', fontWeight: 600 }}>
+                Role
+              </TableCell>
+              <TableCell sx={{ color: '#fff', fontWeight: 600 }}>
+                Created
+              </TableCell>
               <TableCell sx={{ color: '#fff', fontWeight: 600 }} align="right">
                 Actions
               </TableCell>
@@ -227,9 +241,13 @@ export default function AdminUsersPage() {
                 <TableRow key={user.id} hover>
                   <TableCell>{user.email}</TableCell>
                   <TableCell>
-                    {[user.first_name, user.last_name].filter(Boolean).join(' ') || '-'}
+                    {[user.first_name, user.last_name]
+                      .filter(Boolean)
+                      .join(' ') || '-'}
                   </TableCell>
-                  <TableCell sx={{ textTransform: 'capitalize' }}>{user.role}</TableCell>
+                  <TableCell sx={{ textTransform: 'capitalize' }}>
+                    {user.role}
+                  </TableCell>
                   <TableCell>
                     {new Date(user.created_at).toLocaleDateString()}
                   </TableCell>
@@ -257,7 +275,12 @@ export default function AdminUsersPage() {
       </TableContainer>
 
       {/* Add/Edit User Dialog */}
-      <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)} maxWidth="sm" fullWidth>
+      <Dialog
+        open={dialogOpen}
+        onClose={() => setDialogOpen(false)}
+        maxWidth="sm"
+        fullWidth
+      >
         <DialogTitle sx={{ fontWeight: 700 }}>
           {editingUser ? 'Edit User' : 'Add User'}
         </DialogTitle>
@@ -287,7 +310,14 @@ export default function AdminUsersPage() {
             size="small"
             sx={{ mb: 2 }}
           />
-          <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2, mb: 2 }}>
+          <Box
+            sx={{
+              display: 'grid',
+              gridTemplateColumns: '1fr 1fr',
+              gap: 2,
+              mb: 2
+            }}
+          >
             <TextField
               label="First Name"
               value={form.first_name}
@@ -305,7 +335,9 @@ export default function AdminUsersPage() {
           </Box>
           <Select
             value={form.role}
-            onChange={(e: SelectChangeEvent) => setForm({ ...form, role: e.target.value })}
+            onChange={(e: SelectChangeEvent) =>
+              setForm({ ...form, role: e.target.value })
+            }
             fullWidth
             size="small"
           >
@@ -332,10 +364,16 @@ export default function AdminUsersPage() {
       </Dialog>
 
       {/* Delete Confirmation Dialog */}
-      <Dialog open={deleteConfirmId !== null} onClose={() => setDeleteConfirmId(null)}>
+      <Dialog
+        open={deleteConfirmId !== null}
+        onClose={() => setDeleteConfirmId(null)}
+      >
         <DialogTitle>Delete User</DialogTitle>
         <DialogContent>
-          <Typography>Are you sure you want to delete this user? This action cannot be undone.</Typography>
+          <Typography>
+            Are you sure you want to delete this user? This action cannot be
+            undone.
+          </Typography>
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setDeleteConfirmId(null)}>Cancel</Button>

@@ -1,28 +1,30 @@
 'use client'
 
 import React, { useState } from 'react'
-import {
-  Box,
-  Typography,
-  TextField,
-  Button,
-  Paper,
-  Avatar,
-  Stack,
-  Alert,
-  Chip,
-  ToggleButtonGroup,
-  ToggleButton,
-  Divider,
-} from '@mui/material'
-import SendIcon from '@mui/icons-material/Send'
-import HomeIcon from '@mui/icons-material/Home'
-import VideocamIcon from '@mui/icons-material/Videocam'
 import dayjs from 'dayjs'
-import { trackFormSubmission } from '@/utils/analytics'
-import { ssIdentify } from '@/utils/suresendTracking'
-import { isFormBlocked } from '@/utils/formFilter'
+
+import HomeIcon from '@mui/icons-material/Home'
+import SendIcon from '@mui/icons-material/Send'
+import VideocamIcon from '@mui/icons-material/Videocam'
+import {
+  Alert,
+  Avatar,
+  Box,
+  Button,
+  Chip,
+  Divider,
+  Paper,
+  Stack,
+  TextField,
+  ToggleButton,
+  ToggleButtonGroup,
+  Typography
+} from '@mui/material'
+
 import { defaultBlockedWords } from '@/configs/defaults/form-filtering'
+import { trackFormSubmission } from '@/utils/analytics'
+import { isFormBlocked } from '@/utils/formFilter'
+import { ssIdentify } from '@/utils/suresendTracking'
 
 interface Agent {
   name?: string
@@ -54,7 +56,7 @@ const TIME_SLOTS = [
   '1:00 PM',
   '2:00 PM',
   '3:00 PM',
-  '4:00 PM',
+  '4:00 PM'
 ]
 
 function getDateLabel(date: dayjs.Dayjs, index: number): string {
@@ -77,8 +79,8 @@ function sendToSureSend(
       formType,
       propertyAddress,
       mlsNumber,
-      source: 'property_detail_page',
-    }),
+      source: 'property_detail_page'
+    })
   }).catch((err) => console.error('[SureSend] Lead sync failed:', err))
 }
 
@@ -86,13 +88,13 @@ const PropertyContactForm: React.FC<PropertyContactFormProps> = ({
   propertyAddress,
   mlsNumber,
   agent,
-  onSubmit,
+  onSubmit
 }) => {
   const [formData, setFormData] = useState<ContactFormData>({
     name: '',
     email: '',
     phone: '',
-    message: `I'm interested in scheduling a tour for ${propertyAddress}`,
+    message: `I'm interested in scheduling a tour for ${propertyAddress}`
   })
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
@@ -137,24 +139,24 @@ const PropertyContactForm: React.FC<PropertyContactFormProps> = ({
     if (timeSlot) {
       setFormData((prev) => ({
         ...prev,
-        message: `I'd like to schedule a ${tourLabel} for ${propertyAddress} on ${dateLabel} (${date.format('MMM D, YYYY')}) at ${timeSlot}.`,
+        message: `I'd like to schedule a ${tourLabel} for ${propertyAddress} on ${dateLabel} (${date.format('MMM D, YYYY')}) at ${timeSlot}.`
       }))
     } else {
       setFormData((prev) => ({
         ...prev,
-        message: `I'm interested in scheduling a ${tourLabel} for ${propertyAddress} on ${dateLabel} (${date.format('MMM D, YYYY')}).`,
+        message: `I'm interested in scheduling a ${tourLabel} for ${propertyAddress} on ${dateLabel} (${date.format('MMM D, YYYY')}).`
       }))
     }
   }
 
-  const handleChange = (field: keyof ContactFormData) => (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    setFormData((prev) => ({
-      ...prev,
-      [field]: e.target.value,
-    }))
-  }
+  const handleChange =
+    (field: keyof ContactFormData) =>
+    (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+      setFormData((prev) => ({
+        ...prev,
+        [field]: e.target.value
+      }))
+    }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -174,7 +176,11 @@ const PropertyContactForm: React.FC<PropertyContactFormProps> = ({
         await onSubmit(formData)
       }
       trackFormSubmission(formData, 'tour_request')
-      ssIdentify({ email: formData.email, name: formData.name, phone: formData.phone })
+      ssIdentify({
+        email: formData.email,
+        name: formData.name,
+        phone: formData.phone
+      })
       // Fire-and-forget: sync lead to SureSend CRM in parallel
       sendToSureSend(formData, 'tour_request', propertyAddress, mlsNumber)
       setSuccess(true)
@@ -182,7 +188,7 @@ const PropertyContactForm: React.FC<PropertyContactFormProps> = ({
         name: '',
         email: '',
         phone: '',
-        message: `I'm interested in scheduling a tour for ${propertyAddress}`,
+        message: `I'm interested in scheduling a tour for ${propertyAddress}`
       })
       setSelectedTimeSlot(null)
     } catch (err) {
@@ -199,13 +205,15 @@ const PropertyContactForm: React.FC<PropertyContactFormProps> = ({
       elevation={3}
       sx={{
         p: 3,
-        bgcolor: 'background.paper',
+        bgcolor: 'background.paper'
       }}
     >
       <Stack spacing={2.5}>
         {/* Header */}
         <Typography variant="h6" component="h3" fontWeight="bold">
-          {propertyAddress ? `Interested in ${propertyAddress}?` : 'Schedule a Tour'}
+          {propertyAddress
+            ? `Interested in ${propertyAddress}?`
+            : 'Schedule a Tour'}
         </Typography>
 
         {/* Tour Type Toggle */}
@@ -216,11 +224,17 @@ const PropertyContactForm: React.FC<PropertyContactFormProps> = ({
           size="small"
           fullWidth
         >
-          <ToggleButton value="inPerson" sx={{ textTransform: 'none', fontWeight: 600, py: 0.75 }}>
+          <ToggleButton
+            value="inPerson"
+            sx={{ textTransform: 'none', fontWeight: 600, py: 0.75 }}
+          >
             <HomeIcon sx={{ mr: 0.5, fontSize: '1.1rem' }} />
             In Person
           </ToggleButton>
-          <ToggleButton value="video" sx={{ textTransform: 'none', fontWeight: 600, py: 0.75 }}>
+          <ToggleButton
+            value="video"
+            sx={{ textTransform: 'none', fontWeight: 600, py: 0.75 }}
+          >
             <VideocamIcon sx={{ mr: 0.5, fontSize: '1.1rem' }} />
             Video Chat
           </ToggleButton>
@@ -237,7 +251,7 @@ const PropertyContactForm: React.FC<PropertyContactFormProps> = ({
               color={selectedDateIndex === index ? 'primary' : 'default'}
               sx={{
                 fontWeight: selectedDateIndex === index ? 700 : 500,
-                flex: 1,
+                flex: 1
               }}
             />
           ))}
@@ -258,11 +272,13 @@ const PropertyContactForm: React.FC<PropertyContactFormProps> = ({
                 fontWeight: selectedTimeSlot === slot ? 700 : 500,
                 fontSize: '0.8rem',
                 py: 0.75,
-                borderColor: selectedTimeSlot === slot ? 'primary.main' : 'divider',
+                borderColor:
+                  selectedTimeSlot === slot ? 'primary.main' : 'divider',
                 '&:hover': {
                   borderColor: 'primary.main',
-                  bgcolor: selectedTimeSlot === slot ? 'primary.main' : 'action.hover',
-                },
+                  bgcolor:
+                    selectedTimeSlot === slot ? 'primary.main' : 'action.hover'
+                }
               }}
             >
               {slot}
@@ -367,8 +383,13 @@ const PropertyContactForm: React.FC<PropertyContactFormProps> = ({
               {loading ? 'Sending...' : 'Request Tour'}
             </Button>
 
-            <Typography variant="caption" color="text.secondary" textAlign="center">
-              By submitting, you agree to our Terms of Service and Privacy Policy
+            <Typography
+              variant="caption"
+              color="text.secondary"
+              textAlign="center"
+            >
+              By submitting, you agree to our Terms of Service and Privacy
+              Policy
             </Typography>
           </Stack>
         </form>

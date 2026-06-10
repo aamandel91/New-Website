@@ -2,8 +2,9 @@ import { ImageResponse } from 'next/og'
 import type { NextRequest } from 'next/server'
 
 import { getSubTypeBySlug } from '@configs/page-generation'
-import { parseCleanSlug, slugToDisplayName } from 'utils/templateEngine'
 import { tenant } from '@/configs/tenant.config'
+
+import { parseCleanSlug, slugToDisplayName } from 'utils/templateEngine'
 
 export const runtime = 'edge'
 
@@ -66,7 +67,7 @@ export async function GET(req: NextRequest) {
           backgroundColor: NAVY,
           backgroundImage: `radial-gradient(circle at 25% 30%, rgba(${GOLD_RGB}, 0.18) 0%, transparent 60%), radial-gradient(circle at 75% 70%, rgba(${GOLD_RGB}, 0.10) 0%, transparent 50%)`,
           padding: '80px',
-          fontFamily: OG_FONT,
+          fontFamily: OG_FONT
         }}
       >
         <div
@@ -75,7 +76,7 @@ export async function GET(req: NextRequest) {
             width: '120px',
             height: '4px',
             backgroundColor: GOLD,
-            marginBottom: '40px',
+            marginBottom: '40px'
           }}
         />
 
@@ -88,7 +89,7 @@ export async function GET(req: NextRequest) {
             lineHeight: 1.1,
             textAlign: 'center',
             maxWidth: '1000px',
-            letterSpacing: '-0.02em',
+            letterSpacing: '-0.02em'
           }}
         >
           {heading}
@@ -101,7 +102,7 @@ export async function GET(req: NextRequest) {
             fontSize: '32px',
             fontWeight: 400,
             marginTop: '32px',
-            textAlign: 'center',
+            textAlign: 'center'
           }}
         >
           South Florida Real Estate
@@ -114,7 +115,7 @@ export async function GET(req: NextRequest) {
             fontSize: '24px',
             fontWeight: 500,
             marginTop: '60px',
-            letterSpacing: '0.05em',
+            letterSpacing: '0.05em'
           }}
         >
           {tenant.brand.domainDisplay}
@@ -123,7 +124,7 @@ export async function GET(req: NextRequest) {
     ),
     {
       width: 1200,
-      height: 630,
+      height: 630
     }
   )
 }

@@ -5,11 +5,10 @@ import { type Position } from 'geojson'
 import { Container } from '@mui/material'
 
 import { Page404Template, PageTemplate } from '@templates'
-import MapPageContent from '@pages/search'
-import StructuredData from '@shared/StructuredData'
-import RelatedReading from '@shared/RelatedReading'
-import { breadcrumbSchema } from 'utils/structuredData'
 import { tenant } from '@/configs/tenant.config'
+import MapPageContent from '@pages/search'
+import RelatedReading from '@shared/RelatedReading'
+import StructuredData from '@shared/StructuredData'
 
 import { APISaveSearch } from 'services/API'
 import { type Filters } from 'services/Search'
@@ -17,6 +16,7 @@ import AiSearchProvider from 'providers/AiSearchProvider'
 import MapOptionsProvider from 'providers/MapOptionsProvider'
 import SearchProvider from 'providers/SearchProvider'
 import { type PolygonZone } from 'utils/map'
+import { breadcrumbSchema } from 'utils/structuredData'
 
 import { type Params, type SearchParams } from './_types'
 import {
@@ -28,7 +28,9 @@ import {
 const SITE_URL = tenant.brand.siteUrl
 const SITE_NAME = tenant.brand.siteName
 
-const pickStr = (v: string | string[] | number | undefined): string | undefined => {
+const pickStr = (
+  v: string | string[] | number | undefined
+): string | undefined => {
   if (Array.isArray(v)) return v[0]
   if (v === undefined || v === null) return undefined
   return String(v)
@@ -66,7 +68,13 @@ export async function generateMetadata(props: {
 
   // Faceted filter combinations are noindex (filtered duplicates of the
   // canonical /[city] landing pages). Core /search/{layout} remains indexable.
-  const hasFilters = !!(location || minPrice || maxPrice || bedrooms || propertyType)
+  const hasFilters = !!(
+    location ||
+    minPrice ||
+    maxPrice ||
+    bedrooms ||
+    propertyType
+  )
   const robots = hasFilters
     ? { index: false, follow: true }
     : { index: true, follow: true }
@@ -85,13 +93,13 @@ export async function generateMetadata(props: {
       description,
       type: 'website',
       url: canonical,
-      siteName: SITE_NAME,
+      siteName: SITE_NAME
     },
     twitter: {
       card: 'summary_large_image',
       title,
-      description,
-    },
+      description
+    }
   }
 }
 
@@ -143,7 +151,7 @@ const MapPage = async (props: {
       <StructuredData
         data={breadcrumbSchema([
           { name: 'Home', url: SITE_URL },
-          { name: 'Search', url: `${SITE_URL}/search/gallery` },
+          { name: 'Search', url: `${SITE_URL}/search/gallery` }
         ])}
       />
       <MapOptionsProvider

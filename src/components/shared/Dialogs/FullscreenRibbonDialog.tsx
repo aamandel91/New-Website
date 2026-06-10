@@ -30,7 +30,11 @@ const FullscreenRibbonDialog = () => {
       <DialogTitle>{images.length} Images</DialogTitle>
       <DialogContent>
         {images.map((image, index) => (
-          <Box key={index} id={`img-${index}`} sx={{ position: 'relative', width: '100%', mb: 2 }}>
+          <Box
+            key={index}
+            id={`img-${index}`}
+            sx={{ position: 'relative', width: '100%', mb: 2 }}
+          >
             <Image
               src={getCDNPath(image, 'medium')}
               alt={`Property image ${index + 1}`}

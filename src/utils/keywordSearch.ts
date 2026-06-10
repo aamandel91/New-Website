@@ -29,7 +29,10 @@ export function parseKeywordQuery(query: string): KeywordParseResult {
   const includePatterns: string[] = []
 
   // Split on pipe for OR groups, then handle each segment
-  const orSegments = raw.split('|').map((s) => s.trim()).filter(Boolean)
+  const orSegments = raw
+    .split('|')
+    .map((s) => s.trim())
+    .filter(Boolean)
 
   for (const segment of orSegments) {
     // Tokenize: quoted phrases, -exclude terms, and plain words

@@ -1,8 +1,17 @@
 import React from 'react'
 import type { Metadata } from 'next'
-import { Alert, Button, Container, Paper, Stack, Typography } from '@mui/material'
+
+import {
+  Alert,
+  Button,
+  Container,
+  Paper,
+  Stack,
+  Typography
+} from '@mui/material'
 
 import { fetchAddressListings, findActiveListing } from '../addressLookup'
+
 import OfferWizard from './OfferWizard'
 
 interface PageProps {
@@ -14,9 +23,9 @@ export const revalidate = 300
 export async function generateMetadata(props: PageProps): Promise<Metadata> {
   const params = await props.params
   return {
-    title: `Start an Offer`,
+    title: 'Start an Offer',
     alternates: { canonical: `/homes/${params.slug}/offer` },
-    robots: { index: false, follow: false },
+    robots: { index: false, follow: false }
   }
 }
 
@@ -38,7 +47,9 @@ export default async function OfferPage(props: PageProps) {
             <Alert severity="warning">
               The address in this URL could not be parsed.
             </Alert>
-            <Button variant="contained" href="/homes">Browse Florida Homes for Sale</Button>
+            <Button variant="contained" href="/homes">
+              Browse Florida Homes for Sale
+            </Button>
           </Stack>
         </Paper>
       </Container>

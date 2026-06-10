@@ -1,11 +1,11 @@
 import { type Metadata } from 'next'
 
 import { PageTemplate } from '@templates'
-import StructuredData from '@shared/StructuredData'
-import { breadcrumbSchema } from 'utils/structuredData'
 import { tenant } from '@/configs/tenant.config'
-
 import { AiMapListings } from '@pages/ai-search'
+import StructuredData from '@shared/StructuredData'
+
+import { breadcrumbSchema } from 'utils/structuredData'
 
 const SITE_URL = tenant.brand.siteUrl
 const SITE_NAME = tenant.brand.siteName
@@ -25,13 +25,13 @@ export const metadata: Metadata = {
     description: DESCRIPTION,
     type: 'website',
     url: URL,
-    siteName: SITE_NAME,
+    siteName: SITE_NAME
   },
   twitter: {
     card: 'summary_large_image',
     title: TITLE,
-    description: DESCRIPTION,
-  },
+    description: DESCRIPTION
+  }
 }
 
 export default function AiSearchPage() {
@@ -40,7 +40,7 @@ export default function AiSearchPage() {
       <StructuredData
         data={breadcrumbSchema([
           { name: 'Home', url: SITE_URL },
-          { name: 'AI Search', url: URL },
+          { name: 'AI Search', url: URL }
         ])}
       />
       <AiMapListings />

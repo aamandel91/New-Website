@@ -1,30 +1,32 @@
 'use client'
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import {
-  Box,
-  Container,
-  Typography,
-  Tabs,
-  Tab,
-  TextField,
-  Button,
-  Paper,
-  Chip,
-  Stack,
-  Alert,
-  Snackbar,
-  CircularProgress,
-  Divider,
-} from '@mui/material'
+
 import ContentCopyIcon from '@mui/icons-material/ContentCopy'
 import RestartAltIcon from '@mui/icons-material/RestartAlt'
 import SaveIcon from '@mui/icons-material/Save'
+import {
+  Alert,
+  Box,
+  Button,
+  Chip,
+  CircularProgress,
+  Container,
+  Divider,
+  Paper,
+  Snackbar,
+  Stack,
+  Tab,
+  Tabs,
+  TextField,
+  Typography
+} from '@mui/material'
+
 import APISeoMetaTemplates, {
-  SEO_PAGE_TYPES,
   ACTIVE_SEO_PAGE_TYPES,
-  type SeoPageType,
+  SEO_PAGE_TYPES,
   type SeoMetaTemplate,
+  type SeoPageType
 } from '@/services/API/APISeoMetaTemplates'
 
 interface TabConfig {
@@ -35,75 +37,112 @@ interface TabConfig {
 }
 
 const COMMON_PLACEHOLDERS = ['{COMPANY}', '{STATE}', '{STATE_FULL}']
-const LIVE_DATA_PLACEHOLDERS = ['{COUNT}', '{AVG_PRICE}', '{MEDIAN_PRICE}', '{MIN_PRICE}', '{MAX_PRICE}']
+const LIVE_DATA_PLACEHOLDERS = [
+  '{COUNT}',
+  '{AVG_PRICE}',
+  '{MEDIAN_PRICE}',
+  '{MIN_PRICE}',
+  '{MAX_PRICE}'
+]
 
 const TAB_CONFIG: TabConfig[] = [
   {
     pageType: 'city',
     label: 'City',
     example: '/boca-raton',
-    placeholders: ['{CITY}', '{COUNTY}', ...COMMON_PLACEHOLDERS, ...LIVE_DATA_PLACEHOLDERS],
+    placeholders: [
+      '{CITY}',
+      '{COUNTY}',
+      ...COMMON_PLACEHOLDERS,
+      ...LIVE_DATA_PLACEHOLDERS
+    ]
   },
   {
     pageType: 'city_subtype',
     label: 'City + Subtype',
     example: '/boca-raton/condos',
-    placeholders: ['{CITY}', '{SUBTYPE}', '{SUBTYPE_PLURAL}', ...COMMON_PLACEHOLDERS, ...LIVE_DATA_PLACEHOLDERS],
+    placeholders: [
+      '{CITY}',
+      '{SUBTYPE}',
+      '{SUBTYPE_PLURAL}',
+      ...COMMON_PLACEHOLDERS,
+      ...LIVE_DATA_PLACEHOLDERS
+    ]
   },
   {
     pageType: 'neighborhood',
     label: 'Neighborhood',
     example: '/boca-raton/country-isles',
-    placeholders: ['{CITY}', '{NEIGHBORHOOD}', '{COMMUNITY}', ...COMMON_PLACEHOLDERS, ...LIVE_DATA_PLACEHOLDERS],
+    placeholders: [
+      '{CITY}',
+      '{NEIGHBORHOOD}',
+      '{COMMUNITY}',
+      ...COMMON_PLACEHOLDERS,
+      ...LIVE_DATA_PLACEHOLDERS
+    ]
   },
   {
     pageType: 'zipcode',
     label: 'ZIP',
     example: '/boca-raton/33401',
-    placeholders: ['{CITY}', '{ZIP}', ...COMMON_PLACEHOLDERS, ...LIVE_DATA_PLACEHOLDERS],
+    placeholders: [
+      '{CITY}',
+      '{ZIP}',
+      ...COMMON_PLACEHOLDERS,
+      ...LIVE_DATA_PLACEHOLDERS
+    ]
   },
   {
     pageType: 'property_type',
     label: 'Property Type',
     example: '/condos',
-    placeholders: ['{SUBTYPE}', '{SUBTYPE_PLURAL}', ...COMMON_PLACEHOLDERS, ...LIVE_DATA_PLACEHOLDERS],
+    placeholders: [
+      '{SUBTYPE}',
+      '{SUBTYPE_PLURAL}',
+      ...COMMON_PLACEHOLDERS,
+      ...LIVE_DATA_PLACEHOLDERS
+    ]
   },
   {
     pageType: 'county',
     label: 'County',
     example: '(future)',
-    placeholders: ['{COUNTY}', ...COMMON_PLACEHOLDERS, ...LIVE_DATA_PLACEHOLDERS],
+    placeholders: [
+      '{COUNTY}',
+      ...COMMON_PLACEHOLDERS,
+      ...LIVE_DATA_PLACEHOLDERS
+    ]
   },
   {
     pageType: 'school_elementary',
     label: 'School — Elementary',
     example: '(future)',
-    placeholders: ['{SCHOOL}', '{CITY}', ...COMMON_PLACEHOLDERS],
+    placeholders: ['{SCHOOL}', '{CITY}', ...COMMON_PLACEHOLDERS]
   },
   {
     pageType: 'school_middle',
     label: 'School — Middle',
     example: '(future)',
-    placeholders: ['{SCHOOL}', '{CITY}', ...COMMON_PLACEHOLDERS],
+    placeholders: ['{SCHOOL}', '{CITY}', ...COMMON_PLACEHOLDERS]
   },
   {
     pageType: 'school_high',
     label: 'School — High',
     example: '(future)',
-    placeholders: ['{SCHOOL}', '{CITY}', ...COMMON_PLACEHOLDERS],
+    placeholders: ['{SCHOOL}', '{CITY}', ...COMMON_PLACEHOLDERS]
   },
   {
     pageType: 'school_district',
     label: 'School District',
     example: '(future)',
-    placeholders: ['{SCHOOL_DISTRICT}', ...COMMON_PLACEHOLDERS],
+    placeholders: ['{SCHOOL_DISTRICT}', ...COMMON_PLACEHOLDERS]
   },
   {
     pageType: 'popular_search',
     label: 'Popular Search',
     example: '(future)',
-    placeholders: ['{POPULAR_SEARCH}', ...COMMON_PLACEHOLDERS],
-  },
+    placeholders: ['{POPULAR_SEARCH}', ...COMMON_PLACEHOLDERS]
+  }
 ]
 
 function isFuture(pageType: SeoPageType): boolean {
@@ -117,8 +156,12 @@ interface TabPanelProps {
 }
 
 function TabPanel({ config, template, onSaved }: TabPanelProps) {
-  const [titleTemplate, setTitleTemplate] = useState(template?.title_template ?? '')
-  const [descriptionTemplate, setDescriptionTemplate] = useState(template?.description_template ?? '')
+  const [titleTemplate, setTitleTemplate] = useState(
+    template?.title_template ?? ''
+  )
+  const [descriptionTemplate, setDescriptionTemplate] = useState(
+    template?.description_template ?? ''
+  )
   const [previewTitle, setPreviewTitle] = useState('')
   const [previewDescription, setPreviewDescription] = useState('')
   const [saving, setSaving] = useState(false)
@@ -170,7 +213,7 @@ function TabPanel({ config, template, onSaved }: TabPanelProps) {
         pageType: config.pageType,
         titleTemplate,
         descriptionTemplate,
-        enabled: true,
+        enabled: true
       })
       onSaved(saved)
       setToast('Saved')
@@ -201,11 +244,17 @@ function TabPanel({ config, template, onSaved }: TabPanelProps) {
     <Box>
       {isFuture(config.pageType) && (
         <Alert severity="warning" sx={{ mb: 3 }}>
-          No pages of this type exist on the site yet. Template will activate when these page types are built. You can still configure it now.
+          No pages of this type exist on the site yet. Template will activate
+          when these page types are built. You can still configure it now.
         </Alert>
       )}
 
-      <Stack direction="row" justifyContent="space-between" alignItems="flex-start" sx={{ mb: 2 }}>
+      <Stack
+        direction="row"
+        justifyContent="space-between"
+        alignItems="flex-start"
+        sx={{ mb: 2 }}
+      >
         <Box>
           <Typography variant="caption" color="text.secondary">
             Example route
@@ -227,7 +276,9 @@ function TabPanel({ config, template, onSaved }: TabPanelProps) {
           <Button
             onClick={handleSave}
             startIcon={<SaveIcon />}
-            disabled={saving || resetting || !titleTemplate || !descriptionTemplate}
+            disabled={
+              saving || resetting || !titleTemplate || !descriptionTemplate
+            }
             variant="contained"
             size="small"
           >
@@ -240,11 +291,15 @@ function TabPanel({ config, template, onSaved }: TabPanelProps) {
         <Typography variant="subtitle2" gutterBottom>
           Dynamic Placeholders
         </Typography>
-        <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 1.5 }}>
+        <Typography
+          variant="caption"
+          color="text.secondary"
+          sx={{ display: 'block', mb: 1.5 }}
+        >
           Click any chip to copy it to your clipboard.
         </Typography>
         <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
-          {config.placeholders.map(p => (
+          {config.placeholders.map((p) => (
             <Chip
               key={p}
               label={p}
@@ -263,9 +318,13 @@ function TabPanel({ config, template, onSaved }: TabPanelProps) {
       <TextField
         fullWidth
         value={titleTemplate}
-        onChange={e => setTitleTemplate(e.target.value)}
+        onChange={(e) => setTitleTemplate(e.target.value)}
         placeholder="e.g. {COUNT} Homes for Sale in {CITY}, {STATE}"
-        sx={{ mb: 3, fontFamily: 'monospace', '& input': { fontFamily: 'monospace' } }}
+        sx={{
+          mb: 3,
+          fontFamily: 'monospace',
+          '& input': { fontFamily: 'monospace' }
+        }}
       />
 
       <Typography variant="subtitle2" gutterBottom>
@@ -276,7 +335,7 @@ function TabPanel({ config, template, onSaved }: TabPanelProps) {
         multiline
         minRows={3}
         value={descriptionTemplate}
-        onChange={e => setDescriptionTemplate(e.target.value)}
+        onChange={(e) => setDescriptionTemplate(e.target.value)}
         placeholder="e.g. Browse {COUNT} homes for sale in {CITY}, {STATE_FULL}…"
         sx={{ mb: 3, '& textarea': { fontFamily: 'monospace' } }}
       />
@@ -285,17 +344,32 @@ function TabPanel({ config, template, onSaved }: TabPanelProps) {
         <Typography variant="subtitle2" gutterBottom>
           Preview
         </Typography>
-        <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 1.5 }}>
+        <Typography
+          variant="caption"
+          color="text.secondary"
+          sx={{ display: 'block', mb: 1.5 }}
+        >
           Rendered with sample data for this page type.
         </Typography>
         <Box sx={{ mb: 2 }}>
-          <Typography variant="caption" color="text.secondary">&lt;title&gt;</Typography>
-          <Typography sx={{ color: '#1a0dab', fontSize: 18, lineHeight: 1.3, wordBreak: 'break-word' }}>
+          <Typography variant="caption" color="text.secondary">
+            &lt;title&gt;
+          </Typography>
+          <Typography
+            sx={{
+              color: '#1a0dab',
+              fontSize: 18,
+              lineHeight: 1.3,
+              wordBreak: 'break-word'
+            }}
+          >
             {previewTitle || '—'}
           </Typography>
         </Box>
         <Box>
-          <Typography variant="caption" color="text.secondary">&lt;meta description&gt;</Typography>
+          <Typography variant="caption" color="text.secondary">
+            &lt;meta description&gt;
+          </Typography>
           <Typography sx={{ color: '#4d5156', fontSize: 14, lineHeight: 1.45 }}>
             {previewDescription || '—'}
           </Typography>
@@ -320,7 +394,9 @@ function TabPanel({ config, template, onSaved }: TabPanelProps) {
 
 export default function SeoTemplatesAdminPage() {
   const [activeTab, setActiveTab] = useState(0)
-  const [templates, setTemplates] = useState<Map<SeoPageType, SeoMetaTemplate>>(new Map())
+  const [templates, setTemplates] = useState<Map<SeoPageType, SeoMetaTemplate>>(
+    new Map()
+  )
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
@@ -345,7 +421,7 @@ export default function SeoTemplatesAdminPage() {
   }, [])
 
   const handleSaved = (t: SeoMetaTemplate) => {
-    setTemplates(prev => {
+    setTemplates((prev) => {
       const next = new Map(prev)
       next.set(t.page_type, t)
       return next
@@ -354,7 +430,9 @@ export default function SeoTemplatesAdminPage() {
 
   const tabs = useMemo(() => TAB_CONFIG, [])
   const currentTab = tabs[activeTab]
-  const currentTemplate = currentTab ? templates.get(currentTab.pageType) ?? null : null
+  const currentTemplate = currentTab
+    ? (templates.get(currentTab.pageType) ?? null)
+    : null
 
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
@@ -363,7 +441,9 @@ export default function SeoTemplatesAdminPage() {
           SEO Meta Templates
         </Typography>
         <Typography variant="body2" color="text.secondary">
-          Configure default page titles and descriptions for each page type. Templates use dynamic placeholders like {`{CITY}`} and {`{COUNT}`} that are filled in at render time.
+          Configure default page titles and descriptions for each page type.
+          Templates use dynamic placeholders like {'{CITY}'} and {'{COUNT}'}{' '}
+          that are filled in at render time.
         </Typography>
       </Box>
 
@@ -393,7 +473,13 @@ export default function SeoTemplatesAdminPage() {
                   <Stack direction="row" spacing={1} alignItems="center">
                     <span>{tab.label}</span>
                     {isFuture(tab.pageType) && (
-                      <Chip label="Future" size="small" color="warning" variant="outlined" sx={{ height: 18, fontSize: 10 }} />
+                      <Chip
+                        label="Future"
+                        size="small"
+                        color="warning"
+                        variant="outlined"
+                        sx={{ height: 18, fontSize: 10 }}
+                      />
                     )}
                   </Stack>
                 }

@@ -1,11 +1,11 @@
+import type { SubTypeConfig } from '@configs/page-generation'
 import searchConfig from '@configs/search'
 
-import type { SubTypeConfig } from '@configs/page-generation'
 import type {
   ApiBoardArea,
   ApiBoardCity,
   ApiNeighborhood,
-  ApiQueryResponse,
+  ApiQueryResponse
 } from 'services/API'
 import { APISearch } from 'services/API'
 import APISearchCSR from 'services/API/APISearchCSR'
@@ -32,12 +32,14 @@ export async function fetchCountyCities(
 
     const areas = response.boards[0]?.classes[0]?.areas ?? []
     const matchedArea = areas.find(
-      (area: ApiBoardArea) =>
-        area.name.toLowerCase() === county.toLowerCase()
+      (area: ApiBoardArea) => area.name.toLowerCase() === county.toLowerCase()
     )
     return matchedArea?.cities ?? []
   } catch (error) {
-    console.error(`[pageGeneration] fetchCountyCities error for "${county}"`, error)
+    console.error(
+      `[pageGeneration] fetchCountyCities error for "${county}"`,
+      error
+    )
     return []
   }
 }
@@ -56,8 +58,7 @@ export async function fetchCityNeighborhoods(
       for (const cls of board.classes) {
         for (const area of cls.areas) {
           const found = area.cities.find(
-            (c: ApiBoardCity) =>
-              c.name.toLowerCase() === city.toLowerCase()
+            (c: ApiBoardCity) => c.name.toLowerCase() === city.toLowerCase()
           )
           if (found?.neighborhoods) {
             return found.neighborhoods
@@ -67,7 +68,10 @@ export async function fetchCityNeighborhoods(
     }
     return []
   } catch (error) {
-    console.error(`[pageGeneration] fetchCityNeighborhoods error for "${city}"`, error)
+    console.error(
+      `[pageGeneration] fetchCityNeighborhoods error for "${city}"`,
+      error
+    )
     return []
   }
 }
@@ -131,7 +135,7 @@ export async function fetchListingCount(
         boardId: defaultBoardId,
         resultsPerPage: 1,
         listings: false,
-        ...filters,
+        ...filters
       } as any)
       return result?.count ?? 0
     }
@@ -144,15 +148,18 @@ export async function fetchListingCount(
           boardId: defaultBoardId,
           resultsPerPage: 1,
           listings: false,
-          ...filters,
+          ...filters
         },
-        post: {},
+        post: {}
       },
       undefined
     )
     return response?.count ?? 0
   } catch (error) {
-    console.error(`[pageGeneration] fetchListingCount error for "${city}"`, error)
+    console.error(
+      `[pageGeneration] fetchListingCount error for "${city}"`,
+      error
+    )
     return 0
   }
 }
@@ -160,9 +167,7 @@ export async function fetchListingCount(
 /**
  * Fetch zip codes associated with a city using the aggregates parameter.
  */
-export async function fetchZipCodesForCity(
-  city: string
-): Promise<string[]> {
+export async function fetchZipCodesForCity(city: string): Promise<string[]> {
   try {
     if (useCSR) {
       const result = await APISearchCSR.searchListings({
@@ -171,12 +176,16 @@ export async function fetchZipCodesForCity(
         boardId: defaultBoardId,
         resultsPerPage: 1,
         listings: false,
-        aggregates: 'address.zip',
+        aggregates: 'address.zip'
       })
 
-      const zipAggregates = result?.aggregates as Record<string, unknown> | undefined
+      const zipAggregates = result?.aggregates as
+        | Record<string, unknown>
+        | undefined
       if (!zipAggregates) return []
-      const zipData = (zipAggregates as any)?.['address.zip'] ?? (zipAggregates as any)?.address?.zip
+      const zipData =
+        (zipAggregates as any)?.['address.zip'] ??
+        (zipAggregates as any)?.address?.zip
       if (!zipData || typeof zipData !== 'object') return []
       return Object.keys(zipData).filter(Boolean).sort()
     }
@@ -189,20 +198,27 @@ export async function fetchZipCodesForCity(
           boardId: defaultBoardId,
           resultsPerPage: 1,
           listings: false,
-          aggregates: 'address.zip',
+          aggregates: 'address.zip'
         },
-        post: {},
+        post: {}
       },
       undefined
     )
 
-    const zipAggregates = (response?.aggregates as Record<string, unknown> | undefined)
+    const zipAggregates = response?.aggregates as
+      | Record<string, unknown>
+      | undefined
     if (!zipAggregates) return []
-    const zipData = (zipAggregates as any)?.['address.zip'] ?? (zipAggregates as any)?.address?.zip
+    const zipData =
+      (zipAggregates as any)?.['address.zip'] ??
+      (zipAggregates as any)?.address?.zip
     if (!zipData || typeof zipData !== 'object') return []
     return Object.keys(zipData).filter(Boolean).sort()
   } catch (error) {
-    console.error(`[pageGeneration] fetchZipCodesForCity error for "${city}"`, error)
+    console.error(
+      `[pageGeneration] fetchZipCodesForCity error for "${city}"`,
+      error
+    )
     return []
   }
 }
@@ -236,7 +252,7 @@ export async function fetchListingsPreview(
         resultsPerPage: limit,
         sortBy: 'createdOnDesc',
         listings: true,
-        ...subTypeFilters,
+        ...subTypeFilters
       } as any)
     }
 
@@ -249,14 +265,17 @@ export async function fetchListingsPreview(
           resultsPerPage: limit,
           sortBy: 'createdOnDesc',
           listings: true,
-          ...subTypeFilters,
+          ...subTypeFilters
         },
-        post: {},
+        post: {}
       },
       undefined
     )
   } catch (error) {
-    console.error(`[pageGeneration] fetchListingsPreview error for "${city}"`, error)
+    console.error(
+      `[pageGeneration] fetchListingsPreview error for "${city}"`,
+      error
+    )
     return null
   }
 }
@@ -295,8 +314,9 @@ export async function fetchListingStats(
     boardId: defaultBoardId,
     resultsPerPage: 1,
     listings: false,
-    statistics: 'avg-listPrice,med-listPrice,min-listPrice,max-listPrice,cnt-listPrice',
-    ...filters,
+    statistics:
+      'avg-listPrice,med-listPrice,min-listPrice,max-listPrice,cnt-listPrice',
+    ...filters
   }
   if (scope.city) params['city'] = scope.city
   if (scope.zip) params['address.zip'] = scope.zip
@@ -313,7 +333,7 @@ export async function fetchListingStats(
       avg: Number(listPrice?.avg ?? 0) || 0,
       med: Number(listPrice?.med ?? 0) || 0,
       min: Number(listPrice?.min ?? 0) || 0,
-      max: Number(listPrice?.max ?? 0) || 0,
+      max: Number(listPrice?.max ?? 0) || 0
     }
     statsCache.set(cacheKey, { value, expiresAt: now + STATS_CACHE_TTL_MS })
     return value

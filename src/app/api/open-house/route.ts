@@ -1,9 +1,10 @@
 import { NextResponse } from 'next/server'
-import { readFile, writeFile, mkdir } from 'fs/promises'
-import path from 'path'
 import crypto from 'crypto'
+import path from 'path'
 
 import type { OpenHouseSession } from '@/types/openHouse'
+
+import { mkdir, readFile, writeFile } from 'fs/promises'
 
 const DATA_DIR = path.join(process.cwd(), 'data')
 const DATA_FILE = path.join(DATA_DIR, 'open-house-sessions.json')
@@ -44,11 +45,21 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const body = await request.json()
-    const { mlsNumber, agentName, agentEmail, propertyAddress, propertyImage, propertyPrice } = body
+    const {
+      mlsNumber,
+      agentName,
+      agentEmail,
+      propertyAddress,
+      propertyImage,
+      propertyPrice
+    } = body
 
     if (!mlsNumber || !agentName || !propertyAddress) {
       return NextResponse.json(
-        { error: 'Missing required fields: mlsNumber, agentName, propertyAddress' },
+        {
+          error:
+            'Missing required fields: mlsNumber, agentName, propertyAddress'
+        },
         { status: 400 }
       )
     }

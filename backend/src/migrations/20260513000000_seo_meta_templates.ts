@@ -74,7 +74,7 @@ const DEFAULT_TEMPLATES: Array<{
 ]
 
 export async function up(knex: Knex): Promise<void> {
-  await knex.schema.createTable('seo_meta_templates', table => {
+  await knex.schema.createTable('seo_meta_templates', (table) => {
     table.bigIncrements('id').primary()
     table.string('page_type', 64).notNullable().unique()
     table.text('title_template').notNullable()
@@ -87,7 +87,7 @@ export async function up(knex: Knex): Promise<void> {
   })
 
   await knex('seo_meta_templates').insert(
-    DEFAULT_TEMPLATES.map(t => ({
+    DEFAULT_TEMPLATES.map((t) => ({
       page_type: t.page_type,
       title_template: t.title_template,
       description_template: t.description_template,

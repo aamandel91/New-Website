@@ -1,5 +1,4 @@
 import type { Position } from 'geojson'
-import { type LngLatBounds } from 'utils/lngLat'
 
 import {
   defaultAdvancedFilters,
@@ -9,6 +8,7 @@ import {
 import searchConfig from '@configs/search'
 
 import { nonDefaultFilter } from 'utils/filters'
+import { type LngLatBounds } from 'utils/lngLat'
 import { getDefaultBounds, toRectangle } from 'utils/map'
 
 import type { Filters } from './types'
@@ -56,8 +56,7 @@ export const getPageParams = (
   bumpForExclusions = false
 ) => ({
   pageNum,
-  resultsPerPage:
-    bumpForExclusions && resultsPerPage < 50 ? 60 : resultsPerPage
+  resultsPerPage: bumpForExclusions && resultsPerPage < 50 ? 60 : resultsPerPage
 })
 
 export const getNonDefaultFilters = (

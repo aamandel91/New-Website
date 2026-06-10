@@ -1,6 +1,10 @@
 'use client'
 
-import React, { useEffect, useState, useCallback } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
+
+import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward'
+import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward'
+import SaveIcon from '@mui/icons-material/Save'
 import {
   Alert,
   Box,
@@ -18,11 +22,8 @@ import {
   Tab,
   Tabs,
   TextField,
-  Typography,
+  Typography
 } from '@mui/material'
-import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward'
-import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward'
-import SaveIcon from '@mui/icons-material/Save'
 
 const NAVY = '#0F1621'
 const GOLD = '#C4A96E'
@@ -39,10 +40,19 @@ const ALL_WIDGETS = [
   'TodaysListings',
   'BlogCategories',
   'BlogArchives',
-  'BlogTags',
+  'BlogTags'
 ]
 
-const PAGE_TYPES = ['city', 'neighborhood', 'subtype', 'zip', 'sell', 'about', 'contact', 'blog'] as const
+const PAGE_TYPES = [
+  'city',
+  'neighborhood',
+  'subtype',
+  'zip',
+  'sell',
+  'about',
+  'contact',
+  'blog'
+] as const
 type PageType = (typeof PAGE_TYPES)[number]
 
 interface PageConfig {
@@ -105,7 +115,7 @@ export default function AdminSidebarWidgets() {
       const res = await fetch('/api/admin/sidebar-config', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(config),
+        body: JSON.stringify(config)
       })
       if (res.ok) {
         setSuccess(true)
@@ -129,12 +139,16 @@ export default function AdminSidebarWidgets() {
         : [...page.widgets, widget]
       return {
         ...prev,
-        pageTypes: { ...prev.pageTypes, [pageType]: { ...page, widgets } },
+        pageTypes: { ...prev.pageTypes, [pageType]: { ...page, widgets } }
       }
     })
   }
 
-  const moveWidget = (pageType: PageType, index: number, direction: 'up' | 'down') => {
+  const moveWidget = (
+    pageType: PageType,
+    index: number,
+    direction: 'up' | 'down'
+  ) => {
     if (!config) return
     setConfig((prev) => {
       if (!prev) return prev
@@ -145,7 +159,7 @@ export default function AdminSidebarWidgets() {
       ;[widgets[index], widgets[newIndex]] = [widgets[newIndex], widgets[index]]
       return {
         ...prev,
-        pageTypes: { ...prev.pageTypes, [pageType]: { ...page, widgets } },
+        pageTypes: { ...prev.pageTypes, [pageType]: { ...page, widgets } }
       }
     })
   }
@@ -157,7 +171,10 @@ export default function AdminSidebarWidgets() {
       const page = prev.pageTypes[pageType]
       return {
         ...prev,
-        pageTypes: { ...prev.pageTypes, [pageType]: { ...page, enabled: !page.enabled } },
+        pageTypes: {
+          ...prev.pageTypes,
+          [pageType]: { ...page, enabled: !page.enabled }
+        }
       }
     })
   }
@@ -170,8 +187,8 @@ export default function AdminSidebarWidgets() {
         ...prev,
         widgetSettings: {
           ...prev.widgetSettings,
-          ReadyToChat: { ...prev.widgetSettings.ReadyToChat!, [field]: value },
-        },
+          ReadyToChat: { ...prev.widgetSettings.ReadyToChat!, [field]: value }
+        }
       }
     })
   }
@@ -189,7 +206,7 @@ export default function AdminSidebarWidgets() {
       links[index] = { ...links[index], [field]: value }
       return {
         ...prev,
-        widgetSettings: { ...prev.widgetSettings, [widget]: { links } },
+        widgetSettings: { ...prev.widgetSettings, [widget]: { links } }
       }
     })
   }
@@ -215,7 +232,12 @@ export default function AdminSidebarWidgets() {
 
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
-      <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 3 }}>
+      <Stack
+        direction="row"
+        justifyContent="space-between"
+        alignItems="center"
+        sx={{ mb: 3 }}
+      >
         <Typography variant="h4" fontWeight={700} sx={{ color: NAVY }}>
           Sidebar Widgets
         </Typography>
@@ -231,7 +253,11 @@ export default function AdminSidebarWidgets() {
       </Stack>
 
       {success && (
-        <Alert severity="success" sx={{ mb: 2 }} onClose={() => setSuccess(false)}>
+        <Alert
+          severity="success"
+          sx={{ mb: 2 }}
+          onClose={() => setSuccess(false)}
+        >
           Configuration saved successfully
         </Alert>
       )}
@@ -257,9 +283,16 @@ export default function AdminSidebarWidgets() {
 
       {/* Widget Configuration for Selected Page */}
       <Paper sx={{ p: 3, mb: 3 }}>
-        <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
+        <Stack
+          direction="row"
+          justifyContent="space-between"
+          alignItems="center"
+          sx={{ mb: 2 }}
+        >
           <Typography variant="h6" fontWeight={600}>
-            {selectedPageType.charAt(0).toUpperCase() + selectedPageType.slice(1)} Page Widgets
+            {selectedPageType.charAt(0).toUpperCase() +
+              selectedPageType.slice(1)}{' '}
+            Page Widgets
           </Typography>
           <Stack direction="row" alignItems="center" spacing={1}>
             <Typography variant="body2">Sidebar Enabled</Typography>
@@ -318,8 +351,12 @@ export default function AdminSidebarWidgets() {
               key={widget}
               label={widget}
               onClick={() => toggleWidget(selectedPageType, widget)}
-              color={pageConfig.widgets.includes(widget) ? 'primary' : 'default'}
-              variant={pageConfig.widgets.includes(widget) ? 'filled' : 'outlined'}
+              color={
+                pageConfig.widgets.includes(widget) ? 'primary' : 'default'
+              }
+              variant={
+                pageConfig.widgets.includes(widget) ? 'filled' : 'outlined'
+              }
               size="small"
             />
           ))}
@@ -374,24 +411,40 @@ export default function AdminSidebarWidgets() {
           Seller Resources Links
         </Typography>
         <Stack spacing={1} sx={{ mb: 3 }}>
-          {(config.widgetSettings.SellerResources?.links || []).map((link, i) => (
-            <Stack key={i} direction="row" spacing={1}>
-              <TextField
-                label="Label"
-                size="small"
-                value={link.label}
-                onChange={(e) => updateResourceLink('SellerResources', i, 'label', e.target.value)}
-                sx={{ flex: 1 }}
-              />
-              <TextField
-                label="URL"
-                size="small"
-                value={link.href}
-                onChange={(e) => updateResourceLink('SellerResources', i, 'href', e.target.value)}
-                sx={{ flex: 1 }}
-              />
-            </Stack>
-          ))}
+          {(config.widgetSettings.SellerResources?.links || []).map(
+            (link, i) => (
+              <Stack key={i} direction="row" spacing={1}>
+                <TextField
+                  label="Label"
+                  size="small"
+                  value={link.label}
+                  onChange={(e) =>
+                    updateResourceLink(
+                      'SellerResources',
+                      i,
+                      'label',
+                      e.target.value
+                    )
+                  }
+                  sx={{ flex: 1 }}
+                />
+                <TextField
+                  label="URL"
+                  size="small"
+                  value={link.href}
+                  onChange={(e) =>
+                    updateResourceLink(
+                      'SellerResources',
+                      i,
+                      'href',
+                      e.target.value
+                    )
+                  }
+                  sx={{ flex: 1 }}
+                />
+              </Stack>
+            )
+          )}
         </Stack>
 
         <Divider sx={{ my: 2 }} />
@@ -401,24 +454,40 @@ export default function AdminSidebarWidgets() {
           Buyer Resources Links
         </Typography>
         <Stack spacing={1}>
-          {(config.widgetSettings.BuyerResources?.links || []).map((link, i) => (
-            <Stack key={i} direction="row" spacing={1}>
-              <TextField
-                label="Label"
-                size="small"
-                value={link.label}
-                onChange={(e) => updateResourceLink('BuyerResources', i, 'label', e.target.value)}
-                sx={{ flex: 1 }}
-              />
-              <TextField
-                label="URL"
-                size="small"
-                value={link.href}
-                onChange={(e) => updateResourceLink('BuyerResources', i, 'href', e.target.value)}
-                sx={{ flex: 1 }}
-              />
-            </Stack>
-          ))}
+          {(config.widgetSettings.BuyerResources?.links || []).map(
+            (link, i) => (
+              <Stack key={i} direction="row" spacing={1}>
+                <TextField
+                  label="Label"
+                  size="small"
+                  value={link.label}
+                  onChange={(e) =>
+                    updateResourceLink(
+                      'BuyerResources',
+                      i,
+                      'label',
+                      e.target.value
+                    )
+                  }
+                  sx={{ flex: 1 }}
+                />
+                <TextField
+                  label="URL"
+                  size="small"
+                  value={link.href}
+                  onChange={(e) =>
+                    updateResourceLink(
+                      'BuyerResources',
+                      i,
+                      'href',
+                      e.target.value
+                    )
+                  }
+                  sx={{ flex: 1 }}
+                />
+              </Stack>
+            )
+          )}
         </Stack>
       </Paper>
     </Container>

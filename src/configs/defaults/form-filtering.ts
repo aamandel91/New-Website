@@ -5,7 +5,7 @@ export const defaultBlockedWords = [
   'crypto',
   'western union',
   'wire transfer',
-  'cash app',
+  'cash app'
 ]
 
 export interface FormFilterConfig {

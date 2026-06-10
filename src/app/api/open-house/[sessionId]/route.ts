@@ -1,17 +1,18 @@
 import { NextResponse } from 'next/server'
-import { readFile, writeFile, mkdir } from 'fs/promises'
-import path from 'path'
 import crypto from 'crypto'
+import path from 'path'
 
-import type { OpenHouseSession, OpenHouseVisitor } from '@/types/openHouse'
 import {
-  searchPeople,
-  createPerson,
-  updatePerson,
   applyTags,
   createEvent,
   createNote,
+  createPerson,
+  searchPeople,
+  updatePerson
 } from '@/services/suresend/client'
+import type { OpenHouseSession, OpenHouseVisitor } from '@/types/openHouse'
+
+import { mkdir, readFile, writeFile } from 'fs/promises'
 
 const DATA_DIR = path.join(process.cwd(), 'data')
 const DATA_FILE = path.join(DATA_DIR, 'open-house-sessions.json')
@@ -47,14 +48,18 @@ async function syncVisitorToSureSend(
     const existing = await searchPeople(visitor.email)
     if (existing.data.length > 0) {
       personId = existing.data[0].id
-      await updatePerson(personId, { firstName, lastName, phone: visitor.phone })
+      await updatePerson(personId, {
+        firstName,
+        lastName,
+        phone: visitor.phone
+      })
     } else {
       const created = await createPerson({
         firstName,
         lastName,
         email: visitor.email,
         phone: visitor.phone,
-        source: 'open_house',
+        source: 'open_house'
       })
       personId = created.data.id
     }
@@ -65,7 +70,7 @@ async function syncVisitorToSureSend(
       type: 'form_submission',
       personId,
       property: { address: propertyAddress, mlsNumber },
-      metadata: { formType: 'open_house' },
+      metadata: { formType: 'open_house' }
     })
 
     const noteLines = [`Open House Sign-In at ${propertyAddress}`]
@@ -78,7 +83,10 @@ async function syncVisitorToSureSend(
     if (visitor.hearAbout) {
       noteLines.push(`How they heard about it: ${visitor.hearAbout}`)
     }
-    if (visitor.customAnswers && Object.keys(visitor.customAnswers).length > 0) {
+    if (
+      visitor.customAnswers &&
+      Object.keys(visitor.customAnswers).length > 0
+    ) {
       for (const [question, answer] of Object.entries(visitor.customAnswers)) {
         noteLines.push(`${question}: ${answer}`)
       }
@@ -101,13 +109,10 @@ export async function GET(
   try {
     const { sessionId } = await params
     const sessions = await getSessions()
-    const session = sessions.find(s => s.id === sessionId)
+    const session = sessions.find((s) => s.id === sessionId)
 
     if (!session) {
-      return NextResponse.json(
-        { error: 'Session not found' },
-        { status: 404 }
-      )
+      return NextResponse.json({ error: 'Session not found' }, { status: 404 })
     }
 
     return NextResponse.json({ session })
@@ -127,7 +132,15 @@ export async function POST(
   try {
     const { sessionId } = await params
     const body = await request.json()
-    const { name, email, phone, workingWithAgent, hearAbout, preApproved, customAnswers } = body
+    const {
+      name,
+      email,
+      phone,
+      workingWithAgent,
+      hearAbout,
+      preApproved,
+      customAnswers
+    } = body
 
     if (!name || !email || !phone) {
       return NextResponse.json(
@@ -137,13 +150,10 @@ export async function POST(
     }
 
     const sessions = await getSessions()
-    const sessionIndex = sessions.findIndex(s => s.id === sessionId)
+    const sessionIndex = sessions.findIndex((s) => s.id === sessionId)
 
     if (sessionIndex === -1) {
-      return NextResponse.json(
-        { error: 'Session not found' },
-        { status: 404 }
-      )
+      return NextResponse.json({ error: 'Session not found' }, { status: 404 })
     }
 
     const visitor: OpenHouseVisitor = {
@@ -182,13 +192,10 @@ export async function DELETE(
   try {
     const { sessionId } = await params
     const sessions = await getSessions()
-    const filtered = sessions.filter(s => s.id !== sessionId)
+    const filtered = sessions.filter((s) => s.id !== sessionId)
 
     if (filtered.length === sessions.length) {
-      return NextResponse.json(
-        { error: 'Session not found' },
-        { status: 404 }
-      )
+      return NextResponse.json({ error: 'Session not found' }, { status: 404 })
     }
 
     await saveSessions(filtered)

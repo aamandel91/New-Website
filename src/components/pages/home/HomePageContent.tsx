@@ -2,9 +2,10 @@
 
 import { Box } from '@mui/material'
 
+import ExploreLifestyles from './components/ExploreLifestyles'
+
 import BlogSection from './components/BlogSection'
 import CTACards from './components/CTACards'
-import ExploreLifestyles from './components/ExploreLifestyles'
 import ExploreListings from './components/ExploreListings'
 import HeroSection from './components/HeroSection'
 import HomeValueWidget from './components/HomeValueWidget'

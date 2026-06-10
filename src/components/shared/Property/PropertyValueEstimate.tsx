@@ -1,6 +1,7 @@
 import { useTranslations } from 'next-intl'
-import { Box, Stack, Typography, alpha, useTheme } from '@mui/material'
+
 import TrendingUpIcon from '@mui/icons-material/TrendingUp'
+import { alpha, Box, Stack, Typography, useTheme } from '@mui/material'
 
 import { type PropertyEstimate } from 'services/API'
 import { formatPrice } from 'utils/formatters'

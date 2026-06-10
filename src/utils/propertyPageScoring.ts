@@ -27,7 +27,8 @@ export function scorePropertyPage(property: {
   // Sold within 90 days: +2
   if (property.soldDate) {
     const soldDate = new Date(property.soldDate)
-    const daysSinceSold = (Date.now() - soldDate.getTime()) / (1000 * 60 * 60 * 24)
+    const daysSinceSold =
+      (Date.now() - soldDate.getTime()) / (1000 * 60 * 60 * 24)
     if (daysSinceSold <= 90) {
       score += 2
       reasons.push('+2 sold within 90 days')

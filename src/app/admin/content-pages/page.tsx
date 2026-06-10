@@ -1,39 +1,46 @@
 'use client'
 
 import React, { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
+
+import AddIcon from '@mui/icons-material/Add'
+import CopyIcon from '@mui/icons-material/ContentCopy'
+import DeleteIcon from '@mui/icons-material/Delete'
+import EditIcon from '@mui/icons-material/Edit'
+import PublishIcon from '@mui/icons-material/Publish'
+import VisibilityIcon from '@mui/icons-material/Visibility'
 import {
+  Alert,
   Box,
-  Container,
-  Paper,
-  Typography,
   Button,
-  TextField,
-  Select,
-  MenuItem,
+  Chip,
+  CircularProgress,
+  Container,
   FormControl,
+  IconButton,
   InputLabel,
+  MenuItem,
+  Paper,
+  Select,
+  Stack,
   Table,
   TableBody,
   TableCell,
   TableContainer,
   TableHead,
   TableRow,
-  Chip,
-  IconButton,
-  Stack,
-  Alert,
-  CircularProgress
+  TextField,
+  Typography
 } from '@mui/material'
-import AddIcon from '@mui/icons-material/Add'
-import EditIcon from '@mui/icons-material/Edit'
-import DeleteIcon from '@mui/icons-material/Delete'
-import VisibilityIcon from '@mui/icons-material/Visibility'
-import CopyIcon from '@mui/icons-material/ContentCopy'
-import PublishIcon from '@mui/icons-material/Publish'
-import { useRouter } from 'next/navigation'
-import APIContentPages, { type ContentPage } from '@/services/API/APIContentPages'
 
-const STATUS_COLORS: Record<string, 'default' | 'primary' | 'success' | 'warning'> = {
+import APIContentPages, {
+  type ContentPage
+} from '@/services/API/APIContentPages'
+
+const STATUS_COLORS: Record<
+  string,
+  'default' | 'primary' | 'success' | 'warning'
+> = {
   draft: 'default',
   published: 'success',
   scheduled: 'warning'
@@ -115,7 +122,12 @@ export default function ContentPagesPage() {
   return (
     <Container maxWidth="xl">
       <Box sx={{ mb: 4 }}>
-        <Stack direction="row" justifyContent="space-between" alignItems="center" mb={3}>
+        <Stack
+          direction="row"
+          justifyContent="space-between"
+          alignItems="center"
+          mb={3}
+        >
           <Typography variant="h4" component="h1">
             Content Pages
           </Typography>
@@ -222,9 +234,18 @@ export default function ContentPagesPage() {
                       </TableCell>
                       <TableCell>
                         {page.is_template ? (
-                          <Chip label="Template" size="small" variant="outlined" />
+                          <Chip
+                            label="Template"
+                            size="small"
+                            variant="outlined"
+                          />
                         ) : (
-                          <Chip label="Page" size="small" variant="outlined" color="primary" />
+                          <Chip
+                            label="Page"
+                            size="small"
+                            variant="outlined"
+                            color="primary"
+                          />
                         )}
                       </TableCell>
                       <TableCell>
@@ -233,21 +254,23 @@ export default function ContentPagesPage() {
                       <TableCell align="right">
                         <IconButton
                           size="small"
-                          onClick={() => router.push(`/admin/content-pages/${page.id}`)}
+                          onClick={() =>
+                            router.push(`/admin/content-pages/${page.id}`)
+                          }
                         >
                           <EditIcon fontSize="small" />
                         </IconButton>
                         <IconButton
                           size="small"
-                          onClick={() =>
-                            window.open(`/${page.slug}`, '_blank')
-                          }
+                          onClick={() => window.open(`/${page.slug}`, '_blank')}
                         >
                           <VisibilityIcon fontSize="small" />
                         </IconButton>
                         <IconButton
                           size="small"
-                          onClick={() => handleDuplicatePage(page.id, page.title)}
+                          onClick={() =>
+                            handleDuplicatePage(page.id, page.title)
+                          }
                         >
                           <CopyIcon fontSize="small" />
                         </IconButton>

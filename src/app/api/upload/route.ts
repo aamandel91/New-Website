@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server'
-import { writeFile, mkdir, unlink } from 'fs/promises'
 import { existsSync } from 'fs'
 import path from 'path'
+
+import { mkdir, unlink, writeFile } from 'fs/promises'
 
 const ALLOWED_TYPES = new Set([
   'image/jpeg',
@@ -36,10 +37,7 @@ export async function POST(request: Request) {
     const files = formData.getAll('files')
 
     if (files.length === 0) {
-      return NextResponse.json(
-        { error: 'No files provided' },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: 'No files provided' }, { status: 400 })
     }
 
     const images: Array<{
@@ -55,7 +53,9 @@ export async function POST(request: Request) {
 
       if (!ALLOWED_TYPES.has(file.type)) {
         return NextResponse.json(
-          { error: `Invalid file type: ${file.type}. Allowed: jpeg, png, gif, webp, svg` },
+          {
+            error: `Invalid file type: ${file.type}. Allowed: jpeg, png, gif, webp, svg`
+          },
           { status: 400 }
         )
       }
@@ -83,10 +83,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ images })
   } catch (err) {
     console.error('Upload error:', err)
-    return NextResponse.json(
-      { error: 'Upload failed' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Upload failed' }, { status: 500 })
   }
 }
 
@@ -106,19 +103,13 @@ export async function DELETE(request: Request) {
     const filepath = path.join(UPLOAD_DIR, safeName)
 
     if (!existsSync(filepath)) {
-      return NextResponse.json(
-        { error: 'File not found' },
-        { status: 404 }
-      )
+      return NextResponse.json({ error: 'File not found' }, { status: 404 })
     }
 
     await unlink(filepath)
     return NextResponse.json({ success: true })
   } catch (err) {
     console.error('Delete error:', err)
-    return NextResponse.json(
-      { error: 'Delete failed' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Delete failed' }, { status: 500 })
   }
 }

@@ -3,19 +3,21 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import mapboxgl from 'mapbox-gl'
-import 'mapbox-gl/dist/mapbox-gl.css'
 
 import { Alert, Box, Chip } from '@mui/material'
 
-import { APISearchCSR } from 'services/API'
 import mapConfig from '@configs/map'
 import { tenant } from '@/configs/tenant.config'
+
+import { APISearchCSR } from 'services/API'
 import { getSeoUrl } from 'utils/properties'
 
-import { AiSearchPanel } from './AiSearchPanel'
-import { filtersToSearchParams } from './utils/nlpParser'
-import { formatMapPrice } from './utils/formatters'
+import 'mapbox-gl/dist/mapbox-gl.css'
+
 import { trackAiListingClick, trackAiResultsShown } from './utils/analytics'
+import { formatMapPrice } from './utils/formatters'
+import { filtersToSearchParams } from './utils/nlpParser'
+import { AiSearchPanel } from './AiSearchPanel'
 import type { AiSearchFilters, AiSearchListing } from './types'
 
 const DEFAULT_CENTER: [number, number] = [-80.1, 26.7] // South Florida
@@ -34,7 +36,7 @@ const FIELDS = [
   'type',
   'lastStatus',
   'status',
-  'map',
+  'map'
 ].join(',')
 
 function boundsToBbox(bounds: mapboxgl.LngLatBounds) {
@@ -46,12 +48,23 @@ function boundsToBbox(bounds: mapboxgl.LngLatBounds) {
 function getListingCoords(l: AiSearchListing): [number, number] | null {
   const lng = l.map?.longitude ?? l.coordinates?.lng ?? l.longitude
   const lat = l.map?.latitude ?? l.coordinates?.lat ?? l.latitude
-  if (lng === undefined || lat === undefined || Number.isNaN(lng) || Number.isNaN(lat)) return null
+  if (
+    lng === undefined ||
+    lat === undefined ||
+    Number.isNaN(lng) ||
+    Number.isNaN(lat)
+  )
+    return null
   return [Number(lng), Number(lat)]
 }
 
-function getBubbleColor(type?: string, status?: string, lastStatus?: string): string {
-  if (status === 'U' && (lastStatus === 'Sld' || lastStatus === 'Sc')) return '#8b7fa8'
+function getBubbleColor(
+  type?: string,
+  status?: string,
+  lastStatus?: string
+): string {
+  if (status === 'U' && (lastStatus === 'Sld' || lastStatus === 'Sc'))
+    return '#8b7fa8'
   if (status === 'U') return '#f59e0b'
   if (type === 'Lease') return '#a855f7'
   return tenant.visualIdentity.colors.primary
@@ -85,7 +98,7 @@ export function AiMapListings() {
 
   const [filters, setFilters] = useState<AiSearchFilters>({
     listingType: 'sale',
-    propertyTypes: [],
+    propertyTypes: []
   })
   const [count, setCount] = useState(0)
   const [error, setError] = useState<string | null>(null)
@@ -127,7 +140,11 @@ export function AiMapListings() {
           const url = getSeoUrl(listing as any)
           router.push(url)
         })
-        const marker = new mapboxgl.Marker({ element: bubble, anchor: 'bottom', offset: [0, -2] })
+        const marker = new mapboxgl.Marker({
+          element: bubble,
+          anchor: 'bottom',
+          offset: [0, -2]
+        })
           .setLngLat(coords)
           .addTo(map)
         markersRef.current.push(marker)
@@ -159,10 +176,16 @@ export function AiMapListings() {
       zoom: DEFAULT_ZOOM,
       minZoom: mapConfig.mapboxDefaults.minZoom,
       maxZoom: mapConfig.mapboxDefaults.maxZoom,
-      attributionControl: false,
+      attributionControl: false
     })
-    map.addControl(new mapboxgl.NavigationControl({ showCompass: false }), 'top-right')
-    map.addControl(new mapboxgl.AttributionControl({ compact: true }), 'bottom-right')
+    map.addControl(
+      new mapboxgl.NavigationControl({ showCompass: false }),
+      'top-right'
+    )
+    map.addControl(
+      new mapboxgl.AttributionControl({ compact: true }),
+      'bottom-right'
+    )
 
     map.on('load', () => {
       setMapReady(true)
@@ -191,14 +214,16 @@ export function AiMapListings() {
       mapRef.current.easeTo({
         center: loc.center,
         zoom: loc.zoom ?? mapRef.current.getZoom(),
-        duration: 800,
+        duration: 800
       })
     },
     []
   )
 
   return (
-    <Box sx={{ position: 'relative', width: '100%', height: 'calc(100vh - 70px)' }}>
+    <Box
+      sx={{ position: 'relative', width: '100%', height: 'calc(100vh - 70px)' }}
+    >
       <Box ref={containerRef} sx={{ width: '100%', height: '100%' }} />
 
       <AiSearchPanel
@@ -209,7 +234,9 @@ export function AiMapListings() {
 
       <Chip
         label={
-          error ? 'Error loading listings' : `${count.toLocaleString()} ${count === 1 ? 'property' : 'properties'}`
+          error
+            ? 'Error loading listings'
+            : `${count.toLocaleString()} ${count === 1 ? 'property' : 'properties'}`
         }
         color={error ? 'error' : 'default'}
         sx={{
@@ -218,14 +245,20 @@ export function AiMapListings() {
           right: 24,
           bgcolor: 'background.paper',
           fontWeight: 600,
-          boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+          boxShadow: '0 2px 8px rgba(0,0,0,0.15)'
         }}
       />
 
       {error && (
         <Alert
           severity="error"
-          sx={{ position: 'absolute', bottom: 24, left: 16, right: 80, maxWidth: 500 }}
+          sx={{
+            position: 'absolute',
+            bottom: 24,
+            left: 16,
+            right: 80,
+            maxWidth: 500
+          }}
           onClose={() => setError(null)}
         >
           {error}

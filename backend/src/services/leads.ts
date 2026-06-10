@@ -38,7 +38,11 @@ export class LeadsService {
   /**
    * Update a lead
    */
-  async updateLead(orgId: bigint, id: bigint, input: UpdateLeadInput): Promise<Lead> {
+  async updateLead(
+    orgId: bigint,
+    id: bigint,
+    input: UpdateLeadInput
+  ): Promise<Lead> {
     const existing = await this.leadsRepo.getLeadById(orgId, id)
 
     if (!existing) {

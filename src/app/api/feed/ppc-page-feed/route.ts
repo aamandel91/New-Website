@@ -12,13 +12,15 @@
 
 import type { NextRequest } from 'next/server'
 import { NextResponse } from 'next/server'
-import fs from 'fs/promises'
 import path from 'path'
 
-import { ppcFeedConfig } from '@configs/ppc-feed'
-import type { PriceTier } from '@configs/ppc-feed'
-import { subTypes } from '@configs/page-generation'
 import type { SubTypeConfig } from '@configs/page-generation'
+import { subTypes } from '@configs/page-generation'
+import type { PriceTier } from '@configs/ppc-feed'
+import { ppcFeedConfig } from '@configs/ppc-feed'
+
+import fs from 'fs/promises'
+
 import { toCSV } from 'services/marketing'
 
 // ── Types ────────────────────────────────────────────────────────────────────
@@ -59,7 +61,10 @@ async function csrFetch(params: Record<string, unknown>): Promise<any> {
   const url = `${CSR_API_URL}/listings?${searchParams.toString()}`
   const res = await fetch(url, {
     method: 'GET',
-    headers: { 'REPLIERS-API-KEY': CSR_API_KEY, 'Content-Type': 'application/json' },
+    headers: {
+      'REPLIERS-API-KEY': CSR_API_KEY,
+      'Content-Type': 'application/json'
+    }
   })
   if (!res.ok) return null
   return res.json()
@@ -72,7 +77,7 @@ async function fetchAreaCities(area: string): Promise<string[]> {
     area,
     status: 'A',
     listings: false,
-    aggregates: 'address.city',
+    aggregates: 'address.city'
   })
   if (!data?.aggregates) return []
   const cityAgg =
@@ -103,7 +108,8 @@ function buildSubTypeFilters(subType: SubTypeConfig): Record<string, unknown> {
   if (subType.minPrice) params.minPrice = subType.minPrice
   if (subType.lastStatus) params.lastStatus = subType.lastStatus
   if (subType.minLotSize) params.minLotSize = subType.minLotSize
-  if (subType.stories) params.keywords = subType.stories === 1 ? '1 story' : '2 story'
+  if (subType.stories)
+    params.keywords = subType.stories === 1 ? '1 story' : '2 story'
   return params
 }
 
@@ -119,13 +125,13 @@ async function fetchCityStats(
     listings: false,
     statistics: 'listPrice',
     resultsPerPage: 1,
-    ...extraFilters,
+    ...extraFilters
   })
   if (!data) return { count: 0, avg: 0, med: 0 }
   return {
     count: data.count ?? 0,
     avg: data.statistics?.listPrice?.avg ?? 0,
-    med: data.statistics?.listPrice?.med ?? 0,
+    med: data.statistics?.listPrice?.med ?? 0
   }
 }
 
@@ -136,11 +142,12 @@ async function fetchNeighborhoods(city: string): Promise<string[]> {
     city,
     status: 'A',
     listings: false,
-    aggregates: 'address.neighborhood',
+    aggregates: 'address.neighborhood'
   })
   if (!data?.aggregates) return []
   const hoodAgg =
-    data.aggregates['address.neighborhood'] ?? data.aggregates?.address?.neighborhood
+    data.aggregates['address.neighborhood'] ??
+    data.aggregates?.address?.neighborhood
   if (!hoodAgg || typeof hoodAgg !== 'object') return []
   return Object.keys(hoodAgg).filter(Boolean).sort()
 }
@@ -157,20 +164,23 @@ async function fetchNeighborhoodStats(
     status: 'A',
     listings: false,
     statistics: 'listPrice',
-    resultsPerPage: 1,
+    resultsPerPage: 1
   })
   if (!data) return { count: 0, avg: 0, med: 0 }
   return {
     count: data.count ?? 0,
     avg: data.statistics?.listPrice?.avg ?? 0,
-    med: data.statistics?.listPrice?.med ?? 0,
+    med: data.statistics?.listPrice?.med ?? 0
   }
 }
 
 // ── Slug / URL helpers ───────────────────────────────────────────────────────
 
 function slugify(text: string): string {
-  return text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
+  return text
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)/g, '')
 }
 
 function getPriceTier(avgPrice: number, tiers: PriceTier[]): string {
@@ -209,7 +219,14 @@ async function generateFeed(
   minListings: number
 ): Promise<PPCPageEntry[]> {
   const entries: PPCPageEntry[] = []
-  const { excludeSubTypes, targetAreas, priceTiers, baseUrl, includeSubTypes, includeNeighborhoods } = ppcFeedConfig
+  const {
+    excludeSubTypes,
+    targetAreas,
+    priceTiers,
+    baseUrl,
+    includeSubTypes,
+    includeNeighborhoods
+  } = ppcFeedConfig
 
   const eligibleSubTypes = subTypes.filter(
     (st) => !excludeSubTypes.includes(st.slug)
@@ -236,7 +253,7 @@ async function generateFeed(
               listingCount: stats.count,
               avgPrice: Math.round(stats.avg),
               medianPrice: Math.round(stats.med),
-              priceTier: getPriceTier(stats.avg, priceTiers),
+              priceTier: getPriceTier(stats.avg, priceTiers)
             })
           }
         }
@@ -258,7 +275,7 @@ async function generateFeed(
               listingCount: stats.count,
               avgPrice: Math.round(stats.avg),
               medianPrice: Math.round(stats.med),
-              priceTier: getPriceTier(stats.avg, priceTiers),
+              priceTier: getPriceTier(stats.avg, priceTiers)
             })
           }
         }
@@ -277,7 +294,7 @@ function toPageFeedRows(entries: PPCPageEntry[]) {
     'Custom Label 1': e.type,
     'Custom Label 2': e.city,
     'Custom Label 3': e.name,
-    'Custom Label 4': e.priceTier,
+    'Custom Label 4': e.priceTier
   }))
 }
 
@@ -297,7 +314,7 @@ function toCustomizerRows(entries: PPCPageEntry[]) {
       median_price: e.medianPrice,
       city: e.city,
       name: e.name,
-      price_range: priceRange,
+      price_range: priceRange
     }
   })
 }
@@ -310,8 +327,14 @@ export async function GET(request: NextRequest) {
     const format = sp.get('format') || 'csv'
     const type = sp.get('type') || 'pages'
     const refresh = sp.get('refresh') === 'true'
-    const minAvgPrice = parseInt(sp.get('minAvgPrice') || String(ppcFeedConfig.minAvgPrice), 10)
-    const minListings = parseInt(sp.get('minListings') || String(ppcFeedConfig.minListings), 10)
+    const minAvgPrice = parseInt(
+      sp.get('minAvgPrice') || String(ppcFeedConfig.minAvgPrice),
+      10
+    )
+    const minListings = parseInt(
+      sp.get('minListings') || String(ppcFeedConfig.minListings),
+      10
+    )
 
     // Try cache first (unless refresh requested)
     let entries: PPCPageEntry[] | null = null
@@ -335,9 +358,10 @@ export async function GET(request: NextRequest) {
     )
 
     // Build output rows
-    const rows: Record<string, unknown>[] = type === 'customizers'
-      ? toCustomizerRows(filtered)
-      : toPageFeedRows(filtered)
+    const rows: Record<string, unknown>[] =
+      type === 'customizers'
+        ? toCustomizerRows(filtered)
+        : toPageFeedRows(filtered)
 
     if (format === 'json') {
       return NextResponse.json({
@@ -346,35 +370,37 @@ export async function GET(request: NextRequest) {
           total: rows.length,
           byType: {
             subType: filtered.filter((e) => e.type === 'subType').length,
-            neighborhood: filtered.filter((e) => e.type === 'neighborhood').length,
+            neighborhood: filtered.filter((e) => e.type === 'neighborhood')
+              .length
           },
           byCity: Object.fromEntries(
             [...new Set(filtered.map((e) => e.city))].map((city) => [
               city,
-              filtered.filter((e) => e.city === city).length,
+              filtered.filter((e) => e.city === city).length
             ])
           ),
           byPriceTier: Object.fromEntries(
             ppcFeedConfig.priceTiers.map((t) => [
               t.label,
-              filtered.filter((e) => e.priceTier === t.label).length,
+              filtered.filter((e) => e.priceTier === t.label).length
             ])
           ),
           generated_at: new Date().toISOString(),
-          cached: !refresh,
-        },
+          cached: !refresh
+        }
       })
     }
 
     // CSV
     const csv = toCSV(rows)
-    const filename = type === 'customizers' ? 'ppc-ad-customizers.csv' : 'ppc-page-feed.csv'
+    const filename =
+      type === 'customizers' ? 'ppc-ad-customizers.csv' : 'ppc-page-feed.csv'
 
     return new NextResponse(csv, {
       headers: {
         'Content-Type': 'text/csv',
-        'Content-Disposition': `attachment; filename="${filename}"`,
-      },
+        'Content-Disposition': `attachment; filename="${filename}"`
+      }
     })
   } catch (error) {
     console.error('Error generating PPC page feed:', error)

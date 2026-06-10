@@ -1,5 +1,5 @@
-import { NextResponse } from 'next/server'
 import { revalidateTag } from 'next/cache'
+import { NextResponse } from 'next/server'
 
 const ALLOWED_TAGS = new Set(['sitemap-pages'])
 

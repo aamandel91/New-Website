@@ -1,33 +1,36 @@
 'use client'
 
 import React, { useState } from 'react'
+import dayjs from 'dayjs'
+
+import CalendarTodayIcon from '@mui/icons-material/CalendarToday'
+import CloseIcon from '@mui/icons-material/Close'
+import HomeIcon from '@mui/icons-material/Home'
+import PhoneIcon from '@mui/icons-material/Phone'
+import SendIcon from '@mui/icons-material/Send'
+import VideocamIcon from '@mui/icons-material/Videocam'
 import {
+  Alert,
+  AppBar,
   Box,
   Button,
-  Typography,
-  TextField,
-  Stack,
-  Alert,
   Chip,
-  ToggleButtonGroup,
-  ToggleButton,
-  Divider,
   Dialog,
+  Divider,
   IconButton,
-  AppBar,
+  Stack,
+  TextField,
+  ToggleButton,
+  ToggleButtonGroup,
   Toolbar,
+  Typography
 } from '@mui/material'
-import CloseIcon from '@mui/icons-material/Close'
-import SendIcon from '@mui/icons-material/Send'
-import HomeIcon from '@mui/icons-material/Home'
-import VideocamIcon from '@mui/icons-material/Videocam'
-import CalendarTodayIcon from '@mui/icons-material/CalendarToday'
-import PhoneIcon from '@mui/icons-material/Phone'
-import dayjs from 'dayjs'
-import { trackFormSubmission } from '@/utils/analytics'
-import { ssIdentify } from '@/utils/suresendTracking'
-import { isFormBlocked } from '@/utils/formFilter'
+
 import { defaultBlockedWords } from '@/configs/defaults/form-filtering'
+import { trackFormSubmission } from '@/utils/analytics'
+import { isFormBlocked } from '@/utils/formFilter'
+import { ssIdentify } from '@/utils/suresendTracking'
+
 import type { ContactFormData } from './PropertyContactForm'
 
 interface Agent {
@@ -53,7 +56,7 @@ const TIME_SLOTS = [
   '1:00 PM',
   '2:00 PM',
   '3:00 PM',
-  '4:00 PM',
+  '4:00 PM'
 ]
 
 function getDateLabel(date: dayjs.Dayjs, index: number): string {
@@ -76,8 +79,8 @@ function sendToSureSend(
       formType,
       propertyAddress,
       mlsNumber,
-      source: 'mobile_contact_bar',
-    }),
+      source: 'mobile_contact_bar'
+    })
   }).catch((err) => console.error('[SureSend] Lead sync failed:', err))
 }
 
@@ -85,7 +88,7 @@ const MobileContactBar: React.FC<MobileContactBarProps> = ({
   propertyAddress,
   mlsNumber,
   agent,
-  onSubmit,
+  onSubmit
 }) => {
   const [modalOpen, setModalOpen] = useState(false)
   const [modalMode, setModalMode] = useState<'tour' | 'contact'>('tour')
@@ -100,7 +103,7 @@ const MobileContactBar: React.FC<MobileContactBarProps> = ({
     name: '',
     email: '',
     phone: '',
-    message: '',
+    message: ''
   })
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
@@ -133,7 +136,7 @@ const MobileContactBar: React.FC<MobileContactBarProps> = ({
       name: '',
       email: '',
       phone: '',
-      message: buildTourMessage(0, null, 'inPerson'),
+      message: buildTourMessage(0, null, 'inPerson')
     })
     setModalOpen(true)
   }
@@ -146,7 +149,7 @@ const MobileContactBar: React.FC<MobileContactBarProps> = ({
       name: '',
       email: '',
       phone: '',
-      message: `I'd like more information about ${propertyAddress}`,
+      message: `I'd like more information about ${propertyAddress}`
     })
     setModalOpen(true)
   }
@@ -163,7 +166,7 @@ const MobileContactBar: React.FC<MobileContactBarProps> = ({
       setTourType(newType)
       setFormData((prev) => ({
         ...prev,
-        message: buildTourMessage(selectedDateIndex, selectedTimeSlot, newType),
+        message: buildTourMessage(selectedDateIndex, selectedTimeSlot, newType)
       }))
     }
   }
@@ -172,7 +175,7 @@ const MobileContactBar: React.FC<MobileContactBarProps> = ({
     setSelectedDateIndex(index)
     setFormData((prev) => ({
       ...prev,
-      message: buildTourMessage(index, selectedTimeSlot, tourType),
+      message: buildTourMessage(index, selectedTimeSlot, tourType)
     }))
   }
 
@@ -180,18 +183,18 @@ const MobileContactBar: React.FC<MobileContactBarProps> = ({
     setSelectedTimeSlot(slot)
     setFormData((prev) => ({
       ...prev,
-      message: buildTourMessage(selectedDateIndex, slot, tourType),
+      message: buildTourMessage(selectedDateIndex, slot, tourType)
     }))
   }
 
-  const handleChange = (field: keyof ContactFormData) => (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    setFormData((prev) => ({
-      ...prev,
-      [field]: e.target.value,
-    }))
-  }
+  const handleChange =
+    (field: keyof ContactFormData) =>
+    (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+      setFormData((prev) => ({
+        ...prev,
+        [field]: e.target.value
+      }))
+    }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -212,7 +215,11 @@ const MobileContactBar: React.FC<MobileContactBarProps> = ({
       }
       const formType = modalMode === 'tour' ? 'tour_request' : 'contact'
       trackFormSubmission(formData, formType)
-      ssIdentify({ email: formData.email, name: formData.name, phone: formData.phone })
+      ssIdentify({
+        email: formData.email,
+        name: formData.name,
+        phone: formData.phone
+      })
       // Fire-and-forget: sync lead to SureSend CRM in parallel
       sendToSureSend(formData, formType, propertyAddress, mlsNumber)
       setSuccess(true)
@@ -241,7 +248,7 @@ const MobileContactBar: React.FC<MobileContactBarProps> = ({
           boxShadow: '0 -2px 10px rgba(0,0,0,0.1)',
           px: 2,
           py: 1.5,
-          gap: 1.5,
+          gap: 1.5
         }}
       >
         <Button
@@ -287,7 +294,7 @@ const MobileContactBar: React.FC<MobileContactBarProps> = ({
             px: 2.5,
             py: 3,
             overflowY: 'auto',
-            flex: 1,
+            flex: 1
           }}
         >
           <Stack spacing={2.5}>
@@ -331,7 +338,7 @@ const MobileContactBar: React.FC<MobileContactBarProps> = ({
                     overflowX: 'auto',
                     pb: 0.5,
                     '&::-webkit-scrollbar': { display: 'none' },
-                    scrollbarWidth: 'none',
+                    scrollbarWidth: 'none'
                   }}
                 >
                   {dates.map((date, index) => (
@@ -339,11 +346,15 @@ const MobileContactBar: React.FC<MobileContactBarProps> = ({
                       key={index}
                       label={getDateLabel(date, index)}
                       onClick={() => handleDateSelect(index)}
-                      variant={selectedDateIndex === index ? 'filled' : 'outlined'}
-                      color={selectedDateIndex === index ? 'primary' : 'default'}
+                      variant={
+                        selectedDateIndex === index ? 'filled' : 'outlined'
+                      }
+                      color={
+                        selectedDateIndex === index ? 'primary' : 'default'
+                      }
                       sx={{
                         fontWeight: selectedDateIndex === index ? 700 : 500,
-                        flexShrink: 0,
+                        flexShrink: 0
                       }}
                     />
                   ))}
@@ -354,7 +365,9 @@ const MobileContactBar: React.FC<MobileContactBarProps> = ({
                   {TIME_SLOTS.map((slot) => (
                     <Button
                       key={slot}
-                      variant={selectedTimeSlot === slot ? 'contained' : 'outlined'}
+                      variant={
+                        selectedTimeSlot === slot ? 'contained' : 'outlined'
+                      }
                       size="small"
                       onClick={() => handleSlotClick(slot)}
                       sx={{
@@ -364,11 +377,17 @@ const MobileContactBar: React.FC<MobileContactBarProps> = ({
                         fontWeight: selectedTimeSlot === slot ? 700 : 500,
                         fontSize: '0.8rem',
                         py: 0.75,
-                        borderColor: selectedTimeSlot === slot ? 'primary.main' : 'divider',
+                        borderColor:
+                          selectedTimeSlot === slot
+                            ? 'primary.main'
+                            : 'divider',
                         '&:hover': {
                           borderColor: 'primary.main',
-                          bgcolor: selectedTimeSlot === slot ? 'primary.main' : 'action.hover',
-                        },
+                          bgcolor:
+                            selectedTimeSlot === slot
+                              ? 'primary.main'
+                              : 'action.hover'
+                        }
                       }}
                     >
                       {slot}
@@ -384,8 +403,8 @@ const MobileContactBar: React.FC<MobileContactBarProps> = ({
             {success && (
               <Alert severity="success" onClose={() => setSuccess(false)}>
                 {modalMode === 'tour'
-                  ? 'Tour request sent! We\'ll get back to you soon.'
-                  : 'Message sent successfully! We\'ll get back to you soon.'}
+                  ? "Tour request sent! We'll get back to you soon."
+                  : "Message sent successfully! We'll get back to you soon."}
               </Alert>
             )}
 
@@ -456,8 +475,13 @@ const MobileContactBar: React.FC<MobileContactBarProps> = ({
                       : 'Send Message'}
                 </Button>
 
-                <Typography variant="caption" color="text.secondary" textAlign="center">
-                  By submitting, you agree to our Terms of Service and Privacy Policy
+                <Typography
+                  variant="caption"
+                  color="text.secondary"
+                  textAlign="center"
+                >
+                  By submitting, you agree to our Terms of Service and Privacy
+                  Policy
                 </Typography>
               </Stack>
             </form>

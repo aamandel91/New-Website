@@ -223,9 +223,7 @@ const TableContent = () => {
                 <TableCell>{getAddress(property)}</TableCell>
                 <TableCell>{property.details?.numBedrooms || '—'}</TableCell>
                 <TableCell>{property.details?.numBathrooms || '—'}</TableCell>
-                <TableCell>
-                  {property.details?.sqft || '—'}
-                </TableCell>
+                <TableCell>{property.details?.sqft || '—'}</TableCell>
                 <TableCell>{property.type || '—'}</TableCell>
                 <TableCell>{property.lastStatus || property.status}</TableCell>
                 <TableCell>{property.daysOnMarket || '—'}</TableCell>

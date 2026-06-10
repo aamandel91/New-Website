@@ -1,9 +1,10 @@
 'use client'
 
 import React from 'react'
-import { Box, Button, Paper, Typography, Stack } from '@mui/material'
-import ViewInArIcon from '@mui/icons-material/ViewInAr'
+
 import OpenInNewIcon from '@mui/icons-material/OpenInNew'
+import ViewInArIcon from '@mui/icons-material/ViewInAr'
+import { Box, Button, Paper, Stack, Typography } from '@mui/material'
 
 interface Property3DTourProps {
   virtualTourUrl?: string
@@ -41,7 +42,8 @@ const Property3DTour: React.FC<Property3DTourProps> = ({
             3D Virtual Tour Available
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            Explore {propertyAddress} from the comfort of your home with our immersive 3D tour
+            Explore {propertyAddress} from the comfort of your home with our
+            immersive 3D tour
           </Typography>
         </Box>
 

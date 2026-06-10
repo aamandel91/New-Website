@@ -1,8 +1,9 @@
 'use client'
 
 import React from 'react'
-import { Box, Button, Stack, Typography } from '@mui/material'
+
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined'
+import { Box, Button, Stack, Typography } from '@mui/material'
 
 import { useDialog } from 'providers/DialogProvider'
 import { useUser } from 'providers/UserProvider'
@@ -18,7 +19,7 @@ const InsiderGate = ({
   children,
   title = 'Unlock Premium Data',
   description = 'Sign up for free to access sold prices, trending neighbourhoods, and exclusive market insights.',
-  blur = true,
+  blur = true
 }: InsiderGateProps) => {
   const { logged } = useUser()
   const { showDialog: showAuth } = useDialog('auth')
@@ -32,8 +33,8 @@ const InsiderGate = ({
           ...(blur && {
             filter: 'blur(6px)',
             userSelect: 'none',
-            pointerEvents: 'none',
-          }),
+            pointerEvents: 'none'
+          })
         }}
       >
         {children}
@@ -50,10 +51,14 @@ const InsiderGate = ({
           justifyContent: 'center',
           bgcolor: 'rgba(255,255,255,0.5)',
           borderRadius: 2,
-          zIndex: 1,
+          zIndex: 1
         }}
       >
-        <Stack spacing={2} alignItems="center" sx={{ maxWidth: 320, textAlign: 'center', p: 3 }}>
+        <Stack
+          spacing={2}
+          alignItems="center"
+          sx={{ maxWidth: 320, textAlign: 'center', p: 3 }}
+        >
           <LockOutlinedIcon sx={{ fontSize: 40, color: 'primary.main' }} />
           <Typography variant="h6" fontWeight={700}>
             {title}

@@ -27,7 +27,9 @@ export async function up(knex: Knex): Promise<void> {
 }
 
 export async function down(knex: Knex): Promise<void> {
-  await knex.raw(`DELETE FROM organization_members WHERE email = 'andy@mandelteam.com'`)
+  await knex.raw(
+    `DELETE FROM organization_members WHERE email = 'andy@mandelteam.com'`
+  )
   await knex.raw(`
     UPDATE organizations
     SET

@@ -10,12 +10,17 @@ import { ApiError } from '../lib/errors.js'
 
 @injectable()
 export class NavigationService {
-  constructor(@inject(NavigationRepository) private navRepo: NavigationRepository) {}
+  constructor(
+    @inject(NavigationRepository) private navRepo: NavigationRepository
+  ) {}
 
   /**
    * Create a new navigation item
    */
-  async createItem(orgId: bigint, input: CreateNavigationItemInput): Promise<NavigationItem> {
+  async createItem(
+    orgId: bigint,
+    input: CreateNavigationItemInput
+  ): Promise<NavigationItem> {
     // Validate label
     if (!input.label) {
       throw new ApiError('Label is required', { status: 400 })
@@ -35,7 +40,9 @@ export class NavigationService {
 
     // For non-dropdown types, URL is required
     if (input.type !== 'dropdown' && input.type !== 'mega_menu' && !input.url) {
-      throw new ApiError('URL is required for this navigation type', { status: 400 })
+      throw new ApiError('URL is required for this navigation type', {
+        status: 400
+      })
     }
 
     return this.navRepo.createItem(orgId, input)
@@ -84,7 +91,10 @@ export class NavigationService {
   /**
    * Get navigation items with filtering
    */
-  async getItems(orgId: bigint, filters: NavigationFilters = {}): Promise<NavigationItem[]> {
+  async getItems(
+    orgId: bigint,
+    filters: NavigationFilters = {}
+  ): Promise<NavigationItem[]> {
     return this.navRepo.getItems(orgId, filters)
   }
 
@@ -121,9 +131,12 @@ export class NavigationService {
 
     for (const id of itemIds) {
       if (!existingIds.includes(id)) {
-        throw new ApiError(`Navigation item ${id} not found in position ${position}`, {
-          status: 404
-        })
+        throw new ApiError(
+          `Navigation item ${id} not found in position ${position}`,
+          {
+            status: 404
+          }
+        )
       }
     }
 

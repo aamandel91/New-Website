@@ -1,5 +1,7 @@
 'use client'
 
+import React from 'react'
+
 import { type MouseEvent, useState } from 'react'
 
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
@@ -24,8 +26,8 @@ import useBreakpoints from 'hooks/useBreakpoints'
 import {
   BedsAndBathsPanel,
   HomeTypePanel,
-  type MoreFiltersValues,
   MoreFiltersPanel,
+  type MoreFiltersValues,
   PricePanel,
   StatusPanel
 } from './panels'
@@ -164,7 +166,9 @@ export function toSearchFilters(state: ZillowFilterState): Partial<Filters> {
 }
 
 /** Build a ZillowFilterState from the SearchProvider's existing filters */
-export function fromSearchFilters(filters: Partial<Filters>): ZillowFilterState {
+export function fromSearchFilters(
+  filters: Partial<Filters>
+): ZillowFilterState {
   const homeTypes: ListingType[] = []
   if (filters.listingType && filters.listingType !== 'allListings') {
     homeTypes.push(filters.listingType)
@@ -242,7 +246,13 @@ const MobileFiltersDialog = ({
 
   return (
     <Dialog open={open} onClose={onClose} fullScreen>
-      <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      <DialogTitle
+        sx={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center'
+        }}
+      >
         Filters
         <Button onClick={onClose}>Close</Button>
       </DialogTitle>
@@ -255,13 +265,20 @@ const MobileFiltersDialog = ({
           <PricePanel
             minPrice={local.minPrice}
             maxPrice={local.maxPrice}
-            onApply={(min, max) => setLocal((p) => ({ ...p, minPrice: min, maxPrice: max }))}
+            onApply={(min, max) =>
+              setLocal((p) => ({ ...p, minPrice: min, maxPrice: max }))
+            }
           />
           <BedsAndBathsPanel
             minBeds={local.minBeds}
             minBaths={local.minBaths}
             onApply={(beds, baths, exact) =>
-              setLocal((p) => ({ ...p, minBeds: beds, minBaths: baths, exactBedMatch: exact }))
+              setLocal((p) => ({
+                ...p,
+                minBeds: beds,
+                minBaths: baths,
+                exactBedMatch: exact
+              }))
             }
           />
           <HomeTypePanel

@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useEffect, useState } from 'react'
+
 import { Box, Chip, Skeleton, Typography } from '@mui/material'
 
 const NAVY = '#0F1621'
@@ -20,7 +21,8 @@ export default function BlogTags() {
         const data = await res.json()
         if (!cancelled) {
           setTags(
-            (data.tags || []).map((t: any) => (typeof t === 'string' ? t : t.name || ''))
+            (data.tags || [])
+              .map((t: any) => (typeof t === 'string' ? t : t.name || ''))
               .filter(Boolean)
           )
         }
@@ -32,13 +34,19 @@ export default function BlogTags() {
     }
 
     fetchTags()
-    return () => { cancelled = true }
+    return () => {
+      cancelled = true
+    }
   }, [])
 
   if (loading) {
     return (
       <Box>
-        <Typography variant="subtitle1" fontWeight={700} sx={{ mb: 1.5, color: NAVY }}>
+        <Typography
+          variant="subtitle1"
+          fontWeight={700}
+          sx={{ mb: 1.5, color: NAVY }}
+        >
           Tags
         </Typography>
         <Box sx={{ display: 'flex', gap: 0.5, flexWrap: 'wrap' }}>
@@ -54,7 +62,11 @@ export default function BlogTags() {
 
   return (
     <Box>
-      <Typography variant="subtitle1" fontWeight={700} sx={{ mb: 1, color: NAVY }}>
+      <Typography
+        variant="subtitle1"
+        fontWeight={700}
+        sx={{ mb: 1, color: NAVY }}
+      >
         Tags
       </Typography>
       <Box sx={{ display: 'flex', gap: 0.5, flexWrap: 'wrap' }}>
@@ -71,7 +83,7 @@ export default function BlogTags() {
               fontSize: '0.7rem',
               height: 24,
               borderRadius: '12px',
-              '&:hover': { bgcolor: 'rgba(196,169,110,0.08)' },
+              '&:hover': { bgcolor: 'rgba(196,169,110,0.08)' }
             }}
           />
         ))}

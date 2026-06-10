@@ -9,7 +9,11 @@ const heroImages = tenant.visualIdentity.heroImages
 const content = {
   siteLogo: { url: logo.src, width: logo.width, height: logo.height },
   siteMobileLogo: { url: logo.src, width: logo.width, height: logo.height },
-  siteFooterLogo: { url: logo.footerSrc, width: logo.footerWidth, height: logo.footerHeight },
+  siteFooterLogo: {
+    url: logo.footerSrc,
+    width: logo.footerWidth,
+    height: logo.footerHeight
+  },
   siteSplashscreen: heroImages.homepage,
   loginSplashscreen: heroImages.homepage,
   siteName: 'Florida Home Finder',

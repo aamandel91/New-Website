@@ -189,7 +189,7 @@ const Content = ({ property, size }: ContentProps) => {
               WebkitBoxOrient: 'vertical',
               overflow: 'hidden',
               textOverflow: 'ellipsis',
-              mt: 0.5,
+              mt: 0.5
             }}
           >
             {details.description.length > 120

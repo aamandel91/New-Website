@@ -1,35 +1,36 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+
+import CloseIcon from '@mui/icons-material/Close'
+import CopyIcon from '@mui/icons-material/ContentCopy'
+import DeleteIcon from '@mui/icons-material/Delete'
+import DownloadIcon from '@mui/icons-material/Download'
+import ViewIcon from '@mui/icons-material/Visibility'
 import {
+  Alert,
   Box,
-  Container,
-  Typography,
   Button,
+  Chip,
+  CircularProgress,
+  Container,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  IconButton,
+  Paper,
+  Snackbar,
+  Stack,
   Table,
   TableBody,
   TableCell,
   TableContainer,
   TableHead,
   TableRow,
-  Paper,
-  Stack,
-  CircularProgress,
-  Alert,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Chip,
-  IconButton,
-  Snackbar,
-  Tooltip
+  Tooltip,
+  Typography
 } from '@mui/material'
-import CopyIcon from '@mui/icons-material/ContentCopy'
-import DeleteIcon from '@mui/icons-material/Delete'
-import DownloadIcon from '@mui/icons-material/Download'
-import ViewIcon from '@mui/icons-material/Visibility'
-import CloseIcon from '@mui/icons-material/Close'
 
 import type { OpenHouseVisitor } from '@/types/openHouse'
 
@@ -49,7 +50,10 @@ export default function AdminOpenHousePage() {
   const [sessions, setSessions] = useState<SessionSummary[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [deleteDialog, setDeleteDialog] = useState<{ open: boolean; sessionId?: string }>({ open: false })
+  const [deleteDialog, setDeleteDialog] = useState<{
+    open: boolean
+    sessionId?: string
+  }>({ open: false })
   const [deleting, setDeleting] = useState(false)
   const [copySuccess, setCopySuccess] = useState(false)
 
@@ -89,7 +93,7 @@ export default function AdminOpenHousePage() {
         method: 'DELETE'
       })
       if (!res.ok) throw new Error('Failed to delete')
-      setSessions(sessions.filter(s => s.id !== deleteDialog.sessionId))
+      setSessions(sessions.filter((s) => s.id !== deleteDialog.sessionId))
       setDeleteDialog({ open: false })
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to delete session')
@@ -114,7 +118,10 @@ export default function AdminOpenHousePage() {
     }
   }
 
-  const handleViewVisitors = async (sessionId: string, propertyAddress: string) => {
+  const handleViewVisitors = async (
+    sessionId: string,
+    propertyAddress: string
+  ) => {
     setVisitorDialog({ open: true, sessionId, propertyAddress })
     setLoadingVisitors(true)
 
@@ -147,13 +154,14 @@ export default function AdminOpenHousePage() {
   return (
     <Container maxWidth="lg">
       <Box sx={{ py: 4 }}>
-        <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 4 }}>
+        <Stack
+          direction="row"
+          justifyContent="space-between"
+          alignItems="center"
+          sx={{ mb: 4 }}
+        >
           <Typography variant="h3">Open House Management</Typography>
-          <Button
-            variant="contained"
-            href="/open-house"
-            target="_blank"
-          >
+          <Button variant="contained" href="/open-house" target="_blank">
             Create Open House
           </Button>
         </Stack>
@@ -180,12 +188,16 @@ export default function AdminOpenHousePage() {
                   <TableCell sx={{ fontWeight: 600 }}>Property</TableCell>
                   <TableCell sx={{ fontWeight: 600 }}>Agent</TableCell>
                   <TableCell sx={{ fontWeight: 600 }}>Date</TableCell>
-                  <TableCell sx={{ fontWeight: 600 }} align="center">Visitors</TableCell>
-                  <TableCell sx={{ fontWeight: 600 }} align="right">Actions</TableCell>
+                  <TableCell sx={{ fontWeight: 600 }} align="center">
+                    Visitors
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: 600 }} align="right">
+                    Actions
+                  </TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-                {sessions.map(session => (
+                {sessions.map((session) => (
                   <TableRow key={session.id} hover>
                     <TableCell>
                       <Stack direction="row" spacing={1.5} alignItems="center">
@@ -203,7 +215,11 @@ export default function AdminOpenHousePage() {
                           />
                         )}
                         <Box>
-                          <Typography variant="subtitle2" sx={{ maxWidth: 300 }} noWrap>
+                          <Typography
+                            variant="subtitle2"
+                            sx={{ maxWidth: 300 }}
+                            noWrap
+                          >
                             {session.propertyAddress}
                           </Typography>
                           <Typography variant="caption" color="text.secondary">
@@ -222,11 +238,20 @@ export default function AdminOpenHousePage() {
                       />
                     </TableCell>
                     <TableCell align="right">
-                      <Stack direction="row" spacing={0.5} justifyContent="flex-end">
+                      <Stack
+                        direction="row"
+                        spacing={0.5}
+                        justifyContent="flex-end"
+                      >
                         <Tooltip title="View visitors">
                           <IconButton
                             size="small"
-                            onClick={() => handleViewVisitors(session.id, session.propertyAddress)}
+                            onClick={() =>
+                              handleViewVisitors(
+                                session.id,
+                                session.propertyAddress
+                              )
+                            }
                           >
                             <ViewIcon fontSize="small" />
                           </IconButton>
@@ -252,7 +277,12 @@ export default function AdminOpenHousePage() {
                           <IconButton
                             size="small"
                             color="error"
-                            onClick={() => setDeleteDialog({ open: true, sessionId: session.id })}
+                            onClick={() =>
+                              setDeleteDialog({
+                                open: true,
+                                sessionId: session.id
+                              })
+                            }
                           >
                             <DeleteIcon fontSize="small" />
                           </IconButton>
@@ -267,16 +297,21 @@ export default function AdminOpenHousePage() {
         )}
 
         {/* Delete Confirmation Dialog */}
-        <Dialog open={deleteDialog.open} onClose={() => setDeleteDialog({ open: false })}>
+        <Dialog
+          open={deleteDialog.open}
+          onClose={() => setDeleteDialog({ open: false })}
+        >
           <DialogTitle>Delete Open House Session?</DialogTitle>
           <DialogContent>
             <Typography>
-              Are you sure you want to delete this open house session and all its visitor data?
-              This action cannot be undone.
+              Are you sure you want to delete this open house session and all
+              its visitor data? This action cannot be undone.
             </Typography>
           </DialogContent>
           <DialogActions>
-            <Button onClick={() => setDeleteDialog({ open: false })}>Cancel</Button>
+            <Button onClick={() => setDeleteDialog({ open: false })}>
+              Cancel
+            </Button>
             <Button
               onClick={handleDelete}
               variant="contained"
@@ -296,7 +331,11 @@ export default function AdminOpenHousePage() {
           fullWidth
         >
           <DialogTitle>
-            <Stack direction="row" justifyContent="space-between" alignItems="center">
+            <Stack
+              direction="row"
+              justifyContent="space-between"
+              alignItems="center"
+            >
               <Box>
                 <Typography variant="h6">Visitors</Typography>
                 <Typography variant="body2" color="text.secondary">
@@ -326,7 +365,11 @@ export default function AdminOpenHousePage() {
                 <CircularProgress />
               </Box>
             ) : visitors.length === 0 ? (
-              <Typography color="text.secondary" textAlign="center" sx={{ py: 4 }}>
+              <Typography
+                color="text.secondary"
+                textAlign="center"
+                sx={{ py: 4 }}
+              >
                 No visitors have signed in yet.
               </Typography>
             ) : (
@@ -337,14 +380,18 @@ export default function AdminOpenHousePage() {
                       <TableCell sx={{ fontWeight: 600 }}>Name</TableCell>
                       <TableCell sx={{ fontWeight: 600 }}>Email</TableCell>
                       <TableCell sx={{ fontWeight: 600 }}>Phone</TableCell>
-                      <TableCell sx={{ fontWeight: 600 }}>Working w/ Agent</TableCell>
+                      <TableCell sx={{ fontWeight: 600 }}>
+                        Working w/ Agent
+                      </TableCell>
                       <TableCell sx={{ fontWeight: 600 }}>How Heard</TableCell>
-                      <TableCell sx={{ fontWeight: 600 }}>Pre-Approved</TableCell>
+                      <TableCell sx={{ fontWeight: 600 }}>
+                        Pre-Approved
+                      </TableCell>
                       <TableCell sx={{ fontWeight: 600 }}>Time</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {visitors.map(visitor => (
+                    {visitors.map((visitor) => (
                       <TableRow key={visitor.id} hover>
                         <TableCell>{visitor.name}</TableCell>
                         <TableCell>{visitor.email}</TableCell>

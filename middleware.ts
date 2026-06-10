@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import {
   blockedCountries,
-  geoBlockingEnabled,
+  geoBlockingEnabled
 } from '@/configs/defaults/geo-blocking'
 
 /**
@@ -28,7 +28,9 @@ export function middleware(request: NextRequest) {
     url.pathname.startsWith('/api') ||
     url.pathname.startsWith('/_next') ||
     url.pathname.startsWith('/static') ||
-    url.pathname.match(/\.(ico|png|jpg|jpeg|svg|gif|woff|woff2|ttf|eot|css|js)$/)
+    url.pathname.match(
+      /\.(ico|png|jpg|jpeg|svg|gif|woff|woff2|ttf|eot|css|js)$/
+    )
   ) {
     return NextResponse.next()
   }
@@ -42,7 +44,8 @@ export function middleware(request: NextRequest) {
       const country =
         request.headers.get('x-vercel-ip-country') ||
         request.headers.get('cf-ipcountry') ||
-        (request as NextRequest & { geo?: { country?: string } }).geo?.country ||
+        (request as NextRequest & { geo?: { country?: string } }).geo
+          ?.country ||
         ''
 
       if (country && blockedCountries.includes(country)) {
@@ -57,7 +60,10 @@ export function middleware(request: NextRequest) {
   // --- /florida/* redirect to clean URLs ---
   if (url.pathname.startsWith('/florida/') || url.pathname === '/florida') {
     // Strip /florida and any county prefix, redirect to clean URL
-    const segments = url.pathname.replace(/^\/florida\/?/, '').split('/').filter(Boolean)
+    const segments = url.pathname
+      .replace(/^\/florida\/?/, '')
+      .split('/')
+      .filter(Boolean)
 
     if (segments.length === 0) {
       // /florida → redirect to search
@@ -158,7 +164,5 @@ export const config = {
    * - favicon.ico (favicon file)
    * - public files with extensions
    */
-  matcher: [
-    '/((?!api|_next/static|_next/image|favicon.ico|.*\\..*|public).*)'
-  ]
+  matcher: ['/((?!api|_next/static|_next/image|favicon.ico|.*\\..*|public).*)']
 }

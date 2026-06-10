@@ -1,21 +1,23 @@
 'use client'
 
 import React, { useEffect, useState } from 'react'
+
+import ContactMail from '@mui/icons-material/ContactMail'
+import People from '@mui/icons-material/People'
+import ShowChart from '@mui/icons-material/ShowChart'
+import TrendingUp from '@mui/icons-material/TrendingUp'
 import {
+  Alert,
   Box,
+  CircularProgress,
   Container,
   Grid,
   Paper,
-  Typography,
-  CircularProgress,
-  Alert
+  Typography
 } from '@mui/material'
-import TrendingUp from '@mui/icons-material/TrendingUp'
-import People from '@mui/icons-material/People'
-import ContactMail from '@mui/icons-material/ContactMail'
-import ShowChart from '@mui/icons-material/ShowChart'
-import APILeads from '@/services/API/APILeads'
+
 import { useOrganization } from '@/providers/OrganizationProvider'
+import APILeads from '@/services/API/APILeads'
 
 interface StatCardProps {
   title: string
@@ -27,7 +29,13 @@ interface StatCardProps {
 function StatCard({ title, value, icon, color }: StatCardProps) {
   return (
     <Paper sx={{ p: 3 }}>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'flex-start'
+        }}
+      >
         <Box>
           <Typography variant="body2" color="text.secondary" gutterBottom>
             {title}
@@ -80,7 +88,14 @@ export default function AnalyticsPage() {
   if (loading) {
     return (
       <Container maxWidth="xl">
-        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}>
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            minHeight: '60vh'
+          }}
+        >
           <CircularProgress />
         </Box>
       </Container>
@@ -149,21 +164,25 @@ export default function AnalyticsPage() {
             </Typography>
             <Box sx={{ mt: 2 }}>
               {stats?.byStatus &&
-                Object.entries(stats.byStatus).map(([status, count]: [string, any]) => (
-                  <Box
-                    key={status}
-                    sx={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      py: 1,
-                      borderBottom: '1px solid',
-                      borderColor: 'divider'
-                    }}
-                  >
-                    <Typography>{status.replace('_', ' ').toUpperCase()}</Typography>
-                    <Typography fontWeight="bold">{count}</Typography>
-                  </Box>
-                ))}
+                Object.entries(stats.byStatus).map(
+                  ([status, count]: [string, any]) => (
+                    <Box
+                      key={status}
+                      sx={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        py: 1,
+                        borderBottom: '1px solid',
+                        borderColor: 'divider'
+                      }}
+                    >
+                      <Typography>
+                        {status.replace('_', ' ').toUpperCase()}
+                      </Typography>
+                      <Typography fontWeight="bold">{count}</Typography>
+                    </Box>
+                  )
+                )}
             </Box>
           </Paper>
         </Grid>
@@ -175,21 +194,23 @@ export default function AnalyticsPage() {
             </Typography>
             <Box sx={{ mt: 2 }}>
               {stats?.bySource &&
-                Object.entries(stats.bySource).map(([source, count]: [string, any]) => (
-                  <Box
-                    key={source}
-                    sx={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      py: 1,
-                      borderBottom: '1px solid',
-                      borderColor: 'divider'
-                    }}
-                  >
-                    <Typography>{source.toUpperCase()}</Typography>
-                    <Typography fontWeight="bold">{count}</Typography>
-                  </Box>
-                ))}
+                Object.entries(stats.bySource).map(
+                  ([source, count]: [string, any]) => (
+                    <Box
+                      key={source}
+                      sx={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        py: 1,
+                        borderBottom: '1px solid',
+                        borderColor: 'divider'
+                      }}
+                    >
+                      <Typography>{source.toUpperCase()}</Typography>
+                      <Typography fontWeight="bold">{count}</Typography>
+                    </Box>
+                  )
+                )}
             </Box>
           </Paper>
         </Grid>

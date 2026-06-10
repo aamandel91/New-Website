@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+
 import { isAgentSubdomain } from '@/utils/agentSubdomain'
 
 /**
@@ -37,7 +38,9 @@ export default function AgentSubdomainSEO() {
       }
 
       // Also add googlebot-specific tag for redundancy
-      const existingGooglebotTag = document.querySelector('meta[name="googlebot"]')
+      const existingGooglebotTag = document.querySelector(
+        'meta[name="googlebot"]'
+      )
 
       if (!existingGooglebotTag) {
         const googlebotTag = document.createElement('meta')

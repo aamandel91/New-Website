@@ -1,10 +1,16 @@
 import { NextResponse } from 'next/server'
-import { readFile, writeFile } from 'fs/promises'
 import path from 'path'
+
+import { requireAdmin } from '@/utils/adminAuth'
+
+import { readFile, writeFile } from 'fs/promises'
 
 const ROBOTS_PATH = path.join(process.cwd(), 'public', 'robots.txt')
 
-export async function GET() {
+export async function GET(request: Request) {
+  const denied = await requireAdmin(request)
+  if (denied) return denied
+
   try {
     const content = await readFile(ROBOTS_PATH, 'utf-8')
     return NextResponse.json({ content })
@@ -18,11 +24,18 @@ export async function GET() {
 }
 
 export async function PUT(request: Request) {
+  const denied = await requireAdmin(request)
+  if (denied) return denied
+
   try {
     const body = await request.json()
     const { content } = body
 
-    if (!content || typeof content !== 'string' || content.trim().length === 0) {
+    if (
+      !content ||
+      typeof content !== 'string' ||
+      content.trim().length === 0
+    ) {
       return NextResponse.json(
         { error: 'Content must be a non-empty string' },
         { status: 400 }
@@ -31,7 +44,9 @@ export async function PUT(request: Request) {
 
     if (!content.includes('User-agent')) {
       return NextResponse.json(
-        { error: 'robots.txt must contain at least one "User-agent" directive' },
+        {
+          error: 'robots.txt must contain at least one "User-agent" directive'
+        },
         { status: 400 }
       )
     }

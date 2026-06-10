@@ -28,9 +28,10 @@ const BRAND_TEXT = '#1a1a1a'
 const BRAND_HEADER_BG = '#0F1621'
 const BRAND_BORDER = '#d9d9d9'
 
-export function placeholderTemplate(
-  data: PlaceholderTemplateData
-): { html: string; text: string } {
+export function placeholderTemplate(data: PlaceholderTemplateData): {
+  html: string
+  text: string
+} {
   const { brand, contact } = backendTenant
   const preheader = data.preheader || brand.siteName
   const unsubscribeUrl =
@@ -97,7 +98,7 @@ export function placeholderTemplate(
     data.agentName,
     stripHtml(data.agentSignature),
     '',
-    `Manage notifications: ${unsubscribeUrl}`,
+    `Manage notifications: ${unsubscribeUrl}`
   ].join('\n')
 
   return { html, text }

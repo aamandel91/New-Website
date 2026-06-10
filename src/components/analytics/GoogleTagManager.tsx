@@ -17,7 +17,7 @@ const GoogleTagManager = () => {
               'gtm.start': new Date().getTime(),
               event: 'gtm.js'
             });
-          `,
+          `
         }}
       />
       <Script

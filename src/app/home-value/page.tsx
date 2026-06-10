@@ -328,7 +328,7 @@ export default function HomeValuePage() {
         ...(qAddress && { streetAddress: qAddress }),
         ...(qCity && { city: qCity }),
         ...(qZip && { zipCode: qZip }),
-        ...(qState && { state: qState }),
+        ...(qState && { state: qState })
       }))
       // If address is provided, skip to Step 2
       if (qAddress) {

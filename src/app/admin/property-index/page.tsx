@@ -1,6 +1,12 @@
 'use client'
 
-import React, { useEffect, useState, useCallback } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
+
+import GridViewIcon from '@mui/icons-material/GridView'
+import MapIcon from '@mui/icons-material/Map'
+import RefreshIcon from '@mui/icons-material/Refresh'
+import StorageIcon from '@mui/icons-material/Storage'
+import SyncIcon from '@mui/icons-material/Sync'
 import {
   Box,
   Button,
@@ -9,20 +15,15 @@ import {
   Grid,
   Paper,
   Tab,
-  Tabs,
   Table,
   TableBody,
   TableCell,
   TableContainer,
   TableHead,
   TableRow,
-  Typography,
+  Tabs,
+  Typography
 } from '@mui/material'
-import RefreshIcon from '@mui/icons-material/Refresh'
-import StorageIcon from '@mui/icons-material/Storage'
-import SyncIcon from '@mui/icons-material/Sync'
-import MapIcon from '@mui/icons-material/Map'
-import GridViewIcon from '@mui/icons-material/GridView'
 
 import SEOCoverageMap from './SEOCoverageMap'
 
@@ -67,7 +68,7 @@ function computeStats(entries: IndexEntry[]): IndexStats {
     offMarket: entries.filter((e) => e.status === 'off-market').length,
     indexed: entries.filter((e) => e.score >= 3).length,
     noindexFollow: entries.filter((e) => e.score >= 1 && e.score < 3).length,
-    noindexNofollow: entries.filter((e) => e.score < 1).length,
+    noindexNofollow: entries.filter((e) => e.score < 1).length
   }
 }
 
@@ -183,7 +184,7 @@ export default function PropertyIndexPage() {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD',
-      maximumFractionDigits: 0,
+      maximumFractionDigits: 0
     }).format(price)
   }
 
@@ -194,7 +195,9 @@ export default function PropertyIndexPage() {
   }
 
   const areaIndexed = areaEntries.filter((e) => e.score >= 3).length
-  const areaNoindexFollow = areaEntries.filter((e) => e.score >= 1 && e.score < 3).length
+  const areaNoindexFollow = areaEntries.filter(
+    (e) => e.score >= 1 && e.score < 3
+  ).length
   const areaNoindexNofollow = areaEntries.filter((e) => e.score < 1).length
 
   return (
@@ -209,7 +212,11 @@ export default function PropertyIndexPage() {
 
       <Tabs value={tab} onChange={(_, v) => setTab(v)} sx={{ mb: 3 }}>
         <Tab label="Property Pages" />
-        <Tab label="Area Pages" icon={<MapIcon sx={{ fontSize: 18 }} />} iconPosition="start" />
+        <Tab
+          label="Area Pages"
+          icon={<MapIcon sx={{ fontSize: 18 }} />}
+          iconPosition="start"
+        />
         <Tab
           label="SEO Coverage"
           icon={<GridViewIcon sx={{ fontSize: 18 }} />}
@@ -240,11 +247,7 @@ export default function PropertyIndexPage() {
             <Button
               variant="outlined"
               startIcon={
-                syncLoading ? (
-                  <CircularProgress size={18} />
-                ) : (
-                  <SyncIcon />
-                )
+                syncLoading ? <CircularProgress size={18} /> : <SyncIcon />
               }
               onClick={runSync}
               disabled={syncLoading}
@@ -282,7 +285,11 @@ export default function PropertyIndexPage() {
               </Grid>
               <Grid item xs={6} sm={4} md={2}>
                 <Paper sx={{ p: 2, textAlign: 'center' }}>
-                  <Typography variant="h5" fontWeight={700} color="success.main">
+                  <Typography
+                    variant="h5"
+                    fontWeight={700}
+                    color="success.main"
+                  >
                     {stats.indexed}
                   </Typography>
                   <Typography variant="caption" color="text.secondary">
@@ -292,7 +299,11 @@ export default function PropertyIndexPage() {
               </Grid>
               <Grid item xs={6} sm={4} md={2}>
                 <Paper sx={{ p: 2, textAlign: 'center' }}>
-                  <Typography variant="h5" fontWeight={700} color="warning.main">
+                  <Typography
+                    variant="h5"
+                    fontWeight={700}
+                    color="warning.main"
+                  >
                     {stats.noindexFollow}
                   </Typography>
                   <Typography variant="caption" color="text.secondary">
@@ -373,7 +384,7 @@ export default function PropertyIndexPage() {
                             sx={{
                               textDecoration: 'none',
                               color: 'primary.main',
-                              '&:hover': { textDecoration: 'underline' },
+                              '&:hover': { textDecoration: 'underline' }
                             }}
                           >
                             {entry.slug.replace(/-/g, ' ')}
@@ -444,7 +455,9 @@ export default function PropertyIndexPage() {
           <Box sx={{ display: 'flex', gap: 2, mb: 3, alignItems: 'center' }}>
             <Button
               variant="text"
-              startIcon={areaLoading ? <CircularProgress size={18} /> : <RefreshIcon />}
+              startIcon={
+                areaLoading ? <CircularProgress size={18} /> : <RefreshIcon />
+              }
               onClick={loadAreaScores}
               disabled={areaLoading}
             >
@@ -470,7 +483,11 @@ export default function PropertyIndexPage() {
               </Grid>
               <Grid item xs={6} sm={3}>
                 <Paper sx={{ p: 2, textAlign: 'center' }}>
-                  <Typography variant="h5" fontWeight={700} color="success.main">
+                  <Typography
+                    variant="h5"
+                    fontWeight={700}
+                    color="success.main"
+                  >
                     {areaIndexed}
                   </Typography>
                   <Typography variant="caption" color="text.secondary">
@@ -480,7 +497,11 @@ export default function PropertyIndexPage() {
               </Grid>
               <Grid item xs={6} sm={3}>
                 <Paper sx={{ p: 2, textAlign: 'center' }}>
-                  <Typography variant="h5" fontWeight={700} color="warning.main">
+                  <Typography
+                    variant="h5"
+                    fontWeight={700}
+                    color="warning.main"
+                  >
                     {areaNoindexFollow}
                   </Typography>
                   <Typography variant="caption" color="text.secondary">
@@ -523,7 +544,9 @@ export default function PropertyIndexPage() {
                     <TableRow>
                       <TableCell colSpan={5} align="center" sx={{ py: 4 }}>
                         <Typography variant="body2" color="text.secondary">
-                          {areaLoaded ? 'No area pages found.' : 'Click Refresh to load area page scores.'}
+                          {areaLoaded
+                            ? 'No area pages found.'
+                            : 'Click Refresh to load area page scores.'}
                         </Typography>
                       </TableCell>
                     </TableRow>
@@ -539,7 +562,7 @@ export default function PropertyIndexPage() {
                             sx={{
                               textDecoration: 'none',
                               color: 'primary.main',
-                              '&:hover': { textDecoration: 'underline' },
+                              '&:hover': { textDecoration: 'underline' }
                             }}
                           >
                             {entry.url}
@@ -549,11 +572,15 @@ export default function PropertyIndexPage() {
                           <Chip
                             label={entry.pageType}
                             size="small"
-                            color={entry.pageType === 'city' ? 'primary' : 'default'}
+                            color={
+                              entry.pageType === 'city' ? 'primary' : 'default'
+                            }
                             variant="outlined"
                           />
                         </TableCell>
-                        <TableCell>{entry.listingCount.toLocaleString()}</TableCell>
+                        <TableCell>
+                          {entry.listingCount.toLocaleString()}
+                        </TableCell>
                         <TableCell align="center">
                           <Chip
                             label={entry.score}

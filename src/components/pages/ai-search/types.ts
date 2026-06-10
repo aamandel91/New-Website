@@ -44,5 +44,11 @@ export interface AiSearchListing {
 export type AiActivityLogEntry =
   | { id: string; ts: number; kind: 'prompt'; text: string }
   | { id: string; ts: number; kind: 'status'; text: string }
-  | { id: string; ts: number; kind: 'understood'; summary: string; filters: Partial<AiSearchFilters> }
+  | {
+      id: string
+      ts: number
+      kind: 'understood'
+      summary: string
+      filters: Partial<AiSearchFilters>
+    }
   | { id: string; ts: number; kind: 'error'; text: string }

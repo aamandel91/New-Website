@@ -48,7 +48,7 @@ function computeTrend(data: MonthlyDataPoint[]): MarketTimelineResult['trend'] {
 
   return {
     direction: rounded > 0.5 ? 'up' : rounded < -0.5 ? 'down' : 'flat',
-    percentage: Math.abs(rounded),
+    percentage: Math.abs(rounded)
   }
 }
 
@@ -58,7 +58,7 @@ export async function fetchMarketTimeline(
   const emptyResult: MarketTimelineResult = {
     data: [],
     trend: { direction: 'flat', percentage: 0 },
-    summary: { avgPrice: 0, medPrice: 0, avgDaysOnMarket: 0 },
+    summary: { avgPrice: 0, medPrice: 0, avgDaysOnMarket: 0 }
   }
 
   try {
@@ -74,7 +74,7 @@ export async function fetchMarketTimeline(
       ...(params.beds && { minBeds: parseInt(params.beds) }),
       ...(params.baths && { minBaths: parseInt(params.baths) }),
       ...(params.minPrice && { minPrice: parseInt(params.minPrice) }),
-      ...(params.maxPrice && { maxPrice: parseInt(params.maxPrice) }),
+      ...(params.maxPrice && { maxPrice: parseInt(params.maxPrice) })
     })
 
     if (!result?.statistics?.soldPrice?.mth) return emptyResult
@@ -85,24 +85,30 @@ export async function fetchMarketTimeline(
         date: month,
         avgPrice: data.avg || 0,
         medPrice: data.med || data.avg || 0,
-        count: data.count || 0,
+        count: data.count || 0
       }))
       .sort((a, b) => a.date.localeCompare(b.date))
       .slice(-(params.months || 12))
 
     const trend = computeTrend(entries)
 
-    const avgPrice = entries.length > 0
-      ? Math.round(entries.reduce((s, d) => s + d.avgPrice, 0) / entries.length)
-      : 0
-    const medPrice = entries.length > 0
-      ? Math.round(entries.reduce((s, d) => s + d.medPrice, 0) / entries.length)
-      : 0
+    const avgPrice =
+      entries.length > 0
+        ? Math.round(
+            entries.reduce((s, d) => s + d.avgPrice, 0) / entries.length
+          )
+        : 0
+    const medPrice =
+      entries.length > 0
+        ? Math.round(
+            entries.reduce((s, d) => s + d.medPrice, 0) / entries.length
+          )
+        : 0
 
     return {
       data: entries,
       trend,
-      summary: { avgPrice, medPrice, avgDaysOnMarket: 0 },
+      summary: { avgPrice, medPrice, avgDaysOnMarket: 0 }
     }
   } catch (error) {
     console.error('Error fetching market timeline:', error)

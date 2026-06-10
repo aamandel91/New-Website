@@ -3,8 +3,8 @@ import { parseEstimateParams } from './utils'
 
 describe('parseEstimateParams', () => {
   it('should parse basic estimate parameters and preserve rest parameters', () => {
-    const params: PageProps['params'] = {}
-    const searchParams: PageProps['searchParams'] = {
+    const params: Awaited<PageProps['params']> = {}
+    const searchParams: Awaited<PageProps['searchParams']> = {
       step: '2',
       estimateId: '123',
       utm_source: 'google',
@@ -42,8 +42,8 @@ describe('parseEstimateParams', () => {
   })
 
   it('should handle ulid parameter correctly', () => {
-    const params: PageProps['params'] = {}
-    const searchParams: PageProps['searchParams'] = {
+    const params: Awaited<PageProps['params']> = {}
+    const searchParams: Awaited<PageProps['searchParams']> = {
       ulid: 'test-ulid-123',
       utm_source: 'google'
     }
@@ -62,10 +62,10 @@ describe('parseEstimateParams', () => {
   })
 
   it('should handle slug parameters and preserve rest', () => {
-    const params: PageProps['params'] = {
+    const params: Awaited<PageProps['params']> = {
       slugs: ['123', 'step', '2']
     }
-    const searchParams: PageProps['searchParams'] = {
+    const searchParams: Awaited<PageProps['searchParams']> = {
       utm_source: 'facebook',
       utm_content: 'test-content'
     }
@@ -85,10 +85,10 @@ describe('parseEstimateParams', () => {
   })
 
   it('should handle agent signature and clientId', () => {
-    const params: PageProps['params'] = {
+    const params: Awaited<PageProps['params']> = {
       clientId: '456'
     }
-    const searchParams: PageProps['searchParams'] = {
+    const searchParams: Awaited<PageProps['searchParams']> = {
       s: 'agent-signature',
       utm_term: 'test-term'
     }
@@ -107,8 +107,8 @@ describe('parseEstimateParams', () => {
   })
 
   it('should return empty rest object when no additional parameters', () => {
-    const params: PageProps['params'] = {}
-    const searchParams: PageProps['searchParams'] = {
+    const params: Awaited<PageProps['params']> = {}
+    const searchParams: Awaited<PageProps['searchParams']> = {
       step: '1',
       estimateId: '789'
     }
@@ -125,8 +125,8 @@ describe('parseEstimateParams', () => {
   })
 
   it('should filter out undefined values from rest', () => {
-    const params: PageProps['params'] = {}
-    const searchParams: PageProps['searchParams'] = {
+    const params: Awaited<PageProps['params']> = {}
+    const searchParams: Awaited<PageProps['searchParams']> = {
       step: '1',
       utm_source: 'google',
       empty_param: undefined
@@ -141,8 +141,8 @@ describe('parseEstimateParams', () => {
   })
 
   it('should preserve common tracking parameters', () => {
-    const params: PageProps['params'] = {}
-    const searchParams: PageProps['searchParams'] = {
+    const params: Awaited<PageProps['params']> = {}
+    const searchParams: Awaited<PageProps['searchParams']> = {
       estimateId: '456',
       // Google Ads
       gclid: 'Cj0KCQjw_real_google_click_id',
@@ -178,7 +178,7 @@ describe('parseEstimateParams', () => {
 describe('REST parameters preservation integration test', () => {
   it('should demonstrate complete flow of preserving UTM and tracking parameters', () => {
     // Simulate incoming URL with estimate params + UTM/tracking params
-    const searchParams: PageProps['searchParams'] = {
+    const searchParams: Awaited<PageProps['searchParams']> = {
       step: '2',
       estimateId: '123',
       // UTM parameters
@@ -234,7 +234,7 @@ describe('REST parameters preservation integration test', () => {
 
   it('should handle edge cases properly', () => {
     // Test with agent parameters
-    const agentParams: PageProps['searchParams'] = {
+    const agentParams: Awaited<PageProps['searchParams']> = {
       clientId: '456',
       s: 'agent-signature',
       ulid: 'test-ulid-123',
@@ -256,7 +256,7 @@ describe('REST parameters preservation integration test', () => {
   })
 
   it('should handle empty and undefined values correctly', () => {
-    const mixedParams: PageProps['searchParams'] = {
+    const mixedParams: Awaited<PageProps['searchParams']> = {
       step: '1',
       utm_source: 'google',
       empty_string: '',

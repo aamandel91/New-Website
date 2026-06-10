@@ -2,6 +2,8 @@
 
 import React, { useState } from 'react'
 
+import DeleteIcon from '@mui/icons-material/Delete'
+import FavoriteIcon from '@mui/icons-material/Favorite'
 import {
   Box,
   Button,
@@ -14,11 +16,10 @@ import {
   Stack,
   Typography
 } from '@mui/material'
-import DeleteIcon from '@mui/icons-material/Delete'
-import FavoriteIcon from '@mui/icons-material/Favorite'
+
+import LoginDialog from 'components/auth/LoginDialog'
 
 import { useSiteUser } from 'providers/SiteUserProvider'
-import LoginDialog from 'components/auth/LoginDialog'
 import { generatePropertyUrl } from 'utils/propertyUrls'
 
 export default function FavoritesPage() {
@@ -29,8 +30,14 @@ export default function FavoritesPage() {
     return (
       <Container maxWidth="md" sx={{ py: 6, textAlign: 'center' }}>
         <FavoriteIcon sx={{ fontSize: 48, color: 'text.secondary', mb: 2 }} />
-        <Typography variant="h5" gutterBottom>Sign in to see your favorites</Typography>
-        <Button variant="contained" onClick={() => setLoginOpen(true)} sx={{ mt: 2, bgcolor: '#0F1621' }}>
+        <Typography variant="h5" gutterBottom>
+          Sign in to see your favorites
+        </Typography>
+        <Button
+          variant="contained"
+          onClick={() => setLoginOpen(true)}
+          sx={{ mt: 2, bgcolor: '#0F1621' }}
+        >
           Sign In / Register
         </Button>
         <LoginDialog open={loginOpen} onClose={() => setLoginOpen(false)} />
@@ -50,7 +57,8 @@ export default function FavoritesPage() {
         <Box sx={{ textAlign: 'center', py: 8 }}>
           <FavoriteIcon sx={{ fontSize: 48, color: 'text.secondary', mb: 2 }} />
           <Typography color="text.secondary">
-            No favorites yet. Click the heart icon on any property to save it here.
+            No favorites yet. Click the heart icon on any property to save it
+            here.
           </Typography>
         </Box>
       ) : (
@@ -70,13 +78,19 @@ export default function FavoritesPage() {
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    textDecoration: 'none',
+                    textDecoration: 'none'
                   }}
                 >
-                  <Typography color="text.secondary">MLS# {fav.mlsNumber}</Typography>
+                  <Typography color="text.secondary">
+                    MLS# {fav.mlsNumber}
+                  </Typography>
                 </CardMedia>
                 <CardContent>
-                  <Stack direction="row" justifyContent="space-between" alignItems="flex-start">
+                  <Stack
+                    direction="row"
+                    justifyContent="space-between"
+                    alignItems="flex-start"
+                  >
                     <Box>
                       {fav.price && (
                         <Typography variant="h6" fontWeight={700}>

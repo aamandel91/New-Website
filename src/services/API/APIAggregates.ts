@@ -17,7 +17,7 @@ class APIAggregates extends APIClientSide {
     const data: AggregatesResponse = await this.fetch('/listings', {
       aggregates: 'details.propertyType',
       listings: false,
-      boardId,
+      boardId
     })
     return this.parseAggregate(data, 'details.propertyType')
   }
@@ -26,17 +26,20 @@ class APIAggregates extends APIClientSide {
     const data: AggregatesResponse = await this.fetch('/listings', {
       aggregates: 'address.city',
       listings: false,
-      boardId,
+      boardId
     })
     return this.parseAggregate(data, 'address.city')
   }
 
-  async getNeighborhoods(city: string, boardId = DEFAULT_BOARD_ID): Promise<AggregateItem[]> {
+  async getNeighborhoods(
+    city: string,
+    boardId = DEFAULT_BOARD_ID
+  ): Promise<AggregateItem[]> {
     const data: AggregatesResponse = await this.fetch('/listings', {
       aggregates: 'address.neighborhood',
       listings: false,
       boardId,
-      city,
+      city
     })
     return this.parseAggregate(data, 'address.neighborhood')
   }
@@ -45,7 +48,7 @@ class APIAggregates extends APIClientSide {
     const data: AggregatesResponse = await this.fetch('/listings', {
       aggregates: 'details.style',
       listings: false,
-      boardId,
+      boardId
     })
     return this.parseAggregate(data, 'details.style')
   }
@@ -59,7 +62,7 @@ class APIAggregates extends APIClientSide {
       aggregates: fields.join(','),
       listings: false,
       boardId,
-      ...filters,
+      ...filters
     })
     const result: Record<string, AggregateItem[]> = {}
     for (const field of fields) {
@@ -68,7 +71,10 @@ class APIAggregates extends APIClientSide {
     return result
   }
 
-  private parseAggregate(data: AggregatesResponse | null, field: string): AggregateItem[] {
+  private parseAggregate(
+    data: AggregatesResponse | null,
+    field: string
+  ): AggregateItem[] {
     if (!data?.aggregates) return []
     const bucket = data.aggregates[field]
     if (!bucket || typeof bucket !== 'object') return []

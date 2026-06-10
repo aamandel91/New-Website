@@ -30,7 +30,7 @@ export function getOptimizedImageUrl(
   const params = new URLSearchParams({
     url,
     w: String(width || 1080),
-    q: String(quality),
+    q: String(quality)
   })
 
   return `/_next/image?${params.toString()}`

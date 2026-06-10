@@ -83,7 +83,8 @@ export default class RepliersBase {
       body: body ? JSON.stringify(body).slice(0, 500) : 'none',
       headers: {
         'REPLIERS-API-KEY': this.config.repliers.api_key?.slice(0, 10) + '...',
-        'x-repliers-forwarded-for': options.headers?.['x-repliers-forwarded-for'] || 'not set'
+        'x-repliers-forwarded-for':
+          options.headers?.['x-repliers-forwarded-for'] || 'not set'
       }
     })
 

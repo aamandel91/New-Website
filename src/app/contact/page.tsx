@@ -1,7 +1,14 @@
 'use client'
 
 import React, { useState } from 'react'
+
+import BusinessIcon from '@mui/icons-material/Business'
+import EmailIcon from '@mui/icons-material/Email'
+import LocationOnIcon from '@mui/icons-material/LocationOn'
+import PhoneIcon from '@mui/icons-material/Phone'
+import SendIcon from '@mui/icons-material/Send'
 import {
+  Alert,
   Box,
   Button,
   Container,
@@ -9,22 +16,17 @@ import {
   Paper,
   Stack,
   TextField,
-  Typography,
-  Alert,
+  Typography
 } from '@mui/material'
-import PhoneIcon from '@mui/icons-material/Phone'
-import EmailIcon from '@mui/icons-material/Email'
-import LocationOnIcon from '@mui/icons-material/LocationOn'
-import BusinessIcon from '@mui/icons-material/Business'
-import SendIcon from '@mui/icons-material/Send'
+
 import PageWithSidebar from '@/components/layouts/PageWithSidebar'
 import InfoPageSidebar from '@/components/sidebar/InfoPageSidebar'
-import { trackFormSubmission } from '@/utils/analytics'
-import { ssIdentify } from '@/utils/suresendTracking'
-import { isFormBlocked } from '@/utils/formFilter'
 import { defaultBlockedWords } from '@/configs/defaults/form-filtering'
 import { siteSettings } from '@/configs/defaults/site-settings'
 import { tenant } from '@/configs/tenant.config'
+import { trackFormSubmission } from '@/utils/analytics'
+import { isFormBlocked } from '@/utils/formFilter'
+import { ssIdentify } from '@/utils/suresendTracking'
 
 const NAVY = '#0F1621'
 const GOLD = '#C4A96E'
@@ -42,7 +44,7 @@ const initialForm: ContactFormData = {
   name: '',
   email: '',
   phone: '',
-  message: '',
+  message: ''
 }
 
 function sendToSureSend(data: ContactFormData) {
@@ -52,8 +54,8 @@ function sendToSureSend(data: ContactFormData) {
     body: JSON.stringify({
       ...data,
       formType: 'contact',
-      source: 'contact_page',
-    }),
+      source: 'contact_page'
+    })
   }).catch((err) => console.error('[SureSend] Contact lead failed:', err))
 }
 
@@ -63,11 +65,11 @@ export default function ContactPage() {
   const [success, setSuccess] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  const handleChange = (field: keyof ContactFormData) => (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    setForm((prev) => ({ ...prev, [field]: e.target.value }))
-  }
+  const handleChange =
+    (field: keyof ContactFormData) =>
+    (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+      setForm((prev) => ({ ...prev, [field]: e.target.value }))
+    }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -103,12 +105,30 @@ export default function ContactPage() {
   return (
     <Box>
       {/* Hero */}
-      <Box sx={{ bgcolor: NAVY, py: { xs: 8, md: 10 }, px: 3, textAlign: 'center' }}>
+      <Box
+        sx={{
+          bgcolor: NAVY,
+          py: { xs: 8, md: 10 },
+          px: 3,
+          textAlign: 'center'
+        }}
+      >
         <Container maxWidth="md">
-          <Typography variant="h3" component="h1" sx={{ color: 'white', fontWeight: 700, mb: 2, fontSize: { xs: '1.75rem', md: '2.5rem' } }}>
+          <Typography
+            variant="h3"
+            component="h1"
+            sx={{
+              color: 'white',
+              fontWeight: 700,
+              mb: 2,
+              fontSize: { xs: '1.75rem', md: '2.5rem' }
+            }}
+          >
             Contact {tenant.brand.teamName}
           </Typography>
-          <Typography sx={{ color: 'rgba(255,255,255,0.7)', fontSize: '1.1rem' }}>
+          <Typography
+            sx={{ color: 'rgba(255,255,255,0.7)', fontSize: '1.1rem' }}
+          >
             We&apos;d love to hear from you. Reach out today.
           </Typography>
         </Container>
@@ -123,9 +143,14 @@ export default function ContactPage() {
                 <Stack direction="row" spacing={2} alignItems="center">
                   <PhoneIcon sx={{ color: GOLD, fontSize: 28 }} />
                   <Box>
-                    <Typography variant="body2" color="text.secondary">Phone</Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      Phone
+                    </Typography>
                     <Typography variant="body1" fontWeight={600}>
-                      <a href={`tel:${siteSettings.phone.replace(/\D/g, '')}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+                      <a
+                        href={`tel:${siteSettings.phone.replace(/\D/g, '')}`}
+                        style={{ textDecoration: 'none', color: 'inherit' }}
+                      >
                         {siteSettings.phone}
                       </a>
                     </Typography>
@@ -135,9 +160,14 @@ export default function ContactPage() {
                 <Stack direction="row" spacing={2} alignItems="center">
                   <EmailIcon sx={{ color: GOLD, fontSize: 28 }} />
                   <Box>
-                    <Typography variant="body2" color="text.secondary">Email</Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      Email
+                    </Typography>
                     <Typography variant="body1" fontWeight={600}>
-                      <a href={`mailto:${siteSettings.email}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+                      <a
+                        href={`mailto:${siteSettings.email}`}
+                        style={{ textDecoration: 'none', color: 'inherit' }}
+                      >
                         {siteSettings.email}
                       </a>
                     </Typography>
@@ -147,7 +177,9 @@ export default function ContactPage() {
                 <Stack direction="row" spacing={2} alignItems="center">
                   <LocationOnIcon sx={{ color: GOLD, fontSize: 28 }} />
                   <Box>
-                    <Typography variant="body2" color="text.secondary">Address</Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      Address
+                    </Typography>
                     <Typography variant="body1" fontWeight={600}>
                       {siteSettings.address}
                     </Typography>
@@ -157,7 +189,9 @@ export default function ContactPage() {
                 <Stack direction="row" spacing={2} alignItems="center">
                   <BusinessIcon sx={{ color: GOLD, fontSize: 28 }} />
                   <Box>
-                    <Typography variant="body2" color="text.secondary">Brokerage</Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      Brokerage
+                    </Typography>
                     <Typography variant="body1" fontWeight={600}>
                       {siteSettings.brokerage}
                     </Typography>
@@ -170,7 +204,11 @@ export default function ContactPage() {
                     <img
                       src={mapUrl}
                       alt="Office location map"
-                      style={{ width: '100%', height: 'auto', display: 'block' }}
+                      style={{
+                        width: '100%',
+                        height: 'auto',
+                        display: 'block'
+                      }}
                     />
                   </Box>
                 )}
@@ -185,22 +223,66 @@ export default function ContactPage() {
                 </Typography>
 
                 {success && (
-                  <Alert severity="success" sx={{ mb: 2 }} onClose={() => setSuccess(false)}>
+                  <Alert
+                    severity="success"
+                    sx={{ mb: 2 }}
+                    onClose={() => setSuccess(false)}
+                  >
                     Message sent! We&apos;ll get back to you soon.
                   </Alert>
                 )}
                 {error && (
-                  <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError(null)}>
+                  <Alert
+                    severity="error"
+                    sx={{ mb: 2 }}
+                    onClose={() => setError(null)}
+                  >
                     {error}
                   </Alert>
                 )}
 
                 <form onSubmit={handleSubmit}>
                   <Stack spacing={2}>
-                    <TextField label="Name" required fullWidth size="small" value={form.name} onChange={handleChange('name')} disabled={loading} />
-                    <TextField label="Email" type="email" required fullWidth size="small" value={form.email} onChange={handleChange('email')} disabled={loading} />
-                    <TextField label="Phone" type="tel" fullWidth size="small" value={form.phone} onChange={handleChange('phone')} disabled={loading} placeholder="(555) 555-1234" />
-                    <TextField label="Message" multiline rows={5} required fullWidth size="small" value={form.message} onChange={handleChange('message')} disabled={loading} />
+                    <TextField
+                      label="Name"
+                      required
+                      fullWidth
+                      size="small"
+                      value={form.name}
+                      onChange={handleChange('name')}
+                      disabled={loading}
+                    />
+                    <TextField
+                      label="Email"
+                      type="email"
+                      required
+                      fullWidth
+                      size="small"
+                      value={form.email}
+                      onChange={handleChange('email')}
+                      disabled={loading}
+                    />
+                    <TextField
+                      label="Phone"
+                      type="tel"
+                      fullWidth
+                      size="small"
+                      value={form.phone}
+                      onChange={handleChange('phone')}
+                      disabled={loading}
+                      placeholder="(555) 555-1234"
+                    />
+                    <TextField
+                      label="Message"
+                      multiline
+                      rows={5}
+                      required
+                      fullWidth
+                      size="small"
+                      value={form.message}
+                      onChange={handleChange('message')}
+                      disabled={loading}
+                    />
                     <Button
                       type="submit"
                       variant="contained"
@@ -208,7 +290,11 @@ export default function ContactPage() {
                       fullWidth
                       disabled={loading}
                       endIcon={<SendIcon />}
-                      sx={{ py: 1.5, bgcolor: NAVY, '&:hover': { bgcolor: '#1a2435' } }}
+                      sx={{
+                        py: 1.5,
+                        bgcolor: NAVY,
+                        '&:hover': { bgcolor: '#1a2435' }
+                      }}
                     >
                       {loading ? 'Sending...' : 'Send Message'}
                     </Button>

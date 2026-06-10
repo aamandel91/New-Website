@@ -20,19 +20,41 @@ interface SubTypeFilter {
   class?: string
 }
 const SUBTYPE_LOOKUP: Record<string, SubTypeFilter> = {
-  'single-family-homes': { label: 'Single Family Homes', labelSingular: 'Single Family Home', propertyType: 'Detached' },
-  'condos': { label: 'Condos', labelSingular: 'Condo', propertyType: 'Apartment' },
-  'townhomes': { label: 'Townhomes', labelSingular: 'Townhome', propertyType: 'Att/Row/Twnhouse' },
-  'multi-family': { label: 'Multi-Family Homes', labelSingular: 'Multi-Family Home', propertyType: 'Multi-Family' },
-  'luxury': { label: 'Luxury Homes', labelSingular: 'Luxury Home' },
-  'waterfront': { label: 'Waterfront Homes', labelSingular: 'Waterfront Home' },
+  'single-family-homes': {
+    label: 'Single Family Homes',
+    labelSingular: 'Single Family Home',
+    propertyType: 'Detached'
+  },
+  condos: {
+    label: 'Condos',
+    labelSingular: 'Condo',
+    propertyType: 'Apartment'
+  },
+  townhomes: {
+    label: 'Townhomes',
+    labelSingular: 'Townhome',
+    propertyType: 'Att/Row/Twnhouse'
+  },
+  'multi-family': {
+    label: 'Multi-Family Homes',
+    labelSingular: 'Multi-Family Home',
+    propertyType: 'Multi-Family'
+  },
+  luxury: { label: 'Luxury Homes', labelSingular: 'Luxury Home' },
+  waterfront: { label: 'Waterfront Homes', labelSingular: 'Waterfront Home' },
   'pool-homes': { label: 'Pool Homes', labelSingular: 'Pool Home' },
-  'new-construction': { label: 'New Construction Homes', labelSingular: 'New Construction Home' },
+  'new-construction': {
+    label: 'New Construction Homes',
+    labelSingular: 'New Construction Home'
+  },
   '55-plus': { label: '55+ Communities', labelSingular: '55+ Community' },
-  'gated-communities': { label: 'Gated Communities', labelSingular: 'Gated Community' },
+  'gated-communities': {
+    label: 'Gated Communities',
+    labelSingular: 'Gated Community'
+  },
   'no-hoa': { label: 'No HOA Homes', labelSingular: 'No HOA Home' },
-  'rentals': { label: 'Rentals', labelSingular: 'Rental' },
-  'land': { label: 'Lots & Land', labelSingular: 'Lot' }
+  rentals: { label: 'Rentals', labelSingular: 'Rental' },
+  land: { label: 'Lots & Land', labelSingular: 'Lot' }
 }
 function getSubTypeBySlug(slug: string): SubTypeFilter | undefined {
   return SUBTYPE_LOOKUP[slug]
@@ -43,7 +65,10 @@ const CACHE_TTL_MS = 60 * 1000
 
 // Defaults used when the row doesn't exist or the user clicks "reset".
 // Kept in sync with the migration seeds.
-const DEFAULTS: Record<SeoPageType, { title_template: string; description_template: string }> = {
+const DEFAULTS: Record<
+  SeoPageType,
+  { title_template: string; description_template: string }
+> = {
   city: {
     title_template: '{COUNT} Homes for Sale in {CITY}, {STATE} | {COMPANY}',
     description_template:
@@ -103,7 +128,13 @@ const DEFAULTS: Record<SeoPageType, { title_template: string; description_templa
 
 // Placeholders that require a live Repliers stats call. If a template contains
 // any of these, we trigger the (cached) lookup before resolving.
-const LIVE_PLACEHOLDERS = ['{COUNT}', '{AVG_PRICE}', '{MEDIAN_PRICE}', '{MIN_PRICE}', '{MAX_PRICE}']
+const LIVE_PLACEHOLDERS = [
+  '{COUNT}',
+  '{AVG_PRICE}',
+  '{MEDIAN_PRICE}',
+  '{MIN_PRICE}',
+  '{MAX_PRICE}'
+]
 
 interface LiveStats {
   count: number
@@ -130,7 +161,8 @@ function formatRow(row: any): SeoMetaTemplate {
     description_template: row.description_template,
     enabled: Boolean(row.enabled),
     updated_at: row.updated_at,
-    updated_by_user_id: row.updated_by_user_id != null ? String(row.updated_by_user_id) : null
+    updated_by_user_id:
+      row.updated_by_user_id != null ? String(row.updated_by_user_id) : null
   }
 }
 
@@ -140,7 +172,7 @@ function formatPrice(n: number | null | undefined): string {
 }
 
 function templateUsesLiveData(...templates: string[]): boolean {
-  return templates.some(t => LIVE_PLACEHOLDERS.some(p => t.includes(p)))
+  return templates.some((t) => LIVE_PLACEHOLDERS.some((p) => t.includes(p)))
 }
 
 @injectable()
@@ -277,7 +309,10 @@ export class SeoMetaTemplatesService {
     // saves a network round-trip on every neighborhood/school render.
     const needsLive =
       !template ||
-      templateUsesLiveData(template.title_template, template.description_template)
+      templateUsesLiveData(
+        template.title_template,
+        template.description_template
+      )
     if (needsLive) {
       const stats = await this.getLiveStats(pageType, scope)
       if (stats) {
@@ -296,7 +331,15 @@ export class SeoMetaTemplatesService {
     return ctx
   }
 
-  private cacheKey(pageType: SeoPageType, scope: { city?: string; zip?: string; subTypeSlug?: string; neighborhood?: string }): string {
+  private cacheKey(
+    pageType: SeoPageType,
+    scope: {
+      city?: string
+      zip?: string
+      subTypeSlug?: string
+      neighborhood?: string
+    }
+  ): string {
     switch (pageType) {
       case 'city':
         return `city:${scope.city || ''}`
@@ -315,7 +358,12 @@ export class SeoMetaTemplatesService {
 
   private async getLiveStats(
     pageType: SeoPageType,
-    scope: { city?: string; zip?: string; subTypeSlug?: string; neighborhood?: string }
+    scope: {
+      city?: string
+      zip?: string
+      subTypeSlug?: string
+      neighborhood?: string
+    }
   ): Promise<LiveStats | null> {
     const key = this.cacheKey(pageType, scope)
     const now = Date.now()
@@ -327,7 +375,8 @@ export class SeoMetaTemplatesService {
         status: 'A',
         resultsPerPage: 1,
         listings: false,
-        statistics: 'avg-listPrice,med-listPrice,min-listPrice,max-listPrice,cnt-listPrice'
+        statistics:
+          'avg-listPrice,med-listPrice,min-listPrice,max-listPrice,cnt-listPrice'
       }
       if (scope.city) params['city'] = scope.city
       if (scope.zip) params['address.zip'] = scope.zip
@@ -335,14 +384,16 @@ export class SeoMetaTemplatesService {
       if (scope.subTypeSlug) {
         const subType = getSubTypeBySlug(scope.subTypeSlug)
         if (subType) {
-          if (subType.propertyType) params['propertyType'] = subType.propertyType
+          if (subType.propertyType)
+            params['propertyType'] = subType.propertyType
           if (subType.type) params['type'] = subType.type
           if (subType.class) params['class'] = subType.class
         }
       }
 
       const response: any = await this.repliers.listings.search(params)
-      const stats = response?.statistics?.listPrice ?? response?.statistics?.soldPrice ?? {}
+      const stats =
+        response?.statistics?.listPrice ?? response?.statistics?.soldPrice ?? {}
       const count = Number(response?.count ?? 0)
       const value: LiveStats = {
         count: isFinite(count) ? count : 0,
@@ -364,7 +415,9 @@ export class SeoMetaTemplatesService {
    * Sample data used by the admin preview pane — gives admins a sense of what
    * the rendered title/description looks like without hitting Repliers.
    */
-  async getSampleContextForPageType(pageType: SeoPageType): Promise<TemplateContext> {
+  async getSampleContextForPageType(
+    pageType: SeoPageType
+  ): Promise<TemplateContext> {
     const base: TemplateContext = {
       CITY: 'Boca Raton',
       STATE: 'FL',
@@ -374,20 +427,61 @@ export class SeoMetaTemplatesService {
     }
     switch (pageType) {
       case 'city':
-        return { ...base, COUNT: '1,247', AVG_PRICE: '$985,000', MEDIAN_PRICE: '$720,000', MIN_PRICE: '$185,000', MAX_PRICE: '$12,500,000' }
+        return {
+          ...base,
+          COUNT: '1,247',
+          AVG_PRICE: '$985,000',
+          MEDIAN_PRICE: '$720,000',
+          MIN_PRICE: '$185,000',
+          MAX_PRICE: '$12,500,000'
+        }
       case 'city_subtype':
-        return { ...base, SUBTYPE: 'Condo', SUBTYPE_PLURAL: 'Condos', COUNT: '524', AVG_PRICE: '$640,000', MEDIAN_PRICE: '$485,000', MIN_PRICE: '$165,000', MAX_PRICE: '$4,200,000' }
+        return {
+          ...base,
+          SUBTYPE: 'Condo',
+          SUBTYPE_PLURAL: 'Condos',
+          COUNT: '524',
+          AVG_PRICE: '$640,000',
+          MEDIAN_PRICE: '$485,000',
+          MIN_PRICE: '$165,000',
+          MAX_PRICE: '$4,200,000'
+        }
       case 'neighborhood':
-        return { ...base, NEIGHBORHOOD: 'Country Isles', COMMUNITY: 'Country Isles', COUNT: '38', AVG_PRICE: '$875,000' }
+        return {
+          ...base,
+          NEIGHBORHOOD: 'Country Isles',
+          COMMUNITY: 'Country Isles',
+          COUNT: '38',
+          AVG_PRICE: '$875,000'
+        }
       case 'zipcode':
-        return { ...base, CITY: 'Boca Raton', ZIP: '33433', COUNT: '312', AVG_PRICE: '$540,000', MEDIAN_PRICE: '$465,000' }
+        return {
+          ...base,
+          CITY: 'Boca Raton',
+          ZIP: '33433',
+          COUNT: '312',
+          AVG_PRICE: '$540,000',
+          MEDIAN_PRICE: '$465,000'
+        }
       case 'property_type': {
         const { CITY: _drop1, ...rest } = base
-        return { ...rest, SUBTYPE: 'Condo', SUBTYPE_PLURAL: 'Condos', COUNT: '4,820', AVG_PRICE: '$612,000', MEDIAN_PRICE: '$450,000' }
+        return {
+          ...rest,
+          SUBTYPE: 'Condo',
+          SUBTYPE_PLURAL: 'Condos',
+          COUNT: '4,820',
+          AVG_PRICE: '$612,000',
+          MEDIAN_PRICE: '$450,000'
+        }
       }
       case 'county': {
         const { CITY: _drop2, ...rest } = base
-        return { ...rest, COUNTY: 'Palm Beach', COUNT: '8,142', AVG_PRICE: '$895,000' }
+        return {
+          ...rest,
+          COUNTY: 'Palm Beach',
+          COUNT: '8,142',
+          AVG_PRICE: '$895,000'
+        }
       }
       case 'school_elementary':
         return { ...base, SCHOOL: 'Calusa', COUNT: '24' }
@@ -420,7 +514,9 @@ export class SeoMetaTemplatesService {
   }
 
   /** Returns the seeded default (for the admin "reset" link or first render). */
-  getDefault(pageType: SeoPageType): { title_template: string; description_template: string } | null {
+  getDefault(
+    pageType: SeoPageType
+  ): { title_template: string; description_template: string } | null {
     return DEFAULTS[pageType] ?? null
   }
 }

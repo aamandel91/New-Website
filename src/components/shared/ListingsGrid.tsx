@@ -24,7 +24,7 @@ export default function ListingsGrid({
   neighborhood,
   zip,
   status = 'A',
-  limit = 12,
+  limit = 12
 }: ListingsGridProps) {
   const [listings, setListings] = useState<Property[]>([])
   const [totalCount, setTotalCount] = useState(0)
@@ -41,7 +41,7 @@ export default function ListingsGrid({
         zip,
         status,
         resultsPerPage: limit,
-        hasImages: true,
+        hasImages: true
       })
 
       if (response) {
@@ -102,7 +102,14 @@ export default function ListingsGrid({
     <Box sx={{ py: 4 }}>
       <Grid container spacing={3}>
         {listings.map((property, index) => (
-          <Grid item xs={12} sm={6} md={4} lg={3} key={`${property.mlsNumber}-${index}`}>
+          <Grid
+            item
+            xs={12}
+            sm={6}
+            md={4}
+            lg={3}
+            key={`${property.mlsNumber}-${index}`}
+          >
             <PropertyCard property={property} />
           </Grid>
         ))}

@@ -13,7 +13,7 @@ export function isFormBlocked(
     formData.name,
     formData.email,
     formData.phone,
-    formData.message,
+    formData.message
   ]
 
   const combined = fieldsToCheck.join(' ').toLowerCase()

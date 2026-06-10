@@ -1,15 +1,12 @@
 import { type Position } from 'geojson'
-import { type LngLatBounds } from 'utils/lngLat'
 
 import {
   type ApiSavedSearch,
   type ApiSavedSearchUpdateRequest
 } from 'services/API'
 import type { Filters } from 'services/Search'
-import {
-  type PolygonZone,
-  type PolygonZoneType
-} from 'utils/map'
+import { type LngLatBounds } from 'utils/lngLat'
+import { type PolygonZone, type PolygonZoneType } from 'utils/map'
 
 import { type notifications } from './constants'
 

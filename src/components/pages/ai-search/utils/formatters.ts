@@ -5,7 +5,7 @@ export const formatPrice = (price: number): string =>
     style: 'currency',
     currency: 'USD',
     minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
+    maximumFractionDigits: 0
   }).format(price)
 
 export const formatMapPrice = (price: number, type?: string): string => {
@@ -36,7 +36,9 @@ export const formatBedrooms = (details: AiSearchListing['details']): string => {
   return total?.toString() || '—'
 }
 
-export const formatBathrooms = (details: AiSearchListing['details']): string => {
+export const formatBathrooms = (
+  details: AiSearchListing['details']
+): string => {
   if (!details) return '—'
   const total = details.numBathrooms
   const plus = details.numBathroomsPlus
@@ -50,7 +52,7 @@ export const formatAddress = (address: AiSearchListing['address']): string => {
     address.streetNumber,
     address.streetDirection,
     address.streetName,
-    address.streetSuffix,
+    address.streetSuffix
   ]
     .filter(Boolean)
     .join(' ')

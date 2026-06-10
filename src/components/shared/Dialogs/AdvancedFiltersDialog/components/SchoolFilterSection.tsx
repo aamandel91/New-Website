@@ -88,7 +88,11 @@ const SchoolFilterSection = ({
         </FormControl>
       </Stack>
       {!!schoolRating && (
-        <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: 'block' }}>
+        <Typography
+          variant="caption"
+          color="text.secondary"
+          sx={{ mt: 1, display: 'block' }}
+        >
           Listings will be checked against nearby schools. This search uses a
           slower path and may take a moment longer.
         </Typography>

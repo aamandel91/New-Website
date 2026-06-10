@@ -1,8 +1,9 @@
 'use client'
 
 import React from 'react'
-import { Box } from '@mui/material'
+
 import PlayCircleOutlineIcon from '@mui/icons-material/PlayCircleOutline'
+import { Box } from '@mui/material'
 
 interface VideoThumbnailProps {
   videoUrl: string
@@ -38,7 +39,7 @@ const VideoThumbnail = ({ videoUrl, active, onClick }: VideoThumbnailProps) => {
         borderColor: 'primary.main',
         opacity: active ? 1 : 0.7,
         transition: 'opacity 0.2s ease',
-        '&:hover': { opacity: 1 },
+        '&:hover': { opacity: 1 }
       }}
     >
       <Box
@@ -48,7 +49,7 @@ const VideoThumbnail = ({ videoUrl, active, onClick }: VideoThumbnailProps) => {
         sx={{
           width: '100%',
           height: '100%',
-          objectFit: 'cover',
+          objectFit: 'cover'
         }}
       />
       <Box
@@ -61,7 +62,7 @@ const VideoThumbnail = ({ videoUrl, active, onClick }: VideoThumbnailProps) => {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          bgcolor: 'rgba(0,0,0,0.3)',
+          bgcolor: 'rgba(0,0,0,0.3)'
         }}
       >
         <PlayCircleOutlineIcon sx={{ fontSize: 36, color: 'white' }} />

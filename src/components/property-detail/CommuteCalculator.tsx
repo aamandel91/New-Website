@@ -1,22 +1,23 @@
 'use client'
 
-import React, { useState, useCallback, useRef, useEffect } from 'react'
-import {
-  Box,
-  Paper,
-  Typography,
-  TextField,
-  Button,
-  Stack,
-  ToggleButton,
-  ToggleButtonGroup,
-  CircularProgress,
-  Divider,
-} from '@mui/material'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
+
+import DirectionsBikeIcon from '@mui/icons-material/DirectionsBike'
 import DirectionsCarIcon from '@mui/icons-material/DirectionsCar'
 import DirectionsTransitIcon from '@mui/icons-material/DirectionsTransit'
 import DirectionsWalkIcon from '@mui/icons-material/DirectionsWalk'
-import DirectionsBikeIcon from '@mui/icons-material/DirectionsBike'
+import {
+  Box,
+  Button,
+  CircularProgress,
+  Divider,
+  Paper,
+  Stack,
+  TextField,
+  ToggleButton,
+  ToggleButtonGroup,
+  Typography
+} from '@mui/material'
 
 interface CommuteCalculatorProps {
   originAddress: string
@@ -43,23 +44,25 @@ const MODE_LABELS: Record<TravelMode, string> = {
   driving: 'Drive',
   transit: 'Transit',
   walking: 'Walk',
-  cycling: 'Bike',
+  cycling: 'Bike'
 }
 
 const MODE_ICONS: Record<TravelMode, React.ReactNode> = {
   driving: <DirectionsCarIcon />,
   transit: <DirectionsTransitIcon />,
   walking: <DirectionsWalkIcon />,
-  cycling: <DirectionsBikeIcon />,
+  cycling: <DirectionsBikeIcon />
 }
 
 const CommuteCalculator: React.FC<CommuteCalculatorProps> = ({
   originAddress,
   originLat,
-  originLng,
+  originLng
 }) => {
   const [destination, setDestination] = useState('')
-  const [destinationCoords, setDestinationCoords] = useState<[number, number] | null>(null)
+  const [destinationCoords, setDestinationCoords] = useState<
+    [number, number] | null
+  >(null)
   const [travelMode, setTravelMode] = useState<TravelMode>('driving')
   const [result, setResult] = useState<CommuteResult | null>(null)
   const [loading, setLoading] = useState(false)
@@ -72,7 +75,10 @@ const CommuteCalculator: React.FC<CommuteCalculatorProps> = ({
   // Close suggestions on outside click
   useEffect(() => {
     const handleClick = (e: MouseEvent) => {
-      if (suggestionsRef.current && !suggestionsRef.current.contains(e.target as Node)) {
+      if (
+        suggestionsRef.current &&
+        !suggestionsRef.current.contains(e.target as Node)
+      ) {
         setShowSuggestions(false)
       }
     }
@@ -93,10 +99,12 @@ const CommuteCalculator: React.FC<CommuteCalculatorProps> = ({
       if (!resp.ok) return
       const data = await resp.json()
       setSuggestions(
-        (data.features || []).map((f: { place_name: string; center: [number, number] }) => ({
-          place_name: f.place_name,
-          center: f.center,
-        }))
+        (data.features || []).map(
+          (f: { place_name: string; center: [number, number] }) => ({
+            place_name: f.place_name,
+            center: f.center
+          })
+        )
       )
       setShowSuggestions(true)
     } catch {
@@ -122,7 +130,10 @@ const CommuteCalculator: React.FC<CommuteCalculatorProps> = ({
     setShowSuggestions(false)
   }
 
-  const handleModeChange = (_e: React.MouseEvent<HTMLElement>, newMode: TravelMode | null) => {
+  const handleModeChange = (
+    _e: React.MouseEvent<HTMLElement>,
+    newMode: TravelMode | null
+  ) => {
     if (newMode) {
       setTravelMode(newMode)
       setResult(null)
@@ -195,7 +206,7 @@ const CommuteCalculator: React.FC<CommuteCalculatorProps> = ({
       setResult({
         duration: Math.round(route.duration / 60),
         distance: Math.round((route.distance / 1609.34) * 10) / 10,
-        mode: travelMode,
+        mode: travelMode
       })
     } catch {
       setError('Failed to calculate commute. Please try again.')
@@ -205,7 +216,10 @@ const CommuteCalculator: React.FC<CommuteCalculatorProps> = ({
   }
 
   return (
-    <Paper elevation={0} sx={{ p: 3, border: '1px solid', borderColor: 'divider', mt: 3 }}>
+    <Paper
+      elevation={0}
+      sx={{ p: 3, border: '1px solid', borderColor: 'divider', mt: 3 }}
+    >
       <Typography variant="h5" fontWeight="bold" gutterBottom>
         Calculate Commute
       </Typography>
@@ -239,7 +253,7 @@ const CommuteCalculator: React.FC<CommuteCalculatorProps> = ({
                 right: 0,
                 zIndex: 10,
                 maxHeight: 200,
-                overflow: 'auto',
+                overflow: 'auto'
               }}
             >
               {suggestions.map((s, i) => (
@@ -251,7 +265,7 @@ const CommuteCalculator: React.FC<CommuteCalculatorProps> = ({
                     cursor: 'pointer',
                     '&:hover': { bgcolor: 'action.hover' },
                     borderBottom: '1px solid',
-                    borderColor: 'divider',
+                    borderColor: 'divider'
                   }}
                   onClick={() => selectSuggestion(s)}
                 >
@@ -296,7 +310,11 @@ const CommuteCalculator: React.FC<CommuteCalculatorProps> = ({
           disabled={loading || !destination}
           sx={{ textTransform: 'none', fontWeight: 600, py: 1.5 }}
         >
-          {loading ? <CircularProgress size={24} color="inherit" /> : 'Calculate'}
+          {loading ? (
+            <CircularProgress size={24} color="inherit" />
+          ) : (
+            'Calculate'
+          )}
         </Button>
 
         {/* Results */}
@@ -307,7 +325,7 @@ const CommuteCalculator: React.FC<CommuteCalculatorProps> = ({
               bgcolor: 'grey.50',
               borderRadius: 1,
               border: '1px solid',
-              borderColor: 'divider',
+              borderColor: 'divider'
             }}
           >
             <Stack direction="row" spacing={1} alignItems="center">
@@ -333,7 +351,7 @@ const CommuteCalculator: React.FC<CommuteCalculatorProps> = ({
               bgcolor: travelMode === 'transit' ? 'info.light' : 'error.light',
               borderRadius: 1,
               border: '1px solid',
-              borderColor: travelMode === 'transit' ? 'info.main' : 'error.main',
+              borderColor: travelMode === 'transit' ? 'info.main' : 'error.main'
             }}
           >
             <Typography variant="body2" color="text.primary">

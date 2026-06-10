@@ -33,7 +33,9 @@ export class OrganizationRepository {
    * Find organization by subdomain (primary_domain)
    */
   async findByPrimaryDomain(domain: string): Promise<Organization | null> {
-    const org = await this.db('organizations').where({ primary_domain: domain }).first()
+    const org = await this.db('organizations')
+      .where({ primary_domain: domain })
+      .first()
     return org || null
   }
 
@@ -41,14 +43,19 @@ export class OrganizationRepository {
    * Find organization by custom domain
    */
   async findByCustomDomain(domain: string): Promise<Organization | null> {
-    const org = await this.db('organizations').where({ custom_domain: domain }).first()
+    const org = await this.db('organizations')
+      .where({ custom_domain: domain })
+      .first()
     return org || null
   }
 
   /**
    * Update organization
    */
-  async updateOrganization(id: bigint, input: UpdateOrganizationInput): Promise<Organization> {
+  async updateOrganization(
+    id: bigint,
+    input: UpdateOrganizationInput
+  ): Promise<Organization> {
     const updateData: any = {
       updated_at: new Date()
     }
@@ -58,12 +65,17 @@ export class OrganizationRepository {
     if (input.status) updateData.status = input.status
     if (input.settings) updateData.settings = JSON.stringify(input.settings)
     if (input.primary_domain) updateData.primary_domain = input.primary_domain
-    if (input.custom_domain !== undefined) updateData.custom_domain = input.custom_domain
-    if (input.logo_cloudinary_id !== undefined) updateData.logo_cloudinary_id = input.logo_cloudinary_id
+    if (input.custom_domain !== undefined)
+      updateData.custom_domain = input.custom_domain
+    if (input.logo_cloudinary_id !== undefined)
+      updateData.logo_cloudinary_id = input.logo_cloudinary_id
     if (input.primary_color) updateData.primary_color = input.primary_color
-    if (input.secondary_color) updateData.secondary_color = input.secondary_color
-    if (input.contact_email !== undefined) updateData.contact_email = input.contact_email
-    if (input.contact_phone !== undefined) updateData.contact_phone = input.contact_phone
+    if (input.secondary_color)
+      updateData.secondary_color = input.secondary_color
+    if (input.contact_email !== undefined)
+      updateData.contact_email = input.contact_email
+    if (input.contact_phone !== undefined)
+      updateData.contact_phone = input.contact_phone
 
     const [org] = await this.db('organizations')
       .where({ id })
@@ -85,7 +97,12 @@ export class OrganizationRepository {
   /**
    * Add member to organization
    */
-  async addMember(orgId: bigint, email: string, role: string, invitedBy: string): Promise<OrganizationMember> {
+  async addMember(
+    orgId: bigint,
+    email: string,
+    role: string,
+    invitedBy: string
+  ): Promise<OrganizationMember> {
     const now = new Date()
 
     const [member] = await this.db('organization_members')
@@ -105,7 +122,11 @@ export class OrganizationRepository {
   /**
    * Update member role
    */
-  async updateMemberRole(orgId: bigint, email: string, role: string): Promise<OrganizationMember> {
+  async updateMemberRole(
+    orgId: bigint,
+    email: string,
+    role: string
+  ): Promise<OrganizationMember> {
     const [member] = await this.db('organization_members')
       .where({ org_id: orgId, email })
       .update({ role })
@@ -128,7 +149,12 @@ export class OrganizationRepository {
   /**
    * Create invitation
    */
-  async createInvitation(orgId: bigint, email: string, role: string, invitedBy: string): Promise<Invitation> {
+  async createInvitation(
+    orgId: bigint,
+    email: string,
+    role: string,
+    invitedBy: string
+  ): Promise<Invitation> {
     const now = new Date()
     const expiresAt = new Date()
     expiresAt.setDate(expiresAt.getDate() + 7) // 7-day expiration
@@ -182,13 +208,25 @@ export class OrganizationRepository {
     return this.db('agents')
       .where({ org_id: orgId })
       .whereNotNull('subdomain')
-      .select('id', 'org_id', 'email', 'first_name', 'last_name', 'full_name', 'subdomain', 'active')
+      .select(
+        'id',
+        'org_id',
+        'email',
+        'first_name',
+        'last_name',
+        'full_name',
+        'subdomain',
+        'active'
+      )
   }
 
   /**
    * Find agent by subdomain
    */
-  async findAgentBySubdomain(orgId: bigint, subdomain: string): Promise<AgentSubdomain | null> {
+  async findAgentBySubdomain(
+    orgId: bigint,
+    subdomain: string
+  ): Promise<AgentSubdomain | null> {
     const agent = await this.db('agents')
       .where({ org_id: orgId, subdomain })
       .first()

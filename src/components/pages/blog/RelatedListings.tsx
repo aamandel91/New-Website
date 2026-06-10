@@ -1,11 +1,21 @@
 'use client'
 
 import React, { useEffect, useState } from 'react'
-import { Box, Typography, Grid, Paper, Link as MuiLink, Skeleton } from '@mui/material'
 import Link from 'next/link'
+
+import {
+  Box,
+  Grid,
+  Link as MuiLink,
+  Paper,
+  Skeleton,
+  Typography
+} from '@mui/material'
+
+import searchConfig from '@configs/search'
+
 import type { Property } from 'services/API'
 import { APISearch } from 'services/API'
-import searchConfig from '@configs/search'
 
 interface RelatedListingsProps {
   tags: string[]
@@ -35,14 +45,16 @@ function extractCityFromTags(tags: string[]): string | null {
 
 function ListingCard({ property }: { property: Property }) {
   const address = property.address
-  const street = `${address?.streetNumber || ''} ${address?.streetName || ''} ${address?.streetSuffix || ''}`.trim()
+  const street =
+    `${address?.streetNumber || ''} ${address?.streetName || ''} ${address?.streetSuffix || ''}`.trim()
   const cityState = `${address?.city || ''}, ${address?.state || ''} ${address?.zip || ''}`
   const price = property.listPrice ? parseFloat(property.listPrice) : 0
   const beds = property.details?.numBedrooms || '—'
   const baths = property.details?.numBathrooms || '—'
   const sqft = property.details?.sqft || '—'
   const description = property.details?.description || ''
-  const snippet = description.length > 120 ? `${description.slice(0, 120)}...` : description
+  const snippet =
+    description.length > 120 ? `${description.slice(0, 120)}...` : description
   const image = property.images?.[0]
 
   return (
@@ -58,7 +70,11 @@ function ListingCard({ property }: { property: Property }) {
       <Box sx={{ p: 2 }}>
         <Typography variant="subtitle2" fontWeight={600}>
           {price > 0
-            ? new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(price)
+            ? new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: 'USD',
+                maximumFractionDigits: 0
+              }).format(price)
             : 'Price TBD'}
         </Typography>
         <Typography variant="body2" noWrap>
@@ -67,7 +83,12 @@ function ListingCard({ property }: { property: Property }) {
         <Typography variant="caption" color="text.secondary" noWrap>
           {cityState}
         </Typography>
-        <Typography variant="caption" display="block" color="text.secondary" sx={{ mt: 0.5 }}>
+        <Typography
+          variant="caption"
+          display="block"
+          color="text.secondary"
+          sx={{ mt: 0.5 }}
+        >
           {beds} bd | {baths} ba | {sqft} sqft
         </Typography>
         {snippet && (
@@ -80,7 +101,7 @@ function ListingCard({ property }: { property: Property }) {
               WebkitBoxOrient: 'vertical',
               overflow: 'hidden',
               mt: 0.5,
-              fontSize: '0.75rem',
+              fontSize: '0.75rem'
             }}
           >
             {snippet}
@@ -94,7 +115,7 @@ function ListingCard({ property }: { property: Property }) {
 const RelatedListings: React.FC<RelatedListingsProps> = ({
   tags,
   city: propCity,
-  maxListings = 4,
+  maxListings = 4
 }) => {
   const [listings, setListings] = useState<Property[]>([])
   const [loading, setLoading] = useState(true)
@@ -118,9 +139,9 @@ const RelatedListings: React.FC<RelatedListingsProps> = ({
               boardId: searchConfig.defaultBoardId,
               resultsPerPage: maxListings,
               sortBy: 'createdOnDesc',
-              listings: true,
+              listings: true
             },
-            post: {},
+            post: {}
           },
           undefined
         )
@@ -143,14 +164,19 @@ const RelatedListings: React.FC<RelatedListingsProps> = ({
         Related Listings{searchCity ? ` in ${searchCity}` : ''}
       </Typography>
       <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-        Explore properties currently available{searchCity ? ` in ${searchCity}` : ''}.
+        Explore properties currently available
+        {searchCity ? ` in ${searchCity}` : ''}.
       </Typography>
 
       {loading ? (
         <Grid container spacing={2}>
           {Array.from({ length: maxListings }).map((_, i) => (
             <Grid item xs={12} sm={6} md={3} key={i}>
-              <Skeleton variant="rectangular" height={240} sx={{ borderRadius: 1 }} />
+              <Skeleton
+                variant="rectangular"
+                height={240}
+                sx={{ borderRadius: 1 }}
+              />
             </Grid>
           ))}
         </Grid>
@@ -166,7 +192,11 @@ const RelatedListings: React.FC<RelatedListingsProps> = ({
 
       {searchCity && (
         <Box sx={{ mt: 2 }}>
-          <Link href={`/search/grid?city=${encodeURIComponent(searchCity)}`} passHref legacyBehavior>
+          <Link
+            href={`/search/grid?city=${encodeURIComponent(searchCity)}`}
+            passHref
+            legacyBehavior
+          >
             <MuiLink variant="body2" fontWeight="bold" underline="hover">
               {searchCity} Homes for Sale →
             </MuiLink>

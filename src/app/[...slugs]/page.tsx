@@ -1,41 +1,62 @@
-import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
-import { Box, Container, Typography, Breadcrumbs, Link, Grid, Chip, Card, CardContent } from '@mui/material'
+import type { Metadata } from 'next'
 
+import {
+  Box,
+  Breadcrumbs,
+  Card,
+  CardContent,
+  Chip,
+  Container,
+  Grid,
+  Link,
+  Typography
+} from '@mui/material'
+
+import {
+  activeMarkets,
+  allActiveCities,
+  findNearbyCities,
+  getSubTypeBySlug,
+  subTypes
+} from '@configs/page-generation'
 import { PageTemplate } from '@templates'
-import ListingsGrid from '@shared/ListingsGrid'
-import AreaValueTrends from '@shared/AreaValueTrends'
-import MarketTimelineGraph from '@shared/MarketTimelineGraph'
-import StructuredData from '@shared/StructuredData'
-import RelatedReading from '@shared/RelatedReading'
 import PageWithSidebar from '@/components/layouts/PageWithSidebar'
-import CitySidebar from '@/components/sidebar/CitySidebar'
-
-import { subTypes, getSubTypeBySlug, findNearbyCities, activeMarkets, allActiveCities } from '@configs/page-generation'
 import AboutTheArea from '@/components/property-detail/sections/AboutTheArea'
-import { breadcrumbSchema, faqSchema, localBusinessSchema } from 'utils/structuredData'
-import {
-  parseCleanSlug,
-  slugToDisplayName,
-  generateMetaTitle,
-  generateHeadingVariations,
-  generateCleanUrl,
-} from 'utils/templateEngine'
-import type { ParsedCleanSlug } from 'utils/templateEngine'
-import APIContentPages from 'services/API/APIContentPages'
-import type { ContentPage } from 'services/API/APIContentPages'
+import CitySidebar from '@/components/sidebar/CitySidebar'
 import { tenant } from '@/configs/tenant.config'
-import { scoreAreaPage } from 'utils/areaPageScoring'
+import AreaValueTrends from '@shared/AreaValueTrends'
+import ListingsGrid from '@shared/ListingsGrid'
+import MarketTimelineGraph from '@shared/MarketTimelineGraph'
+import RelatedReading from '@shared/RelatedReading'
+import StructuredData from '@shared/StructuredData'
+
+import type { ContentPage } from 'services/API/APIContentPages'
+import APIContentPages from 'services/API/APIContentPages'
 import {
+  buildSubTypeFilters,
   fetchCityNeighborhoods,
   fetchListingCount,
+  fetchListingStats,
   fetchSubTypeCount,
   fetchZipCodesForCity,
-  fetchListingStats,
-  formatPrice,
-  buildSubTypeFilters,
+  formatPrice
 } from 'services/pageGeneration'
 import { renderSeoMeta, type TemplateContext } from 'services/seoMetaTemplates'
+import { scoreAreaPage } from 'utils/areaPageScoring'
+import {
+  breadcrumbSchema,
+  faqSchema,
+  localBusinessSchema
+} from 'utils/structuredData'
+import type { ParsedCleanSlug } from 'utils/templateEngine'
+import {
+  generateCleanUrl,
+  generateHeadingVariations,
+  generateMetaTitle,
+  parseCleanSlug,
+  slugToDisplayName
+} from 'utils/templateEngine'
 
 export const revalidate = 300
 
@@ -47,14 +68,14 @@ function buildBreadcrumbs(
 ): Array<{ name: string; url: string }> {
   const items: Array<{ name: string; url: string }> = [
     { name: 'Home', url: baseUrl },
-    { name: 'Florida', url: `${baseUrl}/search/gallery` },
+    { name: 'Florida', url: `${baseUrl}/search/gallery` }
   ]
 
   if (parsed.pageType === 'property-type' && parsed.subType) {
     const stConfig = getSubTypeBySlug(parsed.subType)
     items.push({
       name: stConfig?.label || slugToDisplayName(parsed.subType),
-      url: `${baseUrl}/${parsed.subType}`,
+      url: `${baseUrl}/${parsed.subType}`
     })
     return items
   }
@@ -65,11 +86,20 @@ function buildBreadcrumbs(
 
   if (parsed.pageType === 'city-subtype' && parsed.subType) {
     const stConfig = getSubTypeBySlug(parsed.subType)
-    items.push({ name: stConfig?.label || slugToDisplayName(parsed.subType), url: `${baseUrl}/${parsed.city}/${parsed.subType}` })
+    items.push({
+      name: stConfig?.label || slugToDisplayName(parsed.subType),
+      url: `${baseUrl}/${parsed.city}/${parsed.subType}`
+    })
   } else if (parsed.pageType === 'city-neighborhood' && parsed.neighborhood) {
-    items.push({ name: slugToDisplayName(parsed.neighborhood), url: `${baseUrl}/${parsed.city}/${parsed.neighborhood}` })
+    items.push({
+      name: slugToDisplayName(parsed.neighborhood),
+      url: `${baseUrl}/${parsed.city}/${parsed.neighborhood}`
+    })
   } else if (parsed.pageType === 'city-zip' && parsed.zip) {
-    items.push({ name: parsed.zip, url: `${baseUrl}/${parsed.city}/${parsed.zip}` })
+    items.push({
+      name: parsed.zip,
+      url: `${baseUrl}/${parsed.city}/${parsed.zip}`
+    })
   } else if (parsed.pageType === 'city-schools') {
     items.push({ name: 'Schools', url: `${baseUrl}/${parsed.city}/schools` })
   }
@@ -85,7 +115,9 @@ interface CleanPageProps {
 // Metadata
 // ---------------------------------------------------------------------------
 
-export async function generateMetadata(props: CleanPageProps): Promise<Metadata> {
+export async function generateMetadata(
+  props: CleanPageProps
+): Promise<Metadata> {
   const { slugs } = await props.params
   const parsed = parseCleanSlug(slugs)
   if (!parsed) return {}
@@ -113,7 +145,7 @@ export async function generateMetadata(props: CleanPageProps): Promise<Metadata>
       const stats = await fetchListingStats({}, buildSubTypeFilters(stConfig))
       const tctx: TemplateContext = {
         SUBTYPE: stConfig.label.replace(/s$/, ''),
-        SUBTYPE_PLURAL: stConfig.label,
+        SUBTYPE_PLURAL: stConfig.label
       }
       if (stats.count > 0) tctx.COUNT = stats.count.toLocaleString('en-US')
       if (stats.avg) tctx.AVG_PRICE = formatPrice(stats.avg)
@@ -121,7 +153,10 @@ export async function generateMetadata(props: CleanPageProps): Promise<Metadata>
       if (stats.min) tctx.MIN_PRICE = formatPrice(stats.min)
       if (stats.max) tctx.MAX_PRICE = formatPrice(stats.max)
       const tpl = await renderSeoMeta('property_type', tctx)
-      if (tpl) { title = tpl.title; description = tpl.description }
+      if (tpl) {
+        title = tpl.title
+        description = tpl.description
+      }
       const ogImageUrl = `${baseUrl}/api/og/city?slug=${encodeURIComponent(parsed.subType!)}`
       return {
         title,
@@ -131,15 +166,24 @@ export async function generateMetadata(props: CleanPageProps): Promise<Metadata>
           title,
           description,
           type: 'website',
-          images: [{ url: ogImageUrl, width: 1200, height: 630 }],
+          images: [{ url: ogImageUrl, width: 1200, height: 630 }]
         },
-        twitter: { card: 'summary_large_image', title, description, images: [ogImageUrl] },
+        twitter: {
+          card: 'summary_large_image',
+          title,
+          description,
+          images: [ogImageUrl]
+        }
       }
     }
     case 'city': {
       const stats = await fetchListingStats({ city: cityName })
       const count = stats.count
-      const pageScore = scoreAreaPage({ pageType: 'city', listingCount: count, hasCmsContent })
+      const pageScore = scoreAreaPage({
+        pageType: 'city',
+        listingCount: count,
+        hasCmsContent
+      })
       let title = `${count} Homes for Sale in ${cityName}, FL (${new Date().getFullYear()})`
       let description = `Browse ${count} homes for sale in ${cityName}, FL. View photos, prices, and property details. Updated daily on ${tenant.brand.siteName}.`
       const tctx: TemplateContext = { CITY: cityName }
@@ -149,7 +193,10 @@ export async function generateMetadata(props: CleanPageProps): Promise<Metadata>
       if (stats.min) tctx.MIN_PRICE = formatPrice(stats.min)
       if (stats.max) tctx.MAX_PRICE = formatPrice(stats.max)
       const tpl = await renderSeoMeta('city', tctx)
-      if (tpl) { title = tpl.title; description = tpl.description }
+      if (tpl) {
+        title = tpl.title
+        description = tpl.description
+      }
       const ogImageUrl = `${baseUrl}/api/og/city?slug=${encodeURIComponent(parsed.city)}`
       return {
         title,
@@ -160,23 +207,36 @@ export async function generateMetadata(props: CleanPageProps): Promise<Metadata>
           title,
           description,
           type: 'website',
-          images: [{ url: ogImageUrl, width: 1200, height: 630 }],
+          images: [{ url: ogImageUrl, width: 1200, height: 630 }]
         },
-        twitter: { card: 'summary_large_image', title, description, images: [ogImageUrl] },
+        twitter: {
+          card: 'summary_large_image',
+          title,
+          description,
+          images: [ogImageUrl]
+        }
       }
     }
     case 'city-subtype': {
       const stConfig = getSubTypeBySlug(parsed.subType!)
       if (!stConfig) return {}
-      const stats = await fetchListingStats({ city: cityName }, buildSubTypeFilters(stConfig))
+      const stats = await fetchListingStats(
+        { city: cityName },
+        buildSubTypeFilters(stConfig)
+      )
       const count = stats.count
-      const pageScore = scoreAreaPage({ pageType: 'subType', listingCount: count, subTypeSlug: stConfig.slug, hasCmsContent })
+      const pageScore = scoreAreaPage({
+        pageType: 'subType',
+        listingCount: count,
+        subTypeSlug: stConfig.slug,
+        hasCmsContent
+      })
       let title = generateMetaTitle(cityName, stConfig.label, count)
       let description = `Browse ${count} ${stConfig.label} for sale in ${cityName}, FL. View photos, prices, and property details. Updated daily on ${tenant.brand.siteName}.`
       const tctx: TemplateContext = {
         CITY: cityName,
         SUBTYPE: stConfig.label.replace(/s$/, ''),
-        SUBTYPE_PLURAL: stConfig.label,
+        SUBTYPE_PLURAL: stConfig.label
       }
       if (count > 0) tctx.COUNT = count.toLocaleString('en-US')
       if (stats.avg) tctx.AVG_PRICE = formatPrice(stats.avg)
@@ -184,24 +244,38 @@ export async function generateMetadata(props: CleanPageProps): Promise<Metadata>
       if (stats.min) tctx.MIN_PRICE = formatPrice(stats.min)
       if (stats.max) tctx.MAX_PRICE = formatPrice(stats.max)
       const tpl = await renderSeoMeta('city_subtype', tctx)
-      if (tpl) { title = tpl.title; description = tpl.description }
+      if (tpl) {
+        title = tpl.title
+        description = tpl.description
+      }
       const ogImageUrl = `${baseUrl}/api/og/city?slug=${encodeURIComponent(`${parsed.city}/${parsed.subType}`)}`
       return {
         title,
         description,
         robots: pageScore.indexDirective,
-        alternates: { canonical: `${baseUrl}/${parsed.city}/${parsed.subType}` },
+        alternates: {
+          canonical: `${baseUrl}/${parsed.city}/${parsed.subType}`
+        },
         openGraph: {
           title,
           description,
           type: 'website',
-          images: [{ url: ogImageUrl, width: 1200, height: 630 }],
+          images: [{ url: ogImageUrl, width: 1200, height: 630 }]
         },
-        twitter: { card: 'summary_large_image', title, description, images: [ogImageUrl] },
+        twitter: {
+          card: 'summary_large_image',
+          title,
+          description,
+          images: [ogImageUrl]
+        }
       }
     }
     case 'city-schools': {
-      const pageScore = scoreAreaPage({ pageType: 'schools', listingCount: 0, hasCmsContent })
+      const pageScore = scoreAreaPage({
+        pageType: 'schools',
+        listingCount: 0,
+        hasCmsContent
+      })
       const title = `Schools in ${cityName}, FL`
       const description = `Explore schools in ${cityName}, Florida. Find top-rated public and private schools near your new home.`
       const ogImageUrl = `${baseUrl}/api/og/city?slug=${encodeURIComponent(`${parsed.city}/schools`)}`
@@ -213,15 +287,24 @@ export async function generateMetadata(props: CleanPageProps): Promise<Metadata>
           title,
           description,
           type: 'website',
-          images: [{ url: ogImageUrl, width: 1200, height: 630 }],
+          images: [{ url: ogImageUrl, width: 1200, height: 630 }]
         },
-        twitter: { card: 'summary_large_image', title, description, images: [ogImageUrl] },
+        twitter: {
+          card: 'summary_large_image',
+          title,
+          description,
+          images: [ogImageUrl]
+        }
       }
     }
     case 'city-zip': {
       const stats = await fetchListingStats({ city: cityName, zip: parsed.zip })
       const count = stats.count
-      const pageScore = scoreAreaPage({ pageType: 'zip', listingCount: count, hasCmsContent })
+      const pageScore = scoreAreaPage({
+        pageType: 'zip',
+        listingCount: count,
+        hasCmsContent
+      })
       let title = `${count} Homes for Sale in ${cityName}, FL ${parsed.zip} (${new Date().getFullYear()})`
       let description = `Browse ${count} homes for sale in ${cityName} zip code ${parsed.zip}, FL. Updated daily.`
       const tctx: TemplateContext = { CITY: cityName, ZIP: parsed.zip! }
@@ -231,7 +314,10 @@ export async function generateMetadata(props: CleanPageProps): Promise<Metadata>
       if (stats.min) tctx.MIN_PRICE = formatPrice(stats.min)
       if (stats.max) tctx.MAX_PRICE = formatPrice(stats.max)
       const tpl = await renderSeoMeta('zipcode', tctx)
-      if (tpl) { title = tpl.title; description = tpl.description }
+      if (tpl) {
+        title = tpl.title
+        description = tpl.description
+      }
       const ogImageUrl = `${baseUrl}/api/og/city?slug=${encodeURIComponent(`${parsed.city}/${parsed.zip}`)}`
       return {
         title,
@@ -241,26 +327,45 @@ export async function generateMetadata(props: CleanPageProps): Promise<Metadata>
           title,
           description,
           type: 'website',
-          images: [{ url: ogImageUrl, width: 1200, height: 630 }],
+          images: [{ url: ogImageUrl, width: 1200, height: 630 }]
         },
-        twitter: { card: 'summary_large_image', title, description, images: [ogImageUrl] },
+        twitter: {
+          card: 'summary_large_image',
+          title,
+          description,
+          images: [ogImageUrl]
+        }
       }
     }
     case 'city-neighborhood': {
       const neighborhoodName = slugToDisplayName(parsed.neighborhood!)
-      const stats = await fetchListingStats({ city: cityName, neighborhood: neighborhoodName })
+      const stats = await fetchListingStats({
+        city: cityName,
+        neighborhood: neighborhoodName
+      })
       const count = stats.count
-      const pageScore = scoreAreaPage({ pageType: 'neighborhood', listingCount: count, hasCmsContent })
+      const pageScore = scoreAreaPage({
+        pageType: 'neighborhood',
+        listingCount: count,
+        hasCmsContent
+      })
       let title = `Homes for Sale in ${neighborhoodName}, ${cityName}, FL`
       let description = `Browse homes for sale in ${neighborhoodName}, ${cityName}, FL. View photos, prices, and property details.`
-      const tctx: TemplateContext = { CITY: cityName, NEIGHBORHOOD: neighborhoodName, COMMUNITY: neighborhoodName }
+      const tctx: TemplateContext = {
+        CITY: cityName,
+        NEIGHBORHOOD: neighborhoodName,
+        COMMUNITY: neighborhoodName
+      }
       if (count > 0) tctx.COUNT = count.toLocaleString('en-US')
       if (stats.avg) tctx.AVG_PRICE = formatPrice(stats.avg)
       if (stats.med) tctx.MEDIAN_PRICE = formatPrice(stats.med)
       if (stats.min) tctx.MIN_PRICE = formatPrice(stats.min)
       if (stats.max) tctx.MAX_PRICE = formatPrice(stats.max)
       const tpl = await renderSeoMeta('neighborhood', tctx)
-      if (tpl) { title = tpl.title; description = tpl.description }
+      if (tpl) {
+        title = tpl.title
+        description = tpl.description
+      }
       const ogImageUrl = `${baseUrl}/api/og/city?slug=${encodeURIComponent(`${parsed.city}/${parsed.neighborhood}`)}`
       return {
         title,
@@ -270,9 +375,14 @@ export async function generateMetadata(props: CleanPageProps): Promise<Metadata>
           title,
           description,
           type: 'website',
-          images: [{ url: ogImageUrl, width: 1200, height: 630 }],
+          images: [{ url: ogImageUrl, width: 1200, height: 630 }]
         },
-        twitter: { card: 'summary_large_image', title, description, images: [ogImageUrl] },
+        twitter: {
+          card: 'summary_large_image',
+          title,
+          description,
+          images: [ogImageUrl]
+        }
       }
     }
   }
@@ -327,15 +437,19 @@ export default async function CleanCatchAllPage(props: CleanPageProps) {
 // Property-Type (Global Aggregate) Page
 // ---------------------------------------------------------------------------
 
-async function renderPropertyTypePage(parsed: ParsedCleanSlug, baseUrl: string) {
+async function renderPropertyTypePage(
+  parsed: ParsedCleanSlug,
+  baseUrl: string
+) {
   const stConfig = getSubTypeBySlug(parsed.subType!)
   if (!stConfig) notFound()
 
   const marketLabel = activeMarkets[0]?.label ?? 'South Florida'
   const countyNames = activeMarkets.flatMap((m) => m.counties)
-  const countyList = countyNames.length > 0
-    ? `${countyNames.slice(0, -1).join(', ')}${countyNames.length > 1 ? ', and ' : ''}${countyNames[countyNames.length - 1]} ${countyNames.length === 1 ? 'County' : 'Counties'}`
-    : marketLabel
+  const countyList =
+    countyNames.length > 0
+      ? `${countyNames.slice(0, -1).join(', ')}${countyNames.length > 1 ? ', and ' : ''}${countyNames[countyNames.length - 1]} ${countyNames.length === 1 ? 'County' : 'Counties'}`
+      : marketLabel
 
   const allCities: string[] = []
   for (const market of activeMarkets) {
@@ -367,7 +481,12 @@ async function renderPropertyTypePage(parsed: ParsedCleanSlug, baseUrl: string) 
         </Breadcrumbs>
 
         <Box sx={{ mb: 4 }}>
-          <Typography variant="h3" component="h1" fontWeight="bold" gutterBottom>
+          <Typography
+            variant="h3"
+            component="h1"
+            fontWeight="bold"
+            gutterBottom
+          >
             {stConfig.label} for Sale in {marketLabel}
           </Typography>
           <Typography variant="body1" color="text.secondary">
@@ -376,7 +495,10 @@ async function renderPropertyTypePage(parsed: ParsedCleanSlug, baseUrl: string) 
         </Box>
 
         {/* Property Listings — global, no city filter */}
-        <ListingsGrid propertyType={stConfig.propertyType || stConfig.label} limit={24} />
+        <ListingsGrid
+          propertyType={stConfig.propertyType || stConfig.label}
+          limit={24}
+        />
 
         {/* Cities grid — internal links to per-city subtype pages */}
         {allCities.length > 0 && (
@@ -433,20 +555,20 @@ async function renderPropertyTypePage(parsed: ParsedCleanSlug, baseUrl: string) 
         data={faqSchema([
           {
             question: `How many ${stConfig.label.toLowerCase()} are for sale in ${marketLabel}?`,
-            answer: `Inventory for ${stConfig.label.toLowerCase()} across ${marketLabel} changes daily. Browse our live listings on ${tenant.brand.siteName} to see all currently available ${stConfig.label.toLowerCase()}.`,
+            answer: `Inventory for ${stConfig.label.toLowerCase()} across ${marketLabel} changes daily. Browse our live listings on ${tenant.brand.siteName} to see all currently available ${stConfig.label.toLowerCase()}.`
           },
           {
             question: `What's the average price of ${stConfig.label.toLowerCase()} in ${marketLabel}?`,
-            answer: `${stConfig.label} prices vary widely by city and neighborhood across ${marketLabel}. Browse current listings on ${tenant.brand.siteName} for up-to-date pricing in your target area.`,
+            answer: `${stConfig.label} prices vary widely by city and neighborhood across ${marketLabel}. Browse current listings on ${tenant.brand.siteName} for up-to-date pricing in your target area.`
           },
           {
             question: `Which cities have the most ${stConfig.label.toLowerCase()} available?`,
-            answer: `${stConfig.label} are available across all major cities in ${marketLabel}. Click any city above to see local inventory and pricing.`,
+            answer: `${stConfig.label} are available across all major cities in ${marketLabel}. Click any city above to see local inventory and pricing.`
           },
           {
             question: `How do I buy ${stConfig.label.toLowerCase()} in ${marketLabel}?`,
-            answer: `Buying ${stConfig.label.toLowerCase()} in ${marketLabel} typically takes 30-60 days from accepted offer to closing. ${tenant.brand.teamName} guides you through every step.`,
-          },
+            answer: `Buying ${stConfig.label.toLowerCase()} in ${marketLabel} typically takes 30-60 days from accepted offer to closing. ${tenant.brand.teamName} guides you through every step.`
+          }
         ])}
       />
     </PageTemplate>
@@ -486,16 +608,18 @@ function renderCmsPage(
         <Typography variant="h3" component="h1" gutterBottom>
           {page.title}
         </Typography>
-        {page.content?.modules?.map((mod: { type: string; data: { content?: string } }, i: number) => (
-          <Box key={i} sx={{ mb: 3 }}>
-            {mod.type === 'text' && (
-              <Typography
-                variant="body1"
-                dangerouslySetInnerHTML={{ __html: mod.data.content ?? '' }}
-              />
-            )}
-          </Box>
-        ))}
+        {page.content?.modules?.map(
+          (mod: { type: string; data: { content?: string } }, i: number) => (
+            <Box key={i} sx={{ mb: 3 }}>
+              {mod.type === 'text' && (
+                <Typography
+                  variant="body1"
+                  dangerouslySetInnerHTML={{ __html: mod.data.content ?? '' }}
+                />
+              )}
+            </Box>
+          )
+        )}
       </Container>
     </PageTemplate>
   )
@@ -514,16 +638,24 @@ async function renderCityPage(
   const [count, neighborhoods, zipCodes] = await Promise.all([
     fetchListingCount(cityName),
     fetchCityNeighborhoods(cityName),
-    fetchZipCodesForCity(cityName),
+    fetchZipCodesForCity(cityName)
   ])
   const breadcrumbItems = buildBreadcrumbs(parsed, cityName, baseUrl)
-  const pageScore = scoreAreaPage({ pageType: 'city', listingCount: count, hasCmsContent })
+  const pageScore = scoreAreaPage({
+    pageType: 'city',
+    listingCount: count,
+    hasCmsContent
+  })
 
   return (
     <PageTemplate>
       <StructuredData data={breadcrumbSchema(breadcrumbItems)} />
       <StructuredData
-        data={localBusinessSchema({ city: cityName, state: 'FL', zipCode: zipCodes[0] ?? '' })}
+        data={localBusinessSchema({
+          city: cityName,
+          state: 'FL',
+          zipCode: zipCodes[0] ?? ''
+        })}
       />
       <Container maxWidth="lg" sx={{ py: 4 }}>
         <Breadcrumbs sx={{ mb: 3 }}>
@@ -607,7 +739,9 @@ async function renderCityPage(
                 {neighborhoods
                   .sort((a, b) => (b.activeCount ?? 0) - (a.activeCount ?? 0))
                   .map((hood) => {
-                    const hoodSlug = hood.name.toLowerCase().replace(/\s+/g, '-')
+                    const hoodSlug = hood.name
+                      .toLowerCase()
+                      .replace(/\s+/g, '-')
                     return (
                       <Grid item xs={12} sm={6} md={4} key={hood.name}>
                         <Card variant="outlined">
@@ -619,7 +753,8 @@ async function renderCityPage(
                               <Typography variant="h6">{hood.name}</Typography>
                             </Link>
                             <Typography variant="body2" color="text.secondary">
-                              {(hood.activeCount ?? 0).toLocaleString()} active listings
+                              {(hood.activeCount ?? 0).toLocaleString()} active
+                              listings
                             </Typography>
                           </CardContent>
                         </Card>
@@ -659,14 +794,19 @@ async function renderCityPage(
             // back to the full active-market city list so the section still
             // renders meaningful links (e.g., CMS pages for cities outside
             // the markets config).
-            const unique = radiusMatches.length > 0
-              ? radiusMatches
-              : [...new Set(
-                  activeMarkets
-                    .flatMap(m => Object.values(m.citiesByCounty).flat())
-                    .map(c => c.name)
-                    .filter(n => n.toLowerCase() !== cityName.toLowerCase())
-                )]
+            const unique =
+              radiusMatches.length > 0
+                ? radiusMatches
+                : [
+                    ...new Set(
+                      activeMarkets
+                        .flatMap((m) => Object.values(m.citiesByCounty).flat())
+                        .map((c) => c.name)
+                        .filter(
+                          (n) => n.toLowerCase() !== cityName.toLowerCase()
+                        )
+                    )
+                  ]
             if (unique.length === 0) return null
             return (
               <Box sx={{ mt: 4 }}>
@@ -717,7 +857,19 @@ async function renderCityPage(
         </PageWithSidebar>
       </Container>
       {process.env.NODE_ENV === 'development' && (
-        <Box sx={{ position: 'fixed', bottom: 80, right: 10, bgcolor: 'rgba(0,0,0,0.7)', color: '#fff', p: 1, borderRadius: 1, fontSize: 11, zIndex: 9999 }}>
+        <Box
+          sx={{
+            position: 'fixed',
+            bottom: 80,
+            right: 10,
+            bgcolor: 'rgba(0,0,0,0.7)',
+            color: '#fff',
+            p: 1,
+            borderRadius: 1,
+            fontSize: 11,
+            zIndex: 9999
+          }}
+        >
           Area Score: {pageScore.score} | {pageScore.indexDirective}
         </Box>
       )}
@@ -725,20 +877,20 @@ async function renderCityPage(
         data={faqSchema([
           {
             question: `How much does it cost to buy a home in ${cityName}, FL?`,
-            answer: `Home prices in ${cityName} vary by property type. Browse current listings on ${tenant.brand.siteName} for up-to-date pricing.`,
+            answer: `Home prices in ${cityName} vary by property type. Browse current listings on ${tenant.brand.siteName} for up-to-date pricing.`
           },
           {
             question: `Is ${cityName}, FL a good place to buy real estate?`,
-            answer: `${cityName} is located in South Florida and offers a strong real estate market. Contact ${tenant.brand.teamName} for a personalized market analysis.`,
+            answer: `${cityName} is located in South Florida and offers a strong real estate market. Contact ${tenant.brand.teamName} for a personalized market analysis.`
           },
           {
             question: `How long does it take to buy a home in ${cityName}?`,
-            answer: `The home buying process in ${cityName} typically takes 30-60 days from accepted offer to closing, depending on financing and inspection timelines.`,
+            answer: `The home buying process in ${cityName} typically takes 30-60 days from accepted offer to closing, depending on financing and inspection timelines.`
           },
           {
             question: `What neighborhoods are popular in ${cityName}, FL?`,
-            answer: `${cityName} has several sought-after neighborhoods. Browse our neighborhood guides to explore options that match your lifestyle.`,
-          },
+            answer: `${cityName} has several sought-after neighborhoods. Browse our neighborhood guides to explore options that match your lifestyle.`
+          }
         ])}
       />
     </PageTemplate>
@@ -760,8 +912,19 @@ async function renderSubTypePage(
 
   const count = await fetchSubTypeCount(cityName, stConfig)
   const breadcrumbItems = buildBreadcrumbs(parsed, cityName, baseUrl)
-  const headings = generateHeadingVariations(cityName, '', 'Florida', stConfig.label, count)
-  const pageScore = scoreAreaPage({ pageType: 'subType', listingCount: count, subTypeSlug: stConfig.slug, hasCmsContent })
+  const headings = generateHeadingVariations(
+    cityName,
+    '',
+    'Florida',
+    stConfig.label,
+    count
+  )
+  const pageScore = scoreAreaPage({
+    pageType: 'subType',
+    listingCount: count,
+    subTypeSlug: stConfig.slug,
+    hasCmsContent
+  })
 
   const otherSubTypes = subTypes.filter((st) => st.slug !== parsed.subType)
 
@@ -770,15 +933,25 @@ async function renderSubTypePage(
       <StructuredData data={breadcrumbSchema(breadcrumbItems)} />
       <Container maxWidth="lg" sx={{ py: 4 }}>
         <PageWithSidebar sidebar={<CitySidebar city={cityName} />}>
-          <Typography variant="h3" component="h1" fontWeight="bold" gutterBottom>
+          <Typography
+            variant="h3"
+            component="h1"
+            fontWeight="bold"
+            gutterBottom
+          >
             {headings.h1 || `${stConfig.label} in ${cityName}, FL`}
           </Typography>
           <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
-            Browse {count} {stConfig.label.toLowerCase()} currently available in {cityName}, Florida.
+            Browse {count} {stConfig.label.toLowerCase()} currently available in{' '}
+            {cityName}, Florida.
           </Typography>
 
           {/* Property Listings */}
-          <ListingsGrid city={cityName} propertyType={stConfig.propertyType || stConfig.label} limit={12} />
+          <ListingsGrid
+            city={cityName}
+            propertyType={stConfig.propertyType || stConfig.label}
+            limit={12}
+          />
 
           {/* Market Timeline */}
           <Box sx={{ mb: 4 }}>
@@ -815,7 +988,19 @@ async function renderSubTypePage(
         </PageWithSidebar>
       </Container>
       {process.env.NODE_ENV === 'development' && (
-        <Box sx={{ position: 'fixed', bottom: 80, right: 10, bgcolor: 'rgba(0,0,0,0.7)', color: '#fff', p: 1, borderRadius: 1, fontSize: 11, zIndex: 9999 }}>
+        <Box
+          sx={{
+            position: 'fixed',
+            bottom: 80,
+            right: 10,
+            bgcolor: 'rgba(0,0,0,0.7)',
+            color: '#fff',
+            p: 1,
+            borderRadius: 1,
+            fontSize: 11,
+            zIndex: 9999
+          }}
+        >
           Area Score: {pageScore.score} | {pageScore.indexDirective}
         </Box>
       )}
@@ -823,20 +1008,20 @@ async function renderSubTypePage(
         data={faqSchema([
           {
             question: `How much does a ${stConfig.label.toLowerCase()} cost in ${cityName}, FL?`,
-            answer: `${stConfig.label} prices in ${cityName} vary by location, size, and amenities. Browse current ${stConfig.label.toLowerCase()} listings on ${tenant.brand.siteName} for up-to-date pricing in your target neighborhoods.`,
+            answer: `${stConfig.label} prices in ${cityName} vary by location, size, and amenities. Browse current ${stConfig.label.toLowerCase()} listings on ${tenant.brand.siteName} for up-to-date pricing in your target neighborhoods.`
           },
           {
             question: `Are ${stConfig.label.toLowerCase()} a good investment in ${cityName}, FL?`,
-            answer: `${stConfig.label} in ${cityName} can be a strong investment depending on your goals — primary residence, vacation home, or rental. Contact ${tenant.brand.teamName} for a personalized market analysis specific to ${stConfig.label.toLowerCase()} in ${cityName}.`,
+            answer: `${stConfig.label} in ${cityName} can be a strong investment depending on your goals — primary residence, vacation home, or rental. Contact ${tenant.brand.teamName} for a personalized market analysis specific to ${stConfig.label.toLowerCase()} in ${cityName}.`
           },
           {
             question: `How many ${stConfig.label.toLowerCase()} are available in ${cityName}?`,
-            answer: `Inventory for ${stConfig.label.toLowerCase()} in ${cityName} changes daily. Browse our live listings on ${tenant.brand.siteName} to see all currently available ${stConfig.label.toLowerCase()} matching your criteria.`,
+            answer: `Inventory for ${stConfig.label.toLowerCase()} in ${cityName} changes daily. Browse our live listings on ${tenant.brand.siteName} to see all currently available ${stConfig.label.toLowerCase()} matching your criteria.`
           },
           {
             question: `What's the buying process for ${stConfig.label.toLowerCase()} in ${cityName}, FL?`,
-            answer: `Buying a ${stConfig.label.toLowerCase().replace(/s$/, '')} in ${cityName} typically takes 30-60 days from accepted offer to closing, depending on financing and inspection timelines. ${tenant.brand.teamName} guides you through every step.`,
-          },
+            answer: `Buying a ${stConfig.label.toLowerCase().replace(/s$/, '')} in ${cityName} typically takes 30-60 days from accepted offer to closing, depending on financing and inspection timelines. ${tenant.brand.teamName} guides you through every step.`
+          }
         ])}
       />
     </PageTemplate>
@@ -856,22 +1041,40 @@ async function renderNeighborhoodPage(
   const neighborhoodName = slugToDisplayName(parsed.subType || '')
   const breadcrumbItems = buildBreadcrumbs(parsed, cityName, baseUrl)
   const count = await fetchListingCount(cityName)
-  const pageScore = scoreAreaPage({ pageType: 'neighborhood', listingCount: count, hasCmsContent })
+  const pageScore = scoreAreaPage({
+    pageType: 'neighborhood',
+    listingCount: count,
+    hasCmsContent
+  })
 
   return (
     <PageTemplate>
       <StructuredData data={breadcrumbSchema(breadcrumbItems)} />
       <Container maxWidth="lg" sx={{ py: 4 }}>
-        <PageWithSidebar sidebar={<CitySidebar city={cityName} neighborhood={neighborhoodName} />}>
-          <Typography variant="h3" component="h1" fontWeight="bold" gutterBottom>
+        <PageWithSidebar
+          sidebar={
+            <CitySidebar city={cityName} neighborhood={neighborhoodName} />
+          }
+        >
+          <Typography
+            variant="h3"
+            component="h1"
+            fontWeight="bold"
+            gutterBottom
+          >
             {neighborhoodName} in {cityName}, FL
           </Typography>
           <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
-            Explore homes for sale in the {neighborhoodName} neighborhood of {cityName}, Florida.
+            Explore homes for sale in the {neighborhoodName} neighborhood of{' '}
+            {cityName}, Florida.
           </Typography>
 
           {/* Property Listings */}
-          <ListingsGrid city={cityName} neighborhood={neighborhoodName} limit={12} />
+          <ListingsGrid
+            city={cityName}
+            neighborhood={neighborhoodName}
+            limit={12}
+          />
 
           <Box sx={{ mb: 4 }}>
             <MarketTimelineGraph city={cityName} />
@@ -901,7 +1104,19 @@ async function renderNeighborhoodPage(
         </PageWithSidebar>
       </Container>
       {process.env.NODE_ENV === 'development' && (
-        <Box sx={{ position: 'fixed', bottom: 80, right: 10, bgcolor: 'rgba(0,0,0,0.7)', color: '#fff', p: 1, borderRadius: 1, fontSize: 11, zIndex: 9999 }}>
+        <Box
+          sx={{
+            position: 'fixed',
+            bottom: 80,
+            right: 10,
+            bgcolor: 'rgba(0,0,0,0.7)',
+            color: '#fff',
+            p: 1,
+            borderRadius: 1,
+            fontSize: 11,
+            zIndex: 9999
+          }}
+        >
           Area Score: {pageScore.score} | {pageScore.indexDirective}
         </Box>
       )}
@@ -922,18 +1137,28 @@ async function renderZipPage(
   const zip = parsed.subType || ''
   const breadcrumbItems = buildBreadcrumbs(parsed, cityName, baseUrl)
   const count = await fetchListingCount(cityName, { zip })
-  const pageScore = scoreAreaPage({ pageType: 'zip', listingCount: count, hasCmsContent })
+  const pageScore = scoreAreaPage({
+    pageType: 'zip',
+    listingCount: count,
+    hasCmsContent
+  })
 
   return (
     <PageTemplate>
       <StructuredData data={breadcrumbSchema(breadcrumbItems)} />
       <Container maxWidth="lg" sx={{ py: 4 }}>
         <PageWithSidebar sidebar={<CitySidebar city={cityName} />}>
-          <Typography variant="h3" component="h1" fontWeight="bold" gutterBottom>
+          <Typography
+            variant="h3"
+            component="h1"
+            fontWeight="bold"
+            gutterBottom
+          >
             Homes for Sale in {cityName}, FL {zip}
           </Typography>
           <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
-            Browse homes and real estate in the {zip} zip code area of {cityName}, Florida.
+            Browse homes and real estate in the {zip} zip code area of{' '}
+            {cityName}, Florida.
           </Typography>
 
           {/* Property Listings */}
@@ -966,7 +1191,19 @@ async function renderZipPage(
         </PageWithSidebar>
       </Container>
       {process.env.NODE_ENV === 'development' && (
-        <Box sx={{ position: 'fixed', bottom: 80, right: 10, bgcolor: 'rgba(0,0,0,0.7)', color: '#fff', p: 1, borderRadius: 1, fontSize: 11, zIndex: 9999 }}>
+        <Box
+          sx={{
+            position: 'fixed',
+            bottom: 80,
+            right: 10,
+            bgcolor: 'rgba(0,0,0,0.7)',
+            color: '#fff',
+            p: 1,
+            borderRadius: 1,
+            fontSize: 11,
+            zIndex: 9999
+          }}
+        >
           Area Score: {pageScore.score} | {pageScore.indexDirective}
         </Box>
       )}
@@ -985,7 +1222,11 @@ async function renderSchoolsPage(
   hasCmsContent: boolean
 ) {
   const breadcrumbItems = buildBreadcrumbs(parsed, cityName, baseUrl)
-  const pageScore = scoreAreaPage({ pageType: 'schools', listingCount: 0, hasCmsContent })
+  const pageScore = scoreAreaPage({
+    pageType: 'schools',
+    listingCount: 0,
+    hasCmsContent
+  })
 
   return (
     <PageTemplate>
@@ -995,7 +1236,8 @@ async function renderSchoolsPage(
           Schools in {cityName}, FL
         </Typography>
         <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
-          Find schools and school district information for {cityName}, Florida. School data coming soon.
+          Find schools and school district information for {cityName}, Florida.
+          School data coming soon.
         </Typography>
 
         <Box sx={{ mt: 4, p: 3, bgcolor: 'grey.100', borderRadius: 2 }}>
@@ -1012,7 +1254,19 @@ async function renderSchoolsPage(
         </Box>
       </Container>
       {process.env.NODE_ENV === 'development' && (
-        <Box sx={{ position: 'fixed', bottom: 80, right: 10, bgcolor: 'rgba(0,0,0,0.7)', color: '#fff', p: 1, borderRadius: 1, fontSize: 11, zIndex: 9999 }}>
+        <Box
+          sx={{
+            position: 'fixed',
+            bottom: 80,
+            right: 10,
+            bgcolor: 'rgba(0,0,0,0.7)',
+            color: '#fff',
+            p: 1,
+            borderRadius: 1,
+            fontSize: 11,
+            zIndex: 9999
+          }}
+        >
           Area Score: {pageScore.score} | {pageScore.indexDirective}
         </Box>
       )}

@@ -4,19 +4,21 @@ import React from 'react'
 
 import { AppBar, Box, Button, Container, Stack } from '@mui/material'
 
-import { useFeatures } from 'providers/FeaturesProvider'
-import useClientSide from 'hooks/useClientSide'
 import { tenant } from '@/configs/tenant.config'
 
+import UserMenu from 'components/auth/UserMenu'
+
+import { useFeatures } from 'providers/FeaturesProvider'
+import useClientSide from 'hooks/useClientSide'
+
+import { NavDropdown, NavLink } from './components/NavMenu'
 import {
   Autosuggestion,
   AutosuggestionContainer,
   Logo,
-  MobileMenu,
+  MobileMenu
 } from './components'
-import { NavDropdown, NavLink } from './components/NavMenu'
 import { cityItems, countyItems, propertyTypeItems } from './navData'
-import UserMenu from 'components/auth/UserMenu'
 
 const NAV_TEXT_SX = {
   color: 'white',
@@ -29,8 +31,8 @@ const NAV_TEXT_SX = {
   py: 0.5,
   minWidth: 0,
   '&:hover': {
-    bgcolor: 'rgba(255,255,255,0.08)',
-  },
+    bgcolor: 'rgba(255,255,255,0.08)'
+  }
 }
 
 const Header = () => {
@@ -46,7 +48,7 @@ const Header = () => {
           bgcolor: `${tenant.visualIdentity.colors.headerBackground} !important`,
           color: 'white !important',
           boxShadow: 'none !important',
-          borderBottom: '1px solid rgba(255,255,255,0.06)',
+          borderBottom: '1px solid rgba(255,255,255,0.06)'
         }}
       >
         <Container
@@ -57,7 +59,7 @@ const Header = () => {
             px: { xs: 2, sm: 3 },
             height: 70,
             display: 'flex',
-            alignItems: 'center',
+            alignItems: 'center'
           }}
         >
           <Stack
@@ -75,7 +77,11 @@ const Header = () => {
               direction="row"
               alignItems="center"
               spacing={0.5}
-              sx={{ display: { xs: 'none', md: 'flex' }, flex: 1, justifyContent: 'center' }}
+              sx={{
+                display: { xs: 'none', md: 'flex' },
+                flex: 1,
+                justifyContent: 'center'
+              }}
             >
               {features.search && (
                 <AutosuggestionContainer>

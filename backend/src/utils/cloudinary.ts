@@ -73,7 +73,9 @@ export async function deleteFromCloudinary(publicId: string): Promise<void> {
 /**
  * Generate Cloudinary image URLs with transformations
  */
-export function generateCloudinaryUrls(publicId: string): CloudinaryTransformUrl {
+export function generateCloudinaryUrls(
+  publicId: string
+): CloudinaryTransformUrl {
   return {
     // Original image with WebP format for modern browsers
     url: cloudinary.url(publicId, {

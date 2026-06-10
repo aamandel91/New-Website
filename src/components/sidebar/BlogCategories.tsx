@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useEffect, useState } from 'react'
+
 import { Box, List, ListItem, Skeleton, Typography } from '@mui/material'
 
 const NAVY = '#0F1621'
@@ -15,7 +16,9 @@ interface BlogCategoriesProps {
   categories?: Category[]
 }
 
-export default function BlogCategories({ categories: propCategories }: BlogCategoriesProps) {
+export default function BlogCategories({
+  categories: propCategories
+}: BlogCategoriesProps) {
   const [categories, setCategories] = useState<Category[]>(propCategories || [])
   const [loading, setLoading] = useState(!propCategories)
 
@@ -35,7 +38,7 @@ export default function BlogCategories({ categories: propCategories }: BlogCateg
             (data.categories || []).map((c: any) => ({
               name: c.name || c,
               count: c.count || 0,
-              slug: (c.slug || c.name || c).toLowerCase().replace(/\s+/g, '-'),
+              slug: (c.slug || c.name || c).toLowerCase().replace(/\s+/g, '-')
             }))
           )
         }
@@ -47,13 +50,19 @@ export default function BlogCategories({ categories: propCategories }: BlogCateg
     }
 
     fetchCategories()
-    return () => { cancelled = true }
+    return () => {
+      cancelled = true
+    }
   }, [propCategories])
 
   if (loading) {
     return (
       <Box>
-        <Typography variant="subtitle1" fontWeight={700} sx={{ mb: 1.5, color: NAVY }}>
+        <Typography
+          variant="subtitle1"
+          fontWeight={700}
+          sx={{ mb: 1.5, color: NAVY }}
+        >
           Categories
         </Typography>
         {[0, 1, 2].map((i) => (
@@ -67,7 +76,11 @@ export default function BlogCategories({ categories: propCategories }: BlogCateg
 
   return (
     <Box>
-      <Typography variant="subtitle1" fontWeight={700} sx={{ mb: 1, color: NAVY }}>
+      <Typography
+        variant="subtitle1"
+        fontWeight={700}
+        sx={{ mb: 1, color: NAVY }}
+      >
         Categories
       </Typography>
       <List dense disablePadding>
@@ -82,7 +95,7 @@ export default function BlogCategories({ categories: propCategories }: BlogCateg
                 width: '100%',
                 textDecoration: 'none',
                 color: 'inherit',
-                '&:hover': { color: 'primary.main' },
+                '&:hover': { color: 'primary.main' }
               }}
             >
               <Typography variant="body2">{cat.name}</Typography>

@@ -55,7 +55,8 @@ export function decodeAssignment(
 ): { userId: number; agentId: number } | null {
   try {
     const padded = token.replace(/-/g, '+').replace(/_/g, '/')
-    const padding = padded.length % 4 === 0 ? '' : '='.repeat(4 - (padded.length % 4))
+    const padding =
+      padded.length % 4 === 0 ? '' : '='.repeat(4 - (padded.length % 4))
     const decoded = Buffer.from(padded + padding, 'base64').toString('utf8')
     const [userIdRaw, agentIdRaw] = decoded.split(':')
     const userId = Number(userIdRaw)
@@ -122,7 +123,10 @@ export default class SendGridService {
 
     try {
       const msg: Parameters<typeof sgMail.send>[0] = {
-        to: { email: opts.to.email, ...(opts.to.name ? { name: opts.to.name } : {}) },
+        to: {
+          email: opts.to.email,
+          ...(opts.to.name ? { name: opts.to.name } : {})
+        },
         from: { email: fromEmail, name: opts.fromName },
         replyTo,
         subject: opts.subject,
@@ -131,8 +135,11 @@ export default class SendGridService {
         headers,
         customArgs,
         ...(opts.templateId
-          ? { templateId: opts.templateId, dynamicTemplateData: opts.dynamicTemplateData ?? {} }
-          : {}),
+          ? {
+              templateId: opts.templateId,
+              dynamicTemplateData: opts.dynamicTemplateData ?? {}
+            }
+          : {})
       } as any
 
       const [response] = await sgMail.send(msg as any)
@@ -167,14 +174,18 @@ export default class SendGridService {
       : `[Client Reply] ${opts.subject || '(no subject)'}`
     const intro = `From: ${opts.fromClient.name || ''} <${opts.fromClient.email}>\n\n`
     return this.send({
-      to: { email: opts.agentEmail, ...(opts.agentName ? { name: opts.agentName } : {}) },
+      to: {
+        email: opts.agentEmail,
+        ...(opts.agentName ? { name: opts.agentName } : {})
+      },
       fromName: backendTenant.brand.teamName,
       subject,
       replyTo: opts.fromClient.email,
       text: intro + opts.bodyText,
       html:
         `<p style="color:#666;font-size:13px">From: <strong>${escapeHtml(opts.fromClient.name || '')}</strong> &lt;${escapeHtml(opts.fromClient.email)}&gt;</p>` +
-        (opts.bodyHtml || `<pre style="white-space:pre-wrap;font-family:inherit">${escapeHtml(opts.bodyText)}</pre>`),
+        (opts.bodyHtml ||
+          `<pre style="white-space:pre-wrap;font-family:inherit">${escapeHtml(opts.bodyText)}</pre>`)
     })
   }
 }

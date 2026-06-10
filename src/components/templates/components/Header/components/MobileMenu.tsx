@@ -15,7 +15,7 @@ import {
   IconButton,
   Link,
   Stack,
-  Typography,
+  Typography
 } from '@mui/material'
 
 import routes from '@configs/routes'
@@ -33,15 +33,15 @@ const ACCORDION_SX = {
   '&:hover': { boxShadow: 'none' },
   '& .MuiAccordionSummary-root': {
     px: 0,
-    minHeight: 44,
+    minHeight: 44
   },
   '& .MuiAccordionSummary-content': {
-    my: 0,
+    my: 0
   },
   '& .MuiAccordionDetails-root': {
     px: 0,
-    pt: 0,
-  },
+    pt: 0
+  }
 }
 
 const MOBILE_LINK_SX = {
@@ -53,7 +53,7 @@ const MOBILE_LINK_SX = {
   textTransform: 'uppercase' as const,
   py: 0.5,
   display: 'block',
-  '&:hover': { color: 'rgba(255,255,255,0.7)' },
+  '&:hover': { color: 'rgba(255,255,255,0.7)' }
 }
 
 const DROPDOWN_LINK_SX = {
@@ -62,7 +62,7 @@ const DROPDOWN_LINK_SX = {
   fontSize: '13px',
   py: 0.5,
   display: 'block',
-  '&:hover': { color: 'white' },
+  '&:hover': { color: 'white' }
 }
 
 const MobileMenu = () => {
@@ -93,8 +93,8 @@ const MobileMenu = () => {
             maxWidth: 320,
             bgcolor: '#0F1621',
             borderRadius: 0,
-            boxShadow: 'none',
-          },
+            boxShadow: 'none'
+          }
         }}
       >
         <Box sx={{ p: 3 }}>
@@ -105,7 +105,11 @@ const MobileMenu = () => {
           </Box>
 
           <Stack spacing={0.5}>
-            <Link href="/search/advanced" onClick={handleClose} sx={MOBILE_LINK_SX}>
+            <Link
+              href="/search/advanced"
+              onClick={handleClose}
+              sx={MOBILE_LINK_SX}
+            >
               Search
             </Link>
 
@@ -114,8 +118,12 @@ const MobileMenu = () => {
             </Link>
 
             <Accordion sx={ACCORDION_SX} disableGutters>
-              <AccordionSummary expandIcon={<ExpandMoreIcon sx={{ color: 'white' }} />}>
-                <Typography sx={{ ...MOBILE_LINK_SX, py: 0 }}>Cities</Typography>
+              <AccordionSummary
+                expandIcon={<ExpandMoreIcon sx={{ color: 'white' }} />}
+              >
+                <Typography sx={{ ...MOBILE_LINK_SX, py: 0 }}>
+                  Cities
+                </Typography>
               </AccordionSummary>
               <AccordionDetails>
                 <Stack spacing={0.5} sx={{ pl: 2 }}>
@@ -134,8 +142,12 @@ const MobileMenu = () => {
             </Accordion>
 
             <Accordion sx={ACCORDION_SX} disableGutters>
-              <AccordionSummary expandIcon={<ExpandMoreIcon sx={{ color: 'white' }} />}>
-                <Typography sx={{ ...MOBILE_LINK_SX, py: 0 }}>Counties</Typography>
+              <AccordionSummary
+                expandIcon={<ExpandMoreIcon sx={{ color: 'white' }} />}
+              >
+                <Typography sx={{ ...MOBILE_LINK_SX, py: 0 }}>
+                  Counties
+                </Typography>
               </AccordionSummary>
               <AccordionDetails>
                 <Stack spacing={0.5} sx={{ pl: 2 }}>
@@ -154,8 +166,12 @@ const MobileMenu = () => {
             </Accordion>
 
             <Accordion sx={ACCORDION_SX} disableGutters>
-              <AccordionSummary expandIcon={<ExpandMoreIcon sx={{ color: 'white' }} />}>
-                <Typography sx={{ ...MOBILE_LINK_SX, py: 0 }}>Property Type</Typography>
+              <AccordionSummary
+                expandIcon={<ExpandMoreIcon sx={{ color: 'white' }} />}
+              >
+                <Typography sx={{ ...MOBILE_LINK_SX, py: 0 }}>
+                  Property Type
+                </Typography>
               </AccordionSummary>
               <AccordionDetails>
                 <Stack spacing={0.5} sx={{ pl: 2 }}>
@@ -185,7 +201,12 @@ const MobileMenu = () => {
                   handleClose()
                   logout()
                 }}
-                sx={{ ...MOBILE_LINK_SX, textAlign: 'left', justifyContent: 'flex-start', p: 0 }}
+                sx={{
+                  ...MOBILE_LINK_SX,
+                  textAlign: 'left',
+                  justifyContent: 'flex-start',
+                  p: 0
+                }}
               >
                 Sign Out
               </Button>
@@ -195,7 +216,12 @@ const MobileMenu = () => {
                   handleClose()
                   showDialog('auth')
                 }}
-                sx={{ ...MOBILE_LINK_SX, textAlign: 'left', justifyContent: 'flex-start', p: 0 }}
+                sx={{
+                  ...MOBILE_LINK_SX,
+                  textAlign: 'left',
+                  justifyContent: 'flex-start',
+                  p: 0
+                }}
               >
                 Login / Register
               </Button>

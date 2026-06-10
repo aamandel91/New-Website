@@ -301,10 +301,7 @@ export const getCenter = (bounds: ApiBounds) => {
 export const getLngLatCenter = (bounds: LngLatBounds) =>
   getCenter(toApiBounds(bounds))
 
-export const calcZoomLevel = (
-  map: MapboxMap,
-  apiBounds: ApiBounds
-): number => {
+export const calcZoomLevel = (map: MapboxMap, apiBounds: ApiBounds): number => {
   const bounds = toMapboxBounds(apiBounds)
   const viewportWidth = map.getContainer().clientWidth
   const viewportHeight = map.getContainer().clientHeight
@@ -652,7 +649,9 @@ export const encodePolygons = (zones: PolygonZone[]): string => {
   return JSON.stringify(compact)
 }
 
-export const decodePolygons = (raw: string | null | undefined): PolygonZone[] => {
+export const decodePolygons = (
+  raw: string | null | undefined
+): PolygonZone[] => {
   if (!raw) return []
   try {
     const parsed = JSON.parse(raw)
@@ -688,5 +687,3 @@ export const polygonToZones = (
   if (!polygon || !polygon.length) return []
   return [{ type: 'include', coords: polygon }]
 }
-
-

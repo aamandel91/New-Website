@@ -1,41 +1,42 @@
 'use client'
 
-import React, { useState, useCallback } from 'react'
+import React, { useCallback, useState } from 'react'
+
+import CampaignIcon from '@mui/icons-material/Campaign'
+import CopyIcon from '@mui/icons-material/ContentCopy'
+import DownloadIcon from '@mui/icons-material/Download'
+import PreviewIcon from '@mui/icons-material/Preview'
+import RefreshIcon from '@mui/icons-material/Refresh'
 import {
+  Alert,
   Box,
-  Container,
-  Typography,
-  Paper,
   Button,
-  Slider,
+  Card,
+  CardContent,
   Checkbox,
+  Chip,
+  CircularProgress,
+  Container,
   FormControlLabel,
   FormGroup,
+  Grid,
+  IconButton,
+  Paper,
+  Slider,
+  Stack,
   Table,
   TableBody,
   TableCell,
   TableContainer,
   TableHead,
   TableRow,
-  Alert,
-  CircularProgress,
-  Chip,
-  Stack,
   TextField,
-  IconButton,
   Tooltip,
-  Card,
-  CardContent,
-  Grid,
+  Typography
 } from '@mui/material'
-import CopyIcon from '@mui/icons-material/ContentCopy'
-import DownloadIcon from '@mui/icons-material/Download'
-import RefreshIcon from '@mui/icons-material/Refresh'
-import PreviewIcon from '@mui/icons-material/Preview'
-import CampaignIcon from '@mui/icons-material/Campaign'
 
-import { ppcFeedConfig } from '@configs/ppc-feed'
 import { subTypes } from '@configs/page-generation'
+import { ppcFeedConfig } from '@configs/ppc-feed'
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
@@ -107,7 +108,7 @@ export default function PPCFeedsPage() {
           format: 'json',
           type: 'pages',
           minAvgPrice: String(minAvgPrice),
-          minListings: String(minListings),
+          minListings: String(minListings)
         })
         if (refresh) params.set('refresh', 'true')
 
@@ -135,23 +136,27 @@ export default function PPCFeedsPage() {
       format: 'csv',
       type,
       minAvgPrice: String(minAvgPrice),
-      minListings: String(minListings),
+      minListings: String(minListings)
     })
     window.open(`/api/feed/ppc-page-feed?${params.toString()}`, '_blank')
   }
 
   // Build feed URLs for display
-  const baseFeedUrl = typeof window !== 'undefined' ? window.location.origin : ''
+  const baseFeedUrl =
+    typeof window !== 'undefined' ? window.location.origin : ''
   const pageFeedUrl = `${baseFeedUrl}/api/feed/ppc-page-feed?format=csv&type=pages&minAvgPrice=${minAvgPrice}&minListings=${minListings}`
   const customizerFeedUrl = `${baseFeedUrl}/api/feed/ppc-page-feed?format=csv&type=customizers&minAvgPrice=${minAvgPrice}&minListings=${minListings}`
 
   // Filter preview data by excluded sub-types
   const filteredData = feedData?.data.filter((entry) => {
     if (entry['Custom Label 1'] === 'subType') {
-      const stSlug = subTypes.find((s) => s.label === entry['Custom Label 3'])?.slug
+      const stSlug = subTypes.find(
+        (s) => s.label === entry['Custom Label 3']
+      )?.slug
       if (stSlug && excludedSubTypes.has(stSlug)) return false
     }
-    if (!selectedAreas.has('Broward') && !selectedAreas.has('Palm Beach')) return false
+    if (!selectedAreas.has('Broward') && !selectedAreas.has('Palm Beach'))
+      return false
     return true
   })
 
@@ -193,11 +198,14 @@ export default function PPCFeedsPage() {
                   marks={[
                     { value: 500000, label: '$500K' },
                     { value: 1000000, label: '$1M' },
-                    { value: 2000000, label: '$2M' },
+                    { value: 2000000, label: '$2M' }
                   ]}
                 />
                 <Typography variant="body2" color="text.secondary">
-                  Current: {minAvgPrice >= 1000000 ? `$${(minAvgPrice / 1000000).toFixed(1)}M` : `$${(minAvgPrice / 1000).toFixed(0)}K`}
+                  Current:{' '}
+                  {minAvgPrice >= 1000000
+                    ? `$${(minAvgPrice / 1000000).toFixed(1)}M`
+                    : `$${(minAvgPrice / 1000).toFixed(0)}K`}
                 </Typography>
               </Paper>
 
@@ -216,7 +224,7 @@ export default function PPCFeedsPage() {
                   marks={[
                     { value: 5, label: '5' },
                     { value: 15, label: '15' },
-                    { value: 30, label: '30' },
+                    { value: 30, label: '30' }
                   ]}
                 />
                 <Typography variant="body2" color="text.secondary">
@@ -251,7 +259,11 @@ export default function PPCFeedsPage() {
                 <Typography variant="subtitle2" gutterBottom>
                   Excluded Sub-Types
                 </Typography>
-                <Typography variant="caption" color="text.secondary" sx={{ mb: 1, display: 'block' }}>
+                <Typography
+                  variant="caption"
+                  color="text.secondary"
+                  sx={{ mb: 1, display: 'block' }}
+                >
                   Checked sub-types are excluded from the feed.
                 </Typography>
                 <FormGroup>
@@ -266,9 +278,7 @@ export default function PPCFeedsPage() {
                         />
                       }
                       label={
-                        <Typography variant="body2">
-                          {st.label}
-                        </Typography>
+                        <Typography variant="body2">{st.label}</Typography>
                       }
                     />
                   ))}
@@ -285,7 +295,13 @@ export default function PPCFeedsPage() {
                 <Stack direction="row" spacing={2} flexWrap="wrap" useFlexGap>
                   <Button
                     variant="contained"
-                    startIcon={loading ? <CircularProgress size={20} color="inherit" /> : <PreviewIcon />}
+                    startIcon={
+                      loading ? (
+                        <CircularProgress size={20} color="inherit" />
+                      ) : (
+                        <PreviewIcon />
+                      )
+                    }
                     onClick={() => fetchPreview(false)}
                     disabled={loading}
                   >
@@ -340,10 +356,21 @@ export default function PPCFeedsPage() {
                           fullWidth
                           size="small"
                           value={pageFeedUrl}
-                          slotProps={{ input: { readOnly: true, sx: { fontFamily: 'monospace', fontSize: '0.8rem' } } }}
+                          slotProps={{
+                            input: {
+                              readOnly: true,
+                              sx: {
+                                fontFamily: 'monospace',
+                                fontSize: '0.8rem'
+                              }
+                            }
+                          }}
                         />
                         <Tooltip title={copied === 'page' ? 'Copied!' : 'Copy'}>
-                          <IconButton onClick={() => handleCopy(pageFeedUrl, 'page')} size="small">
+                          <IconButton
+                            onClick={() => handleCopy(pageFeedUrl, 'page')}
+                            size="small"
+                          >
                             <CopyIcon fontSize="small" />
                           </IconButton>
                         </Tooltip>
@@ -358,10 +385,25 @@ export default function PPCFeedsPage() {
                           fullWidth
                           size="small"
                           value={customizerFeedUrl}
-                          slotProps={{ input: { readOnly: true, sx: { fontFamily: 'monospace', fontSize: '0.8rem' } } }}
+                          slotProps={{
+                            input: {
+                              readOnly: true,
+                              sx: {
+                                fontFamily: 'monospace',
+                                fontSize: '0.8rem'
+                              }
+                            }
+                          }}
                         />
-                        <Tooltip title={copied === 'customizer' ? 'Copied!' : 'Copy'}>
-                          <IconButton onClick={() => handleCopy(customizerFeedUrl, 'customizer')} size="small">
+                        <Tooltip
+                          title={copied === 'customizer' ? 'Copied!' : 'Copy'}
+                        >
+                          <IconButton
+                            onClick={() =>
+                              handleCopy(customizerFeedUrl, 'customizer')
+                            }
+                            size="small"
+                          >
                             <CopyIcon fontSize="small" />
                           </IconButton>
                         </Tooltip>
@@ -480,7 +522,8 @@ export default function PPCFeedsPage() {
                   </Typography>
                   {feedData.meta.cached && (
                     <Alert severity="info" sx={{ mb: 2 }}>
-                      Showing cached data from {new Date(feedData.meta.generated_at).toLocaleString()}.
+                      Showing cached data from{' '}
+                      {new Date(feedData.meta.generated_at).toLocaleString()}.
                       Click &quot;Refresh&quot; to regenerate.
                     </Alert>
                   )}
@@ -498,21 +541,36 @@ export default function PPCFeedsPage() {
                       <TableBody>
                         {filteredData.map((row, idx) => (
                           <TableRow key={idx} hover>
-                            <TableCell sx={{ fontFamily: 'monospace', fontSize: '0.75rem', maxWidth: 300, overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                            <TableCell
+                              sx={{
+                                fontFamily: 'monospace',
+                                fontSize: '0.75rem',
+                                maxWidth: 300,
+                                overflow: 'hidden',
+                                textOverflow: 'ellipsis'
+                              }}
+                            >
                               {row['Page URL']}
                             </TableCell>
                             <TableCell>
                               <Chip
                                 label={row['Custom Label 1']}
                                 size="small"
-                                color={row['Custom Label 1'] === 'subType' ? 'primary' : 'secondary'}
+                                color={
+                                  row['Custom Label 1'] === 'subType'
+                                    ? 'primary'
+                                    : 'secondary'
+                                }
                                 variant="outlined"
                               />
                             </TableCell>
                             <TableCell>{row['Custom Label 2']}</TableCell>
                             <TableCell>{row['Custom Label 3']}</TableCell>
                             <TableCell>
-                              <Chip label={row['Custom Label 4']} size="small" />
+                              <Chip
+                                label={row['Custom Label 4']}
+                                size="small"
+                              />
                             </TableCell>
                           </TableRow>
                         ))}

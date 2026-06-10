@@ -59,7 +59,9 @@ async function main() {
         console.log(`${tag} ok  id=${blog.id} ${counts}`)
       } else {
         failed++
-        console.warn(`${tag} fail id=${blog.id} error=${result.meta.error || 'unknown'}`)
+        console.warn(
+          `${tag} fail id=${blog.id} error=${result.meta.error || 'unknown'}`
+        )
       }
     } catch (err) {
       failed++
@@ -70,8 +72,9 @@ async function main() {
     await sleep(1000)
   }
 
-  const estCost = (inputTokens / 1_000_000) * PRICE_INPUT_PER_M
-    + (outputTokens / 1_000_000) * PRICE_OUTPUT_PER_M
+  const estCost =
+    (inputTokens / 1_000_000) * PRICE_INPUT_PER_M +
+    (outputTokens / 1_000_000) * PRICE_OUTPUT_PER_M
   console.log('---')
   console.log(`[backfill] done. succeeded=${succeeded} failed=${failed}`)
   console.log(
@@ -81,10 +84,10 @@ async function main() {
 }
 
 function sleep(ms: number): Promise<void> {
-  return new Promise(r => setTimeout(r, ms))
+  return new Promise((r) => setTimeout(r, ms))
 }
 
-main().catch(err => {
+main().catch((err) => {
   console.error('[backfill] fatal', err)
   process.exit(1)
 })

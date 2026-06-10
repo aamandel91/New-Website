@@ -2,17 +2,11 @@ import searchConfig from '@configs/search'
 
 import { type Property } from 'services/API'
 import { generatePropertyUrl } from 'utils/propertyUrls'
-import {
-  capitalize,
-  joinNonEmpty,
-} from 'utils/strings'
+import { capitalize, joinNonEmpty } from 'utils/strings'
 
 import { formatShortAddress } from './formatters'
 import { sanitizeScrubbed } from './sanitizers'
-import {
-  rent,
-  sold
-} from '.'
+import { rent, sold } from '.'
 
 /**
  * @description Generates the canonical URL for a property.
@@ -44,7 +38,7 @@ export const getSeoUrl = (
     streetSuffix: scrub((address as Property['address']).streetSuffix),
     city: scrub((address as Property['address']).city),
     state: scrub((address as Property['address']).state),
-    zip: scrub((address as Property['address']).zip),
+    zip: scrub((address as Property['address']).zip)
   }
 
   const baseUrl = generatePropertyUrl(cleanedAddress, mlsNumber)
@@ -76,7 +70,10 @@ export const getSeoTitle = (property: Property): string => {
     [
       localAddress,
       capitalize(city?.toLowerCase()),
-      joinNonEmpty([capitalize(state), zip ? String(zip).toUpperCase() : ''], ' ')
+      joinNonEmpty(
+        [capitalize(state), zip ? String(zip).toUpperCase() : ''],
+        ' '
+      )
     ],
     ', '
   )

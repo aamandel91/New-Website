@@ -3,7 +3,6 @@
 import { useState } from 'react'
 import dynamic from 'next/dynamic'
 import { type Feature, type MultiLineString, type Position } from 'geojson'
-import { type LngLatLike } from 'utils/lngLat'
 
 import ExploreIcon from '@mui/icons-material/Explore'
 import { Box, Button, Skeleton, Stack, Typography } from '@mui/material'
@@ -13,12 +12,9 @@ import defaultLocation from '@configs/location'
 // (which would pull in all 115 turf submodules — ~9MB raw).
 import { simplify } from '@turf/simplify'
 
-import type {
-  ApiBoardArea,
-  ApiBoardCity,
-  ApiNeighborhood
-} from 'services/API'
+import type { ApiBoardArea, ApiBoardCity, ApiNeighborhood } from 'services/API'
 import { useMapOptions } from 'providers/MapOptionsProvider'
+import { type LngLatLike } from 'utils/lngLat'
 import { getDefaultBounds, getLngLatCenter, getMapUrl } from 'utils/map'
 
 import { Breadcrumbs } from '..'
@@ -27,7 +23,9 @@ import { SeoDescription } from './components'
 
 const CatalogMap = dynamic(() => import('./components/CatalogMap'), {
   ssr: false,
-  loading: () => <Skeleton variant="rectangular" height={300} sx={{ borderRadius: 1 }} />,
+  loading: () => (
+    <Skeleton variant="rectangular" height={300} sx={{ borderRadius: 1 }} />
+  )
 })
 
 const CatalogHeader = ({

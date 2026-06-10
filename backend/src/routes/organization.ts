@@ -11,7 +11,8 @@ const router = new Router({
 })
 
 const authMiddleware = container.resolve<Middleware>('middleware.jwt')
-const roleMiddleware = container.resolve<RoleMiddlewareCreator>('middleware.role')
+const roleMiddleware =
+  container.resolve<RoleMiddlewareCreator>('middleware.role')
 
 // Public route - resolve organization by hostname
 router.get('/resolve', async (ctx) => {
@@ -72,48 +73,74 @@ router.get('/:id', async (ctx) => {
 })
 
 // Update organization (admin/owner only)
-router.patch('/:id', roleMiddleware([UserRole.Admin, UserRole.Root]), async (ctx) => {
-  const idParam = ctx.params['id']
-  if (!idParam) {
-    ctx.throw(new ApiError('Organization id is required', { status: 400 }))
-    return
+router.patch(
+  '/:id',
+  roleMiddleware([UserRole.Admin, UserRole.Root]),
+  async (ctx) => {
+    const idParam = ctx.params['id']
+    if (!idParam) {
+      ctx.throw(new ApiError('Organization id is required', { status: 400 }))
+      return
+    }
+    const orgId = BigInt(idParam)
+    const orgService = ctx.state['container'].resolve(OrganizationService)
+
+    // Validate input
+    const body = ctx.request.body as {
+      name?: string
+      plan?: string
+      status?: string
+      settings?: Record<string, unknown>
+      primary_domain?: string
+      custom_domain?: string
+      logo_cloudinary_id?: string
+      primary_color?: string
+      secondary_color?: string
+      contact_email?: string
+      contact_phone?: string
+    }
+    const {
+      name,
+      plan,
+      status,
+      settings,
+      primary_domain,
+      custom_domain,
+      logo_cloudinary_id,
+      primary_color,
+      secondary_color,
+      contact_email,
+      contact_phone
+    } = body
+
+    const updateInput: Record<string, unknown> = {}
+    if (name !== undefined) updateInput['name'] = name
+    if (plan !== undefined) updateInput['plan'] = plan
+    if (status !== undefined) updateInput['status'] = status
+    if (settings !== undefined) updateInput['settings'] = settings
+    if (primary_domain !== undefined)
+      updateInput['primary_domain'] = primary_domain
+    if (custom_domain !== undefined)
+      updateInput['custom_domain'] = custom_domain
+    if (logo_cloudinary_id !== undefined)
+      updateInput['logo_cloudinary_id'] = logo_cloudinary_id
+    if (primary_color !== undefined)
+      updateInput['primary_color'] = primary_color
+    if (secondary_color !== undefined)
+      updateInput['secondary_color'] = secondary_color
+    if (contact_email !== undefined)
+      updateInput['contact_email'] = contact_email
+    if (contact_phone !== undefined)
+      updateInput['contact_phone'] = contact_phone
+
+    const organization = await orgService.updateOrganization(
+      orgId,
+      updateInput as any
+    )
+
+    ctx.body = organization
   }
-  const orgId = BigInt(idParam)
-  const orgService = ctx.state['container'].resolve(OrganizationService)
-
-  // Validate input
-  const body = ctx.request.body as {
-    name?: string
-    plan?: string
-    status?: string
-    settings?: Record<string, unknown>
-    primary_domain?: string
-    custom_domain?: string
-    logo_cloudinary_id?: string
-    primary_color?: string
-    secondary_color?: string
-    contact_email?: string
-    contact_phone?: string
-  }
-  const { name, plan, status, settings, primary_domain, custom_domain, logo_cloudinary_id, primary_color, secondary_color, contact_email, contact_phone } = body
-
-  const updateInput: Record<string, unknown> = {}
-  if (name !== undefined) updateInput['name'] = name
-  if (plan !== undefined) updateInput['plan'] = plan
-  if (status !== undefined) updateInput['status'] = status
-  if (settings !== undefined) updateInput['settings'] = settings
-  if (primary_domain !== undefined) updateInput['primary_domain'] = primary_domain
-  if (custom_domain !== undefined) updateInput['custom_domain'] = custom_domain
-  if (logo_cloudinary_id !== undefined) updateInput['logo_cloudinary_id'] = logo_cloudinary_id
-  if (primary_color !== undefined) updateInput['primary_color'] = primary_color
-  if (secondary_color !== undefined) updateInput['secondary_color'] = secondary_color
-  if (contact_email !== undefined) updateInput['contact_email'] = contact_email
-  if (contact_phone !== undefined) updateInput['contact_phone'] = contact_phone
-
-  const organization = await orgService.updateOrganization(orgId, updateInput as any)
-
-  ctx.body = organization
-})
+)
 
 // Get organization members
 router.get('/:id/members', async (ctx) => {
@@ -130,86 +157,117 @@ router.get('/:id/members', async (ctx) => {
 })
 
 // Add member to organization (admin/owner only)
-router.post('/:id/members', roleMiddleware([UserRole.Admin, UserRole.Root]), async (ctx) => {
-  const idParam = ctx.params['id']
-  if (!idParam) {
-    ctx.throw(new ApiError('Organization id is required', { status: 400 }))
-    return
+router.post(
+  '/:id/members',
+  roleMiddleware([UserRole.Admin, UserRole.Root]),
+  async (ctx) => {
+    const idParam = ctx.params['id']
+    if (!idParam) {
+      ctx.throw(new ApiError('Organization id is required', { status: 400 }))
+      return
+    }
+    const orgId = BigInt(idParam)
+    const { email, role } = ctx.request.body as {
+      email?: string
+      role?: string
+    }
+
+    if (!email || !role) {
+      ctx.throw(new ApiError('email and role are required', { status: 400 }))
+      return
+    }
+
+    const invitedBy = ctx.state['user']?.email
+    const orgService = ctx.state['container'].resolve(OrganizationService)
+
+    const member = await orgService.addMember(orgId, email, role, invitedBy)
+    ctx.body = member
   }
-  const orgId = BigInt(idParam)
-  const { email, role } = ctx.request.body as { email?: string; role?: string }
-
-  if (!email || !role) {
-    ctx.throw(new ApiError('email and role are required', { status: 400 }))
-    return
-  }
-
-  const invitedBy = ctx.state['user']?.email
-  const orgService = ctx.state['container'].resolve(OrganizationService)
-
-  const member = await orgService.addMember(orgId, email, role, invitedBy)
-  ctx.body = member
-})
+)
 
 // Update member role (admin/owner only)
-router.patch('/:id/members/:email', roleMiddleware([UserRole.Admin, UserRole.Root]), async (ctx) => {
-  const idParam = ctx.params['id']
-  const email = ctx.params['email']
-  if (!idParam || !email) {
-    ctx.throw(new ApiError('Organization id and email are required', { status: 400 }))
-    return
+router.patch(
+  '/:id/members/:email',
+  roleMiddleware([UserRole.Admin, UserRole.Root]),
+  async (ctx) => {
+    const idParam = ctx.params['id']
+    const email = ctx.params['email']
+    if (!idParam || !email) {
+      ctx.throw(
+        new ApiError('Organization id and email are required', { status: 400 })
+      )
+      return
+    }
+    const orgId = BigInt(idParam)
+    const { role } = ctx.request.body as { role?: string }
+
+    if (!role) {
+      ctx.throw(new ApiError('role is required', { status: 400 }))
+      return
+    }
+
+    const orgService = ctx.state['container'].resolve(OrganizationService)
+    const member = await orgService.updateMemberRole(orgId, email, role)
+
+    ctx.body = member
   }
-  const orgId = BigInt(idParam)
-  const { role } = ctx.request.body as { role?: string }
-
-  if (!role) {
-    ctx.throw(new ApiError('role is required', { status: 400 }))
-    return
-  }
-
-  const orgService = ctx.state['container'].resolve(OrganizationService)
-  const member = await orgService.updateMemberRole(orgId, email, role)
-
-  ctx.body = member
-})
+)
 
 // Remove member from organization (admin/owner only)
-router.delete('/:id/members/:email', roleMiddleware([UserRole.Admin, UserRole.Root]), async (ctx) => {
-  const idParam = ctx.params['id']
-  const email = ctx.params['email']
-  if (!idParam || !email) {
-    ctx.throw(new ApiError('Organization id and email are required', { status: 400 }))
-    return
+router.delete(
+  '/:id/members/:email',
+  roleMiddleware([UserRole.Admin, UserRole.Root]),
+  async (ctx) => {
+    const idParam = ctx.params['id']
+    const email = ctx.params['email']
+    if (!idParam || !email) {
+      ctx.throw(
+        new ApiError('Organization id and email are required', { status: 400 })
+      )
+      return
+    }
+    const orgId = BigInt(idParam)
+
+    const orgService = ctx.state['container'].resolve(OrganizationService)
+    const success = await orgService.removeMember(orgId, email)
+
+    ctx.body = { success }
   }
-  const orgId = BigInt(idParam)
-
-  const orgService = ctx.state['container'].resolve(OrganizationService)
-  const success = await orgService.removeMember(orgId, email)
-
-  ctx.body = { success }
-})
+)
 
 // Create invitation (admin/owner only)
-router.post('/:id/invitations', roleMiddleware([UserRole.Admin, UserRole.Root]), async (ctx) => {
-  const idParam = ctx.params['id']
-  if (!idParam) {
-    ctx.throw(new ApiError('Organization id is required', { status: 400 }))
-    return
+router.post(
+  '/:id/invitations',
+  roleMiddleware([UserRole.Admin, UserRole.Root]),
+  async (ctx) => {
+    const idParam = ctx.params['id']
+    if (!idParam) {
+      ctx.throw(new ApiError('Organization id is required', { status: 400 }))
+      return
+    }
+    const orgId = BigInt(idParam)
+    const { email, role } = ctx.request.body as {
+      email?: string
+      role?: string
+    }
+
+    if (!email || !role) {
+      ctx.throw(new ApiError('email and role are required', { status: 400 }))
+      return
+    }
+
+    const invitedBy = ctx.state['user']?.email
+    const orgService = ctx.state['container'].resolve(OrganizationService)
+
+    const invitation = await orgService.createInvitation(
+      orgId,
+      email,
+      role,
+      invitedBy
+    )
+    ctx.body = invitation
   }
-  const orgId = BigInt(idParam)
-  const { email, role } = ctx.request.body as { email?: string; role?: string }
-
-  if (!email || !role) {
-    ctx.throw(new ApiError('email and role are required', { status: 400 }))
-    return
-  }
-
-  const invitedBy = ctx.state['user']?.email
-  const orgService = ctx.state['container'].resolve(OrganizationService)
-
-  const invitation = await orgService.createInvitation(orgId, email, role, invitedBy)
-  ctx.body = invitation
-})
+)
 
 // Accept invitation (public with token)
 router.post('/invitations/:token/accept', async (ctx) => {
@@ -251,7 +309,11 @@ router.get('/:id/agents/subdomain/:subdomain', async (ctx) => {
   const idParam = ctx.params['id']
   const subdomain = ctx.params['subdomain']
   if (!idParam || !subdomain) {
-    ctx.throw(new ApiError('Organization id and subdomain are required', { status: 400 }))
+    ctx.throw(
+      new ApiError('Organization id and subdomain are required', {
+        status: 400
+      })
+    )
     return
   }
   const orgId = BigInt(idParam)

@@ -46,7 +46,7 @@ const FiltersBar = ({
               pb: 0.5,
               scrollbarWidth: 'none',
               '&::-webkit-scrollbar': { display: 'none' },
-              '& > *': { flexShrink: 0 },
+              '& > *': { flexShrink: 0 }
             }}
           >
             {secondarySlot}

@@ -1,24 +1,16 @@
 'use client'
 
 import React, { useEffect, useState } from 'react'
-import {
-  Box,
-  Grid,
-  Paper,
-  Skeleton,
-  Stack,
-  Typography,
-} from '@mui/material'
-import GroupsIcon from '@mui/icons-material/Groups'
-import PaidIcon from '@mui/icons-material/Paid'
+
 import CakeIcon from '@mui/icons-material/Cake'
+import GroupsIcon from '@mui/icons-material/Groups'
 import HouseIcon from '@mui/icons-material/House'
+import PaidIcon from '@mui/icons-material/Paid'
+import { Box, Grid, Paper, Skeleton, Stack, Typography } from '@mui/material'
 
 import useSnackbar from 'hooks/useSnackbar'
-import {
-  fetchAreaDemographics,
-  type AreaDemographics,
-} from './areaDataFetch'
+
+import { type AreaDemographics, fetchAreaDemographics } from './areaDataFetch'
 
 interface NeighborhoodDemographicsProps {
   cityName?: string
@@ -32,7 +24,7 @@ function formatCurrency(value?: number): string {
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: 'USD',
-    maximumFractionDigits: 0,
+    maximumFractionDigits: 0
   }).format(value)
 }
 
@@ -44,7 +36,7 @@ function formatNumber(value?: number): string {
 function StatCard({
   icon,
   label,
-  value,
+  value
 }: {
   icon: React.ReactNode
   label: string
@@ -73,7 +65,7 @@ function StatCard({
 const NeighborhoodDemographics: React.FC<NeighborhoodDemographicsProps> = ({
   cityName,
   coordinates,
-  initialData,
+  initialData
 }) => {
   const { showSnackbar } = useSnackbar()
   const [data, setData] = useState<AreaDemographics | null>(initialData ?? null)
