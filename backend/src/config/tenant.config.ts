@@ -1,14 +1,28 @@
 /**
- * BACKEND TENANT CONFIG — mirrors src/configs/tenant.config.ts brand fields.
+ * BACKEND TENANT CONFIG SELECTOR — mirrors the frontend tenant brand fields.
  *
  * Backend needs brand identity (team name, leader, years experience,
  * brokerage, site name) for AI prompt context, plus contact & repliers infra
  * used by listing-alerts plumbing (SendGrid sender, inbound reply domain,
- * default Repliers agent). Keep this in sync with the frontend tenant.config.ts
- * until a shared workspace exists.
+ * default Repliers agent). Per-brand values live in
+ * backend/src/config/tenants/<brand>.ts; this file defines the shape and
+ * selects the active brand at startup based on APP_TENANT.
  *
- * To rebrand: edit values in src/configs/tenant.config.ts AND here.
+ * The backend cannot read NEXT_PUBLIC_* (those are frontend build-time vars),
+ * so it uses APP_TENANT with the same accepted values and default as the
+ * frontend's NEXT_PUBLIC_TENANT.
+ *
+ * Accepted APP_TENANT values:
+ *   floridahomefinder  (default — used when unset or unrecognized)
+ *   countryclub
+ *
+ * To customize a brand: edit backend/src/config/tenants/<brand>.ts AND the
+ * matching frontend src/configs/tenants/<brand>.ts (until a shared workspace
+ * exists, the backend mirrors brand fields).
  */
+
+import { tenant as floridahomefinder } from './tenants/floridahomefinder.js'
+import { tenant as countryclub } from './tenants/countryclub.js'
 
 export interface BackendTenantBrand {
   siteName: string
@@ -49,26 +63,17 @@ export interface BackendTenantConfig {
   repliers: BackendTenantRepliers
 }
 
-export const tenant: BackendTenantConfig = {
-  brand: {
-    siteName: 'Florida Home Finder',
-    teamName: 'The Mandel Team',
-    leaderName: 'Andy Mandel',
-    leaderYearsExperience: 14,
-    brokerage: 'eXp Realty',
-    brokerageLuxury: 'eXp Luxury',
-    domain: 'floridahomefinder.com',
-    domainDisplay: 'FloridaHomeFinder.com',
-    siteUrl: 'https://floridahomefinder.com'
-  },
-  contact: {
-    notificationsEmail: 'notifications@mandelteam.com',
-    inboundReplyDomain: 'reply.floridahomefinder.com',
-    fallbackAgentEmail: 'andy@mandelteam.com'
-  },
-  repliers: {
-    agentId: parseInt(process.env['REPLIERS_AGENT_ID'] || '0'),
-    baseUrl: process.env['REPLIERS_BASE_URL'] || 'https://api.repliers.io',
-    csrUrl: process.env['REPLIERS_CSR_URL'] || 'https://csr-api.repliers.io'
-  }
-}
+const TENANTS = {
+  floridahomefinder,
+  countryclub
+} satisfies Record<string, BackendTenantConfig>
+
+const DEFAULT_TENANT: keyof typeof TENANTS = 'floridahomefinder'
+
+const requested = process.env['APP_TENANT']
+
+// Unknown/unset values fall back to the default brand.
+export const tenant: BackendTenantConfig =
+  requested && requested in TENANTS
+    ? TENANTS[requested as keyof typeof TENANTS]
+    : TENANTS[DEFAULT_TENANT]

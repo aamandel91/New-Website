@@ -1,23 +1,31 @@
 /**
- * TENANT CONFIG — change once, update everywhere.
+ * TENANT CONFIG SELECTOR — change once, update everywhere.
  *
- * This file is the single source of truth for every brand, team, contact, and
- * visual-identity value used across the site. Footer, header, About page,
- * structured data, AI prompt context, OG images, email templates, MUI theme,
- * logo references, hero imagery, and integrations all read from here.
+ * This file defines the TenantConfig shape and selects the active brand at
+ * startup based on NEXT_PUBLIC_TENANT. Every per-brand value lives in
+ * src/configs/tenants/<brand>.ts. Footer, header, About page, structured data,
+ * AI prompt context, OG images, email templates, MUI theme, logo references,
+ * hero imagery, and integrations all read the selected `tenant` from here.
+ *
+ * Accepted NEXT_PUBLIC_TENANT values:
+ *   floridahomefinder  (default — used when unset or unrecognized)
+ *   countryclub
  *
  * Email addresses are intentionally split:
  *   contact.email       — marketing / general / public-facing inbox
  *   contact.legalEmail  — DMCA notices, account termination requests,
  *                         copyright claims, and other legal correspondence
  *
- * To rebrand the site:
- * 1. Edit values below (including `visualIdentity` for colors, logo, fonts)
+ * To customize a brand:
+ * 1. Edit src/configs/tenants/<brand>.ts (including `visualIdentity` for
+ *    colors, logo, fonts) — each brand is a plain, standalone file.
  * 2. Replace logo asset(s) referenced by `visualIdentity.logo.src` in /public
  * 3. Replace hero image asset(s) referenced by `visualIdentity.heroImages` in /public
  * 4. If a backend value changed, also update backend/src/config/tenant.config.ts
  *    (until a shared workspace is set up, the backend mirrors brand fields)
  * 5. Restart the dev server
+ *
+ * To switch brands: set NEXT_PUBLIC_TENANT (see env.example) and rebuild.
  *
  * Values NOT in this config (intentional):
  * - Market geography (counties, cities) — see src/configs/defaults/page-generation.ts
@@ -30,6 +38,9 @@
  * Residual hardcoded references that still require manual editing are
  * catalogued in docs/template/visual-identity-residuals.md.
  */
+
+import { tenant as floridahomefinder } from './tenants/floridahomefinder'
+import { tenant as countryclub } from './tenants/countryclub'
 
 export interface TenantVisualIdentity {
   // Color tokens
@@ -142,112 +153,20 @@ export interface TenantConfig {
   visualIdentity: TenantVisualIdentity
 }
 
-const PHONE_DISPLAY = '(954) 610-0563'
-const PHONE_DIGITS = PHONE_DISPLAY.replace(/\D/g, '')
+const TENANTS = {
+  floridahomefinder,
+  countryclub
+} satisfies Record<string, TenantConfig>
 
-const ADDRESS = {
-  street: '10101 W Sample Rd',
-  city: 'Coral Springs',
-  state: 'FL',
-  zip: '33065'
-}
+const DEFAULT_TENANT: keyof typeof TENANTS = 'floridahomefinder'
 
-export const tenant: TenantConfig = {
-  brand: {
-    siteName: 'Florida Home Finder',
-    teamName: 'The Mandel Team',
-    leaderName: 'Andy Mandel',
-    leaderYearsExperience: 14,
-    slogan: 'The agent you work with matters.',
-    brokerage: 'eXp Realty',
-    brokerageLuxury: 'eXp Luxury',
-    domain: 'floridahomefinder.com',
-    domainDisplay: 'FloridaHomeFinder.com',
-    siteUrl: 'https://floridahomefinder.com'
-  },
-  contact: {
-    phone: PHONE_DISPLAY,
-    phoneE164: `+1${PHONE_DIGITS}`,
-    phoneDigits: PHONE_DIGITS,
-    email: 'info@floridahomefinder.com',
-    legalEmail: 'andy@mandelteam.com',
-    notificationsEmail: 'notifications@mandelteam.com',
-    inboundReplyDomain: 'reply.floridahomefinder.com',
-    fallbackAgentEmail: 'andy@mandelteam.com',
-    address: {
-      ...ADDRESS,
-      full: `${ADDRESS.street}, ${ADDRESS.city}, ${ADDRESS.state} ${ADDRESS.zip}`
-    }
-  },
-  repliers: {
-    agentId: parseInt(
-      process.env['REPLIERS_AGENT_ID'] ||
-        process.env['NEXT_PUBLIC_REPLIERS_AGENT_ID'] ||
-        '0'
-    ),
-    baseUrl: process.env['REPLIERS_BASE_URL'] || 'https://api.repliers.io',
-    csrUrl: process.env['REPLIERS_CSR_URL'] || 'https://csr-api.repliers.io'
-  },
-  integrations: {
-    lender: {
-      name: 'Cross Country Mortgage',
-      applyUrl: 'https://app.crosscountrymortgage.com/#/choose-loan-type'
-    },
-    instantOffer: {
-      provider: 'HiFello',
-      url: 'https://mandelteam.hifello.com/lp/64233cdf7d0caf0019a96a13'
-    },
-    crm: {
-      provider: 'suresend',
-      pixelId: 'SS-UGWGMAAAPH'
-    }
-  },
-  visualIdentity: {
-    colors: {
-      // Gold/tan brand accent — used for primary MUI palette
-      primary: '#b19a55',
-      primaryDark: '#8d7b44',
-      primaryLight: '#d8c890',
-      accent: '#b19a55',
-      accentDark: '#8d7b44',
-      accentLight: '#d8c890',
-      text: '#1a1a1a',
-      textMuted: '#666666',
-      background: '#FFFFFF',
-      surface: '#FFFFFF',
-      border: '#d9d9d9',
-      success: '#4CAF50',
-      warning: '#FFC107',
-      error: '#F44336',
-      info: '#2196F3',
-      // Header/footer chrome
-      headerBackground: '#0F1621',
-      footerBackground: '#0F1621',
-      // Marketing/OG image specific
-      ogBackground: '#1a1a2e', // deep navy used as OG image background
-      ogMuted: '#9b9b9b'
-    },
-    logo: {
-      src: '/logo.svg',
-      footerSrc: '/logo-footer.svg',
-      alt: 'Florida Home Finder',
-      width: 36,
-      height: 36,
-      footerWidth: 80,
-      footerHeight: 100
-    },
-    fonts: {
-      heading:
-        'var(--font-montserrat), Montserrat, Arial, Helvetica, sans-serif',
-      body: 'var(--font-montserrat), Montserrat, Arial, Helvetica, sans-serif'
-    },
-    heroImages: {
-      homepage: '/splashscreen.webp',
-      // Default gradient if no homepage hero image is set in admin
-      homepageGradient: 'linear-gradient(135deg, #0F1621 0%, #1a3a4a 100%)'
-    },
-    ogImage: {
-      fontFamily: 'sans-serif'
-    }
-  }
-}
+// NEXT_PUBLIC_ vars are inlined at build time by Next.js, so this must use dot
+// notation (process.env.NEXT_PUBLIC_TENANT) to be statically replaced in both
+// server and client bundles.
+const requested = process.env.NEXT_PUBLIC_TENANT
+
+// Unknown/unset values fall back to the default brand.
+export const tenant: TenantConfig =
+  requested && requested in TENANTS
+    ? TENANTS[requested as keyof typeof TENANTS]
+    : TENANTS[DEFAULT_TENANT]
