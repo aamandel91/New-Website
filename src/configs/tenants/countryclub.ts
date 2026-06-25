@@ -40,10 +40,13 @@ export const tenant: TenantConfig = {
     phone: PHONE_DISPLAY,
     phoneE164: `+1${PHONE_DIGITS}`,
     phoneDigits: PHONE_DIGITS,
-    email: 'info@floridahomefinder.com',
+    email: 'andy@mandelteam.com',
     legalEmail: 'andy@mandelteam.com',
-    notificationsEmail: 'notifications@mandelteam.com',
-    inboundReplyDomain: 'reply.floridahomefinder.com',
+    notificationsEmail: 'andy@mandelteam.com',
+    // No SendGrid Inbound Parse subdomain exists for the country club brand,
+    // so we use the bare real domain (routes to a real mailbox) rather than an
+    // unconfigured reply.* host. Reply-To is built as reply[+token]@<this>.
+    inboundReplyDomain: 'mandelteam.com',
     fallbackAgentEmail: 'andy@mandelteam.com',
     address: {
       ...ADDRESS,
