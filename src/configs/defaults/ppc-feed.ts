@@ -4,6 +4,7 @@
  */
 
 import { activeMarkets } from '@configs/page-generation'
+import { tenant } from '@/configs/tenant.config'
 
 export interface PriceTier {
   label: string
@@ -44,5 +45,5 @@ export const ppcFeedConfig: PPCFeedConfig = {
     { label: '$1.5M-$2M', min: 1500000, max: 2000000 },
     { label: '$2M+', min: 2000000, max: Infinity }
   ],
-  baseUrl: 'https://floridahomefinder.com'
+  baseUrl: tenant.brand.siteUrl
 }

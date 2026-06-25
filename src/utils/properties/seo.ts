@@ -1,4 +1,5 @@
 import searchConfig from '@configs/search'
+import { tenant } from '@/configs/tenant.config'
 
 import { type Property } from 'services/API'
 import { generatePropertyUrl } from 'utils/propertyUrls'
@@ -80,7 +81,7 @@ export const getSeoTitle = (property: Property): string => {
 
   const parts = [fullAddress]
   if (mlsNumber) parts.push(`MLS# ${mlsNumber}`)
-  parts.push('Florida Home Finder')
+  parts.push(tenant.brand.siteName)
 
   return parts.join(' | ')
 }

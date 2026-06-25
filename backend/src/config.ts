@@ -10,6 +10,7 @@ import type { Knex } from 'knex'
 import path from 'node:path'
 import { ConnectionOptions } from '@nats-io/transport-node'
 import { StringValue } from 'ms'
+import { tenant as backendTenant } from './config/tenant.config.js'
 const __dirname = import.meta.dirname
 import Settings from './lib/settings.js'
 const envFilePath = path.join(
@@ -559,12 +560,14 @@ const config: AppConfig = {
     enabled: !!process.env['SENDGRID_API_KEY'],
     api_key: process.env['SENDGRID_API_KEY'] || '',
     notifications_from_email:
-      process.env['SENDGRID_FROM_EMAIL'] || 'notifications@mandelteam.com',
+      process.env['SENDGRID_FROM_EMAIL'] ||
+      backendTenant.contact.notificationsEmail,
     inbound_reply_domain:
       process.env['SENDGRID_INBOUND_REPLY_DOMAIN'] ||
-      'reply.floridahomefinder.com',
+      backendTenant.contact.inboundReplyDomain,
     fallback_agent_email:
-      process.env['LISTING_ALERTS_FALLBACK_EMAIL'] || 'andy@mandelteam.com',
+      process.env['LISTING_ALERTS_FALLBACK_EMAIL'] ||
+      backendTenant.contact.fallbackAgentEmail,
     inbound_signing_secret: process.env['SENDGRID_INBOUND_SIGNING_SECRET'] || ''
   }
 }

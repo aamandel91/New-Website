@@ -2,6 +2,7 @@ import React from 'react'
 import type { Metadata } from 'next'
 
 import { PageTemplate } from '@templates'
+import { tenant } from '@/configs/tenant.config'
 import { loadSiteSettings } from '@/utils/siteSettings'
 import HomePageContent from '@pages/home'
 import StructuredData from '@shared/StructuredData'
@@ -34,7 +35,7 @@ export const generateMetadata = async (props: any): Promise<Metadata> => {
   return {
     title:
       settings.metaTitle ||
-      'Florida Home Finder - Find Your Dream Home in Florida',
+      `${tenant.brand.siteName} - Find Your Dream Home in Florida`,
     description:
       settings.metaDescription ||
       'Discover thousands of properties and connect with experienced real estate agents across Florida.',
@@ -53,7 +54,7 @@ const HomePage = async (props: any) => {
 
   const orgSchema = organizationSchema()
   const breadcrumbs = breadcrumbSchema([
-    { name: 'Home', url: 'https://floridahomefinder.com' }
+    { name: 'Home', url: tenant.brand.siteUrl }
   ])
   const siteSearch = websiteSearchSchema()
 

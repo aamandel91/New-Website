@@ -2,7 +2,9 @@
  * Sitemap index — points to per-type sitemaps at /sitemaps/[type]
  */
 
-const BASE_URL = 'https://floridahomefinder.com'
+import { tenant } from '@/configs/tenant.config'
+
+const BASE_URL = tenant.brand.siteUrl
 
 const SITEMAP_TYPES = ['active', 'sold', 'pages', 'blog', 'static'] as const
 

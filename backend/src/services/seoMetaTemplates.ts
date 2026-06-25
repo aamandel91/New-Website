@@ -1,6 +1,7 @@
 import { injectable, inject } from 'tsyringe'
 import type { Knex } from 'knex'
 import RepliersService from './repliers.js'
+import { tenant as backendTenant } from '../config/tenant.config.js'
 import type {
   SeoMetaTemplate,
   SeoMetaTemplateUpsertInput,
@@ -423,7 +424,7 @@ export class SeoMetaTemplatesService {
       STATE: 'FL',
       STATE_FULL: 'Florida',
       COUNTY: 'Palm Beach',
-      COMPANY: 'The Mandel Team'
+      COMPANY: backendTenant.brand.teamName
     }
     switch (pageType) {
       case 'city':

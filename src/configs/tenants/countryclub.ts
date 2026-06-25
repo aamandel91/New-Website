@@ -101,7 +101,7 @@ export const tenant: TenantConfig = {
     logo: {
       src: '/logo.svg',
       footerSrc: '/logo-footer.svg',
-      alt: 'Florida Home Finder',
+      alt: 'SFL Country Club Homes',
       width: 36,
       height: 36,
       footerWidth: 80,

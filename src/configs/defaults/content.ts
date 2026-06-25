@@ -5,6 +5,10 @@ import { tenant } from '@/configs/tenant.config'
 
 const logo = tenant.visualIdentity.logo
 const heroImages = tenant.visualIdentity.heroImages
+const brand = tenant.brand
+// Social handle derived from the brand name (e.g. "Florida Home Finder" →
+// "@FloridaHomeFinder"); keeps the Twitter creator tag brand-correct per tenant.
+const socialHandle = `@${brand.siteName.replace(/\s+/g, '')}`
 
 const content = {
   siteLogo: { url: logo.src, width: logo.width, height: logo.height },
@@ -16,8 +20,8 @@ const content = {
   },
   siteSplashscreen: heroImages.homepage,
   loginSplashscreen: heroImages.homepage,
-  siteName: 'Florida Home Finder',
-  siteDefaultBrokerageName: 'Florida Home Finder Real Estate',
+  siteName: brand.siteName,
+  siteDefaultBrokerageName: `${brand.siteName} Real Estate`,
   siteKeywords: [
     'homes for sale in Florida',
     'Florida real estate',
@@ -29,8 +33,7 @@ const content = {
   ],
   siteDescription:
     'Find your dream home in Florida. Browse thousands of listings, connect with expert real estate agents, and discover neighborhoods across the state.',
-  siteFooterDescription:
-    'Florida Home Finder connects buyers and sellers with expert real estate professionals. We provide comprehensive property information, market insights, and innovative tools to make your real estate journey seamless.',
+  siteFooterDescription: `${brand.siteName} connects buyers and sellers with expert real estate professionals. We provide comprehensive property information, market insights, and innovative tools to make your real estate journey seamless.`,
   siteFullscreenFooter: '',
   homepageHeroBlock: {
     title: 'Find Your Home in South Florida',
@@ -39,16 +42,15 @@ const content = {
   },
 
   siteMetadata: {
-    metadataBase: new URL('https://floridahomefinder.com'),
+    metadataBase: new URL(brand.siteUrl),
     title: {
-      template: '%s | Florida Home Finder',
-      default: 'Florida Home Finder - Find Your Dream Home in Florida'
+      template: `%s | ${brand.siteName}`,
+      default: `${brand.siteName} - Find Your Dream Home in Florida`
     },
     alternates: {
       canonical: '/'
     },
-    description:
-      'Discover your perfect Florida home. Browse listings, connect with expert agents, and explore neighborhoods. Start your real estate journey with Florida Home Finder today.',
+    description: `Discover your perfect Florida home. Browse listings, connect with expert agents, and explore neighborhoods. Start your real estate journey with ${brand.siteName} today.`,
     keywords: [
       'homes for sale in Florida',
       'Florida real estate',
@@ -58,14 +60,14 @@ const content = {
       'Florida MLS listings'
     ],
     generator: 'Next.js',
-    applicationName: 'Florida Home Finder',
+    applicationName: brand.siteName,
     referrer: 'origin-when-cross-origin',
-    creator: 'Florida Home Finder',
-    publisher: 'Florida Home Finder',
+    creator: brand.siteName,
+    publisher: brand.siteName,
     authors: [
       {
-        name: 'Florida Home Finder',
-        url: 'https://floridahomefinder.com'
+        name: brand.siteName,
+        url: brand.siteUrl
       }
     ],
     icons: {
@@ -75,27 +77,27 @@ const content = {
     openGraph: {
       type: 'website',
       locale: 'en_US',
-      url: 'https://floridahomefinder.com',
-      title: 'Florida Home Finder - Find Your Dream Home in Florida',
+      url: brand.siteUrl,
+      title: `${brand.siteName} - Find Your Dream Home in Florida`,
       description:
         'Discover thousands of properties and connect with experienced real estate agents across Florida.',
-      siteName: 'Florida Home Finder',
+      siteName: brand.siteName,
       images: [
         {
-          url: 'https://floridahomefinder.com/og-image.jpg',
+          url: `${brand.siteUrl}/og-image.jpg`,
           width: 1200,
           height: 630,
-          alt: 'Florida Home Finder - Find Your Dream Home'
+          alt: `${brand.siteName} - Find Your Dream Home`
         }
       ]
     },
     twitter: {
       card: 'summary_large_image',
-      title: 'Florida Home Finder - Find Your Dream Home in Florida',
+      title: `${brand.siteName} - Find Your Dream Home in Florida`,
       description:
         'Browse thousands of Florida properties and connect with expert real estate agents.',
-      creator: '@FloridaHomeFinder',
-      images: ['https://floridahomefinder.com/twitter-image.jpg']
+      creator: socialHandle,
+      images: [`${brand.siteUrl}/twitter-image.jpg`]
     },
     robots: {
       index: true,
@@ -112,12 +114,11 @@ const content = {
     verification: {
       google: 'your-google-search-console-code',
       yandex: 'your-yandex-code',
-      me: ['https://floridahomefinder.com']
+      me: [brand.siteUrl]
     }
   } as Metadata,
   estimateMetadata: {
-    title:
-      'Florida Home Valuation - Get Your Free Property Estimate | Florida Home Finder',
+    title: `Florida Home Valuation - Get Your Free Property Estimate | ${brand.siteName}`,
     description:
       'Get an instant, accurate home valuation for your Florida property. Our AI-powered tool provides comprehensive market analysis and pricing insights.'
   } as Metadata,

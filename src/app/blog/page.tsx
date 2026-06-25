@@ -1,9 +1,10 @@
 import type { Metadata } from 'next'
 
 import { BlogListing } from '@pages/blog'
+import { tenant } from '@/configs/tenant.config'
 
 export const metadata: Metadata = {
-  title: 'Blog | Florida Home Finder',
+  title: `Blog | ${tenant.brand.siteName}`,
   description:
     'Discover insights and tips about real estate and lifestyle in Florida'
 }

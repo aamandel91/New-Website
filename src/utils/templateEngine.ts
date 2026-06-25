@@ -1,5 +1,6 @@
 import type { TemplateVariables } from '@configs/page-generation'
 import { getSubTypeBySlug } from '@configs/page-generation'
+import { tenant } from '@/configs/tenant.config'
 
 /**
  * Template processing engine for page generation.
@@ -44,7 +45,7 @@ export function generateMetaDescription(
 ): string {
   return (
     `Browse ${count} ${subType} for sale in ${city}, ${county} County, FL. ` +
-    'View photos, prices, and property details. Updated daily on Florida Home Finder.'
+    `View photos, prices, and property details. Updated daily on ${tenant.brand.siteName}.`
   )
 }
 

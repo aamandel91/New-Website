@@ -8,11 +8,12 @@
 import { NextResponse } from 'next/server'
 
 import { subTypes, targetCounties } from '@configs/page-generation'
+import { tenant } from '@/configs/tenant.config'
 
 import { fetchCountyCities, fetchSubTypeCount } from 'services/pageGeneration'
 import { scoreAreaPage } from 'utils/areaPageScoring'
 
-const BASE_URL = 'https://floridahomefinder.com'
+const BASE_URL = tenant.brand.siteUrl
 
 type SitemapType = 'active' | 'sold' | 'pages' | 'blog' | 'static'
 

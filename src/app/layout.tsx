@@ -13,6 +13,7 @@ const montserrat = Montserrat({
 })
 
 import content from '@configs/content'
+import { tenant } from '@/configs/tenant.config'
 import globalStyles from '@configs/theme/global'
 import TrackingInline from '@templates/TrackingInline'
 import GoogleTagManager, {
@@ -36,7 +37,7 @@ export const metadata: Metadata = {
   // Absolute base URL so Open Graph / Twitter images and relative
   // metadata URLs resolve correctly for social sharing and crawlers.
   metadataBase: new URL(
-    process.env.NEXT_PUBLIC_APP_DOMAIN || 'https://www.floridahomefinder.com'
+    process.env.NEXT_PUBLIC_APP_DOMAIN || tenant.brand.siteUrl
   ),
   ...content.siteMetadata
 }
