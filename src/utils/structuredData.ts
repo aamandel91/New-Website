@@ -221,7 +221,7 @@ export function localBusinessSchema(location: {
     '@type': 'LocalBusiness',
     name: `${tenant.brand.siteName} - ${location.city}`,
     description: `Find homes in ${location.city}, ${location.state}`,
-    url: 'https://soldbymandelteam.com',
+    url: tenant.brand.siteUrl,
     telephone: siteSettings.phone,
     priceRange: '$$$$',
     address: {
