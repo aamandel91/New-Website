@@ -245,7 +245,12 @@ const ComparisonPageContent: React.FC = () => {
                           src={
                             typeof property.images[0] === 'string'
                               ? property.images[0]
-                              : (property.images[0] as any)?.url || ''
+                              : property.images[0] &&
+                                  typeof property.images[0] === 'object' &&
+                                  'url' in property.images[0] &&
+                                  typeof property.images[0].url === 'string'
+                                ? property.images[0].url
+                                : ''
                           }
                           alt={`Property ${property.mlsNumber}`}
                           fill

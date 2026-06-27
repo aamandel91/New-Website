@@ -36,6 +36,7 @@ import {
 } from '@mui/material'
 
 import APIAIContent, {
+  type BulkPageGenerationRequest,
   type BulkPageGenerationResult,
   type BulkPagePreview,
   type CityLocation,
@@ -43,6 +44,13 @@ import APIAIContent, {
   type NeighborhoodLocation,
   type ZipLocation
 } from '@/services/API/APIAIContent'
+
+type PageType = BulkPageGenerationRequest['pageType']
+const isPageType = (v: string): v is PageType =>
+  v === 'city' ||
+  v === 'zipcode' ||
+  v === 'neighborhood' ||
+  v === 'property_type'
 
 const PAGE_TYPES = [
   { value: 'city', label: 'City Pages', example: 'Real Estate in Miami' },
@@ -93,7 +101,7 @@ export default function BulkPagesPage() {
   )
 
   // Form state
-  const [pageType, setPageType] = useState<string>('city')
+  const [pageType, setPageType] = useState<PageType>('city')
   const [selectedIds, setSelectedIds] = useState<number[]>([])
   const [autoPublish, setAutoPublish] = useState(false)
   const [useTemplate, setUseTemplate] = useState(false)
@@ -272,7 +280,7 @@ export default function BulkPagesPage() {
       setPreview([])
 
       const previewData = await APIAIContent.previewBulkPages({
-        pageType: pageType as any,
+        pageType,
         selectedIds,
         template: useTemplate ? template : undefined,
         autoPublish
@@ -348,7 +356,7 @@ export default function BulkPagesPage() {
       setGenerationResult(null)
 
       const result = await APIAIContent.generateBulkPages({
-        pageType: pageType as any,
+        pageType,
         selectedIds,
         template: useTemplate ? template : undefined,
         autoPublish
@@ -543,8 +551,11 @@ export default function BulkPagesPage() {
                     value={pageType}
                     label="Page Type"
                     onChange={(e) => {
-                      setPageType(e.target.value)
-                      resetSelection()
+                      const next = e.target.value
+                      if (isPageType(next)) {
+                        setPageType(next)
+                        resetSelection()
+                      }
                     }}
                   >
                     {PAGE_TYPES.map((type) => (

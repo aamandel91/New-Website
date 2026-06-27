@@ -829,6 +829,9 @@ export interface ApiSavedSearch {
   propertyTypes: string[]
   styles: string[]
   map: Position[][]
+  // Exclusion polygons persisted alongside `map`; see
+  // ApiSavedSearchCreateRequest.excludePolygons for the write side.
+  excludePolygons?: [number, number][][]
   status: boolean
   type: 'sale' | 'lease'
   class: ApiClass[]

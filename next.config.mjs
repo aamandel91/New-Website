@@ -20,9 +20,9 @@ const loggingConfig =
 
 const nextConfig = {
   eslint: {
-    // Pre-existing prettier formatting issues across the codebase — skip during build.
-    // TODO: Set this back to `false` before production launch so lint errors block bad deploys.
-    ignoreDuringBuilds: true
+    // Lint errors block bad deploys. If you need to land a hotfix past lint,
+    // flip this to `true` temporarily and open a follow-up to clean it up.
+    ignoreDuringBuilds: false
   },
 
   // Configure `pageExtensions` to include markdown and MDX files

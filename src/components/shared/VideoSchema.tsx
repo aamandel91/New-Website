@@ -2,21 +2,28 @@ interface VideoSchemaProps {
   videoId: string
   title?: string
   description?: string
-  uploadDate?: string
+  /**
+   * ISO date the video was uploaded. Required for accurate VideoObject
+   * schema — defaulting to "today" causes every page render to claim the
+   * video was uploaded that day, which is incorrect.
+   */
+  uploadDate: string
 }
 
 const VideoSchema = ({
   videoId,
   title = 'Video',
   description = '',
-  uploadDate = new Date().toISOString().split('T')[0]
+  uploadDate
 }: VideoSchemaProps) => {
   const schema = {
     '@context': 'https://schema.org',
     '@type': 'VideoObject',
     name: title,
     description,
-    thumbnailUrl: `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`,
+    // `hqdefault.jpg` is guaranteed to exist for every YouTube video;
+    // `maxresdefault.jpg` 404s on videos uploaded below 720p.
+    thumbnailUrl: `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`,
     uploadDate,
     contentUrl: `https://www.youtube.com/watch?v=${videoId}`,
     embedUrl: `https://www.youtube.com/embed/${videoId}`
