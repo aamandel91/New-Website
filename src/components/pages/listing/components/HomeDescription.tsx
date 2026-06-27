@@ -1,4 +1,3 @@
-/* eslint-disable react/no-danger */
 import { Stack, Typography } from '@mui/material'
 
 import propsConfig from '@configs/properties'
@@ -6,7 +5,21 @@ import propsConfig from '@configs/properties'
 import { ScrubbedText } from 'components/atoms'
 
 import { useProperty } from 'providers/PropertyProvider'
-import { formatMultiLineText, scrubbed } from 'utils/properties'
+import { scrubbed } from 'utils/properties'
+
+/**
+ * Split a free-text listing description into paragraphs. Any `<-more->`
+ * divider Repliers may include is stripped. Empty paragraphs are dropped so a
+ * description ending with a trailing newline doesn't render a blank box.
+ */
+const toParagraphs = (text: string): string[] => {
+  const cleaned = text.replace(/<-more->/g, ' ').replace(/\r/g, '').trim()
+  const divider = cleaned.includes('\n\n') ? /\n\n+/ : /\n+/
+  return cleaned
+    .split(divider)
+    .map((p) => p.replace(/\s+/g, ' ').trim())
+    .filter(Boolean)
+}
 
 const HomeDescription = () => {
   const {
@@ -15,8 +28,7 @@ const HomeDescription = () => {
     }
   } = useProperty()
 
-  // WARN: multiline formatter returns non-empty string for any type of input
-  const formattedDescription = formatMultiLineText(description || '')
+  const paragraphs = toParagraphs(description || '')
 
   return (
     <Stack spacing={3} id="description" sx={{ mt: '-33px', pt: 4 }}>
@@ -34,11 +46,11 @@ const HomeDescription = () => {
             <ScrubbedText replace={propsConfig.scrubbedDescriptionLabel} />
           </p>
         ) : (
-          <div
-            dangerouslySetInnerHTML={{
-              __html: formattedDescription
-            }}
-          />
+          paragraphs.map((p, i) => (
+            <p key={i} style={{ margin: '16px 0' }}>
+              {p}
+            </p>
+          ))
         )}
       </Typography>
     </Stack>
