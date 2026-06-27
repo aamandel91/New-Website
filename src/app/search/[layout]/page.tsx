@@ -46,8 +46,10 @@ export async function generateMetadata(props: {
   const location = pickStr(searchParams.location)
   const minPrice = pickStr(searchParams.minPrice)
   const maxPrice = pickStr(searchParams.maxPrice)
-  const bedrooms = pickStr((searchParams as any).bedrooms)
-  const propertyType = pickStr((searchParams as any).propertyType)
+  // `SearchParams` has an index signature of `string | number`, so reading
+  // these fields by string key is already type-safe.
+  const bedrooms = pickStr(searchParams.bedrooms)
+  const propertyType = pickStr(searchParams.propertyType)
 
   let title = `Homes for Sale in South Florida | ${SITE_NAME}`
   let description = `Search homes for sale in South Florida. Filter by city, neighborhood, price, beds, baths, property type, and more on ${SITE_NAME}.`
@@ -130,9 +132,9 @@ const MapPage = async (props: {
       type: 'include',
       coords
     }))
-    const excludes: PolygonZone[] = (
-      (savedSearch as any).excludePolygons || []
-    ).map((coords: any) => ({ type: 'exclude', coords }))
+    const excludes: PolygonZone[] = (savedSearch.excludePolygons || []).map(
+      (coords) => ({ type: 'exclude', coords })
+    )
     polygons = [...includes, ...excludes]
 
     title = name // use saved search name as map title (show special header)
