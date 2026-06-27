@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import ReactMarkdown from 'react-markdown'
 
 import ArticleIcon from '@mui/icons-material/Article'
 import AIIcon from '@mui/icons-material/AutoAwesome'
@@ -306,11 +307,17 @@ export default function AIContentPage() {
                               bgcolor: 'grey.50'
                             }}
                           >
-                            <div
-                              dangerouslySetInnerHTML={{
-                                __html: generatedBlog.content
-                              }}
-                            />
+                            {/*
+                              The backend prompt explicitly requests Markdown
+                              (see backend/src/services/aiContent.ts —
+                              "Format: Markdown"). Rendering via
+                              `react-markdown` matches the prompt contract and
+                              removes the stored-XSS sink that existed when
+                              this was injected via dangerouslySetInnerHTML.
+                            */}
+                            <ReactMarkdown>
+                              {generatedBlog.content}
+                            </ReactMarkdown>
                           </Paper>
                         </Box>
 
