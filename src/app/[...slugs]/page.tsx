@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
+import ReactMarkdown from 'react-markdown'
 
 import {
   Box,
@@ -611,11 +612,16 @@ function renderCmsPage(
         {page.content?.modules?.map(
           (mod: { type: string; data: { content?: string } }, i: number) => (
             <Box key={i} sx={{ mb: 3 }}>
-              {mod.type === 'text' && (
-                <Typography
-                  variant="body1"
-                  dangerouslySetInnerHTML={{ __html: mod.data.content ?? '' }}
-                />
+              {mod.type === 'text' && mod.data.content && (
+                // Backend prompt now requests Markdown (see
+                // backend/src/services/aiContent.ts `generatePageContent`).
+                // Rendering via react-markdown removes the stored-XSS sink
+                // that existed when this was injected via
+                // dangerouslySetInnerHTML. Legacy rows that still contain
+                // raw HTML will render as literal text — safe by default.
+                <Box sx={{ typography: 'body1' }}>
+                  <ReactMarkdown>{mod.data.content}</ReactMarkdown>
+                </Box>
               )}
             </Box>
           )

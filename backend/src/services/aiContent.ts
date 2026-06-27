@@ -193,12 +193,12 @@ Return JSON in EXACTLY this shape — no markdown, no code fences, just JSON:
   "content": {
     "modules": [
       { "type": "hero", "data": { "heading": "", "subheading": "" } },
-      { "type": "text", "data": { "content": "<HTML body of ~500-800 words with H2/H3 sections>" } },
+      { "type": "text", "data": { "content": "<Markdown body of ~500-800 words with ## and ### sections>" } },
       { "type": "faq", "data": { "items": [ { "question": "", "answer": "" }, { "question": "", "answer": "" }, { "question": "", "answer": "" } ] } },
       { "type": "cta", "data": { "heading": "", "buttonLabel": "", "buttonHref": "/contact" } }
     ],
     "sidebar": [
-      { "type": "text", "data": { "heading": "At a Glance", "content": "<short HTML summary, 2-3 sentences>" } }
+      { "type": "text", "data": { "heading": "At a Glance", "content": "<short Markdown summary, 2-3 sentences>" } }
     ]
   },
   "meta_title": "SEO meta title (under 60 characters, includes keyword)",
@@ -213,7 +213,7 @@ Return JSON in EXACTLY this shape — no markdown, no code fences, just JSON:
 }
 
 Rules for the body 'text' module:
-- Real HTML (use <h2>, <h3>, <p>, <ul>, <strong>) — NOT markdown
+- Markdown (use ##, ###, paragraphs, -/* lists, **bold**) — NOT raw HTML
 - ~500-800 words total
 - Naturally include the primary keyword in the first paragraph
 - Specific to the location and/or property type when provided
