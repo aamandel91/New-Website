@@ -28,6 +28,11 @@ export type ListingFields = keyof Property | ApiQueryParamsAllowedFields
 
 export const listingFields: Array<ListingFields> = [
   'mlsNumber',
+  // MLS display permissions — required by restricted()/blur logic. The CSR
+  // API strictly honors this fields list (the backend proxy injected
+  // permissions regardless), so dropping it makes every card render as
+  // MLS-restricted for logged-out visitors.
+  'permissions',
   'status',
   'class',
   'listPrice',

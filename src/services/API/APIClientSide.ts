@@ -41,6 +41,9 @@ const VALID_CSR_PARAMS = new Set([
   'listings',
   'aggregates',
   'statistics',
+  // Geo-bounds polygon/rectangle for map search — the CSR API supports it;
+  // omitting it here silently strips the map viewport from every request.
+  'map',
   'clusterPrecision',
   'clusterFields',
   'lat',
