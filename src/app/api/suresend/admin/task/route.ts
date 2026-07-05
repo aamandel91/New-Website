@@ -2,8 +2,12 @@ import { NextResponse } from 'next/server'
 
 import { createTask } from '@/services/suresend/client'
 import type { SureSendTaskType } from '@/services/suresend/types'
+import { requireAdmin } from '@/utils/adminAuth'
 
 export async function POST(request: Request) {
+  const denied = await requireAdmin(request)
+  if (denied) return denied
+
   try {
     const { personId, name, type, dueDateTime } = (await request.json()) as {
       personId: string

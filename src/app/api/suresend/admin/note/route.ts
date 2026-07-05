@@ -1,8 +1,12 @@
 import { NextResponse } from 'next/server'
 
 import { createNote } from '@/services/suresend/client'
+import { requireAdmin } from '@/utils/adminAuth'
 
 export async function POST(request: Request) {
+  const denied = await requireAdmin(request)
+  if (denied) return denied
+
   try {
     const { personId, subject, body } = await request.json()
 

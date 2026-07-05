@@ -1,8 +1,12 @@
 import { NextResponse } from 'next/server'
 
 import { listPeople } from '@/services/suresend/client'
+import { requireAdmin } from '@/utils/adminAuth'
 
-export async function GET() {
+export async function GET(request: Request) {
+  const denied = await requireAdmin(request)
+  if (denied) return denied
+
   try {
     const result = await listPeople(20, 0)
 
