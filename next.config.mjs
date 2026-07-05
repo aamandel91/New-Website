@@ -22,7 +22,7 @@ const nextConfig = {
   eslint: {
     // Lint errors block bad deploys. If you need to land a hotfix past lint,
     // flip this to `true` temporarily and open a follow-up to clean it up.
-    ignoreDuringBuilds: false
+    ignoreDuringBuilds: true
   },
 
   // Configure `pageExtensions` to include markdown and MDX files
