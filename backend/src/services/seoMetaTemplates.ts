@@ -376,8 +376,10 @@ export class SeoMetaTemplatesService {
         status: 'A',
         resultsPerPage: 1,
         listings: false,
-        statistics:
-          'avg-listPrice,med-listPrice,min-listPrice,max-listPrice,cnt-listPrice'
+        // NOTE: 'cnt-listPrice' is not a valid statistics token — including it
+        // makes Repliers reject the whole request. The match count comes from
+        // the top-level `count` field instead.
+        statistics: 'avg-listPrice,med-listPrice,min-listPrice,max-listPrice'
       }
       if (scope.city) params['city'] = scope.city
       if (scope.zip) params['address.zip'] = scope.zip

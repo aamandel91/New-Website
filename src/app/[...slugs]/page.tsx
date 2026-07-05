@@ -185,8 +185,9 @@ export async function generateMetadata(
         listingCount: count,
         hasCmsContent
       })
-      let title = `${count} Homes for Sale in ${cityName}, FL (${new Date().getFullYear()})`
-      let description = `Browse ${count} homes for sale in ${cityName}, FL. View photos, prices, and property details. Updated daily on ${tenant.brand.siteName}.`
+      const countText = count > 0 ? `${count.toLocaleString('en-US')} ` : ''
+      let title = `${countText}Homes for Sale in ${cityName}, FL (${new Date().getFullYear()})`
+      let description = `Browse ${countText}homes for sale in ${cityName}, FL. View photos, prices, and property details. Updated daily on ${tenant.brand.siteName}.`
       const tctx: TemplateContext = { CITY: cityName }
       if (count > 0) tctx.COUNT = count.toLocaleString('en-US')
       if (stats.avg) tctx.AVG_PRICE = formatPrice(stats.avg)
@@ -232,8 +233,9 @@ export async function generateMetadata(
         subTypeSlug: stConfig.slug,
         hasCmsContent
       })
+      const countText = count > 0 ? `${count.toLocaleString('en-US')} ` : ''
       let title = generateMetaTitle(cityName, stConfig.label, count)
-      let description = `Browse ${count} ${stConfig.label} for sale in ${cityName}, FL. View photos, prices, and property details. Updated daily on ${tenant.brand.siteName}.`
+      let description = `Browse ${countText}${stConfig.label} for sale in ${cityName}, FL. View photos, prices, and property details. Updated daily on ${tenant.brand.siteName}.`
       const tctx: TemplateContext = {
         CITY: cityName,
         SUBTYPE: stConfig.label.replace(/s$/, ''),
@@ -306,8 +308,9 @@ export async function generateMetadata(
         listingCount: count,
         hasCmsContent
       })
-      let title = `${count} Homes for Sale in ${cityName}, FL ${parsed.zip} (${new Date().getFullYear()})`
-      let description = `Browse ${count} homes for sale in ${cityName} zip code ${parsed.zip}, FL. Updated daily.`
+      const countText = count > 0 ? `${count.toLocaleString('en-US')} ` : ''
+      let title = `${countText}Homes for Sale in ${cityName}, FL ${parsed.zip} (${new Date().getFullYear()})`
+      let description = `Browse ${countText}homes for sale in ${cityName} zip code ${parsed.zip}, FL. Updated daily.`
       const tctx: TemplateContext = { CITY: cityName, ZIP: parsed.zip! }
       if (count > 0) tctx.COUNT = count.toLocaleString('en-US')
       if (stats.avg) tctx.AVG_PRICE = formatPrice(stats.avg)
@@ -681,7 +684,8 @@ async function renderCityPage(
         <PageWithSidebar sidebar={<CitySidebar city={cityName} />}>
           <Box sx={{ mb: 4 }}>
             <Typography variant="h3" component="h1" gutterBottom>
-              {count.toLocaleString()} Homes for Sale in {cityName}, FL
+              {count > 0 ? `${count.toLocaleString()} ` : ''}Homes for Sale in{' '}
+              {cityName}, FL
             </Typography>
             <Typography variant="body1" color="text.secondary">
               Browse homes for sale in {cityName}, Florida.
@@ -923,7 +927,7 @@ async function renderSubTypePage(
     '',
     'Florida',
     stConfig.label,
-    count
+    count > 0 ? count : undefined
   )
   const pageScore = scoreAreaPage({
     pageType: 'subType',
@@ -948,8 +952,9 @@ async function renderSubTypePage(
             {headings.h1 || `${stConfig.label} in ${cityName}, FL`}
           </Typography>
           <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
-            Browse {count} {stConfig.label.toLowerCase()} currently available in{' '}
-            {cityName}, Florida.
+            Browse {count > 0 ? `${count.toLocaleString()} ` : ''}
+            {stConfig.label.toLowerCase()} currently available in {cityName},
+            Florida.
           </Typography>
 
           {/* Property Listings */}
@@ -1044,7 +1049,7 @@ async function renderNeighborhoodPage(
   baseUrl: string,
   hasCmsContent: boolean
 ) {
-  const neighborhoodName = slugToDisplayName(parsed.subType || '')
+  const neighborhoodName = slugToDisplayName(parsed.neighborhood || '')
   const breadcrumbItems = buildBreadcrumbs(parsed, cityName, baseUrl)
   const count = await fetchListingCount(cityName)
   const pageScore = scoreAreaPage({
@@ -1140,7 +1145,7 @@ async function renderZipPage(
   baseUrl: string,
   hasCmsContent: boolean
 ) {
-  const zip = parsed.subType || ''
+  const zip = parsed.zip || ''
   const breadcrumbItems = buildBreadcrumbs(parsed, cityName, baseUrl)
   const count = await fetchListingCount(cityName, { zip })
   const pageScore = scoreAreaPage({

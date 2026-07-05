@@ -190,7 +190,9 @@ export async function fetchAreaMarketStats(
         status: 'A',
         listings: false,
         resultsPerPage: 1,
-        statistics: 'avg-listPrice,med-listPrice,avg-daysOnMarket'
+        // daysOnMarket stats are only allowed with status U — the sold query
+        // below provides avg-daysOnMarket.
+        statistics: 'avg-listPrice,med-listPrice'
       } as any).catch(() => null),
       APISearchCSR.searchListings({
         boardId: 110,

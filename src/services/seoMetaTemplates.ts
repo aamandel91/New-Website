@@ -8,8 +8,10 @@
  *   during a first rollout), returns `null` so the caller can fall back to
  *   its existing hardcoded defaults — this preserves prior behavior and
  *   makes the rollout safe.
- * - Replaces `{TOKEN}` patterns using the supplied context. Unknown tokens
- *   are left in place (a signal to the admin that they typed a bad token).
+ * - Replaces `{TOKEN}` patterns using the supplied context. Unresolved tokens
+ *   are stripped: this renders public-facing titles, so a missing value (e.g.
+ *   the live count fetch failed) must not leak a literal "{COUNT}" to users.
+ *   The admin preview (backend service) keeps unknown tokens visible instead.
  * - The "live" placeholders (COUNT, AVG_PRICE, etc.) are computed by the
  *   caller and passed in via context — the helper does not call Repliers.
  */
@@ -95,10 +97,8 @@ export function resolveTemplate(
   context: TemplateContext
 ): string {
   if (!template) return ''
-  const result = template.replace(/\{([A-Z_]+)\}/g, (match, key) => {
-    const val = context[key]
-    if (val === undefined) return match
-    return val
+  const result = template.replace(/\{([A-Z_]+)\}/g, (_match, key) => {
+    return context[key] ?? ''
   })
   return result
     .replace(/\s{2,}/g, ' ')

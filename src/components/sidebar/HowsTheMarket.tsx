@@ -51,8 +51,10 @@ export default function HowsTheMarket({
         const [activeRes, soldRes] = await Promise.all([
           apiSearchCSR.searchListings({
             ...locationParams,
-            // Repliers statistics format: metric-field pairs (see MarketTrends/utils)
-            statistics: 'med-listPrice,avg-daysOnMarket',
+            // Repliers statistics format: metric-field pairs (see MarketTrends/utils).
+            // daysOnMarket stats are only allowed with status U — the sold
+            // query below provides avg-daysOnMarket.
+            statistics: 'med-listPrice',
             status: 'A',
             listings: false,
             resultsPerPage: 1

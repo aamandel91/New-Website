@@ -30,7 +30,10 @@ export function generateMetaTitle(
   count: number
 ): string {
   const year = new Date().getFullYear()
-  return `${count} ${subType} for Sale in ${city}, FL (${year})`
+  // Omit the count when it's unavailable (0 usually means the stats fetch
+  // failed) rather than advertising "0 Condos for Sale".
+  const prefix = count > 0 ? `${count.toLocaleString('en-US')} ` : ''
+  return `${prefix}${subType} for Sale in ${city}, FL (${year})`
 }
 
 /**
@@ -43,8 +46,9 @@ export function generateMetaDescription(
   subType: string,
   count: number
 ): string {
+  const countText = count > 0 ? `${count.toLocaleString('en-US')} ` : ''
   return (
-    `Browse ${count} ${subType} for sale in ${city}, ${county} County, FL. ` +
+    `Browse ${countText}${subType} for sale in ${city}, ${county} County, FL. ` +
     `View photos, prices, and property details. Updated daily on ${tenant.brand.siteName}.`
   )
 }
