@@ -1,30 +1,39 @@
-'use client'
-
-import dynamic from 'next/dynamic'
-
 import { Box } from '@mui/material'
 
+import LazyHydrate from '@shared/LazyHydrate'
+
+import BlogSection from './components/BlogSection'
+import CTACards from './components/CTACards'
+import ExploreLifestyles from './components/ExploreLifestyles'
+import ExploreListings from './components/ExploreListings'
 import HeroSection from './components/HeroSection'
+import HomeValueWidget from './components/HomeValueWidget'
+import SEOContentBlock from './components/SEOContentBlock'
 
-// Below-the-fold sections load in their own chunks. SSR stays on (default),
-// so the server HTML and SEO output are unchanged — only the client bundle
-// for the initial paint gets smaller.
-const ExploreListings = dynamic(() => import('./components/ExploreListings'))
-const CTACards = dynamic(() => import('./components/CTACards'))
-const ExploreLifestyles = dynamic(() => import('./components/ExploreLifestyles'))
-const HomeValueWidget = dynamic(() => import('./components/HomeValueWidget'))
-const BlogSection = dynamic(() => import('./components/BlogSection'))
-const SEOContentBlock = dynamic(() => import('./components/SEOContentBlock'))
-
+// Server component: sections render into the HTML normally (SEO unchanged),
+// but everything below the fold hydrates lazily via LazyHydrate — Lighthouse
+// and real first paints don't pay for their JS execution.
 const HomePageContent = () => (
   <Box>
     <HeroSection />
-    <ExploreListings />
-    <CTACards />
-    <ExploreLifestyles />
-    <HomeValueWidget />
-    <BlogSection />
-    <SEOContentBlock />
+    <LazyHydrate>
+      <ExploreListings />
+    </LazyHydrate>
+    <LazyHydrate>
+      <CTACards />
+    </LazyHydrate>
+    <LazyHydrate>
+      <ExploreLifestyles />
+    </LazyHydrate>
+    <LazyHydrate>
+      <HomeValueWidget />
+    </LazyHydrate>
+    <LazyHydrate>
+      <BlogSection />
+    </LazyHydrate>
+    <LazyHydrate>
+      <SEOContentBlock />
+    </LazyHydrate>
   </Box>
 )
 

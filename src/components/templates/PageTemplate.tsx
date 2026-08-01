@@ -1,16 +1,14 @@
 import { type ReactNode, Suspense } from 'react'
-import dynamic from 'next/dynamic'
 
 import { Box, Stack } from '@mui/material'
+
+import LazyHydrate from '@shared/LazyHydrate'
 
 import { LoadingView } from 'components/atoms'
 
 import DialogWindows from './components/DialogWindows'
+import Footer from './components/Footer'
 import Header from './components/Header'
-
-// Below the fold on every page: SSR stays on (HTML/SEO unchanged), but the
-// client chunk loads separately from the critical bundle.
-const Footer = dynamic(() => import('./components/Footer'))
 
 const PageTemplate = ({
   loading = false,
@@ -41,7 +39,13 @@ const PageTemplate = ({
         ) : (
           <Box flex={1}>{children}</Box>
         )}
-        {!noFooter && <Footer />}
+        {/* Footer is below the fold on every page: server-rendered as usual,
+            hydrated only when scrolled near (its links work without JS). */}
+        {!noFooter && (
+          <LazyHydrate>
+            <Footer />
+          </LazyHydrate>
+        )}
       </Stack>
     </>
   )
