@@ -1,8 +1,9 @@
 'use client'
 
 import React from 'react'
+import dynamic from 'next/dynamic'
 
-import { AppBar, Box, Button, Container, Stack } from '@mui/material'
+import { AppBar, Box, Button, Container, Skeleton, Stack } from '@mui/material'
 
 import { tenant } from '@/configs/tenant.config'
 
@@ -12,12 +13,19 @@ import { useFeatures } from 'providers/FeaturesProvider'
 import useClientSide from 'hooks/useClientSide'
 
 import { NavDropdown, NavLink } from './components/NavMenu'
-import {
-  Autosuggestion,
-  AutosuggestionContainer,
-  Logo,
-  MobileMenu
-} from './components'
+// Direct imports (not the './components' barrel): the barrel re-exports
+// Autosuggestion, which would statically pull it back into the header chunk.
+import AutosuggestionContainer from './components/AutosuggestionContainer'
+import Logo from './components/Logo'
+import MobileMenu from './components/MobileMenu'
+
+// The header ships on every page; the autosuggest (MUI Autocomplete + search
+// services) is interaction-only, so it loads in its own chunk after hydration.
+// The fallback matches the Skeleton the component itself shows pre-hydration.
+const Autosuggestion = dynamic(() => import('./components/Autosuggestion'), {
+  ssr: false,
+  loading: () => <Skeleton variant="rounded" sx={{ height: 48 }} />
+})
 import { cityItems, countyItems, propertyTypeItems } from './navData'
 
 const NAV_TEXT_SX = {

@@ -1,12 +1,16 @@
 import { type ReactNode, Suspense } from 'react'
+import dynamic from 'next/dynamic'
 
 import { Box, Stack } from '@mui/material'
 
 import { LoadingView } from 'components/atoms'
 
 import DialogWindows from './components/DialogWindows'
-import Footer from './components/Footer'
 import Header from './components/Header'
+
+// Below the fold on every page: SSR stays on (HTML/SEO unchanged), but the
+// client chunk loads separately from the critical bundle.
+const Footer = dynamic(() => import('./components/Footer'))
 
 const PageTemplate = ({
   loading = false,

@@ -1,15 +1,20 @@
 'use client'
 
+import dynamic from 'next/dynamic'
+
 import { Box } from '@mui/material'
 
-import ExploreLifestyles from './components/ExploreLifestyles'
-
-import BlogSection from './components/BlogSection'
-import CTACards from './components/CTACards'
-import ExploreListings from './components/ExploreListings'
 import HeroSection from './components/HeroSection'
-import HomeValueWidget from './components/HomeValueWidget'
-import SEOContentBlock from './components/SEOContentBlock'
+
+// Below-the-fold sections load in their own chunks. SSR stays on (default),
+// so the server HTML and SEO output are unchanged — only the client bundle
+// for the initial paint gets smaller.
+const ExploreListings = dynamic(() => import('./components/ExploreListings'))
+const CTACards = dynamic(() => import('./components/CTACards'))
+const ExploreLifestyles = dynamic(() => import('./components/ExploreLifestyles'))
+const HomeValueWidget = dynamic(() => import('./components/HomeValueWidget'))
+const BlogSection = dynamic(() => import('./components/BlogSection'))
+const SEOContentBlock = dynamic(() => import('./components/SEOContentBlock'))
 
 const HomePageContent = () => (
   <Box>

@@ -8,7 +8,9 @@ import { Box, Button, MenuItem, Select, Typography } from '@mui/material'
 
 import { tenant } from '@/configs/tenant.config'
 import type { LocationResult } from '@shared/LocationAutocomplete'
-import LocationAutocomplete from '@shared/LocationAutocomplete'
+// Lazy variant: keeps MUI Autocomplete + Popper out of the homepage's initial
+// chunk; shows a lookalike TextField until the real component hydrates.
+import LocationAutocomplete from '@shared/LocationAutocompleteLazy'
 
 type HeroTab = 'buying' | 'selling' | 'estimate'
 
