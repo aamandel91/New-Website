@@ -1,4 +1,3 @@
-import dayjs from 'dayjs'
 import deepmerge from 'deepmerge'
 
 import { TYPE_CONDO } from '@configs/filter-types'
@@ -18,16 +17,6 @@ export const getPropertyClass = (payload: any): PropertyClass => {
   return 'residential'
 }
 
-type DateFormat = 'YYYY-MM' | 'MMMM YYYY' | 'MMM YYYY'
-
-const formatDate = (date: dayjs.Dayjs, format: DateFormat) =>
-  date.format(format)
-
-type MonthData = {
-  date: string
-  label: string
-}
-
 export const getLocationName = (params: LocationStatsParams): string => {
   const { name, area, city, neighborhood } = params
   return (
@@ -36,18 +25,7 @@ export const getLocationName = (params: LocationStatsParams): string => {
   )
 }
 
-export const getLastMonthes = (): MonthData[] => {
-  const months = new Array(4).fill(null)
-
-  return months.reduce((acc, _, index) => {
-    const date = dayjs().subtract(index, 'month')
-    acc[index] = {
-      date: formatDate(date, 'YYYY-MM'),
-      label: formatDate(date, 'MMM YYYY')
-    }
-    return acc
-  }, [])
-}
+export { getLastMonthes } from './constants'
 
 export type Widget = {
   values: (number | string)[]
