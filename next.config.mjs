@@ -1,5 +1,7 @@
 /** @type {import('next').NextConfig} */
 
+import fs from 'node:fs'
+
 import createMDX from '@next/mdx'
 
 import createNextIntlPlugin from 'next-intl/plugin'
@@ -56,6 +58,29 @@ const nextConfig = {
         hostname: 'api.mapbox.com'
       }
     ]
+  },
+  // Opt-in bundle attribution: ANALYZE=1 writes webpack stats (with module
+  // `reasons`) for the client compilation so heavy libraries can be traced to
+  // their importers. No effect on normal builds.
+  webpack(config, { isServer }) {
+    if (process.env.ANALYZE === '1' && !isServer) {
+      config.plugins.push({
+        apply(compiler) {
+          compiler.hooks.done.tap('WriteStatsPlugin', (stats) => {
+            const out = stats.toJson({
+              all: false,
+              modules: true,
+              chunks: true,
+              chunkModules: true,
+              reasons: true,
+              ids: true
+            })
+            fs.writeFileSync('./stats.json', JSON.stringify(out))
+          })
+        }
+      })
+    }
+    return config
   },
   async redirects() {
     return [
