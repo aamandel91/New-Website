@@ -184,6 +184,7 @@ const MoreProperties: React.FC<MorePropertiesProps> = ({
           sx={{ mt: 3, pt: 2, borderTop: '1px solid', borderColor: 'divider' }}
         >
           <Link
+              prefetch={false}
             href={`/search${city ? `?city=${encodeURIComponent(city)}` : ''}`}
             passHref
             legacyBehavior

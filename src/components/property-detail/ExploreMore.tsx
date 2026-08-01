@@ -176,6 +176,7 @@ const ExploreMore: React.FC<ExploreMoreProps> = ({
               Homes under ${formatCompactPrice(nextTier)} in {city}
             </Typography>
             <Link
+              prefetch={false}
               href={`/search/grid?city=${encodeURIComponent(city)}&maxPrice=${nextTier}`}
               passHref
               legacyBehavior

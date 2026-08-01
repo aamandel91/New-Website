@@ -96,6 +96,7 @@ const ViewOtherUnits: React.FC<ViewOtherUnitsProps> = ({
         unitCount > 0 && (
           <Button
             component={Link}
+            prefetch={false}
             href={searchUrl}
             startIcon={<ApartmentIcon />}
             size="small"

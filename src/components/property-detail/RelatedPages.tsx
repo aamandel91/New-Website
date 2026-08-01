@@ -144,7 +144,7 @@ const RelatedPages: React.FC<RelatedPagesProps> = ({
       <Grid container spacing={2}>
         {relatedPages.map((page, index) => (
           <Grid item xs={12} sm={6} key={index}>
-            <Link href={page.url} passHref legacyBehavior>
+            <Link href={page.url} passHref legacyBehavior prefetch={false}>
               <MuiLink
                 underline="none"
                 sx={{

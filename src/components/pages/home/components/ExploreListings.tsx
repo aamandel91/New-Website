@@ -124,6 +124,7 @@ const ExploreListings = () => {
 
           return (
             <Link
+              prefetch={false}
               key={area.key}
               href={tileHref}
               style={{ textDecoration: 'none' }}

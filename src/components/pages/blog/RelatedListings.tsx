@@ -193,6 +193,7 @@ const RelatedListings: React.FC<RelatedListingsProps> = ({
       {searchCity && (
         <Box sx={{ mt: 2 }}>
           <Link
+              prefetch={false}
             href={`/search/grid?city=${encodeURIComponent(searchCity)}`}
             passHref
             legacyBehavior
