@@ -1,14 +1,13 @@
 import mapConfig from '@configs/map'
 
 import { type ApiBounds, type ApiQueryParams, APISearch } from 'services/API'
-// Do not import the 'services/Map' barrel statically: it chains to
-// MarkerExtension -> mapbox-gl runtime (~1.5MB) and this service is pulled
-// into the site-wide Header. MapSearch is HTTP-only; the live map singleton
-// is loaded lazily (instant on map pages where mapbox is already in memory).
+// Do not import the 'services/Map' barrel here, even dynamically: this service
+// is reachable from server components, so Next would register the mapbox-gl
+// runtime (~420KB) as a client entry on every route. The liveMap registry is
+// dependency-free (type-only mapbox import) and is populated by MapService on
+// real map pages only.
+import { getLiveMap } from 'services/Map/liveMap'
 import MapSearch from 'services/Map/MapSearch'
-
-const getLiveMap = async () =>
-  (await import('services/Map')).default.map
 import { processParams } from 'services/Search/adapter'
 import { calcBoundsAtZoom, calcZoomLevel } from 'utils/map'
 
@@ -69,7 +68,7 @@ class SearchService {
     // get bounds and center point of the area from API
     const { bounds, location } = aggregates?.map?.clusters?.[0] || {}
 
-    const map = await getLiveMap()
+    const map = getLiveMap()
     if (map && bounds && location) {
       const areaZoom = calcZoomLevel(map, bounds)
 
@@ -85,7 +84,7 @@ class SearchService {
   }
 
   async fetchBoundsForAddress(query: string): Promise<ApiBounds | undefined> {
-    const map = await getLiveMap()
+    const map = getLiveMap()
     if (!map) return undefined
 
     const address = await MapSearch.fetchMapboxSuggestion(query)

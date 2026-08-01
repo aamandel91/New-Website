@@ -6,7 +6,12 @@ import { type Map, Marker } from 'mapbox-gl'
 import gridConfig from '@configs/cards-grids'
 
 import { type ApiCluster as Cluster, type Property } from 'services/API'
-import { createMarkerElement, MAP_CONSTANTS, type Markers } from 'services/Map'
+// Import submodules directly, never the 'services/Map' barrel: the barrel
+// re-exports Map.ts, whose singleton instantiation reads this module's default
+// export mid-init ("Cannot access 'X' before initialization" on page load).
+import { MAP_CONSTANTS } from 'services/Map/constants'
+import { type Markers } from 'services/Map/types'
+import { createMarkerElement } from 'services/Map/utils'
 import PopupExtensionService, {
   type PopupExtension
 } from 'services/Map/PopupExtension'

@@ -20,7 +20,7 @@ import { MapNavigation, MapStyleSwitch } from '@shared/Map'
 
 import ScrubbedText from 'components/atoms/ScrubbedText'
 
-import { createMarkerElement } from 'services/Map'
+import { createMarkerElement } from 'services/Map/utils'
 import { useDialog } from 'providers/DialogProvider'
 import { useFeatures } from 'providers/FeaturesProvider'
 import { useMapOptions } from 'providers/MapOptionsProvider'
