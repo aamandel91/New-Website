@@ -8,7 +8,7 @@ import {
   Typography
 } from '@mui/material'
 
-import type { EstimateData } from '@configs/estimate'
+import type { EstimateData } from '@configs/estimate/types'
 
 import { type ApiMessage } from 'services/API'
 import { formatDate } from 'utils/formatters'

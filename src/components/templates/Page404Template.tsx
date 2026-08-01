@@ -9,7 +9,7 @@ import Yoda from 'assets/common/yoda.svg'
 
 import { FullscreenView } from 'components/atoms'
 
-import { PageTemplate } from '.'
+import PageTemplate from './PageTemplate'
 
 const phrases = {
   401: 'Access, you have not. Authorized, you must be.',

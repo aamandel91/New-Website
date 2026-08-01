@@ -2,7 +2,8 @@ import React from 'react'
 
 import { Box, type BoxProps, type SxProps, type Theme } from '@mui/material'
 
-import { type EstimateData, showEstimateImage } from '@configs/estimate'
+import { showEstimateImage } from '@configs/estimate/config'
+import type { EstimateData } from '@configs/estimate/types'
 
 import { ImagePlaceholder } from 'components/atoms'
 

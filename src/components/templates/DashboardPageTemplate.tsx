@@ -11,7 +11,7 @@ import useClientSide from 'hooks/useClientSide'
 
 import AuthView from './components/AuthView'
 import DashboardHeader from './components/DashboardHeader'
-import { PageTemplate } from '.'
+import PageTemplate from './PageTemplate'
 
 const DashboardPageTemplate = ({ children }: { children: React.ReactNode }) => {
   const clientSide = useClientSide()

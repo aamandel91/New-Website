@@ -1,6 +1,6 @@
 import { type Position } from 'geojson'
 
-import { type EstimateData } from '@configs/estimate'
+import type { EstimateData } from '@configs/estimate/types'
 
 export type ApiClass = 'condo' | 'residential' | 'commercial'
 

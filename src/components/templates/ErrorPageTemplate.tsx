@@ -6,7 +6,7 @@ import { Button } from '@mui/material'
 
 import { FullscreenView } from 'components/atoms'
 
-import { PageTemplate } from '.'
+import PageTemplate from './PageTemplate'
 
 export type ErrorPageProps = {
   error: Error

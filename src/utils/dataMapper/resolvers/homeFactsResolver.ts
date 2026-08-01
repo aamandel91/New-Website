@@ -1,4 +1,4 @@
-import { type EstimatePayload } from '@configs/estimate'
+import type { EstimatePayload } from '@configs/estimate/types'
 
 import {
   formatDate,

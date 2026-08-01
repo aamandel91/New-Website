@@ -1,9 +1,9 @@
-import {
-  type EstimateListingType,
-  type FormFields,
-  type FormValues,
-  type StepsConfiguration
-} from '@configs/estimate'
+import type {
+  EstimateListingType,
+  FormFields,
+  FormValues,
+  StepsConfiguration
+} from './types'
 import {
   TYPE_CONDO,
   TYPE_MULTI_FAMILY,

@@ -4,7 +4,7 @@ import { type Metadata } from 'next'
 import { features } from 'features'
 
 import content from '@configs/content'
-import { type EstimateData } from '@configs/estimate'
+import type { EstimateData } from '@configs/estimate/types'
 import Page404Template from '@/components/templates/Page404Template'
 import { tenant } from '@/configs/tenant.config'
 import { EstimateRouteWrapper } from '@pages/estimate'

@@ -6,7 +6,7 @@ import Link from 'next/link'
 
 import { Box, type BoxProps } from '@mui/material'
 
-import { type EstimateData, type EstimatePayload } from '@configs/estimate'
+import type { EstimateData, EstimatePayload } from '@configs/estimate/types'
 
 import { ImagePlaceholder } from 'components/atoms'
 
