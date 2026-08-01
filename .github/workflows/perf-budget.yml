@@ -1,0 +1,21 @@
+name: Performance Budget
+
+on:
+  pull_request:
+    branches: ['**']
+
+jobs:
+  bundle-budget:
+    name: First-load JS budget
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      # Root lockfile is currently out of sync; use `npm install` until it's cleaned up
+      - run: npm install --no-audit --no-fund
+      - name: Build
+        run: cp env.example .env.local && npm run build
+      - name: Check bundle budgets
+        run: node scripts/check-bundle-budget.mjs
