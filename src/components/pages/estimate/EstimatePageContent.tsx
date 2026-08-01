@@ -4,7 +4,7 @@ import React from 'react'
 import { useSearchParams } from 'next/navigation'
 import { features } from 'features'
 
-import { Page404Template } from '@templates'
+import Page404Template from '@/components/templates/Page404Template'
 
 import EstimateProvider from 'providers/EstimateProvider'
 import EstimateStepsProvider from 'providers/EstimateStepsProvider'

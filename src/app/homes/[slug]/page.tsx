@@ -15,7 +15,8 @@ import {
 } from '@mui/material'
 
 import content from '@configs/content'
-import { Property404Template, PropertyPageTemplate } from '@templates'
+import Property404Template from '@/components/templates/Property404Template'
+import PropertyPageTemplate from '@/components/templates/PropertyPageTemplate'
 import {
   NotifyWhenListed,
   PropertyTransactionHistory

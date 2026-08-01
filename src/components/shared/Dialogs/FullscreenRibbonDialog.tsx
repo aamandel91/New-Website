@@ -8,7 +8,7 @@ import { Box, DialogContent, DialogTitle } from '@mui/material'
 import { type GalleryDialogProps, useDialog } from 'providers/DialogProvider'
 import { getCDNPath } from 'utils/urls'
 
-import { BaseFullscreenDialog } from '.'
+import BaseFullscreenDialog from './BaseFullscreenDialog'
 
 const dialogName = 'fullscreen-ribbon'
 

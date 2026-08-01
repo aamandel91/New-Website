@@ -1,7 +1,8 @@
 'use client'
 import { features } from 'features'
 
-import { ClientSidePageTemplate, Page404Template } from '@templates'
+import ClientSidePageTemplate from '@/components/templates/ClientSidePageTemplate'
+import Page404Template from '@/components/templates/Page404Template'
 import ProfilePageContent from '@pages/profile'
 
 const ProfilePage = () => {

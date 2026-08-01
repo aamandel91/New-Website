@@ -3,7 +3,7 @@ import React from 'react'
 import { DialogTitle } from '@mui/material'
 
 import { DialogCloseButton } from '../components'
-import { BaseResponsiveDialog } from '..'
+import BaseResponsiveDialog from '../BaseResponsiveDialog'
 
 import { ContactUsForm } from '.'
 

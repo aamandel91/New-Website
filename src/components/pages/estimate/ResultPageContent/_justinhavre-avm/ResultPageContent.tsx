@@ -4,7 +4,7 @@ import React, { useEffect } from 'react'
 
 import { Container, Stack } from '@mui/material'
 
-import { ClientSidePageTemplate } from '@templates'
+import ClientSidePageTemplate from '@/components/templates/ClientSidePageTemplate'
 import {
   MortgageCalculationBanner,
   MortgageEquityBanner,

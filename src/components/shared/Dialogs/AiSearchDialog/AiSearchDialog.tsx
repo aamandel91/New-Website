@@ -10,7 +10,7 @@ import {
   ToggleButtonGroup
 } from '@mui/material'
 
-import { BaseResponsiveDialog } from '..'
+import BaseResponsiveDialog from '../BaseResponsiveDialog'
 
 import {
   FeaturesSearch,

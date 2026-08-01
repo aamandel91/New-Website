@@ -1,4 +1,4 @@
-import { ClientSidePageTemplate } from '@templates'
+import ClientSidePageTemplate from '@/components/templates/ClientSidePageTemplate'
 import { AgentEstimatesContent } from '@pages/agent'
 
 type Params = {

@@ -2,7 +2,7 @@
 
 import React from 'react'
 
-import { EstimateRemoveDialog } from '@shared/Dialogs'
+import EstimateRemoveDialog from '@shared/Dialogs/EstimateRemoveDialog'
 
 import AgentEstimatesProvider from 'providers/AgentEstimatesProvider'
 

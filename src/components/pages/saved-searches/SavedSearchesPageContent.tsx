@@ -5,7 +5,7 @@ import React from 'react'
 import { Container, Stack } from '@mui/material'
 
 import gridConfig from '@configs/cards-grids'
-import { SaveSearchDialog } from '@shared/Dialogs'
+import SaveSearchDialog from '@shared/Dialogs/SaveSearchDialog'
 import { EmptySavedSearch } from '@shared/EmptyStates'
 
 import { LoadingContent } from 'components/atoms'

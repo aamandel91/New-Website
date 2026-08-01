@@ -1,6 +1,6 @@
 import type React from 'react'
 
-import { ClientSidePageTemplate } from '@templates'
+import ClientSidePageTemplate from '@/components/templates/ClientSidePageTemplate'
 
 const FormPageContainer = ({ children }: { children: React.ReactNode }) => {
   return (

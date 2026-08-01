@@ -2,7 +2,7 @@ import React from 'react'
 import { type Metadata } from 'next'
 
 import Markdown from '@content/dmca-notice'
-import { StaticPageTemplate } from '@templates'
+import StaticPageTemplate from '@/components/templates/StaticPageTemplate'
 import { tenant } from '@/configs/tenant.config'
 import StructuredData from '@shared/StructuredData'
 

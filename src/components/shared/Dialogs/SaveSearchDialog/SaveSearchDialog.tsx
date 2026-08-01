@@ -7,7 +7,7 @@ import { DialogTitle } from '@mui/material'
 import { useDialog } from 'providers/DialogProvider'
 import { useSaveSearch } from 'providers/SaveSearchProvider'
 
-import { BaseResponsiveDialog } from '..'
+import BaseResponsiveDialog from '../BaseResponsiveDialog'
 
 import SaveSearchForm from './SaveSearchForm'
 

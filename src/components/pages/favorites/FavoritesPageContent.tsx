@@ -7,7 +7,7 @@ import { Container, Stack } from '@mui/material'
 import gridConfig from '@configs/cards-grids'
 // TODO: fix constants import from @pages alias
 import { gridColumnsMediaQueries } from '@pages/search/components/MapRoot/constants'
-import { PropertyDialog } from '@shared/Dialogs'
+import PropertyDialog from '@shared/Dialogs/PropertyDialog'
 import { EmptyFavorites } from '@shared/EmptyStates'
 import { PropertyCard } from '@shared/Property'
 

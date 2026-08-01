@@ -14,7 +14,7 @@ import {
 } from '@mui/material'
 
 import routes from '@configs/routes'
-import { PageTemplate } from '@templates'
+import PageTemplate from '@/components/templates/PageTemplate'
 
 import useResponsiveValue from 'hooks/useResponsiveValue'
 

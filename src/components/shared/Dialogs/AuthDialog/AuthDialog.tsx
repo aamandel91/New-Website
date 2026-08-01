@@ -10,7 +10,7 @@ import { storeRedirectUrl } from '@pages/login/utils'
 
 import { useDialog } from 'providers/DialogProvider'
 
-import { BaseResponsiveDialog } from '..'
+import BaseResponsiveDialog from '../BaseResponsiveDialog'
 
 import { AuthForm } from '.'
 

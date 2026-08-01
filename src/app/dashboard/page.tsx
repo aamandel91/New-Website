@@ -1,6 +1,7 @@
 import { features } from 'features'
 
-import { ClientSidePageTemplate, Page404Template } from '@templates'
+import ClientSidePageTemplate from '@/components/templates/ClientSidePageTemplate'
+import Page404Template from '@/components/templates/Page404Template'
 import DashboardPageContent from '@pages/dashboard'
 
 import SearchProvider from 'providers/SearchProvider'

@@ -5,7 +5,7 @@ import { features } from 'features'
 
 import content from '@configs/content'
 import { type EstimateData } from '@configs/estimate'
-import { Page404Template } from '@templates'
+import Page404Template from '@/components/templates/Page404Template'
 import { tenant } from '@/configs/tenant.config'
 import { EstimateRouteWrapper } from '@pages/estimate'
 import StructuredData from '@shared/StructuredData'

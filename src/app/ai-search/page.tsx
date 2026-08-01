@@ -1,6 +1,6 @@
 import { type Metadata } from 'next'
 
-import { PageTemplate } from '@templates'
+import PageTemplate from '@/components/templates/PageTemplate'
 import { tenant } from '@/configs/tenant.config'
 import { AiMapListings } from '@pages/ai-search'
 import StructuredData from '@shared/StructuredData'

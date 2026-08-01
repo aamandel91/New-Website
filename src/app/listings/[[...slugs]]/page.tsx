@@ -1,6 +1,7 @@
 import { features } from 'features'
 
-import { Page404Template, PageTemplate } from '@templates'
+import Page404Template from '@/components/templates/Page404Template'
+import PageTemplate from '@/components/templates/PageTemplate'
 import { tenant } from '@/configs/tenant.config'
 import CatalogPageContent from '@pages/catalog'
 import StructuredData from '@shared/StructuredData'

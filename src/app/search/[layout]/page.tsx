@@ -4,7 +4,8 @@ import { type Position } from 'geojson'
 
 import { Container } from '@mui/material'
 
-import { Page404Template, PageTemplate } from '@templates'
+import Page404Template from '@/components/templates/Page404Template'
+import PageTemplate from '@/components/templates/PageTemplate'
 import { tenant } from '@/configs/tenant.config'
 import MapPageContent from '@pages/search'
 import RelatedReading from '@shared/RelatedReading'

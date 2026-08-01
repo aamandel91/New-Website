@@ -2,7 +2,7 @@
 
 import type React from 'react'
 
-import { Page404Template } from '@templates'
+import Page404Template from '@/components/templates/Page404Template'
 
 import { useEstimate } from 'providers/EstimateProvider'
 

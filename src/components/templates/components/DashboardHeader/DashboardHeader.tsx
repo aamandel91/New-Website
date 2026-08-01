@@ -4,7 +4,7 @@ import React from 'react'
 
 import { Box, Container } from '@mui/material'
 
-import { ProfileDialog } from '@shared/Dialogs'
+import ProfileDialog from '@shared/Dialogs/ProfileDialog'
 
 import { DashboardMenu, DashboardProfile } from './components'
 

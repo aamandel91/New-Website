@@ -6,12 +6,10 @@ import dynamic from 'next/dynamic'
 import { Box, Container, Skeleton, Stack } from '@mui/material'
 
 import { DetailsContainer } from '@shared/Containers'
-import {
-  FullscreenGalleryDialog,
-  FullscreenRibbonDialog,
-  GalleryDialog,
-  SlideshowDialog
-} from '@shared/Dialogs'
+import FullscreenGalleryDialog from '@shared/Dialogs/FullscreenGalleryDialog'
+import FullscreenRibbonDialog from '@shared/Dialogs/FullscreenRibbonDialog'
+import GalleryDialog from '@shared/Dialogs/GalleryDialog'
+import SlideshowDialog from '@shared/Dialogs/SlideshowDialog'
 
 import { type HistoryItemType } from 'services/API'
 import { useFeatures } from 'providers/FeaturesProvider'
