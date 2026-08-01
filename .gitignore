@@ -64,3 +64,6 @@ certificates
 .million
 
 .history/*
+
+# ANALYZE=1 webpack stats output
+stats.json

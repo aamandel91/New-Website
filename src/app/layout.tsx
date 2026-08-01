@@ -8,7 +8,11 @@ import { GlobalStyles } from '@mui/material'
 
 const montserrat = Montserrat({
   subsets: ['latin'],
-  display: 'swap',
+  // 'optional' keeps the webfont off the LCP critical path: if it isn't
+  // ready within the browser's short block period, the (metric-adjusted)
+  // fallback is kept and no late repaint occurs. On fast connections and
+  // repeat visits the webfont renders as before.
+  display: 'optional',
   variable: '--font-montserrat'
 })
 
