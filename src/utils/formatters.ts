@@ -3,30 +3,22 @@ import dayjs from 'dayjs'
 import i18nConfig from '@configs/i18n'
 import propsConfig from '@configs/properties'
 
-import parsePhoneNumber, { AsYouType } from 'libphonenumber-js/min'
-
 import { parseFootInch } from './numbers'
 import { scrubbed } from './properties'
 
 export type Primitive = string | number | boolean | bigint | null | undefined
 
+// Dependency-free US display formatter. This module is reachable from the
+// root layout, so it must not import libphonenumber-js (~30KB gz) — parsing,
+// as-you-type formatting and sanitizing live in utils/phone instead.
 export const formatPhoneNumber = (value: string | null | undefined) => {
-  const phoneNumber = value
-    ? parsePhoneNumber(value, i18nConfig.phoneNumberLocale)
-    : ''
-  if (!phoneNumber) return ''
+  if (!value) return ''
+  const digits = String(value).replace(/\D/g, '')
+  const national =
+    digits.length === 11 && digits.startsWith('1') ? digits.slice(1) : digits
+  if (national.length !== 10) return String(value)
 
-  return phoneNumber.formatNational()
-}
-
-export const formatPhoneNumberAsYouType = (
-  newVal: string,
-  currentVal: string | null = ''
-) => {
-  // backspace handling
-  if (newVal.length < (currentVal || '').length) return newVal
-  // library formating
-  return new AsYouType(i18nConfig.phoneNumberLocale).input(newVal)
+  return `(${national.slice(0, 3)}) ${national.slice(3, 6)}-${national.slice(6)}`
 }
 
 type FormatDateOptions = {

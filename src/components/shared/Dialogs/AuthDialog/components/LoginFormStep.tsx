@@ -9,7 +9,8 @@ import { joiResolver } from '@hookform/resolvers/joi'
 import { GoogleAuthButton } from '@shared/Buttons'
 
 import { type LogInRequest } from 'services/API'
-import { formatPhoneNumber, formatPhoneNumberAsYouType } from 'utils/formatters'
+import { formatPhoneNumber } from 'utils/formatters'
+import { formatPhoneNumberAsYouType } from 'utils/phone'
 
 import { loginSchema } from '../schemas'
 

@@ -10,7 +10,7 @@ import { type FormValues } from '@configs/estimate'
 import { Asterisk, SelectLabel } from 'components/atoms'
 
 import { useUser } from 'providers/UserProvider'
-import { formatPhoneNumberAsYouType } from 'utils/formatters'
+import { formatPhoneNumberAsYouType } from 'utils/phone'
 
 import { EstimateInput, GridSection, GridTitle } from '../components'
 import { useFormField } from '../hooks'

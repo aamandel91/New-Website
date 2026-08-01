@@ -19,7 +19,6 @@ import {
   type AuthCallbackResponse,
   type AuthProvider
 } from 'services/API'
-import { sanitizePhoneNumber } from 'utils/properties/sanitizers'
 import {
   clearTokenSync,
   expired,
@@ -191,6 +190,9 @@ const UserProvider = ({ children }: { children: ReactNode }) => {
     values: OtpLoginValues
   ): Promise<{ status: number; data?: any }> => {
     const { fname, lname, email, phone } = values
+    // UserProvider wraps every page: load libphonenumber-js on demand instead
+    // of shipping it in the root layout bundle.
+    const { sanitizePhoneNumber } = await import('utils/phone')
     const loginFields = {
       email,
       ...(phone && { phone: sanitizePhoneNumber(phone) })
