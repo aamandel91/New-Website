@@ -4,6 +4,8 @@ import {
   blockedCountries,
   geoBlockingEnabled
 } from '@/configs/defaults/geo-blocking'
+import routes from '@/configs/defaults/routes'
+import { features } from '@/features'
 
 /**
  * County slug pattern — matches slugs like "broward-county", "palm-beach-county"
@@ -55,6 +57,15 @@ export function middleware(request: NextRequest) {
         return new NextResponse('Access Denied', { status: 403 })
       }
     }
+  }
+
+  // --- Estimate-as-root ---
+  // Serve the Estimate page at / via a rewrite instead of importing it from
+  // app/page.tsx: a static import there would register the estimate client
+  // chunks (recharts, MUI date-pickers) on the homepage bundle.
+  if (url.pathname === '/' && features.rootPage === 'estimate') {
+    url.pathname = routes.estimate
+    return NextResponse.rewrite(url)
   }
 
   // --- /florida/* redirect to clean URLs ---
