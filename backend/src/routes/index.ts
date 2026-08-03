@@ -22,6 +22,7 @@ import placesRouter from './places.js'
 import searchWithSchoolsRouter from './searchWithSchools.js'
 import seoMetaTemplatesRouter from './seoMetaTemplates.js'
 import relatedBlogPostsRouter from './relatedBlogPosts.js'
+import healthRouter from './health.js'
 const router = new Router({
   prefix: '/api'
 })
@@ -57,4 +58,5 @@ router.use(
   relatedBlogPostsRouter.routes(),
   relatedBlogPostsRouter.allowedMethods()
 )
+router.use(healthRouter.routes(), healthRouter.allowedMethods())
 export default router

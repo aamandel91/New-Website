@@ -17,6 +17,9 @@ import type { EventsCollectionMiddleware } from '../providers/middleware/eventsC
 import SelectViewPropertyParams from '../services/eventsCollection/selectors/selectViewPropertyParams.js'
 import { RplClass } from '../types/repliers.js'
 import { UserRole } from '../constants.js'
+import SureSendActivityService from '../services/suresendActivity.js'
+import { listingDetails } from '../jobs/lib/payload.js'
+import { listingUrl } from '../jobs/lib/portal.js'
 const debug = _debug('repliers:routes:listings')
 const router = new Router({
   prefix: '/listings'
@@ -670,6 +673,7 @@ router.post('/search', authMiddleware, async (ctx) => {
     return
   }
   ctx.body = await listingsService.search(value)
+  trackSearchActivity(ctx, value)
 })
 router.get('/search', authMiddleware, async (ctx) => {
   ctx.state['enable.xff'] = true
@@ -687,6 +691,7 @@ router.get('/search', authMiddleware, async (ctx) => {
     return
   }
   ctx.body = await listingsService.search(value)
+  trackSearchActivity(ctx, value)
 })
 router.get('/count', authMiddleware, async (ctx) => {
   ctx.state['enable.xff'] = true
@@ -918,6 +923,30 @@ router.get(
       // skipping view events for agents
       return next()
     }
+    if (user) {
+      // Fire-and-forget SureSend property_view for identified portal users;
+      // never blocks or fails the render.
+      const suresendActivity = ctx.state.container.resolve(
+        SureSendActivityService
+      )
+      const listing = listingDetails(
+        (ctx.body as Record<string, unknown>) ?? {}
+      )
+      const mls = ctx.params['mlsNumber'] ?? ''
+      suresendActivity.track(user, {
+        type: 'property_view',
+        property: {
+          mlsNumber: mls,
+          address: listing.address,
+          price: listing.price,
+          bedrooms: listing.bedrooms,
+          bathrooms: listing.bathrooms,
+          sqft: listing.sqft,
+          url: listingUrl(mls),
+          imageUrl: listing.imageUrl
+        }
+      })
+    }
     const selectViewPropertyParams = ctx.state.container.resolve(
       SelectViewPropertyParams
     )
@@ -931,4 +960,34 @@ router.get(
     return showPropertyEventsCollector(ctx, next)
   }
 )
+/**
+ * Fire-and-forget "Property Search" activity for identified portal users
+ * (no saved:true metadata — these are ad-hoc searches, not saved ones).
+ */
+function trackSearchActivity(
+  ctx: Parameters<Middleware>[0],
+  dto: object
+): void {
+  const value = dto as Record<string, unknown>
+  const user = ctx.state['user']
+  if (!user || user.role === UserRole.Agent) return
+  const suresendActivity = ctx.state.container.resolve(SureSendActivityService)
+  const city = Array.isArray(value['city']) ? value['city'][0] : value['city']
+  suresendActivity.track(user, {
+    type: 'Property Search',
+    propertySearch: {
+      city: typeof city === 'string' ? city : undefined,
+      state: 'FL',
+      minPrice: numberOrUndefined(value['minPrice']),
+      maxPrice: numberOrUndefined(value['maxPrice']),
+      minBedrooms: numberOrUndefined(value['minBeds'])
+    }
+  })
+}
+
+function numberOrUndefined(value: unknown): number | undefined {
+  const parsed = Number(value)
+  return Number.isFinite(parsed) ? parsed : undefined
+}
+
 export default router

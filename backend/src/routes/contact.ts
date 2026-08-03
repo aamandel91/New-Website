@@ -14,12 +14,47 @@ import type { EventsCollectionMiddleware } from '../providers/middleware/eventsC
 import SelectContactUsParams from '../services/eventsCollection/selectors/selectContactUsParams.js'
 import SelectRequestInfoParams from '../services/eventsCollection/selectors/selectRequestInfoParams.js'
 import SelectScheduleParams from '../services/eventsCollection/selectors/selectScheduleParams.js'
+import SureSendActivityService from '../services/suresendActivity.js'
 const router = new Router({
   prefix: '/contact'
 })
 const authMiddleware = container.resolve<Middleware>(
   'middleware.jwt.passthrough'
 )
+
+/**
+ * Fire-and-forget SureSend form_submission event. Identified by the email
+ * submitted in the form itself (works for incognito visitors too); all
+ * submitted fields go to metadata. Never blocks the response.
+ */
+function trackFormSubmission(
+  ctx: Parameters<Middleware>[0],
+  formName: string,
+  dto: object
+): void {
+  const value = dto as Record<string, unknown>
+  const email = typeof value['email'] === 'string' ? value['email'] : undefined
+  if (!email) return
+  const name = typeof value['name'] === 'string' ? value['name'] : ''
+  const [fname, ...rest] = name.split(' ')
+  const suresendActivity = ctx.state.container.resolve(SureSendActivityService)
+  const metadata: Record<string, string | number | boolean> = {
+    formName
+  }
+  for (const [key, val] of Object.entries(value)) {
+    if (
+      typeof val === 'string' ||
+      typeof val === 'number' ||
+      typeof val === 'boolean'
+    ) {
+      metadata[key] = val
+    }
+  }
+  suresendActivity.track(
+    { email, fname: fname || undefined, lname: rest.join(' ') || undefined },
+    { type: 'form_submission', email, metadata }
+  )
+}
 
 /**
  * @openapi
@@ -68,6 +103,7 @@ router.post(
     const contactService = ctx.state.container.resolve(ContactService)
     await contactService.contactUs(value)
     ctx.body = 'OK'
+    trackFormSubmission(ctx, 'contact_us', value)
     next()
   },
   (ctx, next) => {
@@ -144,6 +180,7 @@ router.post(
     const contactService = ctx.state.container.resolve(ContactService)
     await contactService.schedule(value)
     ctx.body = 'OK'
+    trackFormSubmission(ctx, 'showing_request', value)
     next()
   },
   (ctx, next) => {
@@ -175,6 +212,7 @@ router.post('/schedule/estimate', authMiddleware, async (ctx) => {
   const contactService = ctx.state.container.resolve(ContactService)
   await contactService.scheduleEstimate(value)
   ctx.body = 'OK'
+  trackFormSubmission(ctx, 'estimate_meeting_request', value)
 })
 
 /**
@@ -227,6 +265,7 @@ router.post(
     const contactService = ctx.state.container.resolve(ContactService)
     await contactService.requestInfo(value)
     ctx.body = 'OK'
+    trackFormSubmission(ctx, 'request_info', value)
     next()
   },
   (ctx, next) => {

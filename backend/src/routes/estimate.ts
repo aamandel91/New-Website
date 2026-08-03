@@ -18,6 +18,8 @@ import SelectViewEstimateParams from '../services/eventsCollection/selectors/sel
 import { UserRole } from '../constants.js'
 import { Context, Next } from 'koa'
 import SelectEstimateNoteParams from '../services/eventsCollection/selectors/selectEstimateNoteParams.js'
+import SureSendActivityService from '../services/suresendActivity.js'
+import { formatAddress } from '../jobs/lib/payload.js'
 const router = new Router({
   prefix: '/estimate'
 })
@@ -319,6 +321,28 @@ router.post(
     }
     const estimateService = ctx.state.container.resolve(EstimateService)
     ctx.body = await estimateService.add(value)
+    // Fire-and-forget SureSend form_submission for the valuation form —
+    // includes the address and any estimate value; never blocks the render.
+    const user = ctx.state['user']
+    if (user?.email) {
+      const suresendActivity = ctx.state.container.resolve(
+        SureSendActivityService
+      )
+      const body = ctx.body as Record<string, unknown>
+      const estimate =
+        typeof body?.['estimate'] === 'number'
+          ? (body['estimate'] as number)
+          : undefined
+      const address = formatAddress(value.address)
+      suresendActivity.track(user, {
+        type: 'form_submission',
+        metadata: {
+          formName: 'home_valuation',
+          ...(address ? { address } : {}),
+          ...(estimate !== undefined ? { estimate } : {})
+        }
+      })
+    }
     next()
   },
   (ctx, next) => {

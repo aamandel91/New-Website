@@ -73,7 +73,9 @@ const DEFAULT_TENANT: keyof typeof TENANTS = 'floridahomefinder'
 const requested = process.env['APP_TENANT']
 
 // Unknown/unset values fall back to the default brand.
-export const tenant: BackendTenantConfig =
+export const tenantKey: keyof typeof TENANTS =
   requested && requested in TENANTS
-    ? TENANTS[requested as keyof typeof TENANTS]
-    : TENANTS[DEFAULT_TENANT]
+    ? (requested as keyof typeof TENANTS)
+    : DEFAULT_TENANT
+
+export const tenant: BackendTenantConfig = TENANTS[tenantKey]

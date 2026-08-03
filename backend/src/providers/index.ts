@@ -23,6 +23,7 @@ import keyvSignupcodes from './keyv.otp.js'
 import dataCommunities from './data/communities.js'
 import db from './db.js'
 import nats from './nats.js'
+import pgboss from './pgboss.js'
 import containerMiddleware from './middleware/container.js'
 import containerXffMiddleware from './middleware/container/xff.js'
 import dummyXFFProvider from './dummy.xff.js'
@@ -55,6 +56,7 @@ import tenantContextMiddleware from './middleware/tenantContext.js'
   eventsCollectionMiddleware,
   db,
   nats,
+  pgboss,
   containerMiddleware,
   containerXffMiddleware,
   dummyXFFProvider,

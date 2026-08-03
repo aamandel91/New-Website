@@ -73,6 +73,11 @@ import SelectClientRegistrationParams from '../../src/services/eventsCollection/
     useFactory: () => () => () => null
   },
   {
+    // pass-through stub — the real one resolves organizations from the DB
+    token: 'middleware.tenantContext',
+    useFactory: () => (_ctx: unknown, next: () => Promise<unknown>) => next()
+  },
+  {
     token: SelectClientRegistrationParams,
     useValue: {
       select: () => null

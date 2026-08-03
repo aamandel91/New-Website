@@ -6,6 +6,7 @@ import { container } from 'tsyringe'
 import app from './app.js'
 import config from './config.js'
 import BossWebhooksService from './services/boss/webhook.js'
+import { startJobQueue } from './jobs/index.js'
 const logger = container.resolve<Logger>('logger.global')
 
 // setup nats connection on start, testing resolving on actual use
@@ -21,6 +22,9 @@ http.createServer(app.callback()).listen(config.app.port, () => {
 })
 const webhook = container.resolve(BossWebhooksService)
 await webhook.installHooks()
+// pg-boss job queue (Repliers/SureSend webhook processing) — logs and
+// continues if Postgres is unavailable.
+await startJobQueue()
 process.on('SIGINT', () => {
   logger.info('Shutting down')
   webhook.uninstallHooks().finally(() => {

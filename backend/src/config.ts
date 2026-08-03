@@ -226,6 +226,23 @@ export interface AppConfig {
     fallback_agent_email: string
     inbound_signing_secret: string
   }
+  suresend: {
+    enabled: boolean
+    api_token: string
+    base_url: string
+    webhook_secret: string
+  }
+  integrations: {
+    /**
+     * Master switch for lead-facing texts/emails (SEND_LEAD_ALERTS).
+     * When false, workers write the would-be send to pending_alerts
+     * instead of sending. Agent-facing tasks/notes are always live.
+     */
+    send_lead_alerts: boolean
+    slack_webhook_url: string
+    /** Public base URL of this backend, used to build webhook target URLs. */
+    webhook_base_url: string
+  }
   googlemaps: {
     base_url: string
     key: string
@@ -569,6 +586,18 @@ const config: AppConfig = {
       process.env['LISTING_ALERTS_FALLBACK_EMAIL'] ||
       backendTenant.contact.fallbackAgentEmail,
     inbound_signing_secret: process.env['SENDGRID_INBOUND_SIGNING_SECRET'] || ''
+  },
+  suresend: {
+    enabled: !!process.env['SURESEND_API_TOKEN'],
+    api_token: process.env['SURESEND_API_TOKEN'] || '',
+    base_url:
+      process.env['SURESEND_BASE_URL'] || 'https://api.suresend.ai/api/partner',
+    webhook_secret: process.env['SURESEND_WEBHOOK_SECRET'] || ''
+  },
+  integrations: {
+    send_lead_alerts: process.env['SEND_LEAD_ALERTS'] === 'true',
+    slack_webhook_url: process.env['SLACK_WEBHOOK_URL'] || '',
+    webhook_base_url: process.env['WEBHOOK_BASE_URL'] || ''
   }
 }
 
