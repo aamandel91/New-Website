@@ -1,7 +1,7 @@
 import queryString from 'query-string'
 
 import apiConfig from '@configs/api'
-import { stepNames } from '@configs/estimate'
+import { stepNames } from '@configs/estimate/types'
 import routes from '@configs/routes'
 
 import { joinNonEmpty } from 'utils/strings'

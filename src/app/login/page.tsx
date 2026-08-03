@@ -1,4 +1,4 @@
-import { PageTemplate } from '@templates'
+import PageTemplate from '@/components/templates/PageTemplate'
 import { AgentLoginPageContent } from '@pages/login'
 
 const LoginPage = () => {

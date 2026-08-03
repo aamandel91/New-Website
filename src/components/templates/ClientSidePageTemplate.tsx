@@ -11,7 +11,8 @@ import useClientSide from 'hooks/useClientSide'
 
 import AuthView from './components/AuthView'
 import RedirectView from './components/RedirectView'
-import { Page404Template, PageTemplate } from '.'
+import Page404Template from './Page404Template'
+import PageTemplate from './PageTemplate'
 
 const ClientSidePageTemplate = ({
   noHeader = false,

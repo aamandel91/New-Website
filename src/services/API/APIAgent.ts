@@ -1,6 +1,6 @@
 import queryString from 'query-string'
 
-import type { EstimateData } from '@configs/estimate'
+import type { EstimateData } from '@configs/estimate/types'
 
 import APIBase from './APIBase'
 import {

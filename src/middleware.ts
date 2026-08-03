@@ -4,6 +4,8 @@ import {
   blockedCountries,
   geoBlockingEnabled
 } from '@/configs/defaults/geo-blocking'
+import routes from '@/configs/defaults/routes'
+import { features } from '@/features'
 
 /**
  * County slug pattern — matches slugs like "broward-county", "palm-beach-county"
@@ -57,6 +59,25 @@ export function middleware(request: NextRequest) {
     }
   }
 
+  // --- Estimate-as-root ---
+  // Serve the Estimate page at / via a rewrite instead of importing it from
+  // app/page.tsx: a static import there would register the estimate client
+  // chunks (recharts, MUI date-pickers) on the homepage bundle.
+  if (url.pathname === '/' && features.rootPage === 'estimate') {
+    url.pathname = routes.estimate
+    return NextResponse.rewrite(url)
+  }
+
+  // --- /search (no layout) → default gallery layout ---
+  // The search experience lives at /search/{map|grid|table|gallery}. Bare
+  // /search used to fall through to the [...slugs] city catch-all, rendering
+  // a bogus "0 Homes for Sale in Search, FL" city page. Redirect to the
+  // canonical gallery layout, preserving any query params (?city=..., etc.).
+  if (url.pathname === '/search' || url.pathname === '/search/') {
+    url.pathname = `${routes.search}/gallery`
+    return NextResponse.redirect(url, 301)
+  }
+
   // --- /florida/* redirect to clean URLs ---
   if (url.pathname.startsWith('/florida/') || url.pathname === '/florida') {
     // Strip /florida and any county prefix, redirect to clean URL
@@ -66,8 +87,8 @@ export function middleware(request: NextRequest) {
       .filter(Boolean)
 
     if (segments.length === 0) {
-      // /florida → redirect to search
-      url.pathname = '/search'
+      // /florida → redirect to search (gallery layout, avoids a second hop)
+      url.pathname = `${routes.search}/gallery`
       return NextResponse.redirect(url, 301)
     }
 
@@ -78,7 +99,7 @@ export function middleware(request: NextRequest) {
 
       if (remaining.length === 0) {
         // /florida/broward-county → redirect to search with county filter
-        url.pathname = '/search'
+        url.pathname = `${routes.search}/gallery`
         return NextResponse.redirect(url, 301)
       }
 

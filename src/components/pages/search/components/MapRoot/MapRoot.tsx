@@ -18,11 +18,11 @@ import { Skeleton, Stack } from '@mui/material'
 
 import gridConfig from '@configs/cards-grids'
 import mapConfig from '@configs/map'
-import { SaveSearchDialog } from '@shared/Dialogs'
+import SaveSearchDialog from '@shared/Dialogs/SaveSearchDialog'
 import { MapNavigation, MapStyleSwitch } from '@shared/Map'
 
 import type { Property } from 'services/API'
-import MapService from 'services/Map'
+import MapService from 'services/Map/Map'
 import SearchService from 'services/Search'
 import { useFeatures } from 'providers/FeaturesProvider'
 import { useMapOptions } from 'providers/MapOptionsProvider'

@@ -2,6 +2,8 @@ import { type ReactNode, Suspense } from 'react'
 
 import { Box, Stack } from '@mui/material'
 
+import LazyHydrate from '@shared/LazyHydrate'
+
 import { LoadingView } from 'components/atoms'
 
 import DialogWindows from './components/DialogWindows'
@@ -37,7 +39,13 @@ const PageTemplate = ({
         ) : (
           <Box flex={1}>{children}</Box>
         )}
-        {!noFooter && <Footer />}
+        {/* Footer is below the fold on every page: server-rendered as usual,
+            hydrated only when scrolled near (its links work without JS). */}
+        {!noFooter && (
+          <LazyHydrate>
+            <Footer />
+          </LazyHydrate>
+        )}
       </Stack>
     </>
   )

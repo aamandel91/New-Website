@@ -8,7 +8,8 @@ import { Button, Grid2, Stack, TextField } from '@mui/material'
 import { joiResolver } from '@hookform/resolvers/joi'
 
 import { type LogInRequest, type SignUpRequest } from 'services/API'
-import { formatPhoneNumber, formatPhoneNumberAsYouType } from 'utils/formatters'
+import { formatPhoneNumber } from 'utils/formatters'
+import { formatPhoneNumberAsYouType } from 'utils/phone'
 
 import { signupSchema } from '../schemas'
 

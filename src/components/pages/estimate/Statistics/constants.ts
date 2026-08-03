@@ -1,6 +1,29 @@
 import dayjs from 'dayjs'
 
-import { getLastMonthes, type WidgetsData } from './utils'
+// Type-only import: safe within the constants <-> utils pair. getLastMonthes
+// lives here (not in utils.ts) because this module calls it during its own
+// evaluation — importing it back from utils.ts made the two modules circular
+// and crashed with "Cannot access 'X' before initialization" when utils.ts
+// happened to load first.
+import { type WidgetsData } from './utils'
+
+type MonthData = {
+  date: string
+  label: string
+}
+
+export const getLastMonthes = (): MonthData[] => {
+  const months = new Array(4).fill(null)
+
+  return months.reduce((acc, _, index) => {
+    const date = dayjs().subtract(index, 'month')
+    acc[index] = {
+      date: date.format('YYYY-MM'),
+      label: date.format('MMM YYYY')
+    }
+    return acc
+  }, [])
+}
 
 const lastMonthes = getLastMonthes()
 

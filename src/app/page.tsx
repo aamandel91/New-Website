@@ -1,35 +1,23 @@
 import React from 'react'
 import type { Metadata } from 'next'
 
-import { PageTemplate } from '@templates'
+import PageTemplate from '@/components/templates/PageTemplate'
 import { tenant } from '@/configs/tenant.config'
 import { loadSiteSettings } from '@/utils/siteSettings'
 import HomePageContent from '@pages/home'
 import StructuredData from '@shared/StructuredData'
 
-import EstimatePage, {
-  generateMetadata as generateEstimateMetadata
-} from 'app/(Estimates)/estimate/[[...slugs]]/page'
-
-import { fetchFeatures } from 'utils/features'
 import {
   breadcrumbSchema,
   organizationSchema,
   websiteSearchSchema
 } from 'utils/structuredData'
 
-// NOTE: Dynamically generate metadata for the Estimate Landing Page based on feature flags.
-// When manually setting rootPage with feature flags for the estimate page,
-// Next.js does not recognize EstimatePage as a page component and skips page-level metadata configuration.
-// To prevent this, metadata must be generated dynamically using feature flags.
-export const generateMetadata = async (props: any): Promise<Metadata> => {
-  const features = await fetchFeatures()
-
-  if (features.rootPage === 'estimate') {
-    // landing page metadata
-    return await generateEstimateMetadata(props)
-  }
-
+// NOTE: estimate-as-root is served via a rewrite in middleware.ts. Importing
+// the Estimate page here (even behind a feature check) would register its
+// client chunks — recharts, MUI date-pickers, estimate providers — on the
+// homepage bundle.
+export const generateMetadata = async (): Promise<Metadata> => {
   const settings = await loadSiteSettings()
 
   return {
@@ -46,12 +34,7 @@ export const generateMetadata = async (props: any): Promise<Metadata> => {
   }
 }
 
-const HomePage = async (props: any) => {
-  const features = await fetchFeatures()
-
-  if (features.rootPage === 'estimate')
-    return await (<EstimatePage {...props} />)
-
+const HomePage = async () => {
   const orgSchema = organizationSchema()
   const breadcrumbs = breadcrumbSchema([
     { name: 'Home', url: tenant.brand.siteUrl }

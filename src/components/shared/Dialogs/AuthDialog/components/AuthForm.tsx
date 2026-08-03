@@ -19,8 +19,8 @@ import { useUser } from 'providers/UserProvider'
 import useAnalytics from 'hooks/useAnalytics'
 import useClientSide from 'hooks/useClientSide'
 import useSnackbar from 'hooks/useSnackbar'
-import { formatPhoneNumberAsYouType } from 'utils/formatters'
-import { sanitizePhoneNumber } from 'utils/properties/sanitizers'
+import { formatPhoneNumberAsYouType } from 'utils/phone'
+import { sanitizePhoneNumber } from 'utils/phone'
 
 import {
   expiredOtpErrorMessage,

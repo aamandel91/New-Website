@@ -176,6 +176,7 @@ const ExploreLifestyles = () => {
 
           return (
             <Link
+              prefetch={false}
               key={tile.key}
               href={tile.href}
               style={{ textDecoration: 'none' }}

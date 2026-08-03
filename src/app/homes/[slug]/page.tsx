@@ -15,11 +15,10 @@ import {
 } from '@mui/material'
 
 import content from '@configs/content'
-import { Property404Template, PropertyPageTemplate } from '@templates'
-import {
-  NotifyWhenListed,
-  PropertyTransactionHistory
-} from '@/components/property-detail'
+import Property404Template from '@/components/templates/Property404Template'
+import PropertyPageTemplate from '@/components/templates/PropertyPageTemplate'
+import NotifyWhenListed from '@/components/property-detail/NotifyWhenListed'
+import PropertyTransactionHistory from '@/components/property-detail/PropertyTransactionHistory'
 import AboutTheArea from '@/components/property-detail/sections/AboutTheArea'
 import { tenant } from '@/configs/tenant.config'
 import { scorePropertyPage } from '@/utils/propertyPageScoring'

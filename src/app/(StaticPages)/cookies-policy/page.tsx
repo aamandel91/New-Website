@@ -1,7 +1,7 @@
 import { type Metadata } from 'next'
 
 import Markdown from '@content/cookies-policy'
-import { StaticPageTemplate } from '@templates'
+import StaticPageTemplate from '@/components/templates/StaticPageTemplate'
 import { tenant } from '@/configs/tenant.config'
 import StructuredData from '@shared/StructuredData'
 

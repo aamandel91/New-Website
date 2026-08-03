@@ -6,12 +6,7 @@ import dynamic from 'next/dynamic'
 import { Box, Container, Skeleton, Stack } from '@mui/material'
 
 import { DetailsContainer } from '@shared/Containers'
-import {
-  FullscreenGalleryDialog,
-  FullscreenRibbonDialog,
-  GalleryDialog,
-  SlideshowDialog
-} from '@shared/Dialogs'
+import LazyDialog from '@/components/templates/components/LazyDialog'
 
 import { type HistoryItemType } from 'services/API'
 import { useFeatures } from 'providers/FeaturesProvider'
@@ -48,6 +43,25 @@ const HomeMap = dynamic(() => import('./components/HomeMap'), {
     <Skeleton variant="rectangular" height={400} sx={{ borderRadius: 1 }} />
   )
 })
+
+// Gallery dialogs are interaction-only: keep their chunks (image grids,
+// slideshow, fullscreen viewers) out of the initial listing-page load and
+// mount them on first open via LazyDialog.
+const GalleryDialog = dynamic(() => import('@shared/Dialogs/GalleryDialog'), {
+  ssr: false
+})
+const SlideshowDialog = dynamic(
+  () => import('@shared/Dialogs/SlideshowDialog'),
+  { ssr: false }
+)
+const FullscreenRibbonDialog = dynamic(
+  () => import('@shared/Dialogs/FullscreenRibbonDialog'),
+  { ssr: false }
+)
+const FullscreenGalleryDialog = dynamic(
+  () => import('@shared/Dialogs/FullscreenGalleryDialog'),
+  { ssr: false }
+)
 
 const PropertyPageContent = ({
   embedded = false,
@@ -156,10 +170,18 @@ const PropertyPageContent = ({
           )}
         </Stack>
 
-        {features.pdpGridGallery && <GalleryDialog />}
-        {features.pdpSlideshow && <SlideshowDialog />}
-        {features.pdpFullscreenGallery && <FullscreenRibbonDialog />}
-        {features.pdpFullscreenGallery && <FullscreenGalleryDialog />}
+        {features.pdpGridGallery && (
+          <LazyDialog name="gallery" component={GalleryDialog} />
+        )}
+        {features.pdpSlideshow && (
+          <LazyDialog name="slideshow" component={SlideshowDialog} />
+        )}
+        {features.pdpFullscreenGallery && (
+          <LazyDialog name="fullscreen-ribbon" component={FullscreenRibbonDialog} />
+        )}
+        {features.pdpFullscreenGallery && (
+          <LazyDialog name="fullscreen-gallery" component={FullscreenGalleryDialog} />
+        )}
       </Container>
       <SimilarPropertyCarousel properties={similarProperties} />
     </Stack>

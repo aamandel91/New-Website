@@ -4,7 +4,7 @@ import queryString from 'query-string'
 import apiConfig from '@configs/api'
 
 import { type ApiCoords } from 'services/API'
-import { type GooglePlaceDetailsResponse } from 'services/Map'
+import { type GooglePlaceDetailsResponse } from 'services/Map/types'
 
 const appDomain = process.env.NEXT_PUBLIC_APP_DOMAIN || ''
 const { gmapsApiUrl: api, googlePlacesApiKey: key } = apiConfig

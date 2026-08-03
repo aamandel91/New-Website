@@ -9,7 +9,7 @@ import { Skeleton } from '@mui/material'
 import { trackSearch } from '@/utils/analytics'
 import { ssTrackEvent } from '@/utils/suresendTracking'
 
-import MapService from 'services/Map'
+import MapService from 'services/Map/Map'
 import {
   type Filters,
   getClusterParams,

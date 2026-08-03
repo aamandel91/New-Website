@@ -24,16 +24,13 @@ import {
   type MapboxAddress,
   type Property
 } from 'services/API'
-// IMPORTANT: do not import the 'services/Map' barrel here. The Header renders
-// on every page, and the barrel chains to MarkerExtension -> mapbox-gl runtime
-// (~700KB), which would ship the map library site-wide. MapSearch is HTTP-only.
+// IMPORTANT: do not import the 'services/Map' barrel here, even dynamically.
+// The Header renders on every page, and any reference to the barrel registers
+// the mapbox-gl runtime (~420KB) as a client entry site-wide. The liveMap
+// registry is dependency-free; it holds the live map on real map pages and
+// null everywhere else (same behavior as before).
+import { getLiveMap } from 'services/Map/liveMap'
 import MapSearch from 'services/Map/MapSearch'
-
-// Lazy accessor for the live map singleton. On map pages mapbox is already
-// loaded so this resolves instantly; on every other page it stays out of the
-// bundle and `map` is undefined (same behavior as before).
-const getLiveMap = async () =>
-  (await import('services/Map')).default.map
 import SearchService from 'services/Search'
 import { useLocations } from 'providers/LocationsProvider'
 import { type MapPosition } from 'providers/MapOptionsProvider'
@@ -141,7 +138,7 @@ const Autosuggestion = ({
 
 
   const handleButtonClick = async () => {
-    const map = await getLiveMap()
+    const map = getLiveMap()
     if (map && position.center) {
       map.flyTo({
         center: position.center,
@@ -379,7 +376,7 @@ const Autosuggestion = ({
     setLocations([])
     setSearchString('')
     setPosition({ center: null, zoom: defaultAddressZoom })
-    const map = await getLiveMap()
+    const map = getLiveMap()
     if (map) {
       const strippedUrl = removeQueryParam()
       router.replace(strippedUrl)
@@ -400,7 +397,7 @@ const Autosuggestion = ({
     const center = toMapboxPoint(point)
     const query = getAddressLabel(option)
 
-    const map = await getLiveMap()
+    const map = getLiveMap()
     if (map) {
       const apiBounds = calcBoundsAtZoom(map, point, zoom)
       const mapboxBounds = toMapboxBounds(apiBounds)
@@ -444,7 +441,7 @@ const Autosuggestion = ({
 
     const center = getCenter(bounds)
 
-    const map = await getLiveMap()
+    const map = getLiveMap()
     if (map) {
       const zoom = calcZoomLevel(map, bounds)
       const mapboxBounds = toMapboxBounds(bounds)

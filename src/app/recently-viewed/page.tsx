@@ -7,7 +7,7 @@ import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline'
 import { Box, Button, Container, Stack, Typography } from '@mui/material'
 
 import gridConfig from '@configs/cards-grids'
-import { PageTemplate } from '@templates'
+import PageTemplate from '@/components/templates/PageTemplate'
 import { useRecentlyViewed } from '@/hooks/useRecentlyViewed'
 import { EmptyListings } from '@shared/EmptyStates'
 import { PropertyCard } from '@shared/Property'

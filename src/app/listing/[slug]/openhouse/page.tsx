@@ -1,7 +1,7 @@
 import { permanentRedirect } from 'next/navigation'
 
 import searchConfig from '@configs/search'
-import { Property404Template } from '@templates'
+import Property404Template from '@/components/templates/Property404Template'
 
 import {
   extractMlsFromSlug,

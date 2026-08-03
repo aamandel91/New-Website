@@ -3,7 +3,7 @@ import { permanentRedirect } from 'next/navigation'
 
 import content from '@configs/content'
 import searchConfig from '@configs/search'
-import { Property404Template } from '@templates'
+import Property404Template from '@/components/templates/Property404Template'
 
 import { formatMetadata } from 'utils/properties'
 import {

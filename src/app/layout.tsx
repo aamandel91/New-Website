@@ -8,7 +8,11 @@ import { GlobalStyles } from '@mui/material'
 
 const montserrat = Montserrat({
   subsets: ['latin'],
-  display: 'swap',
+  // 'optional' keeps the webfont off the LCP critical path: if it isn't
+  // ready within the browser's short block period, the (metric-adjusted)
+  // fallback is kept and no late repaint occurs. On fast connections and
+  // repeat visits the webfont renders as before.
+  display: 'optional',
   variable: '--font-montserrat'
 })
 
@@ -75,12 +79,8 @@ const Layout = async ({ children }: { children: React.ReactNode }) => {
         <link rel="preconnect" href="https://csr-api.repliers.io" />
         <link rel="preconnect" href="https://api.mapbox.com" />
         <link rel="preconnect" href="https://events.mapbox.com" />
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link
-          rel="preconnect"
-          href="https://fonts.gstatic.com"
-          crossOrigin="anonymous"
-        />
+        {/* NOTE: no fonts.googleapis/gstatic preconnects — next/font
+            self-hosts the fonts, so those origins are never contacted. */}
         <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
         <meta
           name="format-detection"
@@ -117,7 +117,7 @@ const Layout = async ({ children }: { children: React.ReactNode }) => {
           src="https://cdn.userway.org/widget.js"
           data-account={process.env.NEXT_PUBLIC_USERWAY_ACCOUNT_ID || ''}
           data-position="6"
-          strategy="afterInteractive"
+          strategy="lazyOnload"
         />
         <GlobalStyles styles={globalStyles} />
         <Providers

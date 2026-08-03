@@ -1,12 +1,20 @@
 'use client'
 
-import React, { useEffect } from 'react'
+import React, { useEffect, useRef } from 'react'
+import dynamic from 'next/dynamic'
 
 import { Box } from '@mui/material'
 
-import { PropertyDetailLayout } from '@/components/property-detail'
-import PropertyRegistrationDialog from '@/components/shared/Dialogs/PropertyRegistrationDialog'
+import PropertyDetailLayout from '@/components/property-detail/PropertyDetailLayout'
 import { usePropertyViewTracking } from '@/hooks/useTrafficSource'
+
+// The registration gate reuses the auth signup form (react-hook-form + Joi +
+// libphonenumber). Load it only when it actually needs to show instead of
+// shipping those libraries with every property page.
+const PropertyRegistrationDialog = dynamic(
+  () => import('@/components/shared/Dialogs/PropertyRegistrationDialog'),
+  { ssr: false }
+)
 
 import { type HistoryItemType, type Property } from 'services/API'
 import { useFeatures } from 'providers/FeaturesProvider'
@@ -14,7 +22,7 @@ import PropertyDetailsProvider from 'providers/PropertyDetailsProvider'
 import PropertyProvider from 'providers/PropertyProvider'
 import { useUser } from 'providers/UserProvider'
 
-import { PageTemplate } from '.'
+import PageTemplate from './PageTemplate'
 
 interface PropertyPageTemplateProps {
   property: Property
@@ -51,6 +59,12 @@ const PropertyPageTemplate = ({
     ? `${[property.address.streetNumber, property.address.streetName, property.address.streetSuffix].filter(Boolean).join(' ')}, ${property.address.city}, ${property.address.state} ${property.address.zip}`
     : 'this property'
 
+  // Mount the registration dialog only once it first needs to show (its chunk
+  // isn't downloaded until then), and keep it mounted afterwards so the close
+  // animation still plays.
+  const registrationEverShown = useRef(false)
+  if (shouldShowRegistration) registrationEverShown.current = true
+
   return (
     <PageTemplate noHeader={noHeader}>
       <PropertyProvider property={property}>
@@ -65,7 +79,7 @@ const PropertyPageTemplate = ({
       </PropertyProvider>
 
       {/* Show registration modal for non-authenticated users */}
-      {!user && (
+      {!user && registrationEverShown.current && (
         <PropertyRegistrationDialog
           open={shouldShowRegistration}
           onClose={dismissRegistration}

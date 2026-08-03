@@ -5,7 +5,7 @@ import { type FormValues } from '@configs/estimate'
 
 import { APIUser } from 'services/API'
 import useSnackbar from 'hooks/useSnackbar'
-import { sanitizePhoneNumber } from 'utils/properties/sanitizers'
+import { sanitizePhoneNumber } from 'utils/phone'
 
 const errorMessage = 'Failed to register new user'
 const existingUserErrorMessage = 'This $ is already in use by another client.'

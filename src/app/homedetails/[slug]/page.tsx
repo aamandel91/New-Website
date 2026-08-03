@@ -3,7 +3,8 @@ import type React from 'react'
 
 import content from '@configs/content'
 import searchConfig from '@configs/search'
-import { Property404Template, PropertyPageTemplate } from '@templates'
+import Property404Template from '@/components/templates/Property404Template'
+import PropertyPageTemplate from '@/components/templates/PropertyPageTemplate'
 import StructuredData from '@shared/StructuredData'
 
 import { formatMetadata } from 'utils/properties'

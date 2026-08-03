@@ -1,7 +1,4 @@
-import i18nConfig from '@configs/i18n'
 import propsConfig from '@configs/properties'
-
-import parsePhoneNumber from 'libphonenumber-js/min'
 
 import { type PropertyAddress } from 'services/API'
 
@@ -43,11 +40,8 @@ export const sanitizeAddress = (address: PropertyAddress) => {
     .toLowerCase()
 }
 
-export const sanitizePhoneNumber = (value: string | null | undefined) => {
-  if (!value) return ''
-  const phoneNumber = parsePhoneNumber(value, i18nConfig.phoneNumberLocale)
-  return (phoneNumber?.number || '').replace('+', '')
-}
+// NOTE: sanitizePhoneNumber moved to utils/phone — it needs libphonenumber-js,
+// which must stay out of the root layout's module graph.
 
 export const sanitizeEmail = (value: string | null | undefined) => {
   if (!value) return ''

@@ -22,8 +22,8 @@ import type { ApiUserProfile } from 'services/API'
 import { useFeatures } from 'providers/FeaturesProvider'
 import { useUser } from 'providers/UserProvider'
 import useSnackbar from 'hooks/useSnackbar'
-import { formatPhoneNumberAsYouType } from 'utils/formatters'
-import { sanitizePhoneNumber } from 'utils/properties/sanitizers'
+import { formatPhoneNumberAsYouType } from 'utils/phone'
+import { sanitizePhoneNumber } from 'utils/phone'
 
 import schema from './schema'
 

@@ -12,7 +12,7 @@ import { FullscreenView } from 'components/atoms'
 import { type Property } from 'services/API'
 import { formatFullAddress, parseSeoUrl } from 'utils/properties'
 
-import { PageTemplate } from '.'
+import PageTemplate from './PageTemplate'
 
 const phrases = {
   404: "We're sorry. The listing you are looking for isn't there.",

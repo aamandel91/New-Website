@@ -1,4 +1,4 @@
-import { ClientSidePageTemplate } from '@templates'
+import ClientSidePageTemplate from '@/components/templates/ClientSidePageTemplate'
 import AgentsPageContent from '@pages/admin/agents/AgentsPageContent'
 
 const AgentsPage = () => {

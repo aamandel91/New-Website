@@ -21,7 +21,7 @@ import {
   getSubTypeBySlug,
   subTypes
 } from '@configs/page-generation'
-import { PageTemplate } from '@templates'
+import PageTemplate from '@/components/templates/PageTemplate'
 import PageWithSidebar from '@/components/layouts/PageWithSidebar'
 import AboutTheArea from '@/components/property-detail/sections/AboutTheArea'
 import CitySidebar from '@/components/sidebar/CitySidebar'

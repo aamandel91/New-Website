@@ -7,7 +7,7 @@ import { CircularProgress, Stack, Typography } from '@mui/material'
 
 import routes from '@configs/routes'
 import storageConfig from '@configs/storage'
-import { PageTemplate } from '@templates'
+import PageTemplate from '@/components/templates/PageTemplate'
 
 import { type AuthProvider } from 'services/API'
 import { useUser } from 'providers/UserProvider'

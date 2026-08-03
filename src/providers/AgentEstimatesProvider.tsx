@@ -10,7 +10,7 @@ import {
 } from 'react'
 import type React from 'react'
 
-import { type EstimateData } from '@configs/estimate'
+import type { EstimateData } from '@configs/estimate/types'
 
 import { APIAgent, type ApiClient } from 'services/API'
 

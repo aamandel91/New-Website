@@ -11,7 +11,7 @@ import {
 } from '@mui/material'
 
 import searchConfig from '@configs/search'
-import { PageTemplate } from '@templates'
+import PageTemplate from '@/components/templates/PageTemplate'
 import { MarketTrendsWidget } from '@shared/MarketTrends'
 
 // ISR: serve cached HTML to crawlers/visitors, refresh hourly.

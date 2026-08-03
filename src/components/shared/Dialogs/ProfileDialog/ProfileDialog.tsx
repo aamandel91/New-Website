@@ -2,7 +2,7 @@ import { DialogTitle } from '@mui/material'
 
 import { useDialog } from 'providers/DialogProvider'
 
-import { BaseResponsiveDialog } from '..'
+import BaseResponsiveDialog from '../BaseResponsiveDialog'
 
 import { ProfileForm } from '.'
 

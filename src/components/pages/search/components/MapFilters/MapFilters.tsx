@@ -4,7 +4,8 @@ import React, { Suspense } from 'react'
 
 import { Box, Container } from '@mui/material'
 
-import { AdvancedFiltersDialog, AiSearchDialog } from '@shared/Dialogs'
+import AdvancedFiltersDialog from '@shared/Dialogs/AdvancedFiltersDialog'
+import AiSearchDialog from '@shared/Dialogs/AiSearchDialog'
 import { ZillowFilterBar } from '@shared/Filters'
 
 import type { Filters } from 'services/Search'

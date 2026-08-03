@@ -3,6 +3,7 @@ import { type Map, type Marker } from 'mapbox-gl'
 
 import { type ApiCluster, type Property } from 'services/API'
 import { MAP_CONSTANTS } from 'services/Map/constants'
+import { setLiveMap } from 'services/Map/liveMap'
 import MarkerExtensionService, {
   type MarkerExtension
 } from 'services/Map/MarkerExtension'
@@ -33,11 +34,13 @@ export class MapService {
 
   setMap(map: Map): void {
     this.sharedMap = map
+    setLiveMap(map)
   }
 
   removeMap(): void {
     this.sharedMap?.remove()
     this.sharedMap = null
+    setLiveMap(null)
 
     this.resetMarkersSingleView()
     this.resetMarkersCluster()

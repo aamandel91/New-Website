@@ -47,7 +47,8 @@ const SavedSearchCard = ({ search }: { search: ApiSavedSearch }) => {
           alignItems="center"
           justifyContent="stretch"
         >
-          <Link href={searchLink}>
+          <Link
+              prefetch={false} href={searchLink}>
             <MapImagePreview
               position={position}
               width={imageWidth}
@@ -60,7 +61,8 @@ const SavedSearchCard = ({ search }: { search: ApiSavedSearch }) => {
             justifyContent="space-between"
             height={Number(savedSearchCard.height) - 32}
           >
-            <Link href={searchLink}>
+            <Link
+              prefetch={false} href={searchLink}>
               <SavedSearchHeader search={search} />
             </Link>
 

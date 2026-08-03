@@ -1,6 +1,7 @@
 import { features } from 'features'
 
-import { DashboardPageTemplate, Page404Template } from '@templates'
+import DashboardPageTemplate from '@/components/templates/DashboardPageTemplate'
+import Page404Template from '@/components/templates/Page404Template'
 import MessagesPageContent from '@pages/messages'
 
 const MessagesPage = () => {

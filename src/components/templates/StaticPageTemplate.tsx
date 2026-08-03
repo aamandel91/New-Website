@@ -3,7 +3,7 @@ import React from 'react'
 import { Box, Container } from '@mui/material'
 
 import HeaderBanner from './components/HeaderBanner'
-import { PageTemplate } from '.'
+import PageTemplate from './PageTemplate'
 
 const StaticPageTemplate = ({
   title = '',
